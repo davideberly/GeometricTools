@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Graphics\AmbientLightEffect.cpp" />
+    <ClCompile Include="Graphics\AreaLightEffect.cpp" />
+    <ClCompile Include="Graphics\BaseEngine.cpp" />
+    <ClCompile Include="Graphics\BillboardNode.cpp" />
+    <ClCompile Include="Graphics\BlendState.cpp" />
+    <ClCompile Include="Graphics\BlendTransformController.cpp" />
+    <ClCompile Include="Graphics\BspNode.cpp" />
+    <ClCompile Include="Graphics\Buffer.cpp" />
+    <ClCompile Include="Graphics\BumpMapEffect.cpp" />
+    <ClCompile Include="Graphics\Camera.cpp" />
+    <ClCompile Include="Graphics\ConstantBuffer.cpp" />
+    <ClCompile Include="Graphics\ConstantColorEffect.cpp" />
+    <ClCompile Include="Graphics\ControlledObject.cpp" />
+    <ClCompile Include="Graphics\Controller.cpp" />
+    <ClCompile Include="Graphics\CubeMapEffect.cpp" />
+    <ClCompile Include="Graphics\Culler.cpp" />
+    <ClCompile Include="Graphics\DataFormat.cpp" />
+    <ClCompile Include="Graphics\DepthStencilState.cpp" />
+    <ClCompile Include="Graphics\DirectionalLightEffect.cpp" />
+    <ClCompile Include="Graphics\DirectionalLightTextureEffect.cpp" />
+    <ClCompile Include="Graphics\DrawingState.cpp" />
+    <ClCompile Include="Graphics\DrawTarget.cpp" />
+    <ClCompile Include="Graphics\Font.cpp" />
+    <ClCompile Include="Graphics\FontArialW400H12.cpp" />
+    <ClCompile Include="Graphics\FontArialW400H14.cpp" />
+    <ClCompile Include="Graphics\FontArialW400H16.cpp" />
+    <ClCompile Include="Graphics\FontArialW400H18.cpp" />
+    <ClCompile Include="Graphics\FontArialW700H12.cpp" />
+    <ClCompile Include="Graphics\FontArialW700H14.cpp" />
+    <ClCompile Include="Graphics\FontArialW700H16.cpp" />
+    <ClCompile Include="Graphics\FontArialW700H18.cpp" />
+    <ClCompile Include="Graphics\GEDrawTarget.cpp" />
+    <ClCompile Include="Graphics\GEObject.cpp" />
+    <ClCompile Include="Graphics\GlossMapEffect.cpp" />
+    <ClCompile Include="Graphics\GraphicsEngine.cpp" />
+    <ClCompile Include="Graphics\GraphicsObject.cpp" />
+    <ClCompile Include="Graphics\GTGraphics.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Graphics\IKController.cpp" />
+    <ClCompile Include="Graphics\IndexBuffer.cpp" />
+    <ClCompile Include="Graphics\IndirectArgumentsBuffer.cpp" />
+    <ClCompile Include="Graphics\KeyframeController.cpp" />
+    <ClCompile Include="Graphics\Light.cpp" />
+    <ClCompile Include="Graphics\LightCameraGeometry.cpp" />
+    <ClCompile Include="Graphics\LightEffect.cpp" />
+    <ClCompile Include="Graphics\Lighting.cpp" />
+    <ClCompile Include="Graphics\Material.cpp" />
+    <ClCompile Include="Graphics\MeshFactory.cpp" />
+    <ClCompile Include="Graphics\MorphController.cpp" />
+    <ClCompile Include="Graphics\Node.cpp" />
+    <ClCompile Include="Graphics\OverlayEffect.cpp" />
+    <ClCompile Include="Graphics\ParticleController.cpp" />
+    <ClCompile Include="Graphics\Particles.cpp" />
+    <ClCompile Include="Graphics\Picker.cpp" />
+    <ClCompile Include="Graphics\PickRecord.cpp" />
+    <ClCompile Include="Graphics\PlanarReflectionEffect.cpp" />
+    <ClCompile Include="Graphics\PointController.cpp" />
+    <ClCompile Include="Graphics\PointLightEffect.cpp" />
+    <ClCompile Include="Graphics\PointLightTextureEffect.cpp" />
+    <ClCompile Include="Graphics\ProgramDefines.cpp" />
+    <ClCompile Include="Graphics\ProgramFactory.cpp" />
+    <ClCompile Include="Graphics\ProjectedTextureEffect.cpp" />
+    <ClCompile Include="Graphics\PVWUpdater.cpp" />
+    <ClCompile Include="Graphics\RasterizerState.cpp" />
+    <ClCompile Include="Graphics\RawBuffer.cpp" />
+    <ClCompile Include="Graphics\Resource.cpp" />
+    <ClCompile Include="Graphics\SamplerState.cpp" />
+    <ClCompile Include="Graphics\Shader.cpp" />
+    <ClCompile Include="Graphics\SkinController.cpp" />
+    <ClCompile Include="Graphics\Spatial.cpp" />
+    <ClCompile Include="Graphics\SphereMapEffect.cpp" />
+    <ClCompile Include="Graphics\SpotLightEffect.cpp" />
+    <ClCompile Include="Graphics\StructuredBuffer.cpp" />
+    <ClCompile Include="Graphics\Terrain.cpp" />
+    <ClCompile Include="Graphics\TextEffect.cpp" />
+    <ClCompile Include="Graphics\Texture.cpp" />
+    <ClCompile Include="Graphics\Texture1.cpp" />
+    <ClCompile Include="Graphics\Texture1Array.cpp" />
+    <ClCompile Include="Graphics\Texture2.cpp" />
+    <ClCompile Include="Graphics\Texture2Array.cpp" />
+    <ClCompile Include="Graphics\Texture2Effect.cpp" />
+    <ClCompile Include="Graphics\Texture3.cpp" />
+    <ClCompile Include="Graphics\Texture3Effect.cpp" />
+    <ClCompile Include="Graphics\TextureArray.cpp" />
+    <ClCompile Include="Graphics\TextureBuffer.cpp" />
+    <ClCompile Include="Graphics\TextureCube.cpp" />
+    <ClCompile Include="Graphics\TextureCubeArray.cpp" />
+    <ClCompile Include="Graphics\TextureDS.cpp" />
+    <ClCompile Include="Graphics\TextureRT.cpp" />
+    <ClCompile Include="Graphics\TextureSingle.cpp" />
+    <ClCompile Include="Graphics\TransformController.cpp" />
+    <ClCompile Include="Graphics\TypedBuffer.cpp" />
+    <ClCompile Include="Graphics\VertexBuffer.cpp" />
+    <ClCompile Include="Graphics\VertexColorEffect.cpp" />
+    <ClCompile Include="Graphics\VertexFormat.cpp" />
+    <ClCompile Include="Graphics\ViewVolume.cpp" />
+    <ClCompile Include="Graphics\ViewVolumeNode.cpp" />
+    <ClCompile Include="Graphics\Visual.cpp" />
+    <ClCompile Include="Graphics\VisualEffect.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphics\AmbientLightEffect.h" />
+    <ClInclude Include="Graphics\AreaLightEffect.h" />
+    <ClInclude Include="Graphics\BaseEngine.h" />
+    <ClInclude Include="Graphics\BillboardNode.h" />
+    <ClInclude Include="Graphics\BlendState.h" />
+    <ClInclude Include="Graphics\BlendTransformController.h" />
+    <ClInclude Include="Graphics\BoundingSphere.h" />
+    <ClInclude Include="Graphics\BspNode.h" />
+    <ClInclude Include="Graphics\Buffer.h" />
+    <ClInclude Include="Graphics\BumpMapEffect.h" />
+    <ClInclude Include="Graphics\Camera.h" />
+    <ClInclude Include="Graphics\ComputeProgram.h" />
+    <ClInclude Include="Graphics\ConstantBuffer.h" />
+    <ClInclude Include="Graphics\ConstantColorEffect.h" />
+    <ClInclude Include="Graphics\ControlledObject.h" />
+    <ClInclude Include="Graphics\Controller.h" />
+    <ClInclude Include="Graphics\CubeMapEffect.h" />
+    <ClInclude Include="Graphics\Culler.h" />
+    <ClInclude Include="Graphics\CullingPlane.h" />
+    <ClInclude Include="Graphics\DataFormat.h" />
+    <ClInclude Include="Graphics\DepthStencilState.h" />
+    <ClInclude Include="Graphics\DirectionalLightEffect.h" />
+    <ClInclude Include="Graphics\DirectionalLightTextureEffect.h" />
+    <ClInclude Include="Graphics\DrawingState.h" />
+    <ClInclude Include="Graphics\DrawTarget.h" />
+    <ClInclude Include="Graphics\Font.h" />
+    <ClInclude Include="Graphics\FontArialW400H12.h" />
+    <ClInclude Include="Graphics\FontArialW400H14.h" />
+    <ClInclude Include="Graphics\FontArialW400H16.h" />
+    <ClInclude Include="Graphics\FontArialW400H18.h" />
+    <ClInclude Include="Graphics\FontArialW700H12.h" />
+    <ClInclude Include="Graphics\FontArialW700H14.h" />
+    <ClInclude Include="Graphics\FontArialW700H16.h" />
+    <ClInclude Include="Graphics\FontArialW700H18.h" />
+    <ClInclude Include="Graphics\GEDrawTarget.h" />
+    <ClInclude Include="Graphics\GEInputLayoutManager.h" />
+    <ClInclude Include="Graphics\GEObject.h" />
+    <ClInclude Include="Graphics\GlossMapEffect.h" />
+    <ClInclude Include="Graphics\Graphics.h" />
+    <ClInclude Include="Graphics\GraphicsEngine.h" />
+    <ClInclude Include="Graphics\GraphicsObject.h" />
+    <ClInclude Include="Graphics\GTGraphics.h" />
+    <ClInclude Include="Graphics\GTGraphicsPCH.h" />
+    <ClInclude Include="Graphics\IKController.h" />
+    <ClInclude Include="Graphics\IndexBuffer.h" />
+    <ClInclude Include="Graphics\IndexFormat.h" />
+    <ClInclude Include="Graphics\IndirectArgumentsBuffer.h" />
+    <ClInclude Include="Graphics\KeyframeController.h" />
+    <ClInclude Include="Graphics\Light.h" />
+    <ClInclude Include="Graphics\LightCameraGeometry.h" />
+    <ClInclude Include="Graphics\LightEffect.h" />
+    <ClInclude Include="Graphics\Lighting.h" />
+    <ClInclude Include="Graphics\Material.h" />
+    <ClInclude Include="Graphics\MemberLayout.h" />
+    <ClInclude Include="Graphics\MeshFactory.h" />
+    <ClInclude Include="Graphics\MorphController.h" />
+    <ClInclude Include="Graphics\Node.h" />
+    <ClInclude Include="Graphics\OverlayEffect.h" />
+    <ClInclude Include="Graphics\ParticleController.h" />
+    <ClInclude Include="Graphics\Particles.h" />
+    <ClInclude Include="Graphics\Picker.h" />
+    <ClInclude Include="Graphics\PickRecord.h" />
+    <ClInclude Include="Graphics\PlanarReflectionEffect.h" />
+    <ClInclude Include="Graphics\PointController.h" />
+    <ClInclude Include="Graphics\PointLightEffect.h" />
+    <ClInclude Include="Graphics\PointLightTextureEffect.h" />
+    <ClInclude Include="Graphics\ProgramDefines.h" />
+    <ClInclude Include="Graphics\ProgramFactory.h" />
+    <ClInclude Include="Graphics\ProjectedTextureEffect.h" />
+    <ClInclude Include="Graphics\PVWUpdater.h" />
+    <ClInclude Include="Graphics\RasterizerState.h" />
+    <ClInclude Include="Graphics\RawBuffer.h" />
+    <ClInclude Include="Graphics\Resource.h" />
+    <ClInclude Include="Graphics\SamplerState.h" />
+    <ClInclude Include="Graphics\Shader.h" />
+    <ClInclude Include="Graphics\SkinController.h" />
+    <ClInclude Include="Graphics\Spatial.h" />
+    <ClInclude Include="Graphics\SphereMapEffect.h" />
+    <ClInclude Include="Graphics\SpotLightEffect.h" />
+    <ClInclude Include="Graphics\StructuredBuffer.h" />
+    <ClInclude Include="Graphics\Terrain.h" />
+    <ClInclude Include="Graphics\TextEffect.h" />
+    <ClInclude Include="Graphics\Texture.h" />
+    <ClInclude Include="Graphics\Texture1.h" />
+    <ClInclude Include="Graphics\Texture1Array.h" />
+    <ClInclude Include="Graphics\Texture2.h" />
+    <ClInclude Include="Graphics\Texture2Array.h" />
+    <ClInclude Include="Graphics\Texture2Effect.h" />
+    <ClInclude Include="Graphics\Texture3.h" />
+    <ClInclude Include="Graphics\Texture3Effect.h" />
+    <ClInclude Include="Graphics\TextureArray.h" />
+    <ClInclude Include="Graphics\TextureBuffer.h" />
+    <ClInclude Include="Graphics\TextureCube.h" />
+    <ClInclude Include="Graphics\TextureCubeArray.h" />
+    <ClInclude Include="Graphics\TextureDS.h" />
+    <ClInclude Include="Graphics\TextureRT.h" />
+    <ClInclude Include="Graphics\TextureSingle.h" />
+    <ClInclude Include="Graphics\TransformController.h" />
+    <ClInclude Include="Graphics\TypedBuffer.h" />
+    <ClInclude Include="Graphics\VertexBuffer.h" />
+    <ClInclude Include="Graphics\VertexColorEffect.h" />
+    <ClInclude Include="Graphics\VertexFormat.h" />
+    <ClInclude Include="Graphics\ViewVolume.h" />
+    <ClInclude Include="Graphics\ViewVolumeNode.h" />
+    <ClInclude Include="Graphics\Visual.h" />
+    <ClInclude Include="Graphics\VisualEffect.h" />
+    <ClInclude Include="Graphics\VisualProgram.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{ED37722A-40DE-4B07-9A4A-65E978D43643}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GTGraphics.v16</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Graphics\Common\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Graphics/GTGraphicsPCH.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Graphics/GTGraphicsPCH.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Graphics/GTGraphicsPCH.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile>Graphics/GTGraphicsPCH.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,13 @@
+// In Data/Biped.txt, you see lines of the form "Node <SomeName>".
+// The corresponding file is Data/Bones/SomeName.node.raw and the
+// file format is listed below.
+
+int numChildren;  // number of children of the node
+String names[numChildren];  // names of the children
+
+// A non-null-terminated string.
+struct String
+{
+    int length;  // number of characters in the string
+    char name[length];  // the characters in the string
+}

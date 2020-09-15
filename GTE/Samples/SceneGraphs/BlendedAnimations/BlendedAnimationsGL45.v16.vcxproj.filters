@@ -1,0 +1,1328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{4e2f6cc1-58ed-48ad-b762-c5b643bfb8a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Animations">
+      <UniqueIdentifier>{d0c07536-3335-4e1b-9e6d-22f4fa07ed64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Animations\Idle">
+      <UniqueIdentifier>{4584b2e7-cefe-4ac0-92f5-b40086b49f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Animations\Run">
+      <UniqueIdentifier>{21664bb6-83ac-4f33-ac3d-946d6dc5b961}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Animations\Walk">
+      <UniqueIdentifier>{9ec0b455-0296-4f2e-a932-50343f741aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Bones">
+      <UniqueIdentifier>{9ad41848-bda8-4e18-9f1f-b41e46d91e56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files\Skins">
+      <UniqueIdentifier>{22535806-62fd-4ff2-9ced-e1ff549be38a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BipedManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendedAnimationsMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BlendedAnimationsWindow3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BipedManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlendedAnimationsWindow3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Animations\Idle\Biped.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Bones.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\BonesX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Head.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\HeadNub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\HeadX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\LUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Neck.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\NeckX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Pelvis.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\PelvisX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\RUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Skins.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine03.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Idle\Spine03X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Idle</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Biped.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Bones.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\BonesX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Head.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\HeadNub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\HeadX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\LUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Neck.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\NeckX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Pelvis.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\PelvisX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\RUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Skins.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine03.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Run\Spine03X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Run</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Biped.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Bones.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\BonesX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Head.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\HeadNub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\HeadX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\LUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Neck.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\NeckX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Pelvis.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\PelvisX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RCalf.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RCalfX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RClavicle.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RClavicleX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger01.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger01X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger1Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger2Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger3.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger3Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger3X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger4.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger4Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger4X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger11.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger11X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger21.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger21X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger31.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger31X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger41.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFinger41X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFoot.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RFootX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RForearm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RForearmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RHand.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RHandX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RShoulderPad.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RThigh.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RThighX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RToe0.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RToe0Nub.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RToe0X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RUpperArm.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\RUpperArmX.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Skins.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine1.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine1X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine2.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine2X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine03.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Animations\Walk\Spine03X.xfrmctrl.raw">
+      <Filter>Data Files\Animations\Walk</Filter>
+    </None>
+    <None Include="Data\Bones\Biped.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Bones.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\BonesX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Head.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\HeadNub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\HeadX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LCalf.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LCalfX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LClavicle.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LClavicleX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger0.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger0Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger0X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger01.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger01X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger1.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger1Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger1X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger2.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger2Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger2X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger3.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger3Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger3X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger4.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger4Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger4X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger11.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger11X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger21.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger21X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger31.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger31X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger41.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFinger41X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFoot.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LFootX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LForearm.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LForearmX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LHand.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LHandX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LShoulderPad.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LThigh.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LThighX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LToe0.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LToe0Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LToe0X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LUpperArm.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\LUpperArmX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Neck.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\NeckX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Pelvis.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\PelvisX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RCalf.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RCalfX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RClavicle.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RClavicleX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger0.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger0Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger0X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger01.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger01X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger1.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger1Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger1X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger2.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger2Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger2X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger3.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger3Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger3X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger4.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger4Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger4X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger11.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger11X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger21.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger21X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger31.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger31X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger41.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFinger41X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFoot.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RFootX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RForearm.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RForearmX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RHand.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RHandX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RShoulderPad.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RThigh.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RThighX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RToe0.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RToe0Nub.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RToe0X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RUpperArm.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\RUpperArmX.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Skins.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine1.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine1X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine2.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine2X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine03.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Bones\Spine03X.node.raw">
+      <Filter>Data Files\Bones</Filter>
+    </None>
+    <None Include="Data\Skins\Skins0.mesh.raw">
+      <Filter>Data Files\Skins</Filter>
+    </None>
+    <None Include="Data\Skins\Skins0.skinctrl.raw">
+      <Filter>Data Files\Skins</Filter>
+    </None>
+    <None Include="Data\Skins\Skins1.mesh.raw">
+      <Filter>Data Files\Skins</Filter>
+    </None>
+    <None Include="Data\Skins\Skins1.skinctrl.raw">
+      <Filter>Data Files\Skins</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Skins\Skins0.texture.png">
+      <Filter>Data Files\Skins</Filter>
+    </Image>
+    <Image Include="Data\Skins\Skins1.texture.png">
+      <Filter>Data Files\Skins</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\Biped.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\FormatMeshRaw.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\FormatNodeRaw.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\FormatSkinCtrlRaw.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\FormatXfrmCtrlRaw.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

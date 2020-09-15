@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{01454261-604a-4772-ba10-3bd1aff719d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{31375c4d-4ede-471e-8987-679348410214}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CubicInterpolator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MorphFacesWindow3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Eye.png">
+      <Filter>Data Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\LightColorSampler.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M0BasePosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M1Viseme01PosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M1Viseme01Weights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M2Viseme02PosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M2Viseme02Weights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M3Viseme03aPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M3Viseme03aWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M3Viseme03bPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M3Viseme03bWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M4TheNoLookPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M4TheNoLookWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M5SmilePosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M5SmileWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M6AngerPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M6AngerWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M7FullRightPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M7FullRightWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M8HalfRightPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M8HalfRightWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M9HalfLeftPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M9HalfLeftWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M10FullLeftPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M10FullLeftWeights.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M11UpNotUsedPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\M12DownNotUsedPosNor.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\SharedTexTri.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Texture2PNT.vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\Texture2PNT.ps.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MorphFacesMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MorphFacesWindow3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

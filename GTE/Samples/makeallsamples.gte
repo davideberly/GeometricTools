@@ -1,0 +1,7 @@
+CFG ?= Debug
+
+ROOTFOLDERS := Distance Geometrics Graphics Imagics Intersection Mathematics Physics SceneGraphs
+
+build:
+	for rootfolder in $(ROOTFOLDERS); do make CFG=$(CFG) ROOTFOLDER=$$rootfolder -f makesamples.gte; done
+

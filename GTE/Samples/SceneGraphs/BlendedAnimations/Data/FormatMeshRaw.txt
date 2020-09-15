@@ -1,0 +1,15 @@
+// In Data/Biped.txt, you see lines of the form "TriMesh <SomeName>".
+// The corresponding file is Data/Skins/SomeName.mesh.raw and the
+// file format is listed below.
+
+int numVertices;  // number of mesh vertices
+Vertex vertices[numVertices];  // the mesh vertices
+int numIndices;  // number of mesh indices (numTriangles = numIndices/3)
+int indices[numIndices];  // the mesh indices
+
+struct Vertex
+{
+    float px, py, pz;  // position
+    float nx, ny, nz;  // normal
+    float tx, ty;  // texture coordinate
+};

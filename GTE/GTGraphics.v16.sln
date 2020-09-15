@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v16", "GTGraphics.v16.vcxproj", "{ED37722A-40DE-4B07-9A4A-65E978D43643}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Required", "Required", "{A0183DCD-16CC-43DD-8B0C-475995EE7507}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v16", "GTMathematics.v16.vcxproj", "{3F553568-76EF-48F0-88DD-270482C058B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Debug|x64.ActiveCfg = Debug|x64
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Debug|x64.Build.0 = Debug|x64
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Debug|x86.ActiveCfg = Debug|Win32
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Debug|x86.Build.0 = Debug|Win32
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Release|x64.ActiveCfg = Release|x64
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Release|x64.Build.0 = Release|x64
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Release|x86.ActiveCfg = Release|Win32
+		{ED37722A-40DE-4B07-9A4A-65E978D43643}.Release|x86.Build.0 = Release|Win32
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Debug|x64.ActiveCfg = Debug|x64
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Debug|x64.Build.0 = Debug|x64
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Debug|x86.ActiveCfg = Debug|Win32
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Debug|x86.Build.0 = Debug|Win32
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Release|x64.ActiveCfg = Release|x64
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Release|x64.Build.0 = Release|x64
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Release|x86.ActiveCfg = Release|Win32
+		{3F553568-76EF-48F0-88DD-270482C058B9}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3F553568-76EF-48F0-88DD-270482C058B9} = {A0183DCD-16CC-43DD-8B0C-475995EE7507}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB6126D9-32EF-4F1D-A2CB-32D76FB572A5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,10 @@
+build:
+	cd $(ROOTFOLDER) && \
+	(FOLDERS=`ls`;\
+	for folder in $$FOLDERS; do\
+		cd $$folder/;\
+		make CFG=$(CFG) APP=$$folder -f ../../makesample.gte;\
+		cd ..;\
+		done)
+	cd ..
+

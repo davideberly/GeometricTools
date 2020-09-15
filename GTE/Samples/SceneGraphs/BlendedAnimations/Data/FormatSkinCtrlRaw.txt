@@ -1,0 +1,30 @@
+// Each file Data/Skins/SomeName.mesh.raw represents a TriMesh
+// and has an associated SkinController represented by
+// Data/Skins/SomeName.skinctrl.raw whose file format is listed below.
+
+// Controller elements
+int repeatType;  // Controller::Repeat (RT_CLAMP)
+double minTime;  // Controller::MinTime
+double maxTime;  // Controller::MaxTime
+double phase;  // Controller::Phase
+double frequency;  // Controller::Frequency
+int active;  // Controller::Active (active = 0, so Active = false)
+
+// SkinController elements
+int numVertices;  // number of vertices in the mesh
+int numBones;  // number of bones influencing the mesh
+String boneNames[numBones];  // the bone names
+float weights[numVertices][numBones];  // the vertex weights
+Point offsets[numVertices][numBones];  // the vertex offsets
+
+// A non-null-terminated string.
+struct String
+{
+    int length;  // number of characters in the string
+    char name[length];  // the characters in the string
+}
+
+struct Point
+{
+    float x, y, z;
+}

@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{8929EBB7-3A1B-429D-9E6B-04B64E93A70D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>BlendedAnimations.v16</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BipedManager.cpp" />
+    <ClCompile Include="BlendedAnimationsMain.cpp" />
+    <ClCompile Include="BlendedAnimationsWindow3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BipedManager.h" />
+    <ClInclude Include="BlendedAnimationsWindow3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GTApplicationsGL45.v16.vcxproj">
+      <Project>{EA72EE75-14B3-448F-828A-231FE02D0B38}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphics.v16.vcxproj">
+      <Project>{ED37722A-40DE-4B07-9A4A-65E978D43643}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphicsGL45.v16.vcxproj">
+      <Project>{93806879-D052-48B1-AFAF-BF190FC67B7F}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Animations\Idle\Biped.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Bones.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\BonesX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Head.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\HeadNub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\HeadX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\LUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Neck.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\NeckX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Pelvis.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\PelvisX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\RUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Skins.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine03.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine03X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Idle\Spine2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Biped.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Bones.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\BonesX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Head.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\HeadNub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\HeadX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\LUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Neck.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\NeckX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Pelvis.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\PelvisX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\RUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Skins.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine03.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine03X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Run\Spine2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Biped.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Bones.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\BonesX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Head.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\HeadNub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\HeadX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\LUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Neck.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\NeckX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Pelvis.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\PelvisX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RCalf.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RCalfX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RClavicle.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RClavicleX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger01.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger01X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger11.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger11X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger1Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger21.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger21X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger2Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger2X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger3.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger31.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger31X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger3Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger3X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger4.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger41.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger41X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger4Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFinger4X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFoot.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RFootX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RForearm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RForearmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RHand.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RHandX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RShoulderPad.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RThigh.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RThighX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RToe0.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RToe0Nub.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RToe0X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RUpperArm.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\RUpperArmX.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Skins.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine03.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine03X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine1.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine1X.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine2.xfrmctrl.raw" />
+    <None Include="Data\Animations\Walk\Spine2X.xfrmctrl.raw" />
+    <None Include="Data\Bones\Biped.node.raw" />
+    <None Include="Data\Bones\Bones.node.raw" />
+    <None Include="Data\Bones\BonesX.node.raw" />
+    <None Include="Data\Bones\Head.node.raw" />
+    <None Include="Data\Bones\HeadNub.node.raw" />
+    <None Include="Data\Bones\HeadX.node.raw" />
+    <None Include="Data\Bones\LCalf.node.raw" />
+    <None Include="Data\Bones\LCalfX.node.raw" />
+    <None Include="Data\Bones\LClavicle.node.raw" />
+    <None Include="Data\Bones\LClavicleX.node.raw" />
+    <None Include="Data\Bones\LFinger0.node.raw" />
+    <None Include="Data\Bones\LFinger01.node.raw" />
+    <None Include="Data\Bones\LFinger01X.node.raw" />
+    <None Include="Data\Bones\LFinger0Nub.node.raw" />
+    <None Include="Data\Bones\LFinger0X.node.raw" />
+    <None Include="Data\Bones\LFinger1.node.raw" />
+    <None Include="Data\Bones\LFinger11.node.raw" />
+    <None Include="Data\Bones\LFinger11X.node.raw" />
+    <None Include="Data\Bones\LFinger1Nub.node.raw" />
+    <None Include="Data\Bones\LFinger1X.node.raw" />
+    <None Include="Data\Bones\LFinger2.node.raw" />
+    <None Include="Data\Bones\LFinger21.node.raw" />
+    <None Include="Data\Bones\LFinger21X.node.raw" />
+    <None Include="Data\Bones\LFinger2Nub.node.raw" />
+    <None Include="Data\Bones\LFinger2X.node.raw" />
+    <None Include="Data\Bones\LFinger3.node.raw" />
+    <None Include="Data\Bones\LFinger31.node.raw" />
+    <None Include="Data\Bones\LFinger31X.node.raw" />
+    <None Include="Data\Bones\LFinger3Nub.node.raw" />
+    <None Include="Data\Bones\LFinger3X.node.raw" />
+    <None Include="Data\Bones\LFinger4.node.raw" />
+    <None Include="Data\Bones\LFinger41.node.raw" />
+    <None Include="Data\Bones\LFinger41X.node.raw" />
+    <None Include="Data\Bones\LFinger4Nub.node.raw" />
+    <None Include="Data\Bones\LFinger4X.node.raw" />
+    <None Include="Data\Bones\LFoot.node.raw" />
+    <None Include="Data\Bones\LFootX.node.raw" />
+    <None Include="Data\Bones\LForearm.node.raw" />
+    <None Include="Data\Bones\LForearmX.node.raw" />
+    <None Include="Data\Bones\LHand.node.raw" />
+    <None Include="Data\Bones\LHandX.node.raw" />
+    <None Include="Data\Bones\LShoulderPad.node.raw" />
+    <None Include="Data\Bones\LThigh.node.raw" />
+    <None Include="Data\Bones\LThighX.node.raw" />
+    <None Include="Data\Bones\LToe0.node.raw" />
+    <None Include="Data\Bones\LToe0Nub.node.raw" />
+    <None Include="Data\Bones\LToe0X.node.raw" />
+    <None Include="Data\Bones\LUpperArm.node.raw" />
+    <None Include="Data\Bones\LUpperArmX.node.raw" />
+    <None Include="Data\Bones\Neck.node.raw" />
+    <None Include="Data\Bones\NeckX.node.raw" />
+    <None Include="Data\Bones\Pelvis.node.raw" />
+    <None Include="Data\Bones\PelvisX.node.raw" />
+    <None Include="Data\Bones\RCalf.node.raw" />
+    <None Include="Data\Bones\RCalfX.node.raw" />
+    <None Include="Data\Bones\RClavicle.node.raw" />
+    <None Include="Data\Bones\RClavicleX.node.raw" />
+    <None Include="Data\Bones\RFinger0.node.raw" />
+    <None Include="Data\Bones\RFinger01.node.raw" />
+    <None Include="Data\Bones\RFinger01X.node.raw" />
+    <None Include="Data\Bones\RFinger0Nub.node.raw" />
+    <None Include="Data\Bones\RFinger0X.node.raw" />
+    <None Include="Data\Bones\RFinger1.node.raw" />
+    <None Include="Data\Bones\RFinger11.node.raw" />
+    <None Include="Data\Bones\RFinger11X.node.raw" />
+    <None Include="Data\Bones\RFinger1Nub.node.raw" />
+    <None Include="Data\Bones\RFinger1X.node.raw" />
+    <None Include="Data\Bones\RFinger2.node.raw" />
+    <None Include="Data\Bones\RFinger21.node.raw" />
+    <None Include="Data\Bones\RFinger21X.node.raw" />
+    <None Include="Data\Bones\RFinger2Nub.node.raw" />
+    <None Include="Data\Bones\RFinger2X.node.raw" />
+    <None Include="Data\Bones\RFinger3.node.raw" />
+    <None Include="Data\Bones\RFinger31.node.raw" />
+    <None Include="Data\Bones\RFinger31X.node.raw" />
+    <None Include="Data\Bones\RFinger3Nub.node.raw" />
+    <None Include="Data\Bones\RFinger3X.node.raw" />
+    <None Include="Data\Bones\RFinger4.node.raw" />
+    <None Include="Data\Bones\RFinger41.node.raw" />
+    <None Include="Data\Bones\RFinger41X.node.raw" />
+    <None Include="Data\Bones\RFinger4Nub.node.raw" />
+    <None Include="Data\Bones\RFinger4X.node.raw" />
+    <None Include="Data\Bones\RFoot.node.raw" />
+    <None Include="Data\Bones\RFootX.node.raw" />
+    <None Include="Data\Bones\RForearm.node.raw" />
+    <None Include="Data\Bones\RForearmX.node.raw" />
+    <None Include="Data\Bones\RHand.node.raw" />
+    <None Include="Data\Bones\RHandX.node.raw" />
+    <None Include="Data\Bones\RShoulderPad.node.raw" />
+    <None Include="Data\Bones\RThigh.node.raw" />
+    <None Include="Data\Bones\RThighX.node.raw" />
+    <None Include="Data\Bones\RToe0.node.raw" />
+    <None Include="Data\Bones\RToe0Nub.node.raw" />
+    <None Include="Data\Bones\RToe0X.node.raw" />
+    <None Include="Data\Bones\RUpperArm.node.raw" />
+    <None Include="Data\Bones\RUpperArmX.node.raw" />
+    <None Include="Data\Bones\Skins.node.raw" />
+    <None Include="Data\Bones\Spine03.node.raw" />
+    <None Include="Data\Bones\Spine03X.node.raw" />
+    <None Include="Data\Bones\Spine1.node.raw" />
+    <None Include="Data\Bones\Spine1X.node.raw" />
+    <None Include="Data\Bones\Spine2.node.raw" />
+    <None Include="Data\Bones\Spine2X.node.raw" />
+    <None Include="Data\Skins\Skins0.mesh.raw" />
+    <None Include="Data\Skins\Skins0.skinctrl.raw" />
+    <None Include="Data\Skins\Skins1.mesh.raw" />
+    <None Include="Data\Skins\Skins1.skinctrl.raw" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Skins\Skins0.texture.png" />
+    <Image Include="Data\Skins\Skins1.texture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\Biped.txt" />
+    <Text Include="Data\FormatMeshRaw.txt" />
+    <Text Include="Data\FormatNodeRaw.txt" />
+    <Text Include="Data\FormatSkinCtrlRaw.txt" />
+    <Text Include="Data\FormatXfrmCtrlRaw.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

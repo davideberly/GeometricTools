@@ -1,0 +1,32 @@
+CFG ?= Debug
+
+CC := /usr/bin/g++
+CFLAGS := -c -std=c++14 -Wall -Werror -DGTE_USE_LINUX -DGTE_USE_ROW_MAJOR -DGTE_USE_MAT_VEC -DGTE_USE_OPENGL -DGTE_DISABLE_PCH
+
+ifeq (Debug,$(findstring Debug,$(CFG)))
+CFLAGS += -g -D_DEBUG
+else
+CFLAGS += -O2 -DNDEBUG
+endif
+
+INCPATH := -I ../../../.
+SRC := $(notdir $(wildcard *.cpp))
+OBJ := $(SRC:%.cpp=$(CFG)/%.o)
+LIBPATH := -L ../../../lib/$(CFG)
+LDFLAGS := -Wl,--no-as-needed
+LIBS := -lgtapplications -lgtgraphics -lgtmathematicsgpu -lX11 -lXext -lGL -lEGL -lpng -lpthread -lm 
+
+build : createdir compile
+
+createdir :
+	@mkdir -p $(CFG)
+
+compile : $(OBJ)
+	$(CC) $(LDFLAGS) $(LIBPATH) $(OBJ) -o $(APP).$(CFG) $(LIBS)
+
+clean :
+	rm -rf $(CFG)
+	rm -f $(APP).$(CFG)
+
+$(CFG)/%.o : %.cpp
+	$(CC) $(CFLAGS) $(INCPATH) $< -o $@

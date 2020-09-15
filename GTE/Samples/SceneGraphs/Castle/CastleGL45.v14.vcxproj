@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{37933BE4-83AC-4B75-92BF-84E78693A22F}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Castle.v14</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_OPENGL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="CastleWindow3.h" />
+    <ClInclude Include="TexturePNT1Effect.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CastleMain.cpp" />
+    <ClCompile Include="CastleWindow3.cpp" />
+    <ClCompile Include="CreateMeshes.cpp" />
+    <ClCompile Include="LoadData.cpp" />
+    <ClCompile Include="TexturePNT1Effect.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GTApplicationsGL45.v14.vcxproj">
+      <Project>{8AE08D71-B1FF-471C-9EEB-2ADF97593747}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphics.v14.vcxproj">
+      <Project>{7BE071FB-E33C-4903-9278-6D12BBA46E0D}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphicsGL45.v14.vcxproj">
+      <Project>{77148ADE-5F3A-47D4-9F7F-B8CB621592AD}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\Geometry\Barrel01.txt" />
+    <Text Include="Data\Geometry\BarrelRack01.txt" />
+    <Text Include="Data\Geometry\BarrelRack03.txt" />
+    <Text Include="Data\Geometry\Bench01.txt" />
+    <Text Include="Data\Geometry\Box01.txt" />
+    <Text Include="Data\Geometry\Box02.txt" />
+    <Text Include="Data\Geometry\Bridge.txt" />
+    <Text Include="Data\Geometry\Bunk01.txt" />
+    <Text Include="Data\Geometry\CeilingLight01.txt" />
+    <Text Include="Data\Geometry\ChestBottom01.txt" />
+    <Text Include="Data\Geometry\ChestTop01.txt" />
+    <Text Include="Data\Geometry\Cylinder02.txt" />
+    <Text Include="Data\Geometry\Cylinder02NCL.txt" />
+    <Text Include="Data\Geometry\Cylinder03.txt" />
+    <Text Include="Data\Geometry\Cylinder06.txt" />
+    <Text Include="Data\Geometry\Door.txt" />
+    <Text Include="Data\Geometry\DoorFrame01.txt" />
+    <Text Include="Data\Geometry\DoorFrame53.txt" />
+    <Text Include="Data\Geometry\DoorFrame61.txt" />
+    <Text Include="Data\Geometry\DoorFrame62.txt" />
+    <Text Include="Data\Geometry\DrawBridge.txt" />
+    <Text Include="Data\Geometry\Exterior.txt" />
+    <Text Include="Data\Geometry\FrontHall.txt" />
+    <Text Include="Data\Geometry\FrontRamp.txt" />
+    <Text Include="Data\Geometry\LargePort.txt" />
+    <Text Include="Data\Geometry\MainGate.txt" />
+    <Text Include="Data\Geometry\MainGate01.txt" />
+    <Text Include="Data\Geometry\Mug.txt" />
+    <Text Include="Data\Geometry\QuadPatch01.txt" />
+    <Text Include="Data\Geometry\Rope.txt" />
+    <Text Include="Data\Geometry\SimpleChair01.txt" />
+    <Text Include="Data\Geometry\SkyDome.txt" />
+    <Text Include="Data\Geometry\SmallPort.txt" />
+    <Text Include="Data\Geometry\Sphere01.txt" />
+    <Text Include="Data\Geometry\SquareTable01.txt" />
+    <Text Include="Data\Geometry\Table01.txt" />
+    <Text Include="Data\Geometry\Terrain.txt" />
+    <Text Include="Data\Geometry\Tube01.txt" />
+    <Text Include="Data\Geometry\Wall01.txt" />
+    <Text Include="Data\Geometry\Wall02.txt" />
+    <Text Include="Data\Geometry\WallTurret01.txt" />
+    <Text Include="Data\Geometry\WallTurret02.txt" />
+    <Text Include="Data\Geometry\Water.txt" />
+    <Text Include="Data\Geometry\Water2.txt" />
+    <Text Include="Data\Geometry\WoodShield01.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\Textures\barrel.png" />
+    <Image Include="Data\Textures\barrelbase.png" />
+    <Image Include="Data\Textures\blanket.png" />
+    <Image Include="Data\Textures\bunkwood.png" />
+    <Image Include="Data\Textures\chest01.png" />
+    <Image Include="Data\Textures\door.png" />
+    <Image Include="Data\Textures\doorframe.png" />
+    <Image Include="Data\Textures\floor02.png" />
+    <Image Include="Data\Textures\gravel01.png" />
+    <Image Include="Data\Textures\gravel02.png" />
+    <Image Include="Data\Textures\gravel_cap_ne.png" />
+    <Image Include="Data\Textures\gravel_cap_nw.png" />
+    <Image Include="Data\Textures\gravel_corner_ne.png" />
+    <Image Include="Data\Textures\gravel_corner_nw.png" />
+    <Image Include="Data\Textures\gravel_corner_se.png" />
+    <Image Include="Data\Textures\gravel_corner_sw.png" />
+    <Image Include="Data\Textures\gravel_side_n.png" />
+    <Image Include="Data\Textures\gravel_side_s.png" />
+    <Image Include="Data\Textures\gravel_side_w.png" />
+    <Image Include="Data\Textures\hugestone01.png" />
+    <Image Include="Data\Textures\hugestone02.png" />
+    <Image Include="Data\Textures\keystone.png" />
+    <Image Include="Data\Textures\largerstone01.png" />
+    <Image Include="Data\Textures\largerstone02.png" />
+    <Image Include="Data\Textures\largestone01.png" />
+    <Image Include="Data\Textures\largeststone01.png" />
+    <Image Include="Data\Textures\largeststone02.png" />
+    <Image Include="Data\Textures\metal01.png" />
+    <Image Include="Data\Textures\mug.png" />
+    <Image Include="Data\Textures\outwall03.png" />
+    <Image Include="Data\Textures\port.png" />
+    <Image Include="Data\Textures\ramp03.png" />
+    <Image Include="Data\Textures\river01.png" />
+    <Image Include="Data\Textures\river02.png" />
+    <Image Include="Data\Textures\rooftemp.png" />
+    <Image Include="Data\Textures\rope.png" />
+    <Image Include="Data\Textures\shield01.png" />
+    <Image Include="Data\Textures\skyline.png" />
+    <Image Include="Data\Textures\steps.png" />
+    <Image Include="Data\Textures\stone01.png" />
+    <Image Include="Data\Textures\stone02.png" />
+    <Image Include="Data\Textures\stone03.png" />
+    <Image Include="Data\Textures\tileplanks.png" />
+    <Image Include="Data\Textures\torchhead.png" />
+    <Image Include="Data\Textures\torchwood.png" />
+    <Image Include="Data\Textures\wall02.png" />
+    <Image Include="Data\Textures\walllightmap.png" />
+    <Image Include="Data\Textures\woodceiling.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{698b5116-b151-42c6-8a29-841963d4d4f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CpuMassSpringVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuMassSpringVolume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MassSprings3DMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MassSprings3DWindow3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CpuMassSpringVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuMassSpringVolume.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MassSprings3DWindow3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\RungeKutta.cs.hlsli">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\DrawUsingVertexID.ps.hlsl" />
+    <None Include="Shaders\DrawUsingVertexID.vs.hlsl" />
+    <None Include="Shaders\RungeKutta1a.cs.hlsl" />
+    <None Include="Shaders\RungeKutta1b.cs.hlsl" />
+    <None Include="Shaders\RungeKutta2a.cs.hlsl" />
+    <None Include="Shaders\RungeKutta2b.cs.hlsl" />
+    <None Include="Shaders\RungeKutta3a.cs.hlsl" />
+    <None Include="Shaders\RungeKutta3b.cs.hlsl" />
+    <None Include="Shaders\RungeKutta4a.cs.hlsl" />
+    <None Include="Shaders\RungeKutta4b.cs.hlsl" />
+  </ItemGroup>
+</Project>

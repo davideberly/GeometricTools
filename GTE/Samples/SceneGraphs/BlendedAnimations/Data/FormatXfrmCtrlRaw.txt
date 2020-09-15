@@ -1,0 +1,50 @@
+// Each file Data/Bones/SomeName.node.raw represents a Node
+// and has an associated TransformController represented by
+// Data/Animation/SomeAnim/SomeName.xfrmctrl.raw whose file
+//  format is listed below.
+
+// If 1, the node has a KeyframeController.  If 0, the node
+// does not have a KeyframeController, but is given a
+// TransformController whose transform is constant over time.
+int isKeyframeController;
+
+// Controller elements
+int repeatType;  // Controller::Repeat (RT_CLAMP) [set to RT_WRAP?]
+double minTime;  // Controller::MinTime
+double maxTime;  // Controller::MaxTime
+double phase;  // Controller::Phase
+double frequency;  // Controller::Frequency
+int active;  // Controller::Active (active = 0, so Active = false)
+
+// The initial local transform of the node.  The 'char'
+// values are used to create a Wild Magic Transform object.
+float matrix[9];
+float translate[3];
+float scale[3];
+char isIdentity;  // 0 or 1
+char isRSMatrix;  // 0 or 1
+char isUniformScale;  // 0 or 1
+char dummy;  // pad to 4-byte boundary, value irrelevant
+
+// The remaining data when isKeyframeController is 1.  There is no
+// remaining data when isKeyframeController is 0.  This data is used
+// to create a KeyframeController object.
+int numTranslations;  // possibly 0
+int numRotations;  // possibly 0
+int numScales;  // possibly 0
+float translationTimes[numTranslations];  // no data when numTranslations is 0
+APoint translations[numTranslations];  // no data when numTranslations is 0
+float rotationTimes[numRotatios];  // no data when numRotations is 0
+HQuaternion rotations[numRotations];  // no data when numRotations is 0
+float scaleTime[numScales];  // no data when numScales is 0
+float scales[numScales];  // no data when numScales is 0
+
+struct APoint
+{
+    float x, y, z, w;  // w = 1
+};
+
+struct HQuaternion
+{
+    float w, x, y, z;
+};

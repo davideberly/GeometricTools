@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="gte::FeatureKey&lt;*,*&gt;">
+    <DisplayString Condition="$T1 == 1">{{{V[0]}}}</DisplayString>
+    <DisplayString Condition="$T1 == 2">{{{V[0]}, {V[1]}}}</DisplayString>
+    <DisplayString Condition="$T1 == 3">{{{V[0]}, {V[1]}, {V[2]}}}</DisplayString>
+    <DisplayString Condition="$T1 == 4">{{{V[0]}, {V[1]}, {V[2]}, {V[3]}}}</DisplayString>
+    <DisplayString>{{ size={$T1} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T1</Size>
+        <ValuePointer>V._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="gte::EdgeKey&lt;*&gt;">
+    <DisplayString>{{{V[0]}, {V[1]}}}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T1</Size>
+        <ValuePointer>V._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="gte::TriangleKey&lt;*&gt;">
+    <DisplayString>{{{V[0]}, {V[1]}, {V[2]}}}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T1</Size>
+        <ValuePointer>V._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="gte::TetrahedronKey&lt;*&gt;">
+    <DisplayString>{{{V[0]}, {V[1]}, {V[2]}, {V[3]}}}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T1</Size>
+        <ValuePointer>V._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="gte::Vector&lt;*,*&gt;">
+    <DisplayString Condition="$T1 == 1">{{ x={mTuple[0]} }}</DisplayString>
+    <DisplayString Condition="$T1 == 2">{{ x={mTuple[0]} y={mTuple[1]} }}</DisplayString>
+    <DisplayString Condition="$T1 == 3">{{ x={mTuple[0]} y={mTuple[1]} z={mTuple[2]} }}</DisplayString>
+    <DisplayString Condition="$T1 == 4">{{ x={mTuple[0]} y={mTuple[1]} z={mTuple[2]} w={mTuple[3]} }}</DisplayString>
+    <DisplayString>{{ size={$T1} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T1</Size>
+        <ValuePointer>mTuple._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="gte::Matrix&lt;*,*,*&gt;">
+    <DisplayString>{{ rows={$T1} cols={$T2} }}</DisplayString>
+    <Expand>
+      <ArrayItems Condition="$T2 == 2">
+        <Size>$T1</Size>
+        <ValuePointer>(gte::Vector&lt;2,$T3&gt;*)mTable.mStorage._Elems</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="$T2 == 3">
+        <Size>$T1</Size>
+        <ValuePointer>(gte::Vector&lt;3,$T3&gt;*)mTable.mStorage._Elems</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="$T2 == 4">
+        <Size>$T1</Size>
+        <ValuePointer>(gte::Vector&lt;4,$T3&gt;*)mTable.mStorage._Elems</ValuePointer>
+      </ArrayItems>
+      <ArrayItems Condition="$T2 != 2 &amp;&amp; $T2 != 3 &amp;&amp; $T2 != 4">
+        <Size>$T1</Size>
+        <ValuePointer>mTable.mStorage._Elems</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>
