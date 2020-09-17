@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.04
+// Version: 4.0.2020.09.17
 
 #pragma once
 
@@ -18,11 +18,6 @@
 // arithmetic of unsigned integers.  The template parameter N is the
 // number of 32-bit words required to store the precision for the desired
 // computations (maximum number of bits is 32*N).
-
-// Uncomment this to trap when an attempt is made to create storage with
-// more than N uint32_t items.
-//
-//#define GTE_THROW_ON_UINTEGERFP32_OUT_OF_RANGE
 
 namespace gte
 {
@@ -141,9 +136,7 @@ namespace gte
                 LogError("The number of bits must be nonnegative.");
             }
 
-#if defined(GTE_THROW_ON_UINTEGERFP32_OUT_OF_RANGE)
             LogAssert(mSize <= N, "N not large enough to store number of bits.");
-#endif
         }
 
         inline int32_t GetNumBits() const
