@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.03
+// Version: 4.0.2020.09.17
 
 #pragma once
 
@@ -119,7 +119,14 @@ namespace gte
 
         void Finalize()
         {
-            mTree = std::make_shared<BSPTree2>(*this, mEArray, mEpsilon);
+            // The BSPTree2 constructor is badly designed. The '*this'
+            // is passed as non-const but the previous code in this function
+            // passed 'this->mEArray' as const. The mEArray can be modified
+            // via '*this' in the BSPTree2 class, which led to an infinite
+            // loop in a test data set for a bug report. For now, make a
+            // copy of mEArray and pass it.
+            EArray eArray = mEArray;
+            mTree = std::make_shared<BSPTree2>(*this, eArray, mEpsilon);
         }
 
         // Member access.
@@ -275,16 +282,34 @@ namespace gte
                     case TRANSVERSE_POSITIVE:
                         // modify edge <V0,V1> to <V0,I>, add new edge <I,V1>
                         vmid = polygon.InsertVertex(intr);
-                        polygon.SplitEdge(v0, v1, vmid);
-                        posArray.push_back(Edge(vmid, v1));
-                        negArray.push_back(Edge(v0, vmid));
+                        if (vmid == v0 || vmid == v1)
+                        {
+                            // The intersection point is within epsilon of an
+                            // endpoint.
+                            mCoincident.push_back(edges[i]);
+                        }
+                        else
+                        {
+                            polygon.SplitEdge(v0, v1, vmid);
+                            posArray.push_back(Edge(vmid, v1));
+                            negArray.push_back(Edge(v0, vmid));
+                        }
                         break;
                     case TRANSVERSE_NEGATIVE:
                         // modify edge <V0,V1> to <V0,I>, add new edge <I,V1>
                         vmid = polygon.InsertVertex(intr);
-                        polygon.SplitEdge(v0, v1, vmid);
-                        posArray.push_back(Edge(v0, vmid));
-                        negArray.push_back(Edge(vmid, v1));
+                        if (vmid == v0 || vmid == v1)
+                        {
+                            // The intersection point is within epsilon of an
+                            // endpoint.
+                            mCoincident.push_back(edges[i]);
+                        }
+                        else
+                        {
+                            polygon.SplitEdge(v0, v1, vmid);
+                            posArray.push_back(Edge(v0, vmid));
+                            negArray.push_back(Edge(vmid, v1));
+                        }
                         break;
                     case ALL_POSITIVE:
                         posArray.push_back(edges[i]);
