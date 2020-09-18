@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2020.09.07
+// Version: 4.9.2020.09.18
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -11,7 +11,7 @@
 #include <Mathematics/MinimumAreaBox2.h>
 #include <Mathematics/VETManifoldMesh.h>
 #include <Mathematics/AlignedBox.h>
-#include <Mathematics/UniqueVerticesTriangles.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
 
 // Compute a minimum-volume oriented box containing the specified points. The
 // algorithm is really about computing the minimum-volume box containing the
@@ -324,7 +324,7 @@ namespace gte
                 inIndices[current++] = tri.V[2];
             }
 
-            UniqueVerticesTriangles<Vector3<InputType>> uvt;
+            UniqueVerticesSimplices<Vector3<InputType>, int, 3> uvt;
             std::vector<Vector3<InputType>> outVertices;
             std::vector<int> outIndices;
             uvt.RemoveDuplicateAndUnusedVertices(inVertices, inIndices,

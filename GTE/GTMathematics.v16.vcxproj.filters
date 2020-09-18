@@ -1425,5 +1425,8 @@
     <ClInclude Include="Mathematics\Timer.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\UniqueVerticesSimplices.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

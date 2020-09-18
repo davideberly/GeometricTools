@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.04.13
+// Version: 4.6.2020.09.18
 
 #pragma once
 
@@ -12,7 +12,7 @@
 #include "ConvexMesh3.h"
 #include <Mathematics/EdgeKey.h>
 #include <Mathematics/Hyperplane.h>
-#include <Mathematics/UniqueVerticesTriangles.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
 
 namespace gte
 {
@@ -311,7 +311,7 @@ namespace gte
 
             std::vector<Vertex> outVertices;
             std::vector<Triangle> outTriangles;
-            UniqueVerticesTriangles<Vertex> uvt;
+            UniqueVerticesSimplices<Vertex, int, 3> uvt;
             uvt.RemoveDuplicateAndUnusedVertices(polyhedron.vertices,
                 intersectionMeshTriangles, outVertices, outTriangles);
 
@@ -871,7 +871,7 @@ namespace gte
                 }
             }
 
-            UniqueVerticesTriangles<Vertex> uvt;
+            UniqueVerticesSimplices<Vertex, int, 3> uvt;
 
             if (wantPosMesh)
             {

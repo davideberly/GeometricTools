@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.18
 
 #pragma once
 
 #include <Mathematics/MarchingCubes.h>
 #include <Mathematics/Image3.h>
-#include <Mathematics/UniqueVerticesTriangles.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
 #include <Mathematics/Vector3.h>
 
 namespace gte
@@ -166,7 +166,7 @@ namespace gte
         {
             std::vector<Vector3<Real>> outVertices;
             std::vector<int> outIndices;
-            UniqueVerticesTriangles<Vector3<Real>> uvt;
+            UniqueVerticesSimplices<Vector3<Real>, int, 3> uvt;
             uvt.RemoveDuplicateVertices(vertices, indices, outVertices, outIndices);
             vertices = std::move(outVertices);
             indices = std::move(outIndices);

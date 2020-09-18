@@ -404,6 +404,7 @@
     <ClInclude Include="Mathematics\TriangleKey.h" />
     <ClInclude Include="Mathematics\TSManifoldMesh.h" />
     <ClInclude Include="Mathematics\TubeMesh.h" />
+    <ClInclude Include="Mathematics\UniqueVerticesSimplices.h" />
     <ClInclude Include="Mathematics\UniqueVerticesTriangles.h" />
     <ClInclude Include="Mathematics\UnsymmetricEigenvalues.h" />
     <ClInclude Include="Mathematics\VEManifoldMesh.h" />
