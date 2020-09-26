@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.25
 
 #pragma once
 
@@ -100,13 +100,27 @@ namespace gte
             }
             TIQuery<Real, Ray3<Real>, AlignedBox3<Real>> rbQuery;
             auto rbResult = rbQuery(Ray3<Real>(C, V), superBox);
-            if (!rbResult.intersect)
+            if (rbResult.intersect)
             {
-                return result;
-            }
+                DoQuery(extent, C, sphere.radius, V, result);
 
+                // Translate the contact point back to the coordinate system
+                // of the original sphere and box.
+                result.contactPoint += boxCenter;
+            }
+            return result;
+        }
+
+    protected:
+        // The query assumes the box is axis-aligned with center at the
+        // origin. Callers need to convert the results back to the original
+        // coordinate system of the query.
+        void DoQuery(Vector3<Real> const& K, Vector3<Real> const& inC,
+            Real radius, Vector3<Real> const& inV, Result& result)
+        {
             // Change signs on components, if necessary, to transform C to the
-            // first quadrant.  Adjust the velocity accordingly.
+            // first quadrant. Adjust the velocity accordingly.
+            Vector3<Real> C = inC, V = inV;
             Real sign[3];
             for (int i = 0; i < 3; ++i)
             {
@@ -122,32 +136,6 @@ namespace gte
                 }
             }
 
-            DoQuery(extent, C, sphere.radius, V, result);
-
-            if (result.intersectionType != 0)
-            {
-                // Translate back to the original coordinate system.
-                for (int i = 0; i < 3; ++i)
-                {
-                    if (sign[i] < (Real)0)
-                    {
-                        result.contactPoint[i] = -result.contactPoint[i];
-                    }
-                }
-
-                result.contactPoint += boxCenter;
-            }
-
-            return result;
-        }
-
-    protected:
-        // The query assumes the box is axis-aligned with center at the
-        // origin.  Callers need to convert the results back to the original
-        // coordinate system of the query.
-        void DoQuery(Vector3<Real> const& K, Vector3<Real> const& C,
-            Real radius, Vector3<Real> const& V, Result& result)
-        {
             Vector3<Real> delta = C - K;
             if (delta[2] <= radius)
             {
@@ -287,6 +275,19 @@ namespace gte
                     {
                         // xyz-vertex
                         VertexUnbounded(K, C, radius, delta, V, result);
+                    }
+                }
+            }
+
+            if (result.intersectionType != 0)
+            {
+                // Translate back to the coordinate system of the
+                // tranlated box and sphere.
+                for (int i = 0; i < 3; ++i)
+                {
+                    if (sign[i] < (Real)0)
+                    {
+                        result.contactPoint[i] = -result.contactPoint[i];
                     }
                 }
             }
