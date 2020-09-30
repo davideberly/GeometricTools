@@ -25,9 +25,15 @@ and X-Windows on Linux.
 
 On Microsoft Windows 10, the code is maintained using Microsoft Visual
 Studio 2015, 2017 and 2019 with Microsoft's compilers or with Intel
-C++ Compilers 17, 18 and 19.1. Linux maintenance is for Ubuntu 18.04.5
-LTS with NVIDIA graphics drivers using OpenGL 4.5 and gcc 7.5.0, and for
-Fedora 32 with NVIDIA graphics drivers using OpenGL 4.5 and gcc 10.2.1.
+C++ Compilers 17, 18 and 19.1.
+
+On Ubuntu 20.04.1 LTS, the code is maintained using Visual Studio Code
+1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
+gcc 9.3.0, 
+
+On Fedora 32, the code is maintained using Visual Studio Code 1.49.2
+and CMake 3.18.3, NVIDIA graphics drivers, OpenGL 4.5 and
+gcc 10.2.1.
 
 ## Getting Started ##
 
