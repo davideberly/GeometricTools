@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.09.29
 
 #include "GenerateMeshUVsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -15,7 +15,7 @@
 #include <random>
 
 #if defined(GENERATE_MESH_UVS_GPU)
-#include <Mathematics/GPU/GPUGenerateMeshUV.h>
+#include <MathematicsGPU/GPUGenerateMeshUV.h>
 #else
 #include <Mathematics/GenerateMeshUV.h>
 #endif
@@ -210,8 +210,8 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
     Vector2<double> P;
     Vector3<double> resampled;
     int triangle = 0;
-    std::array<double, 3> bary;
-    std::array<int, 3> lookup;
+    std::array<double, 3> bary = { 0.0, 0.0, 0.0 };
+    std::array<int, 3> lookup = { 0, 0, 0 };
     for (int y = 0; y < size; ++y)
     {
         P[1] = y / dsize;

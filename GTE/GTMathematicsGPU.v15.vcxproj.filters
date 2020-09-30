@@ -15,115 +15,115 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2.cpp">
+    <ClCompile Include="MathematicsGPU\GTMathematicsGPU.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2AdjustVelocity.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2AdjustVelocity.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2ComputeDivergence.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2ComputeDivergence.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2EnforceStateBoundary.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2EnforceStateBoundary.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2InitializeSource.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2InitializeSource.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2InitializeState.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2InitializeState.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2SolvePoisson.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2SolvePoisson.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2UpdateState.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2UpdateState.cpp">
       <Filter>Physics\Fluid2</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3AdjustVelocity.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3AdjustVelocity.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3ComputeDivergence.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3ComputeDivergence.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3EnforceStateBoundary.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3EnforceStateBoundary.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3InitializeSource.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3InitializeSource.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3InitializeState.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3InitializeState.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3SolvePoisson.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3SolvePoisson.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GPUFluid3UpdateState.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid3UpdateState.cpp">
       <Filter>Physics\Fluid3</Filter>
     </ClCompile>
-    <ClCompile Include="Mathematics\GPU\GTMathematicsGPU.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2AdjustVelocity.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2ComputeDivergence.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2EnforceStateBoundary.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2InitializeSource.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2InitializeState.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2Parameters.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2SolvePoisson.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2UpdateState.h">
-      <Filter>Physics\Fluid2</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3AdjustVelocity.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3ComputeDivergence.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3EnforceStateBoundary.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3InitializeSource.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3InitializeState.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3Parameters.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3SolvePoisson.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUFluid3UpdateState.h">
-      <Filter>Physics\Fluid3</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GPUGenerateMeshUV.h">
+    <ClInclude Include="MathematicsGPU\GTMathematicsGPU.h" />
+    <ClInclude Include="MathematicsGPU\GTMathematicsGPUPCH.h" />
+    <ClInclude Include="MathematicsGPU\GPUGenerateMeshUV.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\GPU\GTMathematicsGPU.h" />
-    <ClInclude Include="Mathematics\GPU\GTMathematicsGPUPCH.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2AdjustVelocity.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2ComputeDivergence.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2EnforceStateBoundary.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2InitializeSource.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2InitializeState.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2Parameters.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2SolvePoisson.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid2UpdateState.h">
+      <Filter>Physics\Fluid2</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3AdjustVelocity.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3ComputeDivergence.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3EnforceStateBoundary.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3InitializeSource.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3InitializeState.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3Parameters.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3SolvePoisson.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
+    <ClInclude Include="MathematicsGPU\GPUFluid3UpdateState.h">
+      <Filter>Physics\Fluid3</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

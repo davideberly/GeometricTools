@@ -1,0 +1,15 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "files.exclude": {
+        "**/*.filters": true,
+        "**/*.natvis": true,
+        "**/*.sln": true,
+        "**/*.vcxproj": true,
+        "**/build": true,
+        "**/DX11": true,
+        "**/lib": true,
+        "**/MSW": true,
+        "**/Samples": true,
+        "**/Tools": true
+    }
+}

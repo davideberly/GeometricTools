@@ -98,7 +98,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Mathematics/GPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Mathematics/GPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Mathematics/GPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +152,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PrecompiledHeaderFile>Mathematics/GPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,23 +167,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Mathematics\GPU\GPUFluid2.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2AdjustVelocity.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2ComputeDivergence.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2EnforceStateBoundary.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2InitializeSource.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2InitializeState.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2SolvePoisson.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid2UpdateState.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3AdjustVelocity.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3ComputeDivergence.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3EnforceStateBoundary.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3InitializeSource.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3InitializeState.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3SolvePoisson.cpp" />
-    <ClCompile Include="Mathematics\GPU\GPUFluid3UpdateState.cpp" />
-    <ClCompile Include="Mathematics\GPU\GTMathematicsGPU.cpp">
+    <ClCompile Include="MathematicsGPU\GPUFluid2.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2AdjustVelocity.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2ComputeDivergence.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2EnforceStateBoundary.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2InitializeSource.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2InitializeState.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2SolvePoisson.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid2UpdateState.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3AdjustVelocity.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3ComputeDivergence.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3EnforceStateBoundary.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3InitializeSource.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3InitializeState.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3SolvePoisson.cpp" />
+    <ClCompile Include="MathematicsGPU\GPUFluid3UpdateState.cpp" />
+    <ClCompile Include="MathematicsGPU\GTMathematicsGPU.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -191,30 +191,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mathematics\GPU\GPUFluid2.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2AdjustVelocity.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2ComputeDivergence.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2EnforceStateBoundary.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2InitializeSource.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2InitializeState.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2Parameters.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2SolvePoisson.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid2UpdateState.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3AdjustVelocity.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3ComputeDivergence.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3EnforceStateBoundary.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3InitializeSource.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3InitializeState.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3Parameters.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3SolvePoisson.h" />
-    <ClInclude Include="Mathematics\GPU\GPUFluid3UpdateState.h" />
-    <ClInclude Include="Mathematics\GPU\GPUGenerateMeshUV.h" />
-    <ClInclude Include="Mathematics\GPU\GTMathematicsGPU.h" />
-    <ClInclude Include="Mathematics\GPU\GTMathematicsGPUPCH.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2AdjustVelocity.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2ComputeDivergence.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2EnforceStateBoundary.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2InitializeSource.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2InitializeState.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2Parameters.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2SolvePoisson.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid2UpdateState.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3AdjustVelocity.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3ComputeDivergence.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3EnforceStateBoundary.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3InitializeSource.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3InitializeState.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3Parameters.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3SolvePoisson.h" />
+    <ClInclude Include="MathematicsGPU\GPUFluid3UpdateState.h" />
+    <ClInclude Include="MathematicsGPU\GPUGenerateMeshUV.h" />
+    <ClInclude Include="MathematicsGPU\GTMathematicsGPU.h" />
+    <ClInclude Include="MathematicsGPU\GTMathematicsGPUPCH.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
-
