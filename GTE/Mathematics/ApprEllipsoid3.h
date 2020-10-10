@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.09
+// Version: 4.0.2020.10.10
 
 #pragma once
 
@@ -280,7 +280,13 @@ namespace gte
             Real root = -dq[0] / dq[1];
             if (root > zero)
             {
-                for (size_t k = 0; k < 8; ++k)
+                // Use Sylvester's criterion for testing positive definitess.
+                // A for(;;) loop terminates for floating-point arithmetic but
+                // not for rational (BSRational<UInteger>) arithmetic. Limit
+                // the number of iterations so that the loop terminates for
+                // rational arithmetic but 'return' occurs for floating-point
+                // arithmetic.
+                for (size_t k = 0; k < 2048; ++k)
                 {
                     Matrix3x3<Real> nextM = M + root * negDFDM;
                     if (nextM(0, 0) > zero)
