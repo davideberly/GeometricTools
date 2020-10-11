@@ -34,12 +34,16 @@ namespace gte
         }
 
         void SetTranslate(float x, float y);
+        void SetNormalizedZ(float z);
         void SetColor(Vector4<float> const& color);
 
     private:
         std::shared_ptr<ConstantBuffer> mTranslate;
         std::shared_ptr<ConstantBuffer> mColor;
         std::shared_ptr<SamplerState> mSamplerState;
+
+        // Default normalized Z coordinate for rendered text.
+        static std::array<float, ProgramFactory::PF_NUM_API> const msDefaultNormalizedZ;
 
         // Shader source code as strings.
         static std::string const msGLSLVSSource;
