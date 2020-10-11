@@ -17,11 +17,12 @@ TextEffect::TextEffect(std::shared_ptr<ProgramFactory> const& factory,
     mProgram = factory->CreateFromSources(*msVSSource[api], *msPSSource[api], "");
     if (mProgram)
     {
-        mTranslate = std::make_shared<ConstantBuffer>(sizeof(Vector2<float>), true);
+        mTranslate = std::make_shared<ConstantBuffer>(sizeof(Vector3<float>), true);
         mColor = std::make_shared<ConstantBuffer>(sizeof(Vector4<float>), true);
         mSamplerState = std::make_shared<SamplerState>();
 
         SetTranslate(0.0f, 0.0f);
+        SetNormalizedZ(msDefaultNormalizedZ[api]);
         mProgram->GetVertexShader()->Set("Translate", mTranslate);
 
         SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
@@ -38,6 +39,12 @@ void TextEffect::SetTranslate(float x, float  y)
     data[1] = y;
 }
 
+void TextEffect::SetNormalizedZ(float z)
+{
+    auto* data = mTranslate->Get<float>();
+    data[2] = z;
+}
+
 void TextEffect::SetColor(Vector4<float> const& color)
 {
     auto* data = mColor->Get<Vector4<float>>();
@@ -49,7 +56,7 @@ std::string const TextEffect::msGLSLVSSource =
 R"(
     uniform Translate
     {
-        vec2 translate;
+        vec3 translate;
     };
 
     layout(location = 0) in vec2 modelPosition;
@@ -61,7 +68,7 @@ R"(
         vertexTCoord = modelTCoord;
         gl_Position.x = 2.0f * modelPosition.x - 1.0f + 2.0f * translate.x;
         gl_Position.y = 2.0f * modelPosition.y - 1.0f + 2.0f * translate.y;
-        gl_Position.z = -1.0f;
+        gl_Position.z = translate.z;
         gl_Position.w = 1.0f;
     }
 )";
@@ -93,7 +100,7 @@ std::string const TextEffect::msHLSLVSSource =
 R"(
     cbuffer Translate
     {
-        float2 translate;
+        float3 translate;
     };
     struct VS_INPUT
     {
@@ -113,7 +120,7 @@ R"(
         output.vertexTCoord = input.modelTCoord;
         output.clipPosition.x = 2.0f * input.modelPosition.x - 1.0f + 2.0f * translate.x;
         output.clipPosition.y = 2.0f * input.modelPosition.y - 1.0f + 2.0f * translate.y;
-        output.clipPosition.z = 0.0f;
+        output.clipPosition.z = translate.z;
         output.clipPosition.w = 1.0f;
         return output;
     }
@@ -151,6 +158,12 @@ R"(
         return output;
     }
 )";
+
+std::array<float, ProgramFactory::PF_NUM_API> const TextEffect::msDefaultNormalizedZ =
+{
+    -1.0f,
+    0.0f
+};
 
 ProgramSources const TextEffect::msVSSource =
 {
