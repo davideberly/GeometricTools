@@ -1223,8 +1223,14 @@ namespace gte
             {
                 int currSPrev = V(i).sPrev;
                 int currSNext = V(i).sNext;
-                V(currSPrev).sNext = currSNext;
-                V(currSNext).sPrev = currSPrev;
+                if (currSPrev != -1)
+                {
+                    V(currSPrev).sNext = currSNext;
+                }
+                if (currSNext != -1)
+                {
+                    V(currSNext).sPrev = currSPrev;
+                }
                 V(i).sNext = -1;
                 V(i).sPrev = -1;
             }
