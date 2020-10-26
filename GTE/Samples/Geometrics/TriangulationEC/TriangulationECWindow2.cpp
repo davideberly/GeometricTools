@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.10.26
 
 #include "TriangulationECWindow2.h"
 #include <Applications/LogReporter.h>
@@ -106,11 +106,11 @@ void TriangulationECWindow2::OnDisplay()
 
     case 4:
     {
-        std::queue<std::shared_ptr<Triangulator::Tree>> treeQueue;
+        std::queue<std::shared_ptr<PolygonTree>> treeQueue;
         treeQueue.push(mTree);
         while (treeQueue.size() > 0)
         {
-            std::shared_ptr<Triangulator::Tree> tree = treeQueue.front();
+            std::shared_ptr<PolygonTree> tree = treeQueue.front();
             treeQueue.pop();
             numPositions = static_cast<int>(tree->polygon.size());
             int const* indices = tree->polygon.data();
@@ -463,55 +463,55 @@ void TriangulationECWindow2::TreeOfNestedPolygons()
     };
 
     // outer0 polygon
-    mTree = std::make_shared<Triangulator::Tree>();
+    mTree = std::make_shared<PolygonTree>();
     mTree->polygon = { 0, 1, 2, 3, 4 };
     mFillSeeds.push_back({ 164.0f, 138.0f });
 
     // inner0 polygon
-    auto inner0 = std::make_shared<Triangulator::Tree>();
+    auto inner0 = std::make_shared<PolygonTree>();
     inner0->polygon = { 5, 6, 7 };
     mTree->child.push_back(inner0);
 
     // inner1 polygon
-    auto inner1 = std::make_shared<Triangulator::Tree>();
+    auto inner1 = std::make_shared<PolygonTree>();
     inner1->polygon = { 8, 9, 10 };
     mTree->child.push_back(inner1);
 
     // inner2 polygon
-    auto inner2 = std::make_shared<Triangulator::Tree>();
+    auto inner2 = std::make_shared<PolygonTree>();
     inner2->polygon = { 11, 12, 13, 14, 15, 16, 17, 18 };
     mTree->child.push_back(inner2);
 
     // outer1 polygon (contained in inner2)
-    auto outer1 = std::make_shared<Triangulator::Tree>();
+    auto outer1 = std::make_shared<PolygonTree>();
     outer1->polygon = { 19, 20, 21, 22, 23 };
     inner2->child.push_back(outer1);
     mFillSeeds.push_back({ 184.0f, 248.0f });
 
     // outer2 polygon (contained in inner2)
-    auto outer2 = std::make_shared<Triangulator::Tree>();
+    auto outer2 = std::make_shared<PolygonTree>();
     outer2->polygon = { 24, 25, 26, 27 };
     inner2->child.push_back(outer2);
     mFillSeeds.push_back({ 218.0f, 358.0f });
 
     // outer3 polygon (contained in inner1)
-    auto outer3 = std::make_shared<Triangulator::Tree>();
+    auto outer3 = std::make_shared<PolygonTree>();
     outer3->polygon = { 28, 29, 30 };
     inner1->child.push_back(outer3);
     mFillSeeds.push_back({ 344.0f, 278.0f });
 
     // inner3 polygon (contained in outer2)
-    auto inner3 = std::make_shared<Triangulator::Tree>();
+    auto inner3 = std::make_shared<PolygonTree>();
     inner3->polygon = { 31, 32, 33, 34 };
     outer2->child.push_back(inner3);
 
     // inner4 polygon (contained in outer2)
-    auto inner4 = std::make_shared<Triangulator::Tree>();
+    auto inner4 = std::make_shared<PolygonTree>();
     inner4->polygon = { 35, 36, 37, 38 };
     outer2->child.push_back(inner4);
 
     // inner5 polygon (contained in outer3)
-    auto inner5 = std::make_shared<Triangulator::Tree>();
+    auto inner5 = std::make_shared<PolygonTree>();
     inner5->polygon = { 39, 40, 41, 42 };
     outer3->child.push_back(inner5);
 

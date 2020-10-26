@@ -3,13 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.10.26
 
 #pragma once
 
 #include <Applications/Window2.h>
 #include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/PlanarMesh.h>
 #include <Mathematics/TriangulateCDT.h>
 using namespace gte;
 
@@ -29,10 +28,10 @@ private:
     void TwoNestedPolygons();       // key = '3'
     void TreeOfNestedPolygons();    // key = '4'
 
+    static size_t constexpr smax = std::numeric_limits<size_t>::max();
     typedef BSNumber<UIntegerAP32> Rational;
-    typedef TriangulateCDT<float, Rational> Triangulator;
-    typedef PlanarMesh<float, Rational, Rational> PlanarMesher;
+
     std::vector<Vector2<float>> mPoints;
-    std::unique_ptr<Triangulator> mTriangulator;
-    std::unique_ptr<PlanarMesher> mPMesher;
+    TriangulateCDT<float, Rational> mTriangulator;
+    PolygonTreeEx mOutput;
 };

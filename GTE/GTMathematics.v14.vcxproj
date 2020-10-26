@@ -384,6 +384,7 @@
     <ClInclude Include="Mathematics\PdeFilter3.h" />
     <ClInclude Include="Mathematics\PlanarMesh.h" />
     <ClInclude Include="Mathematics\Polygon2.h" />
+    <ClInclude Include="Mathematics\PolygonTree.h" />
     <ClInclude Include="Mathematics\PolyhedralMassProperties.h" />
     <ClInclude Include="Mathematics\Polyhedron3.h" />
     <ClInclude Include="Mathematics\Polynomial1.h" />

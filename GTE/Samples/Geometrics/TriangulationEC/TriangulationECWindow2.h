@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.10.26
 
 #pragma once
 
@@ -38,7 +38,7 @@ private:
 
     std::vector<Vector2<float>> mPositions;
     std::vector<int> mOuter, mInner0, mInner1, mInner2;
-    std::shared_ptr<Triangulator::Tree> mTree;
+    std::shared_ptr<PolygonTree> mTree;
     std::vector<Vector2<float>> mFillSeeds;
     std::vector<std::array<int, 3>> mTriangles;
     int mExample;

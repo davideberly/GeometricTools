@@ -1428,5 +1428,8 @@
     <ClInclude Include="Mathematics\UniqueVerticesSimplices.h">
       <Filter>Meshes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\PolygonTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

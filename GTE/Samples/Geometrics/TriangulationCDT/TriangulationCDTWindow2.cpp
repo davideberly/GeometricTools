@@ -3,9 +3,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.10.26
 
 #include "TriangulationCDTWindow2.h"
+#include <numeric>
 #include <iostream>
 
 TriangulationCDTWindow2::TriangulationCDTWindow2(Parameters& parameters)
@@ -57,17 +58,16 @@ void TriangulationCDTWindow2::DrawTriangulation()
     int xmax = static_cast<int>(std::ceil(pmax[0]));
     int ymax = static_cast<int>(std::ceil(pmax[1]));
 
-    int tStart = 0;
     for (int y = ymin; y <= ymax; ++y)
     {
         std::cout << "y = " << y << std::endl;
         for (int x = xmin; x <= xmax; ++x)
         {
             Vector2<float> test{ static_cast<float>(x), static_cast<float>(y) };
-            int t = mPMesher->GetContainingTriangle(test, tStart);
-            if (t >= 0)
+            auto result = mOutput.GetContainingTriangle(test, mPoints.data());
+            if (result.first != smax)
             {
-                if (mTriangulator->IsInside(t))
+                if (mOutput.nodes[result.first].chirality > 0)
                 {
                     SetPixel(x, y, 0xFFFF8000);
                 }
@@ -75,17 +75,11 @@ void TriangulationCDTWindow2::DrawTriangulation()
                 {
                     SetPixel(x, y, 0xFF0080FF);
                 }
-
-                tStart = t;
-            }
-            else
-            {
-                tStart = 0;
             }
         }
     }
 
-    for (auto const& tri : mTriangulator->GetAllTriangles())
+    for (auto const& tri : mOutput.allTriangles)
     {
         int v0 = tri[0];
         int v1 = tri[1];
@@ -129,13 +123,11 @@ void TriangulationCDTWindow2::UnindexedSimplePolygon()
         { 110.0f, 382.0f }
     };
 
-    mTriangulator = std::make_unique<Triangulator>(mPoints);
-    (*mTriangulator)();
-    auto const& triangles = mTriangulator->GetAllTriangles();
-    int const numPoints = static_cast<int>(mPoints.size());
-    int const numTriangles = static_cast<int>(triangles.size());
-    mPMesher = std::make_unique<PlanarMesher>(numPoints, &mPoints[0],
-        numTriangles, reinterpret_cast<int const*>(&triangles[0]));
+    auto tree = std::make_shared<PolygonTree>();
+    tree->polygon.resize(mPoints.size());
+    std::iota(tree->polygon.begin(), tree->polygon.end(), 0);
+
+    mTriangulator(mPoints, tree, mOutput);
 
     DrawTriangulation();
 }
@@ -166,15 +158,10 @@ void TriangulationCDTWindow2::IndexedSimplePolygon()
         { 0.0f, 0.0f }
     };
 
-    std::vector<int> outer = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18 };
+    auto tree = std::make_shared<PolygonTree>();
+    tree->polygon = { 0, 2, 4, 6, 8, 10, 12, 14, 16, 18 };
 
-    mTriangulator = std::make_unique<Triangulator>(mPoints);
-    (*mTriangulator)(outer);
-    auto const& triangles = mTriangulator->GetAllTriangles();
-    int const numPoints = static_cast<int>(mPoints.size());
-    int const numTriangles = static_cast<int>(triangles.size());
-    mPMesher = std::make_unique<PlanarMesher>(numPoints, &mPoints[0],
-        numTriangles, reinterpret_cast<int const*>(&triangles[0]));
+    mTriangulator(mPoints, tree, mOutput);
 
     DrawTriangulation();
 }
@@ -192,16 +179,13 @@ void TriangulationCDTWindow2::OneNestedPolygon()
         { 256.0f, 320.0f }
     };
 
-    std::vector<int> outer = { 0, 1, 2, 3 };
-    std::vector<int> inner = { 4, 5, 6 };
+    auto tree = std::make_shared<PolygonTree>();
+    tree->child.resize(1);
+    tree->child[0] = std::make_shared<PolygonTree>();
+    tree->polygon = { 0, 1, 2, 3 };
+    tree->child[0]->polygon = { 4, 5, 6 };
 
-    mTriangulator = std::make_unique<Triangulator>(mPoints);
-    (*mTriangulator)(outer, inner);
-    auto const& triangles = mTriangulator->GetAllTriangles();
-    int const numPoints = static_cast<int>(mPoints.size());
-    int const numTriangles = static_cast<int>(triangles.size());
-    mPMesher = std::make_unique<PlanarMesher>(numPoints, &mPoints[0],
-        numTriangles, reinterpret_cast<int const*>(&triangles[0]));
+    mTriangulator(mPoints, tree, mOutput);
 
     DrawTriangulation();
 }
@@ -228,16 +212,15 @@ void TriangulationCDTWindow2::TwoNestedPolygons()
         { 201.0f, 249.0f }
     };
 
-    std::vector<int> outer = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    std::vector<Triangulator::Polygon> inner{ { 11, 12, 10 }, { 13, 14, 15 } };
+    auto tree = std::make_shared<PolygonTree>();
+    tree->child.resize(2);
+    tree->child[0] = std::make_shared<PolygonTree>();
+    tree->child[1] = std::make_shared<PolygonTree>();
+    tree->polygon = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    tree->child[0]->polygon = { 11, 12, 10 };
+    tree->child[1]->polygon = { 13, 14, 15 };
 
-    mTriangulator = std::make_unique<Triangulator>(mPoints);
-    (*mTriangulator)(outer, inner);
-    auto const& triangles = mTriangulator->GetAllTriangles();
-    int const numPoints = static_cast<int>(mPoints.size());
-    int const numTriangles = static_cast<int>(triangles.size());
-    mPMesher = std::make_unique<PlanarMesher>(numPoints, &mPoints[0],
-        numTriangles, reinterpret_cast<int const*>(&triangles[0]));
+    mTriangulator(mPoints, tree, mOutput);
 
     DrawTriangulation();
 }
@@ -305,61 +288,55 @@ void TriangulationCDTWindow2::TreeOfNestedPolygons()
     //             inner4
 
     // outer0 polygon
-    auto outer0 = std::make_shared<Triangulator::Tree>();
+    auto outer0 = std::make_shared<PolygonTree>();
     outer0->polygon = { 0, 1, 2, 3, 4 };
 
     // inner0 polygon
-    auto inner0 = std::make_shared<Triangulator::Tree>();
+    auto inner0 = std::make_shared<PolygonTree>();
     inner0->polygon = { 5, 6, 7 };
     outer0->child.push_back(inner0);
 
     // inner1 polygon
-    auto inner1 = std::make_shared<Triangulator::Tree>();
+    auto inner1 = std::make_shared<PolygonTree>();
     inner1->polygon = { 8, 9, 10 };
     outer0->child.push_back(inner1);
 
     // inner2 polygon
-    auto inner2 = std::make_shared<Triangulator::Tree>();
+    auto inner2 = std::make_shared<PolygonTree>();
     inner2->polygon = { 11, 12, 13, 14, 15, 16, 17, 18 };
     outer0->child.push_back(inner2);
 
     // outer1 polygon (contained in inner2)
-    auto outer1 = std::make_shared<Triangulator::Tree>();
+    auto outer1 = std::make_shared<PolygonTree>();
     outer1->polygon = { 19, 20, 21, 22, 23 };
     inner2->child.push_back(outer1);
 
     // outer2 polygon (contained in inner2)
-    auto outer2 = std::make_shared<Triangulator::Tree>();
+    auto outer2 = std::make_shared<PolygonTree>();
     outer2->polygon = { 24, 25, 26, 27 };
     inner2->child.push_back(outer2);
 
     // outer3 polygon (contained in inner1)
-    auto outer3 = std::make_shared<Triangulator::Tree>();
+    auto outer3 = std::make_shared<PolygonTree>();
     outer3->polygon = { 28, 29, 30 };
     inner1->child.push_back(outer3);
 
     // inner3 polygon (contained in outer2)
-    auto inner3 = std::make_shared<Triangulator::Tree>();
+    auto inner3 = std::make_shared<PolygonTree>();
     inner3->polygon = { 31, 32, 33, 34 };
     outer2->child.push_back(inner3);
 
     // inner4 polygon (contained in outer2)
-    auto inner4 = std::make_shared<Triangulator::Tree>();
+    auto inner4 = std::make_shared<PolygonTree>();
     inner4->polygon = { 35, 36, 37, 38 };
     outer2->child.push_back(inner4);
 
     // inner5 polygon (contained in outer3)
-    auto inner5 = std::make_shared<Triangulator::Tree>();
+    auto inner5 = std::make_shared<PolygonTree>();
     inner5->polygon = { 39, 40, 41, 42 };
     outer3->child.push_back(inner5);
 
-    mTriangulator = std::make_unique<Triangulator>(mPoints);
-    (*mTriangulator)(outer0);
-    auto const& triangles = mTriangulator->GetAllTriangles();
-    int const numPoints = static_cast<int>(mPoints.size());
-    int const numTriangles = static_cast<int>(triangles.size());
-    mPMesher = std::make_unique<PlanarMesher>(numPoints, &mPoints[0],
-        numTriangles, reinterpret_cast<int const*>(&triangles[0]));
+    mTriangulator(mPoints, outer0, mOutput);
 
     DrawTriangulation();
 }

@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2020.10.26
 
 #pragma once
 
 #include <Mathematics/Logger.h>
+#include <Mathematics/PolygonTree.h>
 #include <Mathematics/PrimalQuery2.h>
 #include <memory>
 #include <map>
@@ -26,6 +27,11 @@ namespace gte
     class TriangulateEC
     {
     public:
+        // The fundamental problem is to compute the triangulation of a
+        // polygon tree. The outer polygons have counterclockwise ordered
+        // vertices. The inner polygons have clockwise ordered vertices.
+        typedef std::vector<int> Polygon;
+
         // The class is a functor to support triangulating multiple polygons
         // that share vertices in a collection of points.  The interpretation
         // of 'numPoints' and 'points' is described before each operator()
@@ -36,7 +42,13 @@ namespace gte
         TriangulateEC(int numPoints, Vector2<InputType> const* points)
             :
             mNumPoints(numPoints),
-            mPoints(points)
+            mPoints(points),
+            mCFirst(-1),
+            mCLast(-1),
+            mRFirst(-1),
+            mRLast(-1),
+            mEFirst(-1),
+            mELast(-1)
         {
             LogAssert(numPoints >= 3 && points != nullptr, "Invalid input.");
             mComputePoints.resize(mNumPoints);
@@ -48,7 +60,13 @@ namespace gte
         TriangulateEC(std::vector<Vector2<InputType>> const& points)
             :
             mNumPoints(static_cast<int>(points.size())),
-            mPoints(points.data())
+            mPoints(points.data()),
+            mCFirst(-1),
+            mCLast(-1),
+            mRFirst(-1),
+            mRLast(-1),
+            mEFirst(-1),
+            mELast(-1)
         {
             LogAssert(mNumPoints >= 3 && mPoints != nullptr, "Invalid input.");
             mComputePoints.resize(mNumPoints);
@@ -62,10 +80,6 @@ namespace gte
         {
             return mTriangles;
         }
-
-        // The outer polygons have counterclockwise ordered vertices.  The
-        // inner polygons have clockwise ordered vertices.
-        typedef std::vector<int> Polygon;
 
         // The input 'points' represents an array of vertices for a simple
         // polygon. The vertices are points[0] through points[numPoints-1] and
@@ -304,23 +318,9 @@ namespace gte
             }
         }
 
-        // A tree of nested polygons.  The root node corresponds to an outer
-        // polygon.  The children of the root correspond to inner polygons,
-        // which are nonoverlapping polygons strictly contained in the outer
-        // polygon.  Each inner polygon may itself contain an outer polygon,
-        // thus leading to a hierarchy of polygons.  The outer polygons have
-        // vertices listed in counterclockwise order.  The inner polygons have
-        // vertices listed in clockwise order.
-        class Tree
-        {
-        public:
-            Polygon polygon;
-            std::vector<std::shared_ptr<Tree>> child;
-        };
-
         // The input 'positions' is a shared array of vertices that contains
         // the vertices for multiple simple polygons in a tree of polygons.
-        bool operator()(std::shared_ptr<Tree> const& tree)
+        bool operator()(std::shared_ptr<PolygonTree> const& tree)
         {
             mTriangles.clear();
             if (mPoints)
@@ -343,11 +343,11 @@ namespace gte
                 int nextElement = mNumPoints;
                 std::map<int, int> indexMap;
 
-                std::queue<std::shared_ptr<Tree>> treeQueue;
+                std::queue<std::shared_ptr<PolygonTree>> treeQueue;
                 treeQueue.push(tree);
                 while (treeQueue.size() > 0)
                 {
-                    std::shared_ptr<Tree> outer = treeQueue.front();
+                    std::shared_ptr<PolygonTree> outer = treeQueue.front();
                     treeQueue.pop();
 
                     int numChildren = static_cast<int>(outer->child.size());
@@ -370,7 +370,7 @@ namespace gte
                         std::vector<Polygon> inners(numChildren);
                         for (int c = 0; c < numChildren; ++c)
                         {
-                            std::shared_ptr<Tree> inner = outer->child[c];
+                            std::shared_ptr<PolygonTree> inner = outer->child[c];
                             inners[c] = inner->polygon;
                             int numGrandChildren = static_cast<int>(inner->child.size());
                             for (int g = 0; g < numGrandChildren; ++g)
@@ -933,18 +933,18 @@ namespace gte
         // outer-inners polygon.  This function computes the total number of
         // extra elements needed for the input tree and it converts InputType
         // vertices to ComputeType values.
-        int InitializeFromTree(std::shared_ptr<Tree> const& tree)
+        int InitializeFromTree(std::shared_ptr<PolygonTree> const& tree)
         {
             // Use a breadth-first search to process the outer-inners pairs
             // of the tree of nested polygons.
             int numExtraPoints = 0;
 
-            std::queue<std::shared_ptr<Tree>> treeQueue;
+            std::queue<std::shared_ptr<PolygonTree>> treeQueue;
             treeQueue.push(tree);
             while (treeQueue.size() > 0)
             {
                 // The 'root' is an outer polygon.
-                std::shared_ptr<Tree> outer = treeQueue.front();
+                std::shared_ptr<PolygonTree> outer = treeQueue.front();
                 treeQueue.pop();
 
                 // Count number of extra points for this outer-inners pair.
@@ -972,7 +972,7 @@ namespace gte
                 for (int c = 0; c < numChildren; ++c)
                 {
                     // The 'child' is an inner polygon.
-                    std::shared_ptr<Tree> inner = outer->child[c];
+                    std::shared_ptr<PolygonTree> inner = outer->child[c];
 
                     // Convert inner points from InputType to ComputeType.
                     int const numInnerIndices = static_cast<int>(inner->polygon.size());
@@ -1044,6 +1044,8 @@ namespace gte
 
         inline Vertex& V(int i)
         {
+            LogAssert(0 <= i && i < static_cast<int>(mVertices.size()),
+                "Index out of range. Do you have coincident vertex-edge or edge-edge? These violate the assumptions for the algorithm.");
             return mVertices[i];
         }
 

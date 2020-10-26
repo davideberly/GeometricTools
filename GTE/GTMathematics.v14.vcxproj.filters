@@ -1419,5 +1419,8 @@
     <ClInclude Include="Mathematics\RemezAlgorithm.h">
       <Filter>NumericalMethods</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\PolygonTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
