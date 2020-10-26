@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 4.0.2020.10.26
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -702,7 +702,22 @@ void DX11Engine::DestroyDefaultObjects()
 
 bool DX11Engine::DestroyDevice()
 {
-    return DX11::FinalRelease(mImmediate) == 0 && DX11::FinalRelease(mDevice) == 0;
+    // TODO: The mSwapChain->Present() call sometimes creates a second
+    // ID3D11Context object in order to create an ID3D11RenderTargetView.
+    // On exit from an application, the FinalRelease(mDevice) call throws
+    // an exception because the number of references to mDevice is positive.
+    // These references come from the second context. The time of destruction
+    // of that context is nondeterministic (probably a timing issue with
+    // threading), so the exception does not occur every time.
+    //
+    // The problem appears to be the introduction of the "flip" flags for
+    // swap chain creation. The back buffer is unbound for writing during the
+    // Present call. I have tried to figure out how to Magic Dance, but am
+    // not yet successful. For now, I am using SafeRelease that does not
+    // throw an exception.
+
+    //return DX11::FinalRelease(mImmediate) == 0 && DX11::FinalRelease(mDevice) == 0;
+    return DX11::SafeRelease(mImmediate) == 0 && DX11::SafeRelease(mDevice) == 0;
 }
 
 bool DX11Engine::DestroySwapChain()
