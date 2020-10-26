@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.03
+// Version: 4.0.2020.10.26
 
 #pragma once
 
@@ -59,6 +59,26 @@ namespace gte
                 :
                 V{ v0, v1, v2 }
             {
+            }
+
+            // The edge <u0,u1> is directed. Determine whether the triangle 
+            // has an edge <V[i],V[(i+1)%3]> = <u0,u1> (return +1) or an edge
+            // <V[i],V[(i+1)%3]> = <u1,u0> (return -1) or does not have an
+            // edge meeting either condition (return 0).
+            int WhichSideOfEdge(int u0, int u1) const
+            {
+                for (size_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+                {
+                    if (V[i0] == u0 && V[i1] == u1)
+                    {
+                        return +1;
+                    }
+                    if (V[i0] == u1 && V[i1] == u0)
+                    {
+                        return -1;
+                    }
+                }
+                return 0;
             }
 
             // Vertices, listed in counterclockwise order (V[0],V[1],V[2]).
