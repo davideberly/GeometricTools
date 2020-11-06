@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.05
+// Version: 4.0.2020.11.06
 
 #pragma once
 
@@ -74,7 +74,12 @@ namespace gte
             PolygonTreeEx& output)
         {
             output.nodes.clear();
+            output.interiorTriangles.clear();
+            output.interiorNodeIndices.clear();
+            output.exteriorTriangles.clear();
+            output.exteriorNodeIndices.clear();
             output.insideTriangles.clear();
+            output.insideNodeIndices.clear();
             output.outsideTriangles.clear();
             output.allTriangles.clear();
 
@@ -231,7 +236,15 @@ namespace gte
                 }
             }
 
-            for (auto& tri : tree.allTriangles)
+            for (auto& tri : tree.interiorTriangles)
+            {
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    tri[j] = remapping[tri[j]];
+                }
+            }
+
+            for (auto& tri : tree.exteriorTriangles)
             {
                 for (size_t j = 0; j < 3; ++j)
                 {
@@ -248,6 +261,14 @@ namespace gte
             }
 
             for (auto& tri : tree.outsideTriangles)
+            {
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    tri[j] = remapping[tri[j]];
+                }
+            }
+
+            for (auto& tri : tree.allTriangles)
             {
                 for (size_t j = 0; j < 3; ++j)
                 {
@@ -482,27 +503,41 @@ namespace gte
             graph.Clear();
         }
 
-        // Get the triangles in the polygon tree. NOTE (for debugging): The
-        // inside triangles are computed as the set difference of the Delaunay
-        // triangles and the triangles outside the polygon tree. The inside
-        // triangles can be accumulated by a breadth-first traversal of the
-        // polygon tree. The two inside-triangle sets must be the same.
+        // Get the triangles in the polygon tree, classifying each as
+        // interior (in region bounded by outer polygon and its contained
+        // inner polygons) or exterior (in region bounded by inner polygon
+        // and its contained outer polygons). The inside triangles are the
+        // union of the interior and exterior triangles.
         void GetInsideTriangles(PolygonTreeEx& tree)
         {
-            std::set<TriangleKey<true>> outside;
-            for (auto const& tri : tree.outsideTriangles)
-            {
-                outside.insert(TriangleKey<true>(tri[0], tri[1], tri[2]));
-            }
-
-            size_t const numInside = tree.allTriangles.size() - tree.outsideTriangles.size();
+            size_t const numTriangles = tree.allTriangles.size();
+            size_t const numOutside = tree.outsideTriangles.size();
+            size_t const numInside = numTriangles - numOutside;
+            tree.interiorTriangles.reserve(numTriangles);
+            tree.interiorNodeIndices.reserve(numTriangles);
+            tree.exteriorTriangles.reserve(numTriangles);
+            tree.exteriorNodeIndices.reserve(numTriangles);
             tree.insideTriangles.reserve(numInside);
-            for (auto const& tri : tree.allTriangles)
+            tree.insideNodeIndices.reserve(numInside);
+
+            for (size_t nIndex = 0; nIndex < tree.nodes.size(); ++nIndex)
             {
-                auto iter = outside.find(TriangleKey<true>(tri[0], tri[1], tri[2]));
-                if (iter == outside.end())
+                auto const& node = tree.nodes[nIndex];
+                for (auto& tri : node.triangulation)
                 {
+                    if (node.chirality > 0)
+                    {
+                        tree.interiorTriangles.push_back(tri);
+                        tree.interiorNodeIndices.push_back(nIndex);
+                    }
+                    else
+                    {
+                        tree.exteriorTriangles.push_back(tri);
+                        tree.exteriorNodeIndices.push_back(nIndex);
+                    }
+
                     tree.insideTriangles.push_back(tri);
+                    tree.insideNodeIndices.push_back(nIndex);
                 }
             }
         }
