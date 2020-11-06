@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.05
 
 #include "ConstrainedDelaunay2DWindow2.h"
 #include <random>
@@ -167,14 +167,17 @@ bool ConstrainedDelaunay2DWindow2::OnCharPress(unsigned char key, int x, int y)
     {
     case '0':
         mDelaunay.Insert({ 0, 5 }, outEdge);
+        mDelaunay.UpdateIndicesAdjacencies();
         OnDisplay();
         return true;
     case '1':
         mDelaunay.Insert({ 5, 9 }, outEdge);
+        mDelaunay.UpdateIndicesAdjacencies();
         OnDisplay();
         return true;
     case '2':
         mDelaunay.Insert({ 9, 0 }, outEdge);
+        mDelaunay.UpdateIndicesAdjacencies();
         OnDisplay();
         return true;
     }

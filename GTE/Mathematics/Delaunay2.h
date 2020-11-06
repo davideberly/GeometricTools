@@ -3,12 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.05
 
 #pragma once
 
 #include <Mathematics/Logger.h>
-#include <Mathematics/ETManifoldMesh.h>
+#include <Mathematics/VETManifoldMesh.h>
 #include <Mathematics/PrimalQuery2.h>
 #include <Mathematics/Line.h>
 #include <set>
@@ -180,33 +180,10 @@ namespace gte
             }
             mNumUniqueVertices = static_cast<int>(processed.size());
 
-            // Assign integer values to the triangles for use by the caller.
-            std::map<std::shared_ptr<Triangle>, int> permute;
-            i = -1;
-            permute[nullptr] = i++;
-            for (auto const& element : mGraph.GetTriangles())
-            {
-                permute[element.second] = i++;
-            }
-
-            // Put Delaunay triangles into an array (vertices and adjacency info).
-            mNumTriangles = static_cast<int>(mGraph.GetTriangles().size());
-            int numindices = 3 * mNumTriangles;
-            if (numindices > 0)
-            {
-                mIndices.resize(numindices);
-                mAdjacencies.resize(numindices);
-                i = 0;
-                for (auto const& element : mGraph.GetTriangles())
-                {
-                    std::shared_ptr<Triangle> tri = element.second;
-                    for (j = 0; j < 3; ++j, ++i)
-                    {
-                        mIndices[i] = tri->V[j];
-                        mAdjacencies[i] = permute[tri->T[j].lock()];
-                    }
-                }
-            }
+            // Assign integer values to the triangles for use by the caller
+            // and copy the triangle information to compact arrays mIndices
+            // and mAdjacencies.
+            UpdateIndicesAdjacencies();
 
             return true;
         }
@@ -325,6 +302,41 @@ namespace gte
             else
             {
                 LogError("The dimension must be 2.");
+            }
+        }
+
+        // Copy Delaunay triangles to compact arrays mIndices and
+        // mAdjacencies. The array information is accessible via the
+        // functions GetIndices(int, std::array<int, 3>&) and
+        // GetAdjacencies(int, std::array<int, 3>&).
+        void UpdateIndicesAdjacencies()
+        {
+            // Assign integer values to the triangles.
+            auto const& tmap = mGraph.GetTriangles();
+            std::map<std::shared_ptr<Triangle>, int> permute;
+            int i = -1;
+            permute[nullptr] = i++;
+            for (auto const& element : tmap)
+            {
+                permute[element.second] = i++;
+            }
+
+            mNumTriangles = static_cast<int>(tmap.size());
+            int numindices = 3 * mNumTriangles;
+            if (numindices > 0)
+            {
+                mIndices.resize(numindices);
+                mAdjacencies.resize(numindices);
+                i = 0;
+                for (auto const& element : tmap)
+                {
+                    std::shared_ptr<Triangle> tri = element.second;
+                    for (size_t j = 0; j < 3; ++j, ++i)
+                    {
+                        mIndices[i] = tri->V[j];
+                        mAdjacencies[i] = permute[tri->T[j].lock()];
+                    }
+                }
             }
         }
 
@@ -751,7 +763,7 @@ namespace gte
         int mNumUniqueVertices;
         int mNumTriangles;
         Vector2<InputType> const* mVertices;
-        ETManifoldMesh mGraph;
+        VETManifoldMesh mGraph;
         std::vector<int> mIndices;
         std::vector<int> mAdjacencies;
 

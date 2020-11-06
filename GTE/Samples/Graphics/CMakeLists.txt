@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 5)
-set(GTE_VERSION_MINOR 2)
+set(GTE_VERSION_MINOR 3)
 
 project(Graphics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 

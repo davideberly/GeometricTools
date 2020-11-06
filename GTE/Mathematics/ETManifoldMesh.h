@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 4.0.2020.11.05
 
 #pragma once
 
@@ -79,6 +79,32 @@ namespace gte
                     }
                 }
                 return 0;
+            }
+
+            std::shared_ptr<Triangle> GetAdjacentOfEdge(int u0, int u1)
+            {
+                for (size_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+                {
+                    if ((V[i0] == u0 && V[i1] == u1) || (V[i0] == u1 && V[i1] == u0))
+                    {
+                        auto adj = T[i0].lock();
+                        return adj;
+                    }
+                }
+                return nullptr;
+            }
+
+            bool GetOppositeVertexOfEdge(int u0, int u1, int& uOpposite)
+            {
+                for (size_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+                {
+                    if ((V[i0] == u0 && V[i1] == u1) || (V[i0] == u1 && V[i1] == u0))
+                    {
+                        uOpposite = V[(i1 + 1) % 3];
+                        return true;
+                    }
+                }
+                return false;
             }
 
             // Vertices, listed in counterclockwise order (V[0],V[1],V[2]).

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 4.0.2020.11.05
 
 #pragma once
 
@@ -314,10 +314,16 @@ namespace gte
                 }
             }
 
-            // Construct an edge-triangle graph to support classifying the
-            // polygon-tree triangles. Store the triangles in mAllTriangles
-            // for potential use by the caller; for example, this is useful
-            // for linear walks during point-in-triangle queries.
+            // Copy the graph to the compact arrays mIndices and
+            // mAdjacencies for use by the caller.
+            cdt.UpdateIndicesAdjacencies();
+
+            // Duplicate the graph, which will be modified during triangle
+            // extration. The original is kept intact for use by the caller.
+            graph = cdt.GetGraph();
+
+            // Store the triangles in allTriangles for potential use by the
+            // caller.
             int const numTriangles = cdt.GetNumTriangles();
             int const* indices = cdt.GetIndices().data();
             tree.allTriangles.resize(numTriangles);
