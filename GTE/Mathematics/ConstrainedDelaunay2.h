@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.05
+// Version: 4.0.2020.11.08
 
 #pragma once
 
@@ -154,6 +154,13 @@ namespace gte
                 }
             }
 
+            // If the following assertion is triggered, ComputeType was chosen
+            // to be 'float' or 'double'. Floating-point rounding errors led to
+            // misclassification of signs. The linkEdges-loop exited without
+            // ever calling the ProcessTriangleStrip or ProcessCoincidentEdge
+            // functions.
+            LogAssert(partition.size() > 0, CDTMessage());
+
             partitionedEdge.resize(partition.size() + 1);
             for (size_t i = 0; i < partition.size(); ++i)
             {
@@ -229,9 +236,9 @@ namespace gte
 
             auto const& tmap = this->mGraph.GetTriangles();
             auto titer = tmap.find(TriangleKey<true>(localEdge[0], v0, v1));
-            LogAssert(titer != tmap.end(), "Unexpected condition.");
+            LogAssert(titer != tmap.end(), CDTMessage());
             auto tri = titer->second;
-            LogAssert(tri, "Unexpected condition.");
+            LogAssert(tri, CDTMessage());
 
             // Keep track of the right and left polylines that bound the
             // triangle strip. These polylines can have coincident edges.
@@ -255,13 +262,13 @@ namespace gte
                 // The current triangle is tri and has edge <v0,v1>. Get
                 // the triangle adj that is adjacent to tri via this edge.
                 auto adj = tri->GetAdjacentOfEdge(v0, v1);
-                LogAssert(adj, "Unexpected condition.");
+                LogAssert(adj, CDTMessage());
                 tristrip.Insert(adj->V[0], adj->V[1], adj->V[2]);
 
                 // Get the vertex of adj that is opposite edge <v0,v1>.
                 int vOpposite;
                 bool found = adj->GetOppositeVertexOfEdge(v0, v1, vOpposite);
-                LogAssert(found, "Unexpected condition.");
+                LogAssert(found, CDTMessage());
                 if (vOpposite == localEdge[1])
                 {
                     // The triangle strip containing the edge is complete.
@@ -298,7 +305,7 @@ namespace gte
                     break;
                 }
             }
-            LogAssert(t < numTriangles, "Are you using floating-point arithmetic?");
+            LogAssert(t < numTriangles, CDTMessage());
 
             // Insert the final endpoint of the to-be-inserted edge.
             rightPolygon.push_back(localEdge[1]);
@@ -466,5 +473,37 @@ namespace gte
         // by the caller. If any edge passed to Insert(...) is partitioned
         // into subedges, the subedges are inserted into this member.
         std::set<EdgeKey<false>> mInsertedEdges;
+
+    private:
+        // All LogAssert statements other than the first one in the Insert
+        // call possibly can occur when ComputeType is chosen to be 'float'
+        // or 'double' rather than an arbitrary-precision type. This function
+        // encapsulates a message that is included in the logging and in the
+        // thrown exception explaining that floating-point rounding errors
+        // are most likely the problem and that you should consider using
+        // arbitrary precision for the ComputeType.
+        template <typename Dummy = ComputeType>
+        static typename std::enable_if<!is_arbitrary_precision<Dummy>::value, std::string>::type
+            CDTMessage()
+        {
+return R"(
+ComputeType is a floating-point type. The assertions can be triggered because
+of rounding errors. Repeat the call to operator() using ComputeType the type
+BSNumber<UIntegerAP32>. If no assertion is triggered, the problem was most
+likely due to rounding errors. If an assertion is triggered, please file a
+bug report and provide the input dataset to the operator()(...) function.
+)";
+        }
+
+        template <typename Dummy = ComputeType>
+        static typename std::enable_if<is_arbitrary_precision<Dummy>::value, std::string>::type
+            CDTMessage()
+        {
+return R"(
+The failed assertion is unexpected when using arbitrary-precision arithmetic.
+Please file a bug report and provide the input dataset to the operator()(...)
+function.
+)";
+        }
     };
 }
