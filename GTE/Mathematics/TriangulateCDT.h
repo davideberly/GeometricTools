@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.06
+// Version: 4.0.2020.11.10
 
 #pragma once
 
@@ -42,9 +42,25 @@
 // the polygon tree, the corresponding output polygons differ from the input
 // polygons in that they have more vertices due to edge splits. The triangle
 // chirality (winding order) is the same as the containing polygon.
+//
+// TriangulateCDT uses the ComputeType only for the ConstrainedDelaunay2
+// object. To avoid the heap management costs of BSNumber<UIntegerAP32> when
+// the input datasets are large, use BSNumber<UIntegerFP32<N>>. The worst-case
+// choices of N for ComputeType are listed in the next table.
+//
+//    input type | compute type |    N
+//    -----------+--------------+------
+//    float      | BSNumber     |   70
+//    double     | BSNumber     |  525
+//    float      | BSRational   |  573
+//    double     | BSRational   | 4329
 
 namespace gte
 {
+    // The recommended ComputeType is BSNumber<UIntegerFP32<70>> for the
+    // InputType 'float' and BSNumber<UIntegerFP32<525>> for the InputType
+    // 'double'.
+
     template <typename InputType, typename ComputeType>
     class TriangulateCDT
     {

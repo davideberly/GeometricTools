@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.08
+// Version: 4.0.2020.11.10
 
 #pragma once
 
@@ -27,9 +27,26 @@
 // to be BSNumber<UInteger> rather than BSRational<UInteger>. However, if
 // you choose ComputeType to be 'float' or 'double', you should call the
 // Insert(...) function in a try-catch block and take appropriate action.
+//
+// The worst-case choices of N for ComputeType of type BSNumber or BSRational
+// with integer storage UIntegerFP32<N> are listed in the next table. The
+// expression requiring the most bits is in the last else-block of ComputePSD.
+// We recommend using only BSNumber, because no divisions are performed in the
+// insertion computations.
+//
+//    input type | compute type | ComputePSD | Delaunay |    N
+//    -----------+--------------+------------+----------+------
+//    float      | BSNumber     |         70 |       35 |   70
+//    double     | BSNumber     |        525 |      263 |  525
+//    float      | BSRational   |        555 |      573 |  573
+//    double     | BSRational   |       4197 |     4329 | 4329
 
 namespace gte
 {
+    // The recommended ComputeType is BSNumber<UIntegerFP32<70>> for the
+    // InputType 'float' and BSNumber<UIntegerFP32<525>> for the InputType
+    // 'double'.
+
     template <typename InputType, typename ComputeType>
     class ConstrainedDelaunay2 : public Delaunay2<InputType, ComputeType>
     {

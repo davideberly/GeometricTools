@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.05
+// Version: 4.0.2020.11.10
 
 #pragma once
 
@@ -48,14 +48,14 @@
 // computations are encapsulated in PrimalQuery2<Real>::ToLine and
 // PrimalQuery2<Real>::ToCircumcircle, the latter query the dominant one in
 // determining N.  We recommend using only BSNumber, because no divisions are
-// performed in the convex-hull computations.
+// performed in the triangulation computations.
 //
 //    input type | compute type | N
 //    -----------+--------------+------
 //    float      | BSNumber     |    35
 //    double     | BSNumber     |   263
-//    float      | BSRational   | 12302
-//    double     | BSRational   | 92827
+//    float      | BSRational   |   573
+//    double     | BSRational   |  4329
 
 namespace gte
 {
