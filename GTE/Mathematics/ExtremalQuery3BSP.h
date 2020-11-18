@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.16
 
 #pragma once
 
@@ -30,7 +30,7 @@ namespace gte
             int const numTriangles = static_cast<int>(indices.size() / 3);
             for (int t = 0; t < numTriangles; ++t)
             {
-                int V[3];
+                std::array<int, 3> V = { 0, 0, 0 };
                 for (int j = 0; j < 3; ++j)
                 {
                     V[j] = indices[3 * t + j];
@@ -134,6 +134,7 @@ namespace gte
                 :
                 nIndex{ -1, -1 },
                 separation(0),
+                normal(Vector3<Real>::Zero()),
                 posVertex(-1),
                 negVertex(-1),
                 posChild(-1),
@@ -187,7 +188,33 @@ namespace gte
             // Traverse the triangles adjacent to vertex V using edge-triangle
             // adjacency information to produce a sorted array of adjacent
             // triangles.
-            auto tri = *tAdj.begin();
+            std::shared_ptr<Triangle> tri = *tAdj.begin();
+            for (int i = 0; i < numTriangles; ++i)
+            {
+                for (int prev = 2, curr = 0; curr < 3; prev = curr++)
+                {
+                    if (tri->V[curr] == vIndex)
+                    {
+                        tAdjSorted[i] = tri;
+                        tri = tri->T[prev].lock();
+                        break;
+                    }
+                }
+            }
+        }
+
+        void SortAdjacentTriangles(int vIndex,
+            std::unordered_set<std::shared_ptr<Triangle>> const& tAdj,
+            std::vector<std::shared_ptr<Triangle>>& tAdjSorted)
+        {
+            // Copy the set of adjacent triangles into a vector container.
+            int const numTriangles = static_cast<int>(tAdj.size());
+            tAdjSorted.resize(tAdj.size());
+
+            // Traverse the triangles adjacent to vertex V using edge-triangle
+            // adjacency information to produce a sorted array of adjacent
+            // triangles.
+            std::shared_ptr<Triangle> tri = *tAdj.begin();
             for (int i = 0; i < numTriangles; ++i)
             {
                 for (int prev = 2, curr = 0; curr < 3; prev = curr++)
@@ -209,8 +236,11 @@ namespace gte
 
             for (auto const& element : mesh.GetEdges())
             {
-                auto edge = element.second;
+                auto const& edge = element.second;
 
+                // VS 2019 16.8.1 generates LNT1006 "Local variable is not
+                // initialized." Incorrect, because the default constructor
+                // initializes all the members.
                 SphericalArc arc;
                 arc.nIndex[0] = mTriToNormal[edge->T[0].lock()];
                 arc.nIndex[1] = mTriToNormal[edge->T[1].lock()];
@@ -243,7 +273,7 @@ namespace gte
             {
                 // Sort the normals into a counterclockwise spherical polygon
                 // when viewed from outside the sphere.
-                auto vertex = element.second;
+                auto const& vertex = element.second;
                 int const vIndex = vertex->V;
                 std::vector<std::shared_ptr<Triangle>> tAdjSorted;
                 SortAdjacentTriangles(vIndex, vertex->TAdjacent, tAdjSorted);
@@ -259,6 +289,10 @@ namespace gte
                     {
                         if (i1 < numTriangles)
                         {
+                            // VS 2019 16.8.1 generates LNT1006 "Local
+                            // variable is not initialized." Incorrect,
+                            // because the default constructor initializes
+                            // all the members.
                             SphericalArc arc;
                             arc.nIndex[0] = mTriToNormal[tAdjSorted[i0]];
                             arc.nIndex[1] = mTriToNormal[tAdjSorted[i1]];

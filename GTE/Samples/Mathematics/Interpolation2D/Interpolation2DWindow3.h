@@ -74,6 +74,11 @@ private:
         bool GetAdjacencies(int t, std::array<int, 3>& adjacencies) const;
         bool GetBarycentrics(int t, Vector2<float> const& P, std::array<float, 3>& bary) const;
         int GetContainingTriangle(Vector2<float> const& P) const;
+
+        inline int GetInvalidIndex() const
+        {
+            return -1;
+        }
     private:
         std::array<Vector2<float>, 6> mVertices;
         std::array<int, 12> mIndices;

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.14
+// Version: 4.0.2020.11.16
 
 #pragma once
 
@@ -74,8 +74,8 @@ namespace gte
         // which case the interpolation is valid.
         bool operator()(Vector2<Real> const& P, Real& F, Real& FX, Real& FY) const
         {
-            int t = mMesh->GetContainingTriangle(P);
-            if (t == -1)
+            auto t = mMesh->GetContainingTriangle(P);
+            if (t == mMesh->GetInvalidIndex())
             {
                 // The point is outside the triangulation.
                 return false;
@@ -198,9 +198,9 @@ namespace gte
     private:
         void EstimateDerivatives(Real spatialDelta)
         {
-            int numVertices = mMesh->GetNumVertices();
+            auto numVertices = mMesh->GetNumVertices();
             Vector2<Real> const* vertices = mMesh->GetVertices();
-            int numTriangles = mMesh->GetNumTriangles();
+            auto numTriangles = mMesh->GetNumTriangles();
             int const* indices = mMesh->GetIndices();
 
             mFXStorage.resize(numVertices);
@@ -214,7 +214,7 @@ namespace gte
             mFY = &mFYStorage[0];
 
             // Accumulate normals at spatial locations (averaging process).
-            for (int t = 0; t < numTriangles; ++t)
+            for (auto t = 0; t < numTriangles; ++t)
             {
                 // Get three vertices of triangle.
                 int v0 = *indices++;
@@ -245,7 +245,7 @@ namespace gte
             }
 
             // Scale the normals to form (x,y,-1).
-            for (int i = 0; i < numVertices; ++i)
+            for (auto i = 0; i < numVertices; ++i)
             {
                 if (FZ[i] != (Real)0)
                 {
@@ -269,11 +269,10 @@ namespace gte
 
             // Compute centers of inscribed circles for triangles.
             Vector2<Real> const* vertices = mMesh->GetVertices();
-            int numTriangles = mMesh->GetNumTriangles();
+            auto numTriangles = mMesh->GetNumTriangles();
             int const* indices = mMesh->GetIndices();
             mTData.resize(numTriangles);
-            int t;
-            for (t = 0; t < numTriangles; ++t)
+            for (auto t = 0; t < numTriangles; ++t)
             {
                 int v0 = *indices++;
                 int v1 = *indices++;
@@ -284,13 +283,13 @@ namespace gte
             }
 
             // Compute cross-edge intersections.
-            for (t = 0; t < numTriangles; ++t)
+            for (auto t = 0; t < numTriangles; ++t)
             {
                 ComputeCrossEdgeIntersections(t);
             }
 
             // Compute Bezier coefficients.
-            for (t = 0; t < numTriangles; ++t)
+            for (auto t = 0; t < numTriangles; ++t)
             {
                 ComputeCoefficients(t);
             }
@@ -304,7 +303,7 @@ namespace gte
 
             // Get the centers of adjacent triangles.
             TriangleData& tData = mTData[t];
-            std::array<int, 3> adjacencies;
+            std::array<int, 3> adjacencies = { 0, 0, 0 };
             mMesh->GetAdjacencies(t, adjacencies);
             for (int j0 = 2, j1 = 0; j1 < 3; j0 = j1++)
             {
@@ -343,7 +342,7 @@ namespace gte
             // Get the sample data at main triangle vertices.
             std::array<int, 3> indices = { 0, 0, 0 };
             mMesh->GetIndices(t, indices);
-            Jet jet[3];
+            std::array<Jet, 3> jet;
             for (int j = 0; j < 3; ++j)
             {
                 int k = indices[j];
@@ -386,9 +385,11 @@ namespace gte
             Real oneMinusBeta = (Real)1 - beta;
             Real oneMinusGamma = (Real)1 - gamma;
 
-            Real tmp, A[9], B[9];
+            Real const zero = static_cast<Real>(0);
+            std::array<Real, 9> A = { zero, zero, zero, zero, zero, zero, zero, zero, zero };
+            std::array<Real, 9> B = { zero, zero, zero, zero, zero, zero, zero, zero, zero };
 
-            tmp = cenT[0] * V[0][0] + cenT[1] * V[1][0] + cenT[2] * V[2][0];
+            Real tmp = cenT[0] * V[0][0] + cenT[1] * V[1][0] + cenT[2] * V[2][0];
             A[0] = (Real)0.5 * (tmp - V[0][0]);
             A[1] = (Real)0.5 * (tmp - V[1][0]);
             A[2] = (Real)0.5 * (tmp - V[2][0]);
@@ -438,13 +439,21 @@ namespace gte
         {
         public:
             Vector2<Real> center;
-            Vector2<Real> intersect[3];
-            Real coeff[19];
+            std::array<Vector2<Real>, 3> intersect;
+            std::array<Real, 19> coeff;
         };
 
         class Jet
         {
         public:
+            Jet()
+                :
+                F(static_cast<Real>(0)),
+                FX(static_cast<Real>(0)),
+                FY(static_cast<Real>(0))
+            {
+            }
+
             Real F, FX, FY;
         };
 

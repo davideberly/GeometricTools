@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.13
 
 #include "Delaunay2DWindow2.h"
 #include <random>
@@ -30,15 +30,15 @@ Delaunay2DWindow2::Delaunay2DWindow2(Parameters& parameters)
 #if 0
     // A 3x3 square grid.
     mVertices.resize(9);
-    mVertices[0] = Vector2<float>( 64.0f,  64.0f);
-    mVertices[1] = Vector2<float>( 64.0f, 256.0f);
-    mVertices[2] = Vector2<float>( 64.0f, 448.0f);
-    mVertices[3] = Vector2<float>(256.0f,  64.0f);
-    mVertices[4] = Vector2<float>(256.0f, 256.0f);
-    mVertices[5] = Vector2<float>(256.0f, 448.0f);
-    mVertices[6] = Vector2<float>(448.0f,  64.0f);
-    mVertices[7] = Vector2<float>(448.0f, 256.0f);
-    mVertices[8] = Vector2<float>(448.0f, 448.0f);
+    mVertices[0] = Vector2<float>{  64.0f,  64.0f };
+    mVertices[1] = Vector2<float>{  64.0f, 256.0f };
+    mVertices[2] = Vector2<float>{  64.0f, 448.0f };
+    mVertices[3] = Vector2<float>{ 256.0f,  64.0f };
+    mVertices[4] = Vector2<float>{ 256.0f, 256.0f };
+    mVertices[5] = Vector2<float>{ 256.0f, 448.0f };
+    mVertices[6] = Vector2<float>{ 448.0f,  64.0f };
+    mVertices[7] = Vector2<float>{ 448.0f, 256.0f };
+    mVertices[8] = Vector2<float>{ 448.0f, 448.0f };
 #endif
 
     mDelaunay(static_cast<int>(mVertices.size()), &mVertices[0], 0.001f);
