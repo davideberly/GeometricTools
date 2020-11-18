@@ -302,6 +302,53 @@ int PrimalQuery3ToCircumsphere(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add9.bsn.maxWords : add9.bsr.maxWords);
 }
 
+int ConstrainedDelaunay2ComputePSD(BSPrecision::Type type, bool forBSNumber)
+{
+    // Precompute some common values that are used in all calls
+    // to ComputePSD.
+    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
+    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
+    //Vector2<ComputeType> V1mV0 = ctv1 - ctv0;
+    //ComputeType sqrlen10 = Dot(V1mV0, V1mV0);
+    // :
+    //ComputeType const zero = static_cast<ComputeType>(0);
+    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
+    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
+    //Vector2<ComputeType> const& ctv2 = this->mComputeVertices[v2];
+    //Vector2<ComputeType> V2mV0 = ctv2 - ctv0;
+    //ComputeType dot1020 = Dot(V1mV0, V2mV0);
+    //ComputeType psd;
+    //if (dot1020 <= zero)
+    //{
+    //    ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
+    //    psd = sqrlen10 * sqrlen20;
+    //}
+    //else
+    //{
+    //    Vector2<ComputeType> V2mV1 = ctv2 - ctv1;
+    //    ComputeType dot1021 = Dot(V1mV0, V2mV1);
+    //    if (dot1021 >= zero)
+    //    {
+    //        ComputeType sqrlen21 = Dot(V2mV1, V2mV1);
+    //        psd = sqrlen10 * sqrlen21;
+    //    }
+    //    else
+    //    {
+    //        ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
+    //        psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
+    //    }
+    //}
+    //return psd;
+
+    // The longest computational path is
+    // psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
+    BSPrecision u(type);
+    BSPrecision vdiff = u * u - u * u;
+    BSPrecision dotvdiff = vdiff * vdiff + vdiff * vdiff;
+    BSPrecision psd = dotvdiff * dotvdiff - dotvdiff * dotvdiff;
+    return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
+}
+
 int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
@@ -326,5 +373,11 @@ int main()
     bsNumberDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, true);  // 329
     bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, false);  // 1875
     bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, false);  // 14167
+
+    bsNumberFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, true);  // 70
+    bsNumberDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, true);  // 525
+    bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, false);  // 555
+    bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, false);  // 4197
+
     return 0;
 }
