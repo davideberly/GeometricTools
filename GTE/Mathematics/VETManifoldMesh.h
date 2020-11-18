@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.16
 
 #pragma once
 
@@ -20,7 +20,7 @@ namespace gte
         // Vertex data types.
         class Vertex;
         typedef std::shared_ptr<Vertex>(*VCreator)(int);
-        typedef std::map<int, std::shared_ptr<Vertex>> VMap;
+        using VMap = std::unordered_map<int, std::shared_ptr<Vertex>>;
 
         // Vertex object.
         class Vertex
@@ -38,9 +38,9 @@ namespace gte
             int V;
 
             // Adjacent objects.
-            std::set<int> VAdjacent;
-            std::set<std::shared_ptr<Edge>> EAdjacent;
-            std::set<std::shared_ptr<Triangle>> TAdjacent;
+            std::unordered_set<int> VAdjacent;
+            std::unordered_set<std::shared_ptr<Edge>> EAdjacent;
+            std::unordered_set<std::shared_ptr<Triangle>> TAdjacent;
         };
 
 

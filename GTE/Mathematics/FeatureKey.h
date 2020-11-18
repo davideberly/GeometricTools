@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2020.11.16
 
 #pragma once
 
+#include <Mathematics/HashCombine.h>
 #include <algorithm>
 #include <array>
 
@@ -79,6 +80,24 @@ namespace gte
         bool operator>=(FeatureKey const& key) const
         {
             return !operator<(key);
+        }
+
+        // Support for hashing in std::unordered*<T> container classes. The
+        // first operator() is the hash function. The second operator() is
+        // the equality comparison used for elements in the same bucket.
+        std::size_t operator()(FeatureKey const& key) const
+        {
+            std::size_t seed = 0;
+            for (auto value : key.V)
+            {
+                HashCombine(seed, value);
+            }
+            return seed;
+        }
+
+        bool operator()(FeatureKey const& v0, FeatureKey const& v1) const
+        {
+            return v0 == v1;
         }
 
         std::array<int, N> V;

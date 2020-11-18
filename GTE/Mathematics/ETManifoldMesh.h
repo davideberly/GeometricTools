@@ -3,16 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.05
+// Version: 4.0.2020.11.16
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/EdgeKey.h>
+#include <Mathematics/HashCombine.h>
 #include <Mathematics/TriangleKey.h>
 #include <map>
 #include <memory>
 #include <queue>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace gte
@@ -23,12 +26,14 @@ namespace gte
         // Edge data types.
         class Edge;
         typedef std::shared_ptr<Edge>(*ECreator)(int, int);
-        typedef std::map<EdgeKey<false>, std::shared_ptr<Edge>> EMap;
+        using EMap = std::unordered_map<EdgeKey<false>, std::shared_ptr<Edge>,
+            EdgeKey<false>, EdgeKey<false>>;
 
         // Triangle data types.
         class Triangle;
         typedef std::shared_ptr<Triangle>(*TCreator)(int, int, int);
-        typedef std::map<TriangleKey<true>, std::shared_ptr<Triangle>> TMap;
+        using TMap = std::unordered_map<TriangleKey<true>, std::shared_ptr<Triangle>,
+            TriangleKey<true>, TriangleKey<true>>;
 
         // Edge object.
         class Edge
@@ -338,7 +343,7 @@ namespace gte
         {
             for (auto const& element : mEMap)
             {
-                auto edge = element.second;
+                std::shared_ptr<Edge> edge = element.second;
                 if (!edge->T[0].lock() || !edge->T[1].lock())
                 {
                     return false;
@@ -355,7 +360,7 @@ namespace gte
         {
             for (auto const& element : mEMap)
             {
-                auto edge = element.second;
+                std::shared_ptr<Edge> edge = element.second;
                 if (edge->T[0].lock() && edge->T[1].lock())
                 {
                     // In each triangle, find the ordered edge that
@@ -408,7 +413,7 @@ namespace gte
         void GetComponents(std::vector<std::vector<std::shared_ptr<Triangle>>>& components) const
         {
             // visited: 0 (unvisited), 1 (discovered), 2 (finished)
-            std::map<std::shared_ptr<Triangle>, int> visited;
+            TrianglePtrIntMap visited;
             for (auto const& element : mTMap)
             {
                 visited.insert(std::make_pair(element.second, 0));
@@ -416,7 +421,7 @@ namespace gte
 
             for (auto& element : mTMap)
             {
-                auto tri = element.second;
+                std::shared_ptr<Triangle> tri = element.second;
                 if (visited[tri] == 0)
                 {
                     std::vector<std::shared_ptr<Triangle>> component;
@@ -429,7 +434,7 @@ namespace gte
         void GetComponents(std::vector<std::vector<TriangleKey<true>>>& components) const
         {
             // visited: 0 (unvisited), 1 (discovered), 2 (finished)
-            std::map<std::shared_ptr<Triangle>, int> visited;
+            TrianglePtrIntMap visited;
             for (auto const& element : mTMap)
             {
                 visited.insert(std::make_pair(element.second, 0));
@@ -485,7 +490,7 @@ namespace gte
             triangles.resize(numTriangles);
             adjacents.resize(numTriangles);
 
-            std::map<std::shared_ptr<Triangle>, size_t> triIndexMap;
+            TrianglePtrSizeTMap triIndexMap;
             triIndexMap.insert(std::make_pair(nullptr, std::numeric_limits<size_t>::max()));
             size_t index = 0;
             for (auto const& element : mTMap)
@@ -496,7 +501,7 @@ namespace gte
             index = 0;
             for (auto const& element : mTMap)
             {
-                auto triPtr = element.second;
+                auto const& triPtr = element.second;
                 auto& tri = triangles[index];
                 auto& adj = adjacents[index];
                 for (size_t j = 0; j < 3; ++j)
@@ -708,7 +713,7 @@ namespace gte
             components.clear();
 
             // Build the vertex adjacency graph.
-            std::set<int> boundaryVertices;
+            std::unordered_set<int> boundaryVertices;
             std::multimap<int, int> vertexGraph;
             for (auto const& element : mEMap)
             {
@@ -742,7 +747,7 @@ namespace gte
                 if (numAdjacents == 2)
                 {
                     auto lbIter = vertexGraph.lower_bound(v);
-                    std::array<int, 2> endpoints;
+                    std::array<int, 2> endpoints = { 0, 0 };
                     endpoints[0] = lbIter->second;
                     ++lbIter;
                     endpoints[1] = lbIter->second;
@@ -753,7 +758,7 @@ namespace gte
                     // Create pairs of vertices that form a wedge of triangles
                     // at the vertex v, as a triangle strip of triangles all
                     // sharing v.
-                    std::set<int> adjacents;
+                    std::unordered_set<int> adjacents;
                     auto lbIter = vertexGraph.lower_bound(v);
                     auto ubIter = vertexGraph.upper_bound(v);
                     for (auto vgIter = lbIter; vgIter != ubIter; ++vgIter)
@@ -927,6 +932,9 @@ namespace gte
         }
 
     protected:
+        using TrianglePtrIntMap = std::unordered_map<std::shared_ptr<Triangle>, int>;
+        using TrianglePtrSizeTMap = std::unordered_map<std::shared_ptr<Triangle>, size_t>;
+
         // The edge data and default edge creation.
         static std::shared_ptr<Edge> CreateEdge(int v0, int v1)
         {
@@ -950,8 +958,9 @@ namespace gte
         // straightforward depth-first search of the graph but uses a
         // preallocated stack rather than a recursive function that could
         // possibly overflow the call stack.
-        void DepthFirstSearch(std::shared_ptr<Triangle> const& tInitial,
-            std::map<std::shared_ptr<Triangle>, int>& visited,
+        void DepthFirstSearch(
+            std::shared_ptr<Triangle> const& tInitial,
+            TrianglePtrIntMap& visited,
             std::vector<std::shared_ptr<Triangle>>& component) const
         {
             // Allocate the maximum-size stack that can occur in the

@@ -200,6 +200,7 @@
     <ClInclude Include="Mathematics\GradientAnisotropic3.h" />
     <ClInclude Include="Mathematics\GVector.h" />
     <ClInclude Include="Mathematics\Halfspace.h" />
+    <ClInclude Include="Mathematics\HashCombine.h" />
     <ClInclude Include="Mathematics\Histogram.h" />
     <ClInclude Include="Mathematics\Hyperellipsoid.h" />
     <ClInclude Include="Mathematics\Hyperplane.h" />

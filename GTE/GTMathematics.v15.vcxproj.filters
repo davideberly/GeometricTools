@@ -1422,5 +1422,8 @@
     <ClInclude Include="Mathematics\PolygonTree.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\HashCombine.h">
+      <Filter>LowLevel</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
