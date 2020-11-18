@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.17
+// Version: 4.0.2020.11.16
 
 #pragma once
 
@@ -177,6 +177,20 @@ namespace gte
         inline void SetAllBitsToZero()
         {
             std::fill(mBits.begin(), mBits.end(), 0u);
+        }
+
+        // Copy from UIntegerFP32<NSource> to UIntegerFP32<N> as long as
+        // NSource <= N.
+        template <int NSource>
+        void CopyFrom(UIntegerFP32<NSource> const& source)
+        {
+            static_assert(NSource <= N,
+                "The source dimension cannot exceed the target dimension.");
+
+            mNumBits = source.GetNumBits();
+            mSize = source.GetSize();
+            auto const& srcBits = source.GetBits();
+            std::copy(srcBits.begin(), srcBits.end(), mBits.begin());
         }
 
         // Disk input/output.  The fstream objects should be created using
