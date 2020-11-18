@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.1.2020.09.08
+// Version: 4.1.2020.11.16
 
 #pragma once
 
@@ -146,6 +146,122 @@ namespace gte
                 // Just return the entire set of real numbers.
                 return Reals();
             }
+        }
+
+        // This function is called to compute the lower bound on the product
+        // of two intervals. Before calling the function, you need to call
+        // std::fesetround(FE_DOWNWARD). The idea is to compute lower bounds
+        // in batch mode (multiple calls of ProductLowerBound) in order to
+        // minimize FPU control word state changes.
+        static FPType ProductLowerBound(std::array<FPType, 2> const& u,
+            std::array<FPType, 2> const& v)
+        {
+            FPType const zero = static_cast<FPType>(0);
+            FPType w0;
+            if (u[0] >= zero)
+            {
+                if (v[0] >= zero)
+                {
+                    w0 = u[0] * v[0];
+                }
+                else if (v[1] <= zero)
+                {
+                    w0 = u[1] * v[0];
+                }
+                else
+                {
+                    w0 = u[1] * v[0];
+                }
+            }
+            else if (u[1] <= zero)
+            {
+                if (v[0] >= zero)
+                {
+                    w0 = u[0] * v[1];
+                }
+                else if (v[1] <= zero)
+                {
+                    w0 = u[1] * v[1];
+                }
+                else
+                {
+                    w0 = u[0] * v[1];
+                }
+            }
+            else
+            {
+                if (v[0] >= zero)
+                {
+                    w0 = u[0] * v[1];
+                }
+                else if (v[1] <= zero)
+                {
+                    w0 = u[1] * v[0];
+                }
+                else
+                {
+                    w0 = u[0] * v[0];
+                }
+            }
+            return w0;
+        }
+
+        // This function is called to compute the upper bound on the product
+        // of two intervals. Before calling the function, you need to call
+        // std::fesetround(FE_UPWARD). The idea is to compute lower bounds
+        // inbatch mode (multiple calls of ProductUpperBound) in order to
+        // minimize FPU control word state changes.
+        static FPType ProductUpperBound(std::array<FPType, 2> const& u,
+            std::array<FPType, 2> const& v)
+        {
+            FPType const zero = static_cast<FPType>(0);
+            FPType w1;
+            if (u[0] >= zero)
+            {
+                if (v[0] >= zero)
+                {
+                    w1 = u[1] * v[1];
+                }
+                else if (v[1] <= zero)
+                {
+                    w1 = u[0] * v[1];
+                }
+                else
+                {
+                    w1 = u[1] * v[1];
+                }
+            }
+            else if (u[1] <= zero)
+            {
+                if (v[0] >= zero)
+                {
+                    w1 = u[1] * v[0];
+                }
+                else if (v[1] <= zero)
+                {
+                    w1 = u[0] * v[0];
+                }
+                else
+                {
+                    w1 = u[0] * v[0];
+                }
+            }
+            else
+            {
+                if (v[0] >= zero)
+                {
+                    w1 = u[1] * v[1];
+                }
+                else if (v[1] <= zero)
+                {
+                    w1 = u[0] * v[0];
+                }
+                else
+                {
+                    w1 = u[1] * v[1];
+                }
+            }
+            return w1;
         }
 
     private:

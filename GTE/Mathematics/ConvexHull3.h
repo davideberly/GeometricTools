@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.01
+// Version: 4.0.2020.11.16
 
 #pragma once
 
@@ -14,6 +14,7 @@
 
 #include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/ETManifoldMesh.h>
+#include <Mathematics/FPInterval.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/Vector3.h>
@@ -311,112 +312,6 @@ namespace gte
             return mRationalPoints[index];
         }
 
-        static Real IntervalProductDown(
-            std::array<Real, 2> const& u, std::array<Real, 2> const& v)
-        {
-            Real const zero(0);
-            Real w0;
-            if (u[0] >= zero)
-            {
-                if (v[0] >= zero)
-                {
-                    w0 = u[0] * v[0];
-                }
-                else if (v[1] <= zero)
-                {
-                    w0 = u[1] * v[0];
-                }
-                else
-                {
-                    w0 = u[1] * v[0];
-                }
-            }
-            else if (u[1] <= zero)
-            {
-                if (v[0] >= zero)
-                {
-                    w0 = u[0] * v[1];
-                }
-                else if (v[1] <= zero)
-                {
-                    w0 = u[1] * v[1];
-                }
-                else
-                {
-                    w0 = u[0] * v[1];
-                }
-            }
-            else
-            {
-                if (v[0] >= zero)
-                {
-                    w0 = u[0] * v[1];
-                }
-                else if (v[1] <= zero)
-                {
-                    w0 = u[1] * v[0];
-                }
-                else
-                {
-                    w0 = u[0] * v[0];
-                }
-            }
-            return w0;
-        }
-
-        static Real IntervalProductUp(
-            std::array<Real, 2> const& u, std::array<Real, 2> const& v)
-        {
-            Real const zero(0);
-            Real w1;
-            if (u[0] >= zero)
-            {
-                if (v[0] >= zero)
-                {
-                    w1 = u[1] * v[1];
-                }
-                else if (v[1] <= zero)
-                {
-                    w1 = u[0] * v[1];
-                }
-                else
-                {
-                    w1 = u[1] * v[1];
-                }
-            }
-            else if (u[1] <= zero)
-            {
-                if (v[0] >= zero)
-                {
-                    w1 = u[1] * v[0];
-                }
-                else if (v[1] <= zero)
-                {
-                    w1 = u[0] * v[0];
-                }
-                else
-                {
-                    w1 = u[0] * v[0];
-                }
-            }
-            else
-            {
-                if (v[0] >= zero)
-                {
-                    w1 = u[1] * v[1];
-                }
-                else if (v[1] <= zero)
-                {
-                    w1 = u[0] * v[0];
-                }
-                else
-                {
-                    w1 = u[1] * v[1];
-                }
-            }
-            return w1;
-        }
-
         int ToPlane(int i, int v0, int v1, int v2) const
         {
             auto const& test = mPoints[i];
@@ -455,19 +350,19 @@ namespace gte
 
             std::array<Real, 2> y1z2, y2z1, y2z0, y0z2, y0z1, y1z0;
             std::fesetround(FE_DOWNWARD);
-            y1z2[0] = IntervalProductDown(y1, z2);
-            y2z1[0] = IntervalProductDown(y2, z1);
-            y2z0[0] = IntervalProductDown(y2, z0);
-            y0z2[0] = IntervalProductDown(y0, z2);
-            y0z1[0] = IntervalProductDown(y0, z1);
-            y1z0[0] = IntervalProductDown(y1, z0);
+            y1z2[0] = FPInterval<Real>::ProductLowerBound(y1, z2);
+            y2z1[0] = FPInterval<Real>::ProductLowerBound(y2, z1);
+            y2z0[0] = FPInterval<Real>::ProductLowerBound(y2, z0);
+            y0z2[0] = FPInterval<Real>::ProductLowerBound(y0, z2);
+            y0z1[0] = FPInterval<Real>::ProductLowerBound(y0, z1);
+            y1z0[0] = FPInterval<Real>::ProductLowerBound(y1, z0);
             std::fesetround(FE_UPWARD);
-            y1z2[1] = IntervalProductUp(y1, z2);
-            y2z1[1] = IntervalProductUp(y2, z1);
-            y2z0[1] = IntervalProductUp(y2, z0);
-            y0z2[1] = IntervalProductUp(y0, z2);
-            y0z1[1] = IntervalProductUp(y0, z1);
-            y1z0[1] = IntervalProductUp(y1, z0);
+            y1z2[1] = FPInterval<Real>::ProductUpperBound(y1, z2);
+            y2z1[1] = FPInterval<Real>::ProductUpperBound(y2, z1);
+            y2z0[1] = FPInterval<Real>::ProductUpperBound(y2, z0);
+            y0z2[1] = FPInterval<Real>::ProductUpperBound(y0, z2);
+            y0z1[1] = FPInterval<Real>::ProductUpperBound(y0, z1);
+            y1z0[1] = FPInterval<Real>::ProductUpperBound(y1, z0);
 
             std::array<Real, 2> c0, c1, c2;
             std::fesetround(FE_DOWNWARD);
@@ -481,14 +376,14 @@ namespace gte
 
             std::array<Real, 2> x0c0, x1c1, x2c2, det;
             std::fesetround(FE_DOWNWARD);
-            x0c0[0] = IntervalProductDown(x0, c0);
-            x1c1[0] = IntervalProductDown(x1, c1);
-            x2c2[0] = IntervalProductDown(x2, c2);
+            x0c0[0] = FPInterval<Real>::ProductLowerBound(x0, c0);
+            x1c1[0] = FPInterval<Real>::ProductLowerBound(x1, c1);
+            x2c2[0] = FPInterval<Real>::ProductLowerBound(x2, c2);
             det[0] = x0c0[0] + x1c1[0] + x2c2[0];
             std::fesetround(FE_UPWARD);
-            x0c0[1] = IntervalProductUp(x0, c0);
-            x1c1[1] = IntervalProductUp(x1, c1);
-            x2c2[1] = IntervalProductUp(x2, c2);
+            x0c0[1] = FPInterval<Real>::ProductUpperBound(x0, c0);
+            x1c1[1] = FPInterval<Real>::ProductUpperBound(x1, c1);
+            x2c2[1] = FPInterval<Real>::ProductUpperBound(x2, c2);
             det[1] = x0c0[1] + x1c1[1] + x2c2[1];
             std::fesetround(saveMode);
 
