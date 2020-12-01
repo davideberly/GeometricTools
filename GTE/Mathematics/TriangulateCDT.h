@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.10
+// Version: 4.0.2020.11.30
 
 #pragma once
 
@@ -612,7 +612,19 @@ namespace gte
             LogAssert(inputPoints.size() >= 3 && inputTree, "Invalid argument.");
 
             CopyAndCompactify(inputTree, outputTree);
-            Triangulate(inputPoints, outputTree);
+            Triangulate(inputPoints.size(), inputPoints.data(), outputTree);
+        }
+
+        void operator()(
+            size_t numInputPoints,
+            Vector2<T> const* inputPoints,
+            std::shared_ptr<PolygonTree> const& inputTree,
+            PolygonTreeEx& outputTree)
+        {
+            LogAssert(numInputPoints >= 3 && inputPoints != nullptr && inputTree, "Invalid argument.");
+
+            CopyAndCompactify(inputTree, outputTree);
+            Triangulate(numInputPoints, inputPoints, outputTree);
         }
 
     private:
@@ -674,7 +686,8 @@ namespace gte
             }
         }
 
-        void Triangulate(std::vector<Vector2<T>> const& inputPoints, PolygonTreeEx& tree)
+        void Triangulate(size_t numInputPoints, Vector2<T> const* inputPoints,
+            PolygonTreeEx& tree)
         {
             // The constrained Delaunay triangulator will be given the unique
             // points referenced by the polygons in the tree. The tree
@@ -684,7 +697,7 @@ namespace gte
             // relative to inputPoints[].
             std::vector<Vector2<T>> points;
             std::vector<int32_t> remapping;
-            RemapPolygonTree(inputPoints, tree, points, remapping);
+            RemapPolygonTree(numInputPoints, inputPoints, tree, points, remapping);
             LogAssert(points.size() >= 3, "Invalid polygon tree.");
 
             ETManifoldMesh graph;
@@ -702,17 +715,18 @@ namespace gte
         // after the triangulation is computed. The 'edges' stores all the
         // polygon edges that must be in the triangulation.
         void RemapPolygonTree(
-            std::vector<Vector2<T>> const& inputPoints,
+            size_t numInputPoints,
+            Vector2<T> const* inputPoints,
             PolygonTreeEx& tree,
             std::vector<Vector2<T>>& points,
             std::vector<int32_t>& remapping)
         {
             std::map<Vector2<T>, int32_t> pointMap;
-            points.reserve(inputPoints.size());
+            points.reserve(numInputPoints);
             int32_t currentIndex = 0;
 
             // The remapping is initially the identity, remapping[j] = j.
-            remapping.resize(inputPoints.size());
+            remapping.resize(numInputPoints);
             std::iota(remapping.begin(), remapping.end(), 0);
 
             std::queue<size_t> queue;

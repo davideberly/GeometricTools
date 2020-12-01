@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.10
+// Version: 4.0.2020.11.30
 
 #pragma once
 
@@ -567,6 +567,11 @@ namespace gte
             return Delaunay2<T>::operator()(vertices);
         }
 
+        bool operator()(size_t numVertices, Vector2<T> const* vertices)
+        {
+            return Delaunay2<T>::operator()(numVertices, vertices);
+        }
+
         // The 'edge' is the constrained edge to be inserted into the
         // triangulation. If that edge is already in the triangulation, the
         // function returns without any retriangulation and 'partitionedEdge'
@@ -753,9 +758,9 @@ namespace gte
             // The expression tree has 13 nodes consisting of 6 input
             // leaves and 7 compute nodes.
 
-            auto const& inP = (*this->mVertices)[pIndex];
-            Vector2<T> const& inV0 = (*this->mVertices)[v0Index];
-            Vector2<T> const& inV1 = (*this->mVertices)[v1Index];
+            auto const& inP = this->mVertices[pIndex];
+            Vector2<T> const& inV0 = this->mVertices[v0Index];
+            Vector2<T> const& inV1 = this->mVertices[v1Index];
 
             // Use interval arithmetic to determine the sign if possible.
             std::array<T, 2> x0, y0, x1, y1, x0y1, x1y0, det;

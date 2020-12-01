@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.15
+// Version: 4.0.2020.11.30
 
 #pragma once
 
@@ -845,6 +845,7 @@ namespace gte
 
         Delaunay2()
             :
+            mNumVertices(0),
             mVertices(nullptr),
             mIRVertices{},
             mGraph(),
@@ -872,9 +873,17 @@ namespace gte
         // all the same point.
         bool operator()(std::vector<Vector2<T>> const& vertices)
         {
+            return operator()(vertices.size(), vertices.data());
+        }
+
+        bool operator()(size_t numVertices, Vector2<T> const* vertices)
+        {
             // Initialize values in case they were set by a previous call
             // to operator()(...).
-            mVertices = &vertices;
+            LogAssert(numVertices > 0 && vertices != nullptr, "Invalid argument.");
+
+            mNumVertices = numVertices;
+            mVertices = vertices;
             mIRVertices.clear();
             mDuplicates.clear();
             mLine.origin = Vector2<T>::Zero();
@@ -889,8 +898,7 @@ namespace gte
 
             // Compute the intrinsic dimension and return early if that
             // dimension is 0 or 1.
-            IntrinsicsVector2<T> info(static_cast<int32_t>(vertices.size()),
-                vertices.data(), static_cast<T>(0));
+            IntrinsicsVector2<T> info(static_cast<int>(mNumVertices), mVertices, static_cast<T>(0));
             if (info.dimension == 0)
             {
                 // The vertices are the same point.
@@ -912,17 +920,17 @@ namespace gte
             mDimension = 2;
 
             // Convert the floating-point inputs to rational type.
-            mIRVertices.resize(vertices.size());
-            for (size_t i = 0; i < vertices.size(); ++i)
+            mIRVertices.resize(mNumVertices);
+            for (size_t i = 0; i < mNumVertices; ++i)
             {
-                mIRVertices[i][0] = vertices[i][0];
-                mIRVertices[i][1] = vertices[i][1];
+                mIRVertices[i][0] = mVertices[i][0];
+                mIRVertices[i][1] = mVertices[i][1];
             }
 
             // Assume initially the vertices are unique. If duplicates are
             // found during the Delaunay update, mDuplicates[] will be
             // modified accordingly.
-            mDuplicates.resize(vertices.size());
+            mDuplicates.resize(mNumVertices);
             std::iota(mDuplicates.begin(), mDuplicates.end(), 0);
 
             // Insert the nondegenerate triangle constructed by the call to
@@ -942,12 +950,12 @@ namespace gte
             for (size_t i = 0; i < 3; ++i)
             {
                 int32_t j = info.extreme[i];
-                processed.insert(ProcessedVertex(vertices[j], j));
+                processed.insert(ProcessedVertex(mVertices[j], j));
                 mDuplicates[j] = j;
             }
-            for (size_t i = 0; i < vertices.size(); ++i)
+            for (size_t i = 0; i < mNumVertices; ++i)
             {
-                ProcessedVertex v(vertices[i], i);
+                ProcessedVertex v(mVertices[i], i);
                 auto iter = processed.find(v);
                 if (iter == processed.end())
                 {
@@ -990,7 +998,7 @@ namespace gte
             return mIRVertices.size();
         }
 
-        inline std::vector<Vector2<T>> const* GetVertices() const
+        inline Vector2<T> const* GetVertices() const
         {
             return mVertices;
         }
@@ -1284,7 +1292,8 @@ namespace gte
         // The vector of vertices used for geometric queries. The input
         // vertices are read-only, so we can represent them by the type
         // InputRational.
-        std::vector<Vector2<T>> const* mVertices;
+        size_t mNumVertices;
+        Vector2<T> const* mVertices;
         std::vector<Vector2<InputRational>> mIRVertices;
 
         VETManifoldMesh mGraph;
@@ -1353,9 +1362,9 @@ namespace gte
             // leaves and 7 compute nodes.
 
             // Use interval arithmetic to determine the sign if possible.
-            auto const& inP = (pIndex != negOne ? (*mVertices)[pIndex] : mQueryPoint);
-            Vector2<T> const& inV0 = (*mVertices)[v0Index];
-            Vector2<T> const& inV1 = (*mVertices)[v1Index];
+            auto const& inP = (pIndex != negOne ? mVertices[pIndex] : mQueryPoint);
+            Vector2<T> const& inV0 = mVertices[v0Index];
+            Vector2<T> const& inV1 = mVertices[v1Index];
 
             std::array<T, 2> x0, y0, x1, y1, x0y1, x1y0, det;
             auto saveMode = std::fegetround();
@@ -1437,10 +1446,10 @@ namespace gte
             // leaves and 35 compute nodes.
 
             // Use interval arithmetic to determine the sign if possible.
-            auto const& inP = (pIndex != negOne ? (*mVertices)[pIndex] : mQueryPoint);
-            Vector2<T> const& inV0 = (*mVertices)[v0Index];
-            Vector2<T> const& inV1 = (*mVertices)[v1Index];
-            Vector2<T> const& inV2 = (*mVertices)[v2Index];
+            auto const& inP = (pIndex != negOne ? mVertices[pIndex] : mQueryPoint);
+            Vector2<T> const& inV0 = mVertices[v0Index];
+            Vector2<T> const& inV1 = mVertices[v1Index];
+            Vector2<T> const& inV2 = mVertices[v2Index];
 
             std::array<T, 2> x0, y0, z0, x1, y1, z1, x2, y2, z2;
             std::array<T, 2> s00, s01, s10, s11, s20, s21;
@@ -1889,7 +1898,7 @@ namespace gte
         // The query point for Update, GetContainingTriangle and
         // GetAndRemoveInsertionPolygon when the point is not an input vertex
         // to the constructor. ToLine and ToCircumcircle are passed indices
-        // into the vertex array. When the vertex is valid, (*mVertices)[] and
+        // into the vertex array. When the vertex is valid, mVertices[] and
         // mCRVertices[] are used for lookups. When the vertex is 'negOne', the
         // query point is used for lookups.
         mutable Vector2<T> mQueryPoint;
