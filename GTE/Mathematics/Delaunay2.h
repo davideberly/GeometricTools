@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.30
+// Version: 4.0.2020.12.01
 
 #pragma once
 
@@ -1493,21 +1493,21 @@ namespace gte
             t20[0] = FPInterval<T>::ProductLowerBound(s20, x2);
             t21[0] = FPInterval<T>::ProductLowerBound(s21, y2);
             std::fesetround(FE_UPWARD);
-            t00[0] = FPInterval<T>::ProductUpperBound(s00, x0);
-            t01[0] = FPInterval<T>::ProductUpperBound(s01, y0);
-            t10[0] = FPInterval<T>::ProductUpperBound(s10, x1);
-            t11[0] = FPInterval<T>::ProductUpperBound(s11, y1);
-            t20[0] = FPInterval<T>::ProductUpperBound(s20, x2);
-            t21[0] = FPInterval<T>::ProductUpperBound(s21, y2);
+            t00[1] = FPInterval<T>::ProductUpperBound(s00, x0);
+            t01[1] = FPInterval<T>::ProductUpperBound(s01, y0);
+            t10[1] = FPInterval<T>::ProductUpperBound(s10, x1);
+            t11[1] = FPInterval<T>::ProductUpperBound(s11, y1);
+            t20[1] = FPInterval<T>::ProductUpperBound(s20, x2);
+            t21[1] = FPInterval<T>::ProductUpperBound(s21, y2);
 
             std::fesetround(FE_DOWNWARD);
             z0[0] = t00[0] + t01[0];
             z1[0] = t10[0] + t11[0];
             z2[0] = t20[0] + t21[0];
             std::fesetround(FE_UPWARD);
-            z0[1] = t00[0] + t01[0];
-            z1[1] = t10[0] + t11[0];
-            z2[1] = t20[0] + t21[0];
+            z0[1] = t00[1] + t01[1];
+            z1[1] = t10[1] + t11[1];
+            z2[1] = t20[1] + t21[1];
 
             std::fesetround(FE_DOWNWARD);
             y0z1[0] = FPInterval<T>::ProductLowerBound(y0, z1);
@@ -1525,13 +1525,13 @@ namespace gte
             y2z1[1] = FPInterval<T>::ProductUpperBound(y2, z1);
 
             std::fesetround(FE_DOWNWARD);
-            c0[0] = y1z2[0] - y2z1[0];
-            c1[0] = y2z0[0] - y0z2[0];
-            c2[0] = y0z1[0] - y1z0[0];
+            c0[0] = y1z2[0] - y2z1[1];
+            c1[0] = y2z0[0] - y0z2[1];
+            c2[0] = y0z1[0] - y1z0[1];
             std::fesetround(FE_UPWARD);
-            c0[1] = y1z2[0] - y2z1[0];
-            c1[1] = y2z0[0] - y0z2[0];
-            c2[1] = y0z1[0] - y1z0[0];
+            c0[1] = y1z2[1] - y2z1[0];
+            c1[1] = y2z0[1] - y0z2[0];
+            c2[1] = y0z1[1] - y1z0[0];
 
             std::fesetround(FE_DOWNWARD);
             x0c0[0] = FPInterval<T>::ProductLowerBound(x0, c0);
