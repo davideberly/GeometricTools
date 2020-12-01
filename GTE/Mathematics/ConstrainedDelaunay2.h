@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.30
+// Version: 4.0.2020.12.01
 
 #pragma once
 
@@ -693,7 +693,10 @@ namespace gte
         // All edges inserted via the Insert(...) call are stored for use
         // by the caller. If any edge passed to Insert(...) is partitioned
         // into subedges, the subedges are stored but not the original edge.
-        std::set<EdgeKey<false>> const& GetInsertedEdges() const
+        using EdgeKeySet = std::unordered_set<EdgeKey<false>,
+            EdgeKey<false>, EdgeKey<false>>;
+
+        EdgeKeySet const& GetInsertedEdges() const
         {
             return mInsertedEdges;
         }
@@ -1139,7 +1142,7 @@ function.
         // All edges inserted via the Insert(...) call are stored for use
         // by the caller. If any edge passed to Insert(...) is partitioned
         // into subedges, the subedges are inserted into this member.
-        std::set<EdgeKey<false>> mInsertedEdges;
+        EdgeKeySet mInsertedEdges;
 
         // Sufficient storage for the expression trees related to computing
         // the exact pseudosquared distances in SelectSplit and ComputePSD.
