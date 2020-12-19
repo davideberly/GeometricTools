@@ -3,10 +3,52 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 4.0.2020.11.21
 
 #include <Mathematics/ArbitraryPrecision.h>
 using namespace gte;
+
+int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real det2 = a00 * a11 - a01 * a10
+    BSPrecision input(type);
+    BSPrecision prod = input * input;
+    BSPrecision det2 = prod - prod;
+    return (forBSNumber ? det2.bsn.maxWords : det2.bsr.maxWords);
+}
+
+int PrimalQuery2Determinant3(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real c0 = a11 * a22 - a12 * a21;
+    // Real c1 = a10 * a22 - a12 * a20;
+    // Real c2 = a10 * a21 - a11 * a20;
+    // Real det3 = a00 * c0 - a01 * c1 + a02 * c2;
+    BSPrecision input(type);
+    BSPrecision prod = input * input;
+    BSPrecision det2 = prod - prod;
+    BSPrecision term1 = input * det2;
+    BSPrecision term2 = term1 + term1;
+    BSPrecision det3 = term1 + term2;
+    return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
+}
+
+int PrimalQuery2Determinant4(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real u0 = a00 * a11 - a01 * a10, v0 = a20 * a31 - a21 * a30;
+    // Real u1 = a00 * a12 - a02 * a10, v1 = a20 * a32 - a22 * a30;
+    // Real u2 = a00 * a13 - a02 * a10, v2 = a20 * a33 - a23 * a30;
+    // Real u3 = a01 * a12 - a02 * a11, v3 = a21 * a32 - a22 * a31;
+    // Real u4 = a01 * a13 - a03 * a11, v4 = a21 * a33 - a23 * a31;
+    // Real u5 = a02 * a13 - a03 * a12, v5 = a22 * a33 - a23 * a32;
+    // Real det = (u0 * v5 - u1 * v4) + (u2 * v3 + u3 * v2) + (- u4 * v1 + u5 * v0);
+    BSPrecision input(type);
+    BSPrecision prod = input * input;
+    BSPrecision det2 = prod - prod;
+    BSPrecision term1 = det2 * det2;
+    BSPrecision term2 = term1 + term1;
+    BSPrecision det4 = term2 + term2 + term2;
+    return (forBSNumber ? det4.bsn.maxWords : det4.bsr.maxWords);
+}
 
 int PrimalQuery2ToLine(BSPrecision::Type type, bool forBSNumber)
 {
@@ -353,6 +395,21 @@ int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
     int32_t bsRationalFloatWords, bsRationalDoubleWords;
+
+    bsNumberFloatWords = PrimalQuery2Determinant2(BSPrecision::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery2Determinant2(BSPrecision::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery2Determinant2(BSPrecision::IS_FLOAT, false);  // 35
+    bsRationalDoubleWords = PrimalQuery2Determinant2(BSPrecision::IS_DOUBLE, false);  // 263
+
+    bsNumberFloatWords = PrimalQuery2Determinant3(BSPrecision::IS_FLOAT, true);  // 27
+    bsNumberDoubleWords = PrimalQuery2Determinant3(BSPrecision::IS_DOUBLE, true);  // 197
+    bsRationalFloatWords = PrimalQuery2Determinant3(BSPrecision::IS_FLOAT, false);  // 130
+    bsRationalDoubleWords = PrimalQuery2Determinant3(BSPrecision::IS_DOUBLE, false);  // 984
+
+    bsNumberFloatWords = PrimalQuery2Determinant4(BSPrecision::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = PrimalQuery2Determinant4(BSPrecision::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = PrimalQuery2Determinant4(BSPrecision::IS_FLOAT, false);  // 417
+    bsRationalDoubleWords = PrimalQuery2Determinant4(BSPrecision::IS_DOUBLE, false);  // 3148
 
     bsNumberFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, true);  // 132
