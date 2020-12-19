@@ -1434,5 +1434,8 @@
     <ClInclude Include="Mathematics\HashCombine.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\TetrahedraRasterizer.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

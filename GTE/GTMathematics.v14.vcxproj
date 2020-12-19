@@ -434,6 +434,7 @@
     <ClInclude Include="Mathematics\SymmetricEigensolver3x3.h" />
     <ClInclude Include="Mathematics\TanEstimate.h" />
     <ClInclude Include="Mathematics\TCBSplineCurve.h" />
+    <ClInclude Include="Mathematics\TetrahedraRasterizer.h" />
     <ClInclude Include="Mathematics\Tetrahedron3.h" />
     <ClInclude Include="Mathematics\TetrahedronKey.h" />
     <ClInclude Include="Mathematics\ThreadSafeMap.h" />
