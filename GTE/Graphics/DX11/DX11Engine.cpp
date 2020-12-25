@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 4.0.2020.12.25
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -94,7 +94,10 @@ DX11Engine::DX11Engine()
 {
     mIsGraphicsDevice = false;
     Initialize(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, false);
-    CreateDevice();
+    if (CreateDevice())
+    {
+        CreateDefaultObjects();
+    }
 }
 
 DX11Engine::DX11Engine(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driverType,
@@ -102,7 +105,10 @@ DX11Engine::DX11Engine(IDXGIAdapter* adapter, D3D_DRIVER_TYPE driverType,
 {
     mIsGraphicsDevice = false;
     Initialize(adapter, driverType, softwareModule, flags, false);
-    CreateDevice();
+    if (CreateDevice())
+    {
+        CreateDefaultObjects();
+    }
 }
 
 DX11Engine::DX11Engine(HWND handle, UINT xSize, UINT ySize, bool useDepth24Stencil8)
@@ -118,7 +124,6 @@ DX11Engine::DX11Engine(HWND handle, UINT xSize, UINT ySize, bool useDepth24Stenc
     }
     else
     {
-        DestroyDefaultObjects();
         DestroyBackBuffer();
         DestroySwapChain();
         DestroyDevice();
@@ -140,7 +145,6 @@ DX11Engine::DX11Engine(IDXGIAdapter* adapter, HWND handle, UINT xSize,
     }
     else
     {
-        DestroyDefaultObjects();
         DestroyBackBuffer();
         DestroySwapChain();
         DestroyDevice();
