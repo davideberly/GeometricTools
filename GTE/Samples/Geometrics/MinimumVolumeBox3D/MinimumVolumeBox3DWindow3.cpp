@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2020
+// Copyright (c) 1998-2021
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.05
+// Version: 4.0.2021.01.14
 
 #include "MinimumVolumeBox3DWindow3.h"
 #include <Applications/Timer.h>
@@ -13,6 +13,7 @@
 #include <Mathematics/MinimumVolumeBox3.h>
 #include <iostream>
 #include <random>
+#include <thread>
 
 MinimumVolumeBox3DWindow3::MinimumVolumeBox3DWindow3(Parameters& parameters)
     :
@@ -111,16 +112,19 @@ void MinimumVolumeBox3DWindow3::CreateScene()
     MinimumVolumeBox3<float, false> mvb3(numThreads);
     OrientedBox3<float> minBox;
     float volume;
-    mvb3(NUM_POINTS, &mVertices[0], lgMaxSample, minBox, volume);
+    mvb3(NUM_POINTS, mVertices.data(), lgMaxSample, minBox, volume);
 
     // Recompute the convex hull for visualization.
     ConvexHull3<float> ch3;
-    ch3(NUM_POINTS, &mVertices[0], 0.0f);
-    std::vector<TriangleKey<true>> const& triangles = ch3.GetHullUnordered();
-    int const* indices = static_cast<int const*>(&triangles[0].V[0]);
+    ch3(NUM_POINTS, mVertices.data(), numThreads);
+    auto const& triangles = ch3.GetHull();
     ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-        static_cast<uint32_t>(triangles.size()), sizeof(int));
-    std::memcpy(ibuffer->GetData(), indices, ibuffer->GetNumBytes());
+        static_cast<uint32_t>(triangles.size() / 3), sizeof(int));
+    auto indices = ibuffer->Get<int>();
+    for (size_t i = 0; i < triangles.size(); ++i)
+    {
+        *indices++ = static_cast<int>(triangles[i]);
+    }
     mPolytope = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mScene->AttachChild(mPolytope);
 

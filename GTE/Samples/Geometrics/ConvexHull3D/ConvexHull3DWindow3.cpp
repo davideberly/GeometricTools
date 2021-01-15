@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2020
+// Copyright (c) 1998-2021
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.01.14
 
 #include "ConvexHull3DWindow3.h"
 #include <Mathematics/ArbitraryPrecision.h>
@@ -156,7 +156,8 @@ bool ConvexHull3DWindow3::LoadData()
     }
 
     ConvexHull3<float> ch;
-    if (numVertices < 4 || !ch(numVertices, &vertices[0], 0.0f))
+    ch(vertices, 0);
+    if (numVertices < 4 || ch.GetDimension() < 3)
     {
         if (mMesh)
         {
@@ -174,7 +175,7 @@ bool ConvexHull3DWindow3::LoadData()
     std::cout << "max size = " << gte::gBSNumberMaxSize << std::endl;
 #endif
 
-    std::vector<TriangleKey<true>> const& triangles = ch.GetHullUnordered();
+    std::vector<size_t> const& hull = ch.GetHull();
 
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.0f, 1.0f);
@@ -198,9 +199,13 @@ bool ConvexHull3DWindow3::LoadData()
         vertex[i].color[3] = 1.0f;
     }
 
-    unsigned int numPrimitives = static_cast<unsigned int>(triangles.size());
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numPrimitives, sizeof(unsigned int));
-    std::memcpy(ibuffer->GetData(), &triangles[0], ibuffer->GetNumBytes());
+    unsigned int numPrimitives = static_cast<unsigned int>(hull.size() / 3);
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numPrimitives, sizeof(int32_t));
+    auto indices = ibuffer->Get<int32_t>();
+    for (size_t i = 0; i < hull.size(); ++i)
+    {
+        indices[i] = static_cast<int32_t>(hull[i]);
+    }
 
     // Update all information associated with the mesh transforms.
     if (mMesh)
