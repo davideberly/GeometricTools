@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.01.15
 
 #pragma once
 
 #include <Mathematics/ETManifoldMesh.h>
+#include <map>
 
 // The VETManifoldMesh class represents an edge-triangle manifold mesh
 // but additionally stores vertex adjacency information.
@@ -20,7 +21,7 @@ namespace gte
         // Vertex data types.
         class Vertex;
         typedef std::shared_ptr<Vertex>(*VCreator)(int);
-        using VMap = std::unordered_map<int, std::shared_ptr<Vertex>>;
+        using VMap = std::map<int, std::shared_ptr<Vertex>>;
 
         // Vertex object.
         class Vertex
