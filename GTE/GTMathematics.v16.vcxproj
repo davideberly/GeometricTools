@@ -392,6 +392,7 @@
     <ClInclude Include="Mathematics\SurfaceExtractorCubes.h" />
     <ClInclude Include="Mathematics\SurfaceExtractorMC.h" />
     <ClInclude Include="Mathematics\SurfaceExtractorTetrahedra.h" />
+    <ClInclude Include="Mathematics\SWInterval.h" />
     <ClInclude Include="Mathematics\SymmetricEigensolver.h" />
     <ClInclude Include="Mathematics\SymmetricEigensolver2x2.h" />
     <ClInclude Include="Mathematics\SymmetricEigensolver3x3.h" />

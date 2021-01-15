@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2020.09.18
+// Version: 4.9.2021.01.14
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -12,6 +12,7 @@
 #include <Mathematics/VETManifoldMesh.h>
 #include <Mathematics/AlignedBox.h>
 #include <Mathematics/UniqueVerticesSimplices.h>
+#include <cstring>
 
 // Compute a minimum-volume oriented box containing the specified points. The
 // algorithm is really about computing the minimum-volume box containing the
@@ -223,13 +224,14 @@ namespace gte
             InputType const half = static_cast<InputType>(0.5);
 
             ConvexHull3<InputType> ch3;
-            ch3(numPoints, points, zero);
-            int dimension = ch3.GetDimension();
+            ch3(static_cast<size_t>(numPoints), points, 0);
+            size_t dimension = ch3.GetDimension();
+            auto const& hull = ch3.GetHull();
 
             if (dimension == 0)
             {
                 // The points are all the same.
-                box.center = points[0];
+                box.center = points[hull[0]];
                 box.axis[0] = { one, zero, zero };
                 box.axis[1] = { zero, one, zero };
                 box.axis[2] = { zero, zero, one };
@@ -242,31 +244,13 @@ namespace gte
 
             if (dimension == 1)
             {
-                // The points lie on a line. Determine the extreme t-values
-                // for the points represented as P = origin + t*direction.
-                // We know that 'origin' is an input vertex, so we can start
-                // both t-extremes at zero.
-                Line3<InputType> const& line = ch3.GetLine();
-                InputType tmin = zero, tmax = zero;
-                for (int i = 0; i < numPoints; ++i)
-                {
-                    Vector3<InputType> diff = points[i] - line.origin;
-                    InputType t = Dot(diff, line.direction);
-                    if (t > tmax)
-                    {
-                        tmax = t;
-                    }
-                    else if (t < tmin)
-                    {
-                        tmin = t;
-                    }
-                }
-
-                box.center = line.origin + (half * (tmin + tmax)) * line.direction;
-                box.extent[0] = half * (tmax - tmin);
+                // The points lie on a line.
+                Vector3<InputType> direction = points[hull[1]] - points[hull[0]];
+                box.center = half * (points[hull[0]] + points[hull[1]]);
+                box.extent[0] = half * Normalize(direction);
                 box.extent[1] = zero;
                 box.extent[2] = zero;
-                box.axis[0] = line.direction;
+                box.axis[0] = direction;
                 ComputeOrthogonalComplement(1, &box.axis[0]);
                 volume = zero;
                 return 1;
@@ -274,15 +258,21 @@ namespace gte
 
             if (dimension == 2)
             {
-                // The points line on a plane. Project the points onto the
-                // plane and compute the minimum-area bounding box of them.
-                Plane3<InputType> const& plane = ch3.GetPlane();
+                // The points line on a plane. Get a coordinate system
+                // relative to the plane of the points. Choose the origin
+                // to be any of the input points.
+                Vector3<InputType> origin = points[hull[0]];
+                Vector3<InputType> normal = Vector3<InputType>::Zero();
+                size_t numHull = hull.size();
+                for (size_t i0 = numHull - 1, i1 = 1; i1 < numHull; i0 = i1++)
+                {
+                    auto const& P0 = points[hull[i0]];
+                    auto const& P1 = points[hull[i1]];
+                    normal += Cross(P0, P1);
+                }
 
-                // Get a coordinate system relative to the plane of the
-                // points. Choose the origin to be any of the input points.
-                Vector3<InputType> origin = points[0];
                 Vector3<InputType> basis[3];
-                basis[0] = plane.normal;
+                basis[0] = normal;
                 ComputeOrthogonalComplement(1, basis);
 
                 // Project the input points onto the plane.
@@ -314,14 +304,12 @@ namespace gte
             // polyhedron.
             std::vector<Vector3<InputType>> inVertices(numPoints);
             std::memcpy(inVertices.data(), points, inVertices.size() * sizeof(Vector3<InputType>));
-            auto const& triangles = ch3.GetHullUnordered();
-            std::vector<int> inIndices(3 * triangles.size());
+            auto const& triangles = ch3.GetHull();
+            std::vector<int> inIndices(triangles.size());
             size_t current = 0;
-            for (auto const& tri : triangles)
+            for (auto index : triangles)
             {
-                inIndices[current++] = tri.V[0];
-                inIndices[current++] = tri.V[1];
-                inIndices[current++] = tri.V[2];
+                inIndices[current++] = static_cast<int>(index);
             }
 
             UniqueVerticesSimplices<Vector3<InputType>, int, 3> uvt;

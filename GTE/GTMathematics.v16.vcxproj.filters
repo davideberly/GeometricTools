@@ -1437,5 +1437,8 @@
     <ClInclude Include="Mathematics\TetrahedraRasterizer.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\SWInterval.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
