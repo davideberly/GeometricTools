@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.01.14
 
 #pragma once
 
@@ -113,7 +113,7 @@ namespace gte
             }
 
             // Vertices, listed in counterclockwise order (V[0],V[1],V[2]).
-            int V[3];
+            std::array<int, 3> V;
 
             // Adjacent edges.  E[i] points to edge (V[i],V[(i+1)%3]).
             std::array<std::weak_ptr<Edge>, 3> E;
