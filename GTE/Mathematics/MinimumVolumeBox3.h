@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2021.01.14
+// Version: 4.9.2021.01.17
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -406,6 +406,14 @@ namespace gte
             CreateDomainIndex(current, 0, mMaxSample);
         }
 
+        // The vertices are stored in a vertex-edge-triangle manifold mesh.
+        // Each vertex as a set of adjacent vertices, a set of adjacent
+        // edges and a set of adjacent triangles. The adjacent vertices are
+        // repackaged into mVertexAdjacent[] and mAdjacentPool[]. For
+        // vertex v with n adjacent vertices, mVertexAdjacent[v] is the
+        // index into mAdjacentPool[] whre the n adjacent vertices are
+        // stored. If the adjacent vertices are a[0] through a[n-1], then
+        // mAdjacentPool[mVertexAdjacent[v] + i] is a[i].
         void CreateCompactMesh(
             std::vector<Vector3<InputType>> const& vertices,
             std::vector<int> const& indices)
@@ -423,16 +431,32 @@ namespace gte
                 mesh.Insert(v0, v1, v2);
             }
 
+            // It is implicit in the construction of mVertexAdjacent that
+            //   (1) the vertex indices v satisfy 0 <= v < N for a mesh of
+            //       N vertices and
+            //   (2) the vertex map itself is ordered as <0,vertex0>,
+            //       <1,vertex1>, ..., <N-1,vertexNm1>.
+            // Condition (1) is guaranteed because the input to the MVB3
+            // constructor uses the contiguous indices of the position array.
+            // Condition (2) is not guaranteed because VETManifoldMesh::VMap
+            // is a std::unordered_map. The vertices must be sorted here to
+            // satisfy condition2.
             auto const& vmap = mesh.GetVertices();
-            size_t numAdjacentPool = 0;
+            std::map<int, std::shared_ptr<VETManifoldMesh::Vertex>> sortedVMap;
             for (auto const& element : vmap)
+            {
+                sortedVMap.insert(element);
+            }
+
+            size_t numAdjacentPool = 0;
+            for (auto const& element : sortedVMap)
             {
                 numAdjacentPool += element.second->VAdjacent.size() + 1;
             }
             mAdjacentPool.resize(numAdjacentPool);
-            mVertexAdjacent.resize(vmap.size());
+            mVertexAdjacent.resize(sortedVMap.size());
             size_t apIndex = 0, vaIndex = 0;
-            for (auto const& element : vmap)
+            for (auto const& element : sortedVMap)
             {
                 auto const& adjacent = element.second->VAdjacent;
                 mVertexAdjacent[vaIndex++] = apIndex;
