@@ -391,6 +391,20 @@ int ConstrainedDelaunay2ComputePSD(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
 }
 
+int PrimalQuery3Collinear(BSPrecision::Type type, bool forBSNumber)
+{
+    // delta1 = v1 - v0
+    // delta2 = v2 - v0
+    // cross = Cross(diff1, diff2)
+    //       = (diff1.y * diff2.z - diff1.z * diff2.y, *, *)
+    // cross[0] = cross[1] = cross[2] = 0;
+    BSPrecision vcomponent(type);
+    BSPrecision vdelta = vcomponent - vcomponent;
+    BSPrecision product = vdelta * vdelta;
+    BSPrecision ddiff = product - product;
+    return (forBSNumber ? ddiff.bsn.maxWords : ddiff.bsr.maxWords);
+}
+
 int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
@@ -435,6 +449,11 @@ int main()
     bsNumberDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, true);  // 525
     bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, false);  // 555
     bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, false);  // 4197
+
+    bsNumberFloatWords = PrimalQuery3Collinear(BSPrecision::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery3Collinear(BSPrecision::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery3Collinear(BSPrecision::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = PrimalQuery3Collinear(BSPrecision::IS_DOUBLE, false);  // 525
 
     return 0;
 }
