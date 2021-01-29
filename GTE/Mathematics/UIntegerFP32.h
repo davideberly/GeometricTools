@@ -19,6 +19,19 @@
 // number of 32-bit words required to store the precision for the desired
 // computations (maximum number of bits is 32*N).
 
+// Uncomment this to collect statistics on how large the UIntegerFP32 storage
+// becomes when using it for the UInteger of BSNumber.  If you use this
+// feature, you must define gsUIntegerFP32MaxSize somewhere in your code.
+//
+//#define GTE_COLLECT_UINTEGERFP32_STATISTICS
+#if defined(GTE_COLLECT_UINTEGERFP32_STATISTICS)
+#include <Mathematics/AtomicMinMax.h>
+namespace gte
+{
+    extern std::atomic<int32_t> gsUIntegerFP32MaxSize;
+}
+#endif
+
 namespace gte
 {
     template <int N>
@@ -58,6 +71,10 @@ namespace gte
                 mNumBits = 0;
                 mSize = 0;
             }
+
+#if defined(GTE_COLLECT_UINTEGERFP32_STATISTICS)
+            AtomicMax(gsUIntegerFP32MaxSize, mSize);
+#endif
         }
 
         UIntegerFP32(uint64_t number)
@@ -82,6 +99,10 @@ namespace gte
                 mNumBits = 0;
                 mSize = 0;
             }
+
+#if defined(GTE_COLLECT_UINTEGERFP32_STATISTICS)
+            AtomicMax(gsUIntegerFP32MaxSize, mSize);
+#endif
         }
 
         // Assignment.  Only mSize elements are copied.
@@ -136,6 +157,9 @@ namespace gte
                 LogError("The number of bits must be nonnegative.");
             }
 
+#if defined(GTE_COLLECT_UINTEGERFP32_STATISTICS)
+            AtomicMax(gsUIntegerFP32MaxSize, mSize);
+#endif
             LogAssert(mSize <= N, "N not large enough to store number of bits.");
         }
 
