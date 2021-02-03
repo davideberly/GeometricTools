@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 4.0.2021.02.02
 
 #pragma once
 
@@ -425,31 +425,63 @@ namespace gte
             VETManifoldMesh& hullMesh, size_t& current)
         {
             using TrianglePtr = std::shared_ptr<VETManifoldMesh::Triangle>;
-
             // The hull points previous to the current one are coplanar and
             // are the vertices of a convex polygon. To initialize the 3D
             // hull, use triangles from a triangle fan of the convex polygon
             // and use triangles connecting the current point to the edges
-            // of the convex polygon.
+            // of the convex polygon. The vertex ordering of these triangles
+            // depends on whether sorted[current] is on the positive or
+            // negative side of the plane determined by hull[0], hull[1] and
+            // hull[2].
             int32_t sign = ToPlane(hull[0], hull[1], hull[2], sorted[current]);
-            if (sign < 0)
+            int32_t h0, h1, h2;
+            if (sign > 0)
             {
-                std::reverse(hull.begin(), hull.end());
-            }
+                h0 = static_cast<int32_t>(hull[0]);
+                for (size_t i1 = 1, i2 = 2; i2 < hull.size(); i1 = i2++)
+                {
+                    h1 = static_cast<int32_t>(hull[i1]);
+                    h2 = static_cast<int32_t>(hull[i2]);
+                    auto inserted = hullMesh.Insert(h0, h2, h1);
+                    LogAssert(
+                        inserted != nullptr,
+                        "Unexpected insertion failure.");
+                }
 
-            int32_t h0 = static_cast<int32_t>(hull[0]), h1, h2;
-            for (size_t i1 = 1, i2 = 2; i2 < hull.size(); i1 = i2++)
-            {
-                h1 = static_cast<int32_t>(hull[i1]);
-                h2 = static_cast<int32_t>(hull[i2]);
-                hullMesh.Insert(h0, h2, h1);
+                h0 = static_cast<int32_t>(sorted[current]);
+                for (size_t i1 = hull.size() - 1, i2 = 0; i2 < hull.size(); i1 = i2++)
+                {
+                    h1 = static_cast<int32_t>(hull[i1]);
+                    h2 = static_cast<int32_t>(hull[i2]);
+                    auto inserted = hullMesh.Insert(h0, h1, h2);
+                    LogAssert(
+                        inserted != nullptr,
+                        "Unexpected insertion failure.");
+                }
             }
-            h0 = static_cast<int32_t>(sorted[current]);
-            for (size_t i1 = hull.size() - 1, i2 = 0; i2 < hull.size(); i1 = i2++)
+            else
             {
-                h1 = static_cast<int32_t>(hull[i1]);
-                h2 = static_cast<int32_t>(hull[i2]);
-                hullMesh.Insert(h0, h1, h2);
+                h0 = static_cast<int32_t>(hull[0]);
+                for (size_t i1 = 1, i2 = 2; i2 < hull.size(); i1 = i2++)
+                {
+                    h1 = static_cast<int32_t>(hull[i1]);
+                    h2 = static_cast<int32_t>(hull[i2]);
+                    auto inserted = hullMesh.Insert(h0, h1, h2);
+                    LogAssert(
+                        inserted != nullptr,
+                        "Unexpected insertion failure.");
+                }
+
+                h0 = static_cast<int32_t>(sorted[current]);
+                for (size_t i1 = hull.size() - 1, i2 = 0; i2 < hull.size(); i1 = i2++)
+                {
+                    h1 = static_cast<int32_t>(hull[i1]);
+                    h2 = static_cast<int32_t>(hull[i2]);
+                    auto inserted = hullMesh.Insert(h0, h2, h1);
+                    LogAssert(
+                        inserted != nullptr,
+                        "Unexpected insertion failure.");
+                }
             }
 
             // The hull is now maintained in hullMesh, so there is no need
@@ -513,13 +545,19 @@ namespace gte
                         }
                     }
                     visited.erase(tri);
-                    hullMesh.Remove(tri->V[0], tri->V[1], tri->V[2]);
+                    bool removed = hullMesh.Remove(tri->V[0], tri->V[1], tri->V[2]);
+                    LogAssert(
+                        removed,
+                        "Unexpected removal failure.");
                 }
 
                 // Insert the new hull triangles.
                 for (auto const& edge : terminator)
                 {
-                    hullMesh.Insert(edge[0], edge[1], h1);
+                    auto inserted = hullMesh.Insert(edge[0], edge[1], h1);
+                    LogAssert(
+                        inserted != nullptr,
+                        "Unexpected insertion failure.");
                 }
 
                 // The current index h1 becomes the previous index h0 for the
