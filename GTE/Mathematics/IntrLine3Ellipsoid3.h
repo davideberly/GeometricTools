@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.02.10
 
 #pragma once
 
@@ -23,6 +23,12 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
@@ -34,7 +40,8 @@ namespace gte
             //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
             // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
             // a0 = (P-K)^T*M*(P-K)-1.
-            Result result;
+            Real constexpr zero = 0;
+            Result result{};
 
             Matrix3x3<Real> M;
             ellipsoid.GetM(M);
@@ -48,7 +55,7 @@ namespace gte
 
             // Intersection occurs when Q(t) has real roots.
             Real discr = a1 * a1 - a0 * a2;
-            result.intersect = (discr >= (Real)0);
+            result.intersect = (discr >= zero);
             return result;
         }
     };
@@ -59,6 +66,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{},
+                point{}
+            {
+                Real constexpr rmax = std::numeric_limits<Real>::max();
+                parameter.fill(rmax);
+                point.fill(Vector3<Real>{ rmax, rmax, rmax });
+            }
+
             bool intersect;
             int numIntersections;
             std::array<Real, 2> parameter;
@@ -67,7 +86,7 @@ namespace gte
 
         Result operator()(Line3<Real> const& line, Ellipsoid3<Real> const& ellipsoid)
         {
-            Result result;
+            Result result{};
             DoQuery(line.origin, line.direction, ellipsoid, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -88,6 +107,7 @@ namespace gte
             //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
             // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
             // a0 = (P-K)^T*M*(P-K)-1.
+            Real constexpr zero = 0;
             Matrix3x3<Real> M;
             ellipsoid.GetM(M);
 
@@ -100,25 +120,38 @@ namespace gte
 
             // Intersection occurs when Q(t) has real roots.
             Real discr = a1 * a1 - a0 * a2;
-            if (discr > (Real)0)
+            if (discr > zero)
             {
+                // The line intersects the ellipsoid in 2 distinct points.
+                Real constexpr one = 1;
                 result.intersect = true;
                 result.numIntersections = 2;
                 Real root = std::sqrt(discr);
-                Real inv = (Real)1 / a2;
+                Real inv = one / a2;
                 result.parameter[0] = (-a1 - root) * inv;
                 result.parameter[1] = (-a1 + root) * inv;
             }
-            else if (discr < (Real)0)
+            else if (discr < zero)
             {
+                // The line does not intersect the ellipsoid. The parameter[]
+                // values are initialized to invalid numbers, but they should
+                // not be used by the caller.
+                Real constexpr rmax = std::numeric_limits<Real>::max();
                 result.intersect = false;
                 result.numIntersections = 0;
+                result.parameter[0] = +rmax;
+                result.parameter[1] = -rmax;
             }
             else
             {
+                // The line is tangent to the ellipsoid, so the intersection
+                // is a single point. The parameter[1] value is set, because
+                // callers will access the degenerate interval
+                // [-a1 / a2, -a1 / a2].
                 result.intersect = true;
                 result.numIntersections = 1;
                 result.parameter[0] = -a1 / a2;
+                result.parameter[1] = result.parameter[0];
             }
         }
     };

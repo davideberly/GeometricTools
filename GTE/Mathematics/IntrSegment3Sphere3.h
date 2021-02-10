@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.02.10
 
 #pragma once
 
@@ -19,6 +19,12 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
@@ -28,7 +34,8 @@ namespace gte
             // Substitute the line equation into the sphere equation to
             // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
             // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Result result;
+            Real constexpr zero = 0;
+            Result result{};
 
             Vector3<Real> segOrigin, segDirection;
             Real segExtent;
@@ -38,23 +45,24 @@ namespace gte
             Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
             Real a1 = Dot(segDirection, diff);
             Real discr = a1 * a1 - a0;
-            if (discr < (Real)0)
+            if (discr < zero)
             {
                 result.intersect = false;
                 return result;
             }
 
+            Real constexpr two = 2;
             Real tmp0 = segExtent * segExtent + a0;
-            Real tmp1 = ((Real)2) * a1 * segExtent;
+            Real tmp1 = two * a1 * segExtent;
             Real qm = tmp0 - tmp1;
             Real qp = tmp0 + tmp1;
-            if (qm * qp <= (Real)0)
+            if (qm * qp <= zero)
             {
                 result.intersect = true;
                 return result;
             }
 
-            result.intersect = (qm > (Real)0 && std::fabs(a1) < segExtent);
+            result.intersect = (qm > zero && std::fabs(a1) < segExtent);
             return result;
         }
     };
@@ -78,7 +86,7 @@ namespace gte
             Real segExtent;
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, sphere, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {

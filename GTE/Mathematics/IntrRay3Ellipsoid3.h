@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.02.10
 
 #pragma once
 
@@ -22,6 +22,12 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
@@ -33,7 +39,8 @@ namespace gte
             //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
             // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
             // a0 = (P-K)^T*M*(P-K)-1.
-            Result result;
+            Real constexpr zero = 0;
+            Result result{};
 
             Matrix3x3<Real> M;
             ellipsoid.GetM(M);
@@ -46,10 +53,10 @@ namespace gte
             Real a0 = Dot(diff, matDiff) - (Real)1;
 
             Real discr = a1 * a1 - a0 * a2;
-            if (discr >= (Real)0)
+            if (discr >= zero)
             {
                 // Test whether ray origin is inside ellipsoid.
-                if (a0 <= (Real)0)
+                if (a0 <= zero)
                 {
                     result.intersect = true;
                 }
@@ -60,7 +67,7 @@ namespace gte
                     // definite, implying that D^T*M*D > 0 for any nonzero
                     // vector D.  Thus, an intersection occurs only when
                     // Q'(0) < 0.
-                    result.intersect = (a1 < (Real)0);
+                    result.intersect = (a1 < zero);
                 }
             }
             else
@@ -88,7 +95,7 @@ namespace gte
 
         Result operator()(Ray3<Real> const& ray, Ellipsoid3<Real> const& ellipsoid)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, ellipsoid, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -110,7 +117,9 @@ namespace gte
                 // The line containing the ray intersects the ellipsoid; the
                 // t-interval is [t0,t1].  The ray intersects the capsule as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval = { (Real)0, std::numeric_limits<Real>::max() };
+                Real constexpr zero = 0;
+                Real constexpr rmax = std::numeric_limits<Real>::max();
+                std::array<Real, 2> rayInterval = { zero, rmax };
                 FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
                 auto iiResult = iiQuery(result.parameter, rayInterval);
                 if (iiResult.intersect)

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.02.10
 
 #pragma once
 
@@ -19,6 +19,12 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
@@ -28,11 +34,12 @@ namespace gte
             // Substitute the line equation into the sphere equation to
             // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
             // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Result result;
+            Real constexpr zero = 0;
+            Result result{};
 
             Vector3<Real> diff = ray.origin - sphere.center;
             Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
-            if (a0 <= (Real)0)
+            if (a0 <= zero)
             {
                 // P is inside the sphere.
                 result.intersect = true;
@@ -41,7 +48,7 @@ namespace gte
             // else: P is outside the sphere
 
             Real a1 = Dot(ray.direction, diff);
-            if (a1 >= (Real)0)
+            if (a1 >= zero)
             {
                 result.intersect = false;
                 return result;
@@ -49,7 +56,7 @@ namespace gte
 
             // Intersection occurs when Q(t) has real roots.
             Real discr = a1 * a1 - a0;
-            result.intersect = (discr >= (Real)0);
+            result.intersect = (discr >= zero);
             return result;
         }
     };
@@ -69,7 +76,7 @@ namespace gte
 
         Result operator()(Ray3<Real> const& ray, Sphere3<Real> const& sphere)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, sphere, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -91,7 +98,9 @@ namespace gte
                 // The line containing the ray intersects the sphere; the
                 // t-interval is [t0,t1].  The ray intersects the sphere as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval = { (Real)0, std::numeric_limits<Real>::max() };
+                Real constexpr zero = 0;
+                Real constexpr rmax = std::numeric_limits<Real>::max();
+                std::array<Real, 2> rayInterval = { zero, rmax };
                 FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
                 auto iiResult = iiQuery(result.parameter, rayInterval);
                 if (iiResult.intersect)

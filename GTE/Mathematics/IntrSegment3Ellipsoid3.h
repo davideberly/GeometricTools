@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.02.10
 
 #pragma once
 
@@ -22,6 +22,12 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
@@ -33,7 +39,8 @@ namespace gte
             //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
             // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
             // a0 = (P-K)^T*M*(P-K)-1.
-            Result result;
+            Real constexpr zero = 0;
+            Result result{};
 
             Vector3<Real> segOrigin, segDirection;
             Real segExtent;
@@ -42,18 +49,19 @@ namespace gte
             Matrix3x3<Real> M;
             ellipsoid.GetM(M);
 
+            Real constexpr one = 1;
             Vector3<Real> diff = segOrigin - ellipsoid.center;
             Vector3<Real> matDir = M * segDirection;
             Vector3<Real> matDiff = M * diff;
             Real a2 = Dot(segDirection, matDir);
             Real a1 = Dot(segDirection, matDiff);
-            Real a0 = Dot(diff, matDiff) - (Real)1;
+            Real a0 = Dot(diff, matDiff) - one;
 
             Real discr = a1 * a1 - a0 * a2;
-            if (discr >= (Real)0)
+            if (discr >= zero)
             {
                 // Test whether ray origin is inside ellipsoid.
-                if (a0 <= (Real)0)
+                if (a0 <= zero)
                 {
                     result.intersect = true;
                 }
@@ -64,20 +72,21 @@ namespace gte
                     // definite, implying that D^T*M*D > 0 for any nonzero
                     // vector D.
                     Real q, qder;
-                    if (a1 >= (Real)0)
+                    if (a1 >= zero)
                     {
                         // Roots are possible only on [-e,0], e is the segment
                         // extent.  At least one root occurs if Q(-e) <= 0 or
                         // if Q(-e) > 0 and Q'(-e) < 0.
-                        q = a0 + segExtent * ((Real)-2 * a1 + a2 * segExtent);
-                        if (q <= (Real)0)
+                        Real constexpr negTwo = -2;
+                        q = a0 + segExtent * (negTwo * a1 + a2 * segExtent);
+                        if (q <= zero)
                         {
                             result.intersect = true;
                         }
                         else
                         {
                             qder = a1 - a2 * segExtent;
-                            result.intersect = (qder < (Real)0);
+                            result.intersect = (qder < zero);
                         }
                     }
                     else
@@ -85,15 +94,16 @@ namespace gte
                         // Roots are only possible on [0,e], e is the segment
                         // extent.  At least one root occurs if Q(e) <= 0 or
                         // if Q(e) > 0 and Q'(e) > 0.
-                        q = a0 + segExtent * ((Real)2 * a1 + a2 * segExtent);
-                        if (q <= (Real)0.0)
+                        Real constexpr two = 2;
+                        q = a0 + segExtent * (two * a1 + a2 * segExtent);
+                        if (q <= zero)
                         {
                             result.intersect = true;
                         }
                         else
                         {
                             qder = a1 + a2 * segExtent;
-                            result.intersect = (qder < (Real)0);
+                            result.intersect = (qder < zero);
                         }
                     }
                 }
@@ -127,7 +137,7 @@ namespace gte
             Real segExtent;
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, ellipsoid, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
