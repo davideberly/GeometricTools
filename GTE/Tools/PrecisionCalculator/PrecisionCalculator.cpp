@@ -8,6 +8,8 @@
 #include <Mathematics/ArbitraryPrecision.h>
 using namespace gte;
 
+// sizeof(BSNumber<UIntegerFP32<N>>) = 4 * (N + 4)
+
 int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
 {
     // Real det2 = a00 * a11 - a01 * a10
@@ -391,7 +393,7 @@ int ConstrainedDelaunay2ComputePSD(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
 }
 
-int PrimalQuery3Collinear(BSPrecision::Type type, bool forBSNumber)
+int PrimalQuery3Colinear(BSPrecision::Type type, bool forBSNumber)
 {
     // delta1 = v1 - v0
     // delta2 = v2 - v0
@@ -403,6 +405,22 @@ int PrimalQuery3Collinear(BSPrecision::Type type, bool forBSNumber)
     BSPrecision product = vdelta * vdelta;
     BSPrecision ddiff = product - product;
     return (forBSNumber ? ddiff.bsn.maxWords : ddiff.bsr.maxWords);
+}
+
+int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
+{
+    // delta1 = v1 - v0
+    // delta2 = v2 - v0
+    // delta3 = v3 - v0
+    // dotCross = Dot(Cross(delta1, delta2, delta3))
+    // return dotCross == 0
+    BSPrecision vcomponent(type);
+    BSPrecision vdelta = vcomponent - vcomponent;
+    BSPrecision product = vdelta * vdelta;
+    BSPrecision det2 = product - product;
+    BSPrecision term = vdelta * det2;
+    BSPrecision det3 = term + term + term;
+    return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
 }
 
 int main()
@@ -450,10 +468,15 @@ int main()
     bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, false);  // 555
     bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, false);  // 4197
 
-    bsNumberFloatWords = PrimalQuery3Collinear(BSPrecision::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = PrimalQuery3Collinear(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = PrimalQuery3Collinear(BSPrecision::IS_FLOAT, false);  // 70
-    bsRationalDoubleWords = PrimalQuery3Collinear(BSPrecision::IS_DOUBLE, false);  // 525
+    bsNumberFloatWords = PrimalQuery3Colinear(BSPrecision::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery3Colinear(BSPrecision::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery3Colinear(BSPrecision::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = PrimalQuery3Colinear(BSPrecision::IS_DOUBLE, false);  // 525
+
+    bsNumberFloatWords = PrimalQuery3Coplanar(BSPrecision::IS_FLOAT, true);  // 27
+    bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, true);  // 197
+    bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::IS_FLOAT, false);  // 361
+    bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, false);  // 1968
 
     return 0;
 }
