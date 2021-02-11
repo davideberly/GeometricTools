@@ -423,6 +423,72 @@ int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
 }
 
+int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
+{
+    // z = x * x + y * y
+    BSPrecision u(type);
+    BSPrecision product = u * u;
+    BSPrecision sum = product + product;
+    return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
+}
+
+int Delaunay2ToPlane(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real x0 = P[0] - V0[0];
+    // Real y0 = P[1] - V0[1];
+    // Real z0 = P[2] - V0[2];
+    // Real x1 = V1[0] - V0[0];
+    // Real y1 = V1[1] - V0[1];
+    // Real z1 = V1[2] - V0[2];
+    // Real x2 = V2[0] - V0[0];
+    // Real y2 = V2[1] - V0[1];
+    // Real z2 = V2[2] - V0[2];
+    // [det = z0*(x1*y2-x2*y1) + z1*(x2*y0-x0*y2) + z2*(x0*y1-x1*y0)]
+    // Real x1y2 = x1*y2;
+    // Real x2y1 = x2*y1;
+    // Real x2y0 = x2*y0;
+    // Real x0y2 = x0*y2;
+    // Real x0y1 = x0*y1;
+    // Real x1y0 = x1*y0;
+    // Real c0 = x1y2 - x2y1;
+    // Real c1 = x2y0 - x0y2;
+    // Real c2 = x0y1 - x1y0;
+    // Real z0c0 = z0*c0;
+    // Real z1c1 = z1*c1;
+    // Real z2c2 = z2*c2;
+    // Real term = z0c0 + z1c1;
+    // Real det = term + z2c2;
+
+    // P[0], P[1], V0[0], V0[1], V1[0], V1[1], V2[0], V2[1]
+    BSPrecision x(type), y(type);
+
+    // P[2], V0[2], V1[2], V2[2]
+    BSPrecision xx = x * x, yy = y * y;
+    BSPrecision z = xx + yy;
+
+    // x0, y0, x1, y1, x2, y2
+    BSPrecision xSub = x - x, ySub = y - y;
+
+    // z0, z1, z2
+    BSPrecision zSub = z - z;
+
+    // x1y2, x2y1, x2y0, x0y2, x0y1, x1y0
+    BSPrecision mul0 = xSub * ySub;
+
+    // c0, c1, c2
+    BSPrecision subXYXY = mul0 - mul0;
+
+    // z0c0, z1c1, z2c2
+    BSPrecision mul1 = zSub * subXYXY;
+
+    // term
+    BSPrecision add0 = mul1 + mul1;
+
+    // det
+    BSPrecision add1 = add0 + mul1;
+    return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
+}
+
 int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
@@ -477,6 +543,16 @@ int main()
     bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, true);  // 197
     bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::IS_FLOAT, false);  // 361
     bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, false);  // 1968
+
+    bsNumberFloatWords = SumOfTwoSquares(BSPrecision::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = SumOfTwoSquares(BSPrecision::IS_FLOAT, false);  // 35
+    bsRationalDoubleWords = SumOfTwoSquares(BSPrecision::IS_DOUBLE, false);  // 263
+
+    bsNumberFloatWords = Delaunay2ToPlane(BSPrecision::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = Delaunay2ToPlane(BSPrecision::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = Delaunay2ToPlane(BSPrecision::IS_FLOAT, false);  // 417
+    bsRationalDoubleWords = Delaunay2ToPlane(BSPrecision::IS_DOUBLE, false);  // 3148
 
     return 0;
 }
