@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.03
+// Version: 4.0.2021.03.08
 
 #pragma once
 
@@ -118,6 +118,9 @@ namespace gte
 
         BSNumber(int32_t number)
         {
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = static_cast<double>(number);
+#endif
             if (number == 0)
             {
                 mSign = 0;
@@ -140,9 +143,6 @@ namespace gte
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
-#endif
-#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
-            mValue = static_cast<double>(number);
 #endif
         }
 
@@ -169,6 +169,9 @@ namespace gte
 
         BSNumber(int64_t number)
         {
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = static_cast<double>(number);
+#endif
             if (number == 0)
             {
                 mSign = 0;
@@ -191,9 +194,6 @@ namespace gte
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
-#endif
-#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
-            mValue = static_cast<double>(number);
 #endif
         }
 
