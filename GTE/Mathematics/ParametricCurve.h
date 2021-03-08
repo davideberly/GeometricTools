@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.03.08
 
 #pragma once
 
@@ -24,30 +24,26 @@ namespace gte
         ParametricCurve(Real tmin, Real tmax)
             :
             mTime(2),
-            mSegmentLength(1),
-            mAccumulatedLength(1),
+            mSegmentLength(1, (Real)0),
+            mAccumulatedLength(1, (Real)0),
             mRombergOrder(DEFAULT_ROMBERG_ORDER),
             mMaxBisections(DEFAULT_MAX_BISECTIONS),
             mConstructed(false)
         {
             mTime[0] = tmin;
             mTime[1] = tmax;
-            mSegmentLength[0] = (Real)0;
-            mAccumulatedLength[0] = (Real)0;
         }
 
         ParametricCurve(int numSegments, Real const* times)
             :
             mTime(numSegments + 1),
-            mSegmentLength(numSegments),
-            mAccumulatedLength(numSegments),
+            mSegmentLength(numSegments, (Real)0),
+            mAccumulatedLength(numSegments, (Real)0),
             mRombergOrder(DEFAULT_ROMBERG_ORDER),
             mMaxBisections(DEFAULT_MAX_BISECTIONS),
             mConstructed(false)
         {
             std::copy(times, times + numSegments + 1, mTime.begin());
-            mSegmentLength[0] = (Real)0;
-            mAccumulatedLength[0] = (Real)0;
         }
 
     public:
