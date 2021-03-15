@@ -391,7 +391,7 @@ namespace gte
             stack[++top] = { 0, polygon.size() - 1 };
             while (top != -1)
             {
-                auto const& i = stack[top--];
+                std::array<size_t, 2> i = stack[top--];
                 if (i[1] > i[0] + 1)
                 {
                     // Get the vertex indices for the specified i-values.
