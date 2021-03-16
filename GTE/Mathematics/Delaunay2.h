@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.12.01
+// Version: 4.0.2021.03.15
 
 #pragma once
 
@@ -15,6 +15,7 @@
 #include <Mathematics/HashCombine.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/PrimalQuery2.h>
+#include <Mathematics/SWInterval.h>
 #include <Mathematics/Vector2.h>
 #include <Mathematics/VETManifoldMesh.h>
 #include <numeric>
@@ -1366,33 +1367,15 @@ namespace gte
             Vector2<T> const& inV0 = mVertices[v0Index];
             Vector2<T> const& inV1 = mVertices[v1Index];
 
-            std::array<T, 2> x0, y0, x1, y1, x0y1, x1y0, det;
-            auto saveMode = std::fegetround();
-            std::fesetround(FE_DOWNWARD);
-            x0[0] = inP[0] - inV0[0];
-            y0[0] = inP[1] - inV0[1];
-            x1[0] = inV1[0] - inV0[0];
-            y1[0] = inV1[1] - inV0[1];
-            std::fesetround(FE_UPWARD);
-            x0[1] = inP[0] - inV0[0];
-            y0[1] = inP[1] - inV0[1];
-            x1[1] = inV1[0] - inV0[0];
-            y1[1] = inV1[1] - inV0[1];
+            auto x0 = SWInterval<T>::Sub(inP[0], inV0[0]);
+            auto y0 = SWInterval<T>::Sub(inP[1], inV0[1]);
+            auto x1 = SWInterval<T>::Sub(inV1[0], inV0[0]);
+            auto y1 = SWInterval<T>::Sub(inV1[1], inV0[1]);
+            auto x0y1 = x0 * y1;
+            auto x1y0 = x1 * y0;
+            auto det = x0y1 - x1y0;
 
-            std::fesetround(FE_DOWNWARD);
-            x0y1[0] = FPInterval<T>::ProductLowerBound(x0, y1);
-            x1y0[0] = FPInterval<T>::ProductLowerBound(x1, y0);
-            std::fesetround(FE_UPWARD);
-            x0y1[1] = FPInterval<T>::ProductUpperBound(x0, y1);
-            x1y0[1] = FPInterval<T>::ProductUpperBound(x1, y0);
-
-            std::fesetround(FE_DOWNWARD);
-            det[0] = x0y1[0] - x1y0[1];
-            std::fesetround(FE_UPWARD);
-            det[1] = x0y1[1] - x1y0[0];
-            std::fesetround(saveMode);
-
-            T const zero = static_cast<T>(0);
+            T constexpr zero = 0;
             if (det[0] > zero)
             {
                 return +1;
@@ -1451,101 +1434,42 @@ namespace gte
             Vector2<T> const& inV1 = mVertices[v1Index];
             Vector2<T> const& inV2 = mVertices[v2Index];
 
-            std::array<T, 2> x0, y0, z0, x1, y1, z1, x2, y2, z2;
-            std::array<T, 2> s00, s01, s10, s11, s20, s21;
-            std::array<T, 2> t00, t01, t10, t11, t20, t21;
-            std::array<T, 2> y0z1, y0z2, y1z0, y1z2, y2z0, y2z1;
-            std::array<T, 2> c0, c1, c2, x0c0, x1c1, x2c2, det;
+            auto x0 = SWInterval<T>::Sub(inV0[0], inP[0]);
+            auto y0 = SWInterval<T>::Sub(inV0[1], inP[1]);
+            auto s00 = SWInterval<T>::Add(inV0[0], inP[0]);
+            auto s01 = SWInterval<T>::Add(inV0[1], inP[1]);
+            auto x1 = SWInterval<T>::Sub(inV1[0], inP[0]);
+            auto y1 = SWInterval<T>::Sub(inV1[1], inP[1]);
+            auto s10 = SWInterval<T>::Add(inV1[0], inP[0]);
+            auto s11 = SWInterval<T>::Add(inV1[1], inP[1]);
+            auto x2 = SWInterval<T>::Sub(inV2[0], inP[0]);
+            auto y2 = SWInterval<T>::Sub(inV2[1], inP[1]);
+            auto s20 = SWInterval<T>::Add(inV2[0], inP[0]);
+            auto s21 = SWInterval<T>::Add(inV2[1], inP[1]);
+            auto t00 = s00 * x0;
+            auto t01 = s01 * y0;
+            auto t10 = s10 * x1;
+            auto t11 = s11 * y1;
+            auto t20 = s20 * x2;
+            auto t21 = s21 * y2;
+            auto z0 = t00 + t01;
+            auto z1 = t10 + t11;
+            auto z2 = t20 + t21;
+            auto y0z1 = y0 * z1;
+            auto y0z2 = y0 * z2;
+            auto y1z0 = y1 * z0;
+            auto y1z2 = y1 * z2;
+            auto y2z0 = y2 * z0;
+            auto y2z1 = y2 * z1;
+            auto c0 = y1z2 - y2z1;
+            auto c1 = y2z0 - y0z2;
+            auto c2 = y0z1 - y1z0;
+            auto x0c0 = x0 * c0;
+            auto x1c1 = x1 * c1;
+            auto x2c2 = x2 * c2;
+            auto det = x0c0 + x1c1 + x2c2;
 
-            auto saveMode = std::fegetround();
-            std::fesetround(FE_DOWNWARD);
-            x0[0] = inV0[0] - inP[0];
-            y0[0] = inV0[1] - inP[1];
-            s00[0] = inV0[0] + inP[0];
-            s01[0] = inV0[1] + inP[1];
-            x1[0] = inV1[0] - inP[0];
-            y1[0] = inV1[1] - inP[1];
-            s10[0] = inV1[0] + inP[0];
-            s11[0] = inV1[1] + inP[1];
-            x2[0] = inV2[0] - inP[0];
-            y2[0] = inV2[1] - inP[1];
-            s20[0] = inV2[0] + inP[0];
-            s21[0] = inV2[1] + inP[1];
-            std::fesetround(FE_UPWARD);
-            x0[1] = inV0[0] - inP[0];
-            y0[1] = inV0[1] - inP[1];
-            s00[1] = inV0[0] + inP[0];
-            s01[1] = inV0[1] + inP[1];
-            x1[1] = inV1[0] - inP[0];
-            y1[1] = inV1[1] - inP[1];
-            s10[1] = inV1[0] + inP[0];
-            s11[1] = inV1[1] + inP[1];
-            x2[1] = inV2[0] - inP[0];
-            y2[1] = inV2[1] - inP[1];
-            s20[1] = inV2[0] + inP[0];
-            s21[1] = inV2[1] + inP[1];
-
-            std::fesetround(FE_DOWNWARD);
-            t00[0] = FPInterval<T>::ProductLowerBound(s00, x0);
-            t01[0] = FPInterval<T>::ProductLowerBound(s01, y0);
-            t10[0] = FPInterval<T>::ProductLowerBound(s10, x1);
-            t11[0] = FPInterval<T>::ProductLowerBound(s11, y1);
-            t20[0] = FPInterval<T>::ProductLowerBound(s20, x2);
-            t21[0] = FPInterval<T>::ProductLowerBound(s21, y2);
-            std::fesetround(FE_UPWARD);
-            t00[1] = FPInterval<T>::ProductUpperBound(s00, x0);
-            t01[1] = FPInterval<T>::ProductUpperBound(s01, y0);
-            t10[1] = FPInterval<T>::ProductUpperBound(s10, x1);
-            t11[1] = FPInterval<T>::ProductUpperBound(s11, y1);
-            t20[1] = FPInterval<T>::ProductUpperBound(s20, x2);
-            t21[1] = FPInterval<T>::ProductUpperBound(s21, y2);
-
-            std::fesetround(FE_DOWNWARD);
-            z0[0] = t00[0] + t01[0];
-            z1[0] = t10[0] + t11[0];
-            z2[0] = t20[0] + t21[0];
-            std::fesetround(FE_UPWARD);
-            z0[1] = t00[1] + t01[1];
-            z1[1] = t10[1] + t11[1];
-            z2[1] = t20[1] + t21[1];
-
-            std::fesetround(FE_DOWNWARD);
-            y0z1[0] = FPInterval<T>::ProductLowerBound(y0, z1);
-            y0z2[0] = FPInterval<T>::ProductLowerBound(y0, z2);
-            y1z0[0] = FPInterval<T>::ProductLowerBound(y1, z0);
-            y1z2[0] = FPInterval<T>::ProductLowerBound(y1, z2);
-            y2z0[0] = FPInterval<T>::ProductLowerBound(y2, z0);
-            y2z1[0] = FPInterval<T>::ProductLowerBound(y2, z1);
-            std::fesetround(FE_UPWARD);
-            y0z1[1] = FPInterval<T>::ProductUpperBound(y0, z1);
-            y0z2[1] = FPInterval<T>::ProductUpperBound(y0, z2);
-            y1z0[1] = FPInterval<T>::ProductUpperBound(y1, z0);
-            y1z2[1] = FPInterval<T>::ProductUpperBound(y1, z2);
-            y2z0[1] = FPInterval<T>::ProductUpperBound(y2, z0);
-            y2z1[1] = FPInterval<T>::ProductUpperBound(y2, z1);
-
-            std::fesetround(FE_DOWNWARD);
-            c0[0] = y1z2[0] - y2z1[1];
-            c1[0] = y2z0[0] - y0z2[1];
-            c2[0] = y0z1[0] - y1z0[1];
-            std::fesetround(FE_UPWARD);
-            c0[1] = y1z2[1] - y2z1[0];
-            c1[1] = y2z0[1] - y0z2[0];
-            c2[1] = y0z1[1] - y1z0[0];
-
-            std::fesetround(FE_DOWNWARD);
-            x0c0[0] = FPInterval<T>::ProductLowerBound(x0, c0);
-            x1c1[0] = FPInterval<T>::ProductLowerBound(x1, c1);
-            x2c2[0] = FPInterval<T>::ProductLowerBound(x2, c2);
-            det[0] = x0c0[0] + x1c1[0] + x2c2[0];
-            std::fesetround(FE_UPWARD);
-            x0c0[1] = FPInterval<T>::ProductUpperBound(x0, c0);
-            x1c1[1] = FPInterval<T>::ProductUpperBound(x1, c1);
-            x2c2[1] = FPInterval<T>::ProductUpperBound(x2, c2);
-            det[1] = x0c0[1] + x1c1[1] + x2c2[1];
-            std::fesetround(saveMode);
-
-            T const zero = static_cast<T>(0);
+            T constexpr zero = 0;
             if (det[0] > zero)
             {
                 return -1;
@@ -1554,6 +1478,9 @@ namespace gte
             {
                 return +1;
             }
+
+            // The exact sign of the determinant is not known, so compute
+            // the determinant using rational arithmetic.
 
             // Name the nodes of the expression tree.
             auto const& irP = (pIndex != negOne ? mIRVertices[pIndex] : mIRQueryPoint);

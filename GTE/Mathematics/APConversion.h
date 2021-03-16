@@ -3,13 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.09.26
+// Version: 4.0.2021.03.15
 
 #pragma once
 
 #include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/QFNumber.h>
-#include <cfenv>
 
 // The conversion functions here are used to obtain arbitrary-precision
 // approximations to rational numbers and to quadratic field numbers.
@@ -473,24 +472,24 @@ namespace gte
 
         Rational GetMinOfSqrt(Rational const& rSqr, int exponent)
         {
-            double lowerRSqr;
+            // Compute a lower bound on the square root of r^2.
+            double lowerRSqr = 0.0;
             Convert(rSqr, FE_DOWNWARD, lowerRSqr);
-            int saveRoundingMode = std::fegetround();
-            std::fesetround(FE_DOWNWARD);
-            Rational aMin = std::sqrt(lowerRSqr);
-            std::fesetround(saveRoundingMode);
+            double sqrtLowerRSqr = std::sqrt(lowerRSqr);
+            Rational aMin = std::nextafter(sqrtLowerRSqr,
+                -std::numeric_limits<double>::max());
             aMin = std::ldexp(aMin, exponent);
             return aMin;
         }
 
         Rational GetMaxOfSqrt(Rational const& rSqr, int exponent)
         {
-            double upperRSqr;
+            // Compute an upper bound on the square root of r^2.
+            double upperRSqr = 0.0;
             Convert(rSqr, FE_UPWARD, upperRSqr);
-            int saveRoundingMode = std::fegetround();
-            std::fesetround(FE_UPWARD);
-            Rational aMax = std::sqrt(upperRSqr);
-            std::fesetround(saveRoundingMode);
+            double sqrtUpperRSqr = std::sqrt(upperRSqr);
+            Rational aMax = std::nextafter(sqrtUpperRSqr,
+                +std::numeric_limits<double>::max());
             aMax = std::ldexp(aMax, exponent);
             return aMax;
         }

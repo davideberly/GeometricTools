@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.12.01
+// Version: 4.0.2021.03.15
 
 #pragma once
 
@@ -761,45 +761,27 @@ namespace gte
             // The expression tree has 13 nodes consisting of 6 input
             // leaves and 7 compute nodes.
 
+            // Use interval arithmetic to determine the sign if possible.
             auto const& inP = this->mVertices[pIndex];
             Vector2<T> const& inV0 = this->mVertices[v0Index];
             Vector2<T> const& inV1 = this->mVertices[v1Index];
 
-            // Use interval arithmetic to determine the sign if possible.
-            std::array<T, 2> x0, y0, x1, y1, x0y1, x1y0, det;
-            auto saveMode = std::fegetround();
-            std::fesetround(FE_DOWNWARD);
-            x0[0] = inP[0] - inV0[0];
-            y0[0] = inP[1] - inV0[1];
-            x1[0] = inV1[0] - inV0[0];
-            y1[0] = inV1[1] - inV0[1];
-            std::fesetround(FE_UPWARD);
-            x0[1] = inP[0] - inV0[0];
-            y0[1] = inP[1] - inV0[1];
-            x1[1] = inV1[0] - inV0[0];
-            y1[1] = inV1[1] - inV0[1];
+            auto x0 = SWInterval<T>::Sub(inP[0], inV0[0]);
+            auto y0 = SWInterval<T>::Sub(inP[1], inV0[1]);
+            auto x1 = SWInterval<T>::Sub(inV1[0], inV0[0]);
+            auto y1 = SWInterval<T>::Sub(inV1[1], inV0[1]);
+            auto x0y1 = x0 * y1;
+            auto x1y0 = x1 * y0;
+            auto det = x0y1 - x1y0;
 
-            std::fesetround(FE_DOWNWARD);
-            x0y1[0] = FPInterval<T>::ProductLowerBound(x0, y1);
-            x1y0[0] = FPInterval<T>::ProductLowerBound(x1, y0);
-            std::fesetround(FE_UPWARD);
-            x0y1[1] = FPInterval<T>::ProductUpperBound(x0, y1);
-            x1y0[1] = FPInterval<T>::ProductUpperBound(x1, y0);
-
-            std::fesetround(FE_DOWNWARD);
-            det[0] = x0y1[0] - x1y0[1];
-            std::fesetround(FE_UPWARD);
-            det[1] = x0y1[1] - x1y0[0];
-            std::fesetround(saveMode);
-
-            T const zero = static_cast<T>(0);
-             if (det[0] > zero)
+            T constexpr zero = 0;
+            if (det[0] > zero)
             {
                 return +1;
             }
             else if (det[1] < zero)
             {
-               return -1;
+                return -1;
             }
 
             // The exact sign of the determinant is not known, so compute
