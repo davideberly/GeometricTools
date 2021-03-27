@@ -1431,5 +1431,8 @@
     <ClInclude Include="Mathematics\SWInterval.h">
       <Filter>Arithmetic</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IncrementalDelaunay2.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

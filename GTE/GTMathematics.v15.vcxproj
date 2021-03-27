@@ -212,6 +212,7 @@
     <ClInclude Include="Mathematics\Image3.h" />
     <ClInclude Include="Mathematics\ImageUtility2.h" />
     <ClInclude Include="Mathematics\ImageUtility3.h" />
+    <ClInclude Include="Mathematics\IncrementalDelaunay2.h" />
     <ClInclude Include="Mathematics\IndexAttribute.h" />
     <ClInclude Include="Mathematics\Integration.h" />
     <ClInclude Include="Mathematics\IntpAkima1.h" />

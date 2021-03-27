@@ -297,6 +297,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainDX11.v14", "Samples\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectPlaneConvexPolyhedronDX11.v14", "Samples\Intersection\IntersectPlaneConvexPolyhedron\IntersectPlaneConvexPolyhedronDX11.v14.vcxproj", "{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IncrementalDelaunay2DX11.v14", "Samples\Geometrics\IncrementalDelaunay2\IncrementalDelaunay2DX11.v14.vcxproj", "{C03110C5-CB24-4C2D-B066-3A0AC79FF460}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1401,6 +1403,14 @@ Global
 		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x64.Build.0 = Release|x64
 		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x86.ActiveCfg = Release|Win32
 		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE}.Release|x86.Build.0 = Release|Win32
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Debug|x64.ActiveCfg = Debug|x64
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Debug|x64.Build.0 = Debug|x64
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Debug|x86.ActiveCfg = Debug|Win32
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Debug|x86.Build.0 = Debug|Win32
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Release|x64.ActiveCfg = Release|x64
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Release|x64.Build.0 = Release|x64
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Release|x86.ActiveCfg = Release|Win32
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1551,5 +1561,6 @@ Global
 		{9BDF8B40-1B11-41F8-94D2-934909C9C93C} = {7A0C4B08-5D19-4FD0-BD91-E604F4023ADD}
 		{DDF3FCA2-C941-47E0-ADA0-7FECE70FD45E} = {7A0C4B08-5D19-4FD0-BD91-E604F4023ADD}
 		{7E00BC21-BD21-47D9-98A0-8D81C4AFF3DE} = {76333F65-B906-47D2-A72D-43BAE4366F0C}
+		{C03110C5-CB24-4C2D-B066-3A0AC79FF460} = {A35ACCCD-CBA7-4254-98F8-C520DC7ABBE9}
 	EndGlobalSection
 EndGlobal

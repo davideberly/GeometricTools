@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 5)
-set(GTE_VERSION_MINOR 6)
+set(GTE_VERSION_MINOR 8)
 
 project(Geometrics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -19,6 +19,7 @@ add_subdirectory(Delaunay3D)
 add_subdirectory(DisjointIntervalsRectangles)
 add_subdirectory(ExtremalQuery)
 add_subdirectory(GenerateMeshUVs)
+add_subdirectory(IncrementalDelaunay2)
 add_subdirectory(MinimalCycleBasis)
 add_subdirectory(MinimumAreaBox2D)
 add_subdirectory(MinimumAreaCircle2D)
