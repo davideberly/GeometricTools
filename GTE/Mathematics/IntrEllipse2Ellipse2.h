@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.11
+// Version: 4.0.2021.04.13
 
 #pragma once
 
@@ -516,7 +516,7 @@ namespace gte
             E1.center = ellipse1.center;
             E1.axis = ellipse1.axis;
             E1.extent = ellipse1.extent;
-            E1.sqrExtent = ellipse1.extent * ellipse0.extent;
+            E1.sqrExtent = ellipse1.extent * ellipse1.extent;
             FinishEllipseInfo(E1);
 
             AreaResult ar;
