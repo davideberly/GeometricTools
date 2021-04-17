@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.8.2021.03.26
+// Version: 4.8.2021.04.16
 
 #pragma once
 
@@ -80,10 +80,19 @@ namespace gte
             mYMax(yMax),
             mCRPool(maxNumCRPool),
             mGraph{},
-            mIndex{ { { 0, 1 }, { 1, 2 }, { 2, 0 } } }
+            mIndex{ { { 0, 1 }, { 1, 2 }, { 2, 0 } } },
+            mTriangles{},
+            mAdjacencies{},
+            mTrianglesAndAdjacenciesNeedUpdate(true),
+            mQueryPoint{},
+            mIRQueryPoint{}
         {
+            static_assert(
+                std::is_floating_point<T>::value,
+                "Invalid floating-point type.");
+
             LogAssert(
-                mXMin < mXMax&& mYMin < mYMax,
+                mXMin < mXMax && mYMin < mYMax,
                 "Invalid bounding rectangle.");
 
             mToLineWrapper = [this](size_t vPrev, size_t vCurr, size_t vNext)
@@ -132,6 +141,8 @@ namespace gte
         // an exception is thrown.
         size_t Insert(Vector2<T> const& position)
         {
+            mTrianglesAndAdjacenciesNeedUpdate = true;
+
             LogAssert(
                 mXMin <= position[0] && position[0] <= mXMax &&
                 mYMin <= position[1] && position[1] <= mYMax,
@@ -160,6 +171,8 @@ namespace gte
         // std::numeric_limit<size_t>::max().
         size_t Remove(Vector2<T> const& position)
         {
+            mTrianglesAndAdjacenciesNeedUpdate = true;
+
             auto iter = mVertexIndexMap.find(position);
             if (iter == mVertexIndexMap.end())
             {
@@ -246,9 +259,259 @@ namespace gte
             }
         }
 
-    private:
+        // Get the current graph, which includes all triangles whether
+        // Delaunay or those containing a supervertex.
+        inline VETManifoldMesh const& GetGraph() const
+        {
+            return mGraph;
+        }
+
+        // Queries associated with the mesh of Delaunay triangles. The
+        // triangles containing a supervertex are not included in these
+        // queries.
+        inline size_t GetNumVertices() const
+        {
+            return mVertices.size();
+        }
+
+        inline std::vector<Vector2<T>> const& GetVertices() const
+        {
+            return mVertices;
+        }
+
+        size_t GetNumTriangles() const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            return mTriangles.size();
+        }
+
+        std::vector<std::array<size_t, 3>> const& GetTriangles() const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            return mTriangles;
+        }
+
+        std::vector<std::array<size_t, 3>> const& GetAdjacencies() const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            return mAdjacencies;
+        }
+
+        // Get the vertex indices for triangle t. The function returns 'true'
+        // when t is a valid triangle index, in which case 'triangle' is valid;
+        // otherwise, the function returns 'false' and 'triangle' is invalid.
+        bool GetTriangle(size_t t, std::array<size_t, 3>& triangle) const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            if (t < mTriangles.size())
+            {
+                triangle = mTriangles[t];
+                return true;
+            }
+            return false;
+        }
+
+        // Get the indices for triangles adjacent to triangle t. The function
+        // returns 'true' when t is a valid triangle index, in which case
+        // 'adjacent' is valid; otherwise, the function returns 'false' and
+        // 'adjacent' is invalid. When valid, triangle t has ordered vertices
+        // <V[0], V[1], V[2]>. The value adjacent[0] is the index for the
+        // triangle adjacent to edge <V[0], V[1]>, adjacent[1] is the index
+        // for the triangle adjacent to edge <V[1], V[2]>, and adjacent[2] is
+        // the index for the triangle adjacent to edge <V[2], V[0]>.
+        bool GetAdjacent(size_t t, std::array<size_t, 3>& adjacent) const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            if (t < mAdjacencies.size())
+            {
+                adjacent = mAdjacencies[t];
+                return true;
+            }
+            return false;
+        }
+
+        // Get the convex polygon that is the hull of the Delaunay triangles.
+        // The polygon is counterclockwise ordered with vertices V[hull[0]],
+        // V[hull[1]], ..., V[hull.size()-1].
+        void GetHull(std::vector<size_t>& hull) const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            // The hull edges are shared by the triangles with exactly one
+            // supervertex.
+            std::map<size_t, size_t> edges;
+            auto const& vmap = mGraph.GetVertices();
+            for (int32_t v = 0; v < 3; ++v)
+            {
+                auto vIter = vmap.find(v);
+                LogAssert(
+                    vIter != vmap.end(),
+                    "Expecting the supervertices to exist in the graph.");
+
+                for (auto const& adj : vIter->second->TAdjacent)
+                {
+                    for (size_t i0 = 1, i1 = 2, i2 = 0; i2 < 3; i0 = i1, i1 = i2, ++i2)
+                    {
+                        if (adj->V[i0] == v)
+                        {
+                            if (IsDelaunayVertex(adj->V[i1]) && IsDelaunayVertex(adj->V[i2]))
+                            {
+                                edges.insert(std::make_pair(adj->V[i2], adj->V[i1]));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Repackage the edges into a convex polygon with vertices ordered
+            // counterclockwise.
+            size_t numEdges = edges.size();
+            hull.resize(numEdges);
+            auto eIter = edges.begin();
+            size_t vStart = eIter->first;
+            size_t vNext = eIter->second;
+            size_t i = 0;
+            hull[0] = vStart;
+            while (vNext != vStart)
+            {
+                hull[++i] = vNext;
+                eIter = edges.find(vNext);
+                LogAssert(
+                    eIter != edges.end(),
+                    "Expecting to find a hull edge.");
+                vNext = eIter->second;
+            }
+        }
+
+        // Support for searching the Delaunay triangles that contains the
+        // point p. If there is a containing triangle, the returned value is
+        // a triangle index i with 0 <= i < GetNumTriangles(). If there is
+        // not a containing triangle, 'invalid' is returned. The computations
+        // are performed using exact rational arithmetic.
+        //
+        // The SearchInfo input stores information about the triangle search
+        // when looking for the triangle (if any) that contains p. The first
+        // triangle searched is 'initialTriangle'. On return 'path' stores the
+        // ordered triangle indices visited during the search. The last
+        // visited triangle has index 'finalTriangle' and vertex indices
+        // 'finalV[0,1,2]', stored in counterclockwise order. The last edge of
+        // the search is <finalV[0], finalV[1]>. For spatially coherent inputs
+        // p for numerous calls to this function, you will want to specify
+        // 'finalTriangle' from the previous call as 'initialTriangle' for the
+        // next call, which should reduce search times.
+
         static size_t constexpr invalid = std::numeric_limits<size_t>::max();
 
+        struct SearchInfo
+        {
+            SearchInfo()
+                :
+                initialTriangle(invalid),
+                finalTriangle(invalid),
+                finalV{ invalid, invalid, invalid },
+                numPath(0),
+                path{}
+            {
+            }
+
+            size_t initialTriangle;
+            size_t finalTriangle;
+            std::array<size_t, 3> finalV;
+            size_t numPath;
+            std::vector<size_t> path;
+        };
+
+        size_t GetContainingTriangle(Vector2<T> const& p, SearchInfo& info) const
+        {
+            if (mTrianglesAndAdjacenciesNeedUpdate)
+            {
+                UpdateTrianglesAndAdjacencies();
+                mTrianglesAndAdjacenciesNeedUpdate = false;
+            }
+
+            mQueryPoint = p;
+            mIRQueryPoint = IRVector{ p[0], p[1] };
+
+            size_t const numTriangles = mTriangles.size();
+            info.path.resize(numTriangles);
+            info.numPath = 0;
+            size_t tIndex;
+            if (info.initialTriangle < numTriangles)
+            {
+                tIndex = info.initialTriangle;
+            }
+            else
+            {
+                info.initialTriangle = 0;
+                tIndex = 0;
+            }
+
+            for (size_t t = 0; t < numTriangles; ++t)
+            {
+                auto const& v = mTriangles[tIndex];
+                auto const& adj = mAdjacencies[tIndex];
+
+                info.finalTriangle = tIndex;
+                info.finalV = v;
+                info.path[info.numPath++] = tIndex;
+
+                size_t i0, i1, i2;
+                for (i0 = 1, i1 = 2, i2 = 0; i2 < 3; i0 = i1, i1 = i2++)
+                {
+                    // ToLine(pIndex, v0Index, v1Index) uses mQueryPoint when
+                    // pIndex is set to 'invalid'.
+                    if (ToLine(invalid, v[i0], v[i1]) > 0)
+                    {
+                        tIndex = adj[i0];
+                        if (tIndex == invalid)
+                        {
+                            info.finalV[0] = v[i0];
+                            info.finalV[1] = v[i1];
+                            info.finalV[2] = v[i2];
+                            return invalid;
+                        }
+                        break;
+                    }
+                }
+                if (i2 == 3)
+                {
+                    return tIndex;
+                }
+            }
+            return invalid;
+        }
+
+    private:
         // The minimum-size rational type of the input points.
         static int32_t constexpr InputNumWords = std::is_same<T, float>::value ? 2 : 4;
         using InputRational = BSNumber<UIntegerFP32<InputNumWords>>;
@@ -334,7 +597,7 @@ namespace gte
 
                 if (j == 3)
                 {
-                    // The point is inside all four edges, so the point is
+                    // The point is inside all three edges, so the point is
                     // inside a triangle.
                     return true;
                 }
@@ -547,7 +810,7 @@ namespace gte
             // leaves and 7 compute nodes.
 
             // Use interval arithmetic to determine the sign if possible.
-            Vector2<T> const& inP = mVertices[pIndex];
+            Vector2<T> const& inP = (pIndex != invalid ? mVertices[pIndex] : mQueryPoint);
             Vector2<T> const& inV0 = mVertices[v0Index];
             Vector2<T> const& inV1 = mVertices[v1Index];
 
@@ -573,7 +836,7 @@ namespace gte
             // the determinant using rational arithmetic.
 
             // Name the nodes of the expression tree.
-            auto const& irP = mIRVertices[pIndex];
+            auto const& irP = (pIndex != invalid ? mIRVertices[pIndex] : mIRQueryPoint);
             Vector2<InputRational> const& irV0 = mIRVertices[v0Index];
             Vector2<InputRational> const& irV1 = mIRVertices[v1Index];
 
@@ -1449,6 +1712,58 @@ namespace gte
                     LogAssert(
                         inserted != nullptr,
                         "Unexpected insertion failure.");
+                }
+            }
+        }
+
+    private:
+        // Support for queries associated with the mesh of Delaunay triangles.
+        mutable std::vector<std::array<size_t, 3>> mTriangles;
+        mutable std::vector<std::array<size_t, 3>> mAdjacencies;
+        mutable bool mTrianglesAndAdjacenciesNeedUpdate;
+        mutable Vector2<T> mQueryPoint;
+        mutable IRVector mIRQueryPoint;
+
+        void UpdateTrianglesAndAdjacencies() const
+        {
+            // Assign integer values to the triangles.
+            auto const& tmap = mGraph.GetTriangles();
+            if (tmap.size() == 0)
+            {
+                return;
+            }
+
+            std::unordered_map<std::shared_ptr<Triangle>, size_t> permute;
+            permute[nullptr] = invalid;
+            size_t numTriangles = 0;
+            for (auto const& element : tmap)
+            {
+                if (IsDelaunayVertex(element.first.V[0]) &&
+                    IsDelaunayVertex(element.first.V[1]) &&
+                    IsDelaunayVertex(element.first.V[2]))
+                {
+                    permute[element.second] = numTriangles++;
+                }
+                else
+                {
+                    permute[element.second] = invalid;
+                }
+            }
+
+            mTriangles.resize(numTriangles);
+            mAdjacencies.resize(numTriangles);
+            size_t t = 0;
+            for (auto const& element : tmap)
+            {
+                auto const& tri = element.second;
+                if (permute[element.second] != invalid)
+                {
+                    for (size_t j = 0; j < 3; ++j)
+                    {
+                        mTriangles[t][j] = tri->V[j];
+                        mAdjacencies[t][j] = permute[tri->T[j].lock()];
+                    }
+                    ++t;
                 }
             }
         }
