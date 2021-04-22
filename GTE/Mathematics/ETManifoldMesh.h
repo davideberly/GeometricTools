@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -25,14 +25,14 @@ namespace gte
     public:
         // Edge data types.
         class Edge;
-        typedef std::shared_ptr<Edge>(*ECreator)(int, int);
-        using EMap = std::unordered_map<EdgeKey<false>, std::shared_ptr<Edge>,
+        typedef std::unique_ptr<Edge>(*ECreator)(int, int);
+        using EMap = std::unordered_map<EdgeKey<false>, std::unique_ptr<Edge>,
             EdgeKey<false>, EdgeKey<false>>;
 
         // Triangle data types.
         class Triangle;
-        typedef std::shared_ptr<Triangle>(*TCreator)(int, int, int);
-        using TMap = std::unordered_map<TriangleKey<true>, std::shared_ptr<Triangle>,
+        typedef std::unique_ptr<Triangle>(*TCreator)(int, int, int);
+        using TMap = std::unordered_map<TriangleKey<true>, std::unique_ptr<Triangle>,
             TriangleKey<true>, TriangleKey<true>>;
 
         // Edge object.
@@ -45,13 +45,14 @@ namespace gte
                 :
                 V{ v0, v1 }
             {
+                T.fill(nullptr);
             }
 
             // Vertices of the edge.
             std::array<int, 2> V;
 
             // Triangles sharing the edge.
-            std::array<std::weak_ptr<Triangle>, 2> T;
+            std::array<Triangle*, 2> T;
         };
 
         // Triangle object.
@@ -64,9 +65,11 @@ namespace gte
                 :
                 V{ v0, v1, v2 }
             {
+                E.fill(nullptr);
+                T.fill(nullptr);
             }
 
-            // The edge <u0,u1> is directed. Determine whether the triangle 
+            // The edge <u0,u1> is directed. Determine whether the triangle
             // has an edge <V[i],V[(i+1)%3]> = <u0,u1> (return +1) or an edge
             // <V[i],V[(i+1)%3]> = <u1,u0> (return -1) or does not have an
             // edge meeting either condition (return 0).
@@ -86,14 +89,13 @@ namespace gte
                 return 0;
             }
 
-            std::shared_ptr<Triangle> GetAdjacentOfEdge(int u0, int u1)
+            Triangle* GetAdjacentOfEdge(int u0, int u1)
             {
                 for (size_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
                 {
                     if ((V[i0] == u0 && V[i1] == u1) || (V[i0] == u1 && V[i1] == u0))
                     {
-                        auto adj = T[i0].lock();
-                        return adj;
+                        return T[i0];
                     }
                 }
                 return nullptr;
@@ -116,11 +118,11 @@ namespace gte
             std::array<int, 3> V;
 
             // Adjacent edges.  E[i] points to edge (V[i],V[(i+1)%3]).
-            std::array<std::weak_ptr<Edge>, 3> E;
+            std::array<Edge*, 3> E;
 
             // Adjacent triangles.  T[i] points to the adjacent triangle
             // sharing edge E[i].
-            std::array<std::weak_ptr<Triangle>, 3> T;
+            std::array<Triangle*, 3> T;
         };
 
 
@@ -137,9 +139,7 @@ namespace gte
 
         // Support for a deep copy of the mesh.  The mEMap and mTMap objects
         // have dynamically allocated memory for edges and triangles.  A
-        // shallow copy of the pointers to this memory is problematic.
-        // Allowing sharing, say, via std::shared_ptr, is an option but not
-        // really the intent of copying the mesh graph.
+        // shallow copy of the pointers isn't possible with unique_ptr.
         ETManifoldMesh(ETManifoldMesh const& mesh)
         {
             *this = mesh;
@@ -188,7 +188,7 @@ namespace gte
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
         // returned.  If the insertion leads to a nonmanifold mesh, the call
         // fails with a nullptr returned.
-        virtual std::shared_ptr<Triangle> Insert(int v0, int v1, int v2)
+        virtual Triangle* Insert(int v0, int v1, int v2)
         {
             TriangleKey<true> tkey(v0, v1, v2);
             if (mTMap.find(tkey) != mTMap.end())
@@ -202,19 +202,21 @@ namespace gte
             // of the function so that if an assertion is triggered and the
             // function returns early, the (bad) triangle will not be part of
             // the mesh.
-            std::shared_ptr<Triangle> tri = mTCreator(v0, v1, v2);
+            std::unique_ptr<Triangle> newTri = mTCreator(v0, v1, v2);
+            Triangle* tri = newTri.get();
 
             // Add the edges to the mesh if they do not already exist.
             for (int i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
             {
                 EdgeKey<false> ekey(tri->V[i0], tri->V[i1]);
-                std::shared_ptr<Edge> edge;
+                Edge* edge;
                 auto eiter = mEMap.find(ekey);
                 if (eiter == mEMap.end())
                 {
                     // This is the first time the edge is encountered.
-                    edge = mECreator(tri->V[i0], tri->V[i1]);
-                    mEMap[ekey] = edge;
+                    std::unique_ptr<Edge> newEdge = mECreator(tri->V[i0], tri->V[i1]);
+                    edge = newEdge.get();
+                    mEMap[ekey] = std::move(newEdge);
 
                     // Update the edge and triangle.
                     edge->T[0] = tri;
@@ -223,11 +225,11 @@ namespace gte
                 else
                 {
                     // This is the second time the edge is encountered.
-                    edge = eiter->second;
+                    edge = eiter->second.get();
                     LogAssert(edge != nullptr, "Unexpected condition.");
 
                     // Update the edge.
-                    if (edge->T[1].lock())
+                    if (edge->T[1])
                     {
                         if (mThrowOnNonmanifoldInsertion)
                         {
@@ -241,11 +243,11 @@ namespace gte
                     edge->T[1] = tri;
 
                     // Update the adjacent triangles.
-                    auto adjacent = edge->T[0].lock();
+                    auto adjacent = edge->T[0];
                     LogAssert(adjacent != nullptr, "Unexpected condition.");
                     for (int j = 0; j < 3; ++j)
                     {
-                        if (adjacent->E[j].lock() == edge)
+                        if (adjacent->E[j] == edge)
                         {
                             adjacent->T[j] = tri;
                             break;
@@ -258,7 +260,7 @@ namespace gte
                 }
             }
 
-            mTMap[tkey] = tri;
+            mTMap[tkey] = std::move(newTri);
             return tri;
         }
 
@@ -276,24 +278,24 @@ namespace gte
             }
 
             // Get the triangle.
-            std::shared_ptr<Triangle> tri = titer->second;
+            Triangle* tri = titer->second.get();
 
             // Remove the edges and update adjacent triangles if necessary.
             for (int i = 0; i < 3; ++i)
             {
                 // Inform the edges the triangle is being deleted.
-                auto edge = tri->E[i].lock();
+                auto edge = tri->E[i];
                 LogAssert(edge != nullptr, "Unexpected condition.");
 
-                if (edge->T[0].lock() == tri)
+                if (edge->T[0] == tri)
                 {
                     // One-triangle edges always have pointer at index zero.
                     edge->T[0] = edge->T[1];
-                    edge->T[1].reset();
+                    edge->T[1] = nullptr;
                 }
-                else if (edge->T[1].lock() == tri)
+                else if (edge->T[1] == tri)
                 {
-                    edge->T[1].reset();
+                    edge->T[1] = nullptr;
                 }
                 else
                 {
@@ -301,21 +303,21 @@ namespace gte
                 }
 
                 // Remove the edge if you have the last reference to it.
-                if (!edge->T[0].lock() && !edge->T[1].lock())
+                if (!edge->T[0] && !edge->T[1])
                 {
                     EdgeKey<false> ekey(edge->V[0], edge->V[1]);
                     mEMap.erase(ekey);
                 }
 
                 // Inform adjacent triangles the triangle is being deleted.
-                auto adjacent = tri->T[i].lock();
+                auto adjacent = tri->T[i];
                 if (adjacent)
                 {
                     for (int j = 0; j < 3; ++j)
                     {
-                        if (adjacent->T[j].lock() == tri)
+                        if (adjacent->T[j] == tri)
                         {
-                            adjacent->T[j].reset();
+                            adjacent->T[j] = nullptr;
                             break;
                         }
                     }
@@ -343,8 +345,8 @@ namespace gte
         {
             for (auto const& element : mEMap)
             {
-                std::shared_ptr<Edge> edge = element.second;
-                if (!edge->T[0].lock() || !edge->T[1].lock())
+                Edge* edge = element.second.get();
+                if (!edge->T[0] || !edge->T[1])
                 {
                     return false;
                 }
@@ -360,8 +362,8 @@ namespace gte
         {
             for (auto const& element : mEMap)
             {
-                std::shared_ptr<Edge> edge = element.second;
-                if (edge->T[0].lock() && edge->T[1].lock())
+                Edge* edge = element.second.get();
+                if (edge->T[0] && edge->T[1])
                 {
                     // In each triangle, find the ordered edge that
                     // corresponds to the unordered edge element.first.  Also
@@ -370,7 +372,7 @@ namespace gte
                     int vOpposite[2] = { -1, -1 };
                     for (int j = 0; j < 2; ++j)
                     {
-                        auto tri = edge->T[j].lock();
+                        auto tri = edge->T[j];
                         for (int i = 0; i < 3; ++i)
                         {
                             if (tri->V[i] == element.first.V[0])
@@ -410,23 +412,23 @@ namespace gte
         // triangle keys, which requires three times as much storage as the
         // pointers but allows you to clear or destroy 'this' before consuming
         // the components.
-        void GetComponents(std::vector<std::vector<std::shared_ptr<Triangle>>>& components) const
+        void GetComponents(std::vector<std::vector<Triangle*>>& components) const
         {
             // visited: 0 (unvisited), 1 (discovered), 2 (finished)
             TrianglePtrIntMap visited;
             for (auto const& element : mTMap)
             {
-                visited.insert(std::make_pair(element.second, 0));
+                visited.insert(std::make_pair(element.second.get(), 0));
             }
 
             for (auto& element : mTMap)
             {
-                std::shared_ptr<Triangle> tri = element.second;
+                Triangle* tri = element.second.get();
                 if (visited[tri] == 0)
                 {
-                    std::vector<std::shared_ptr<Triangle>> component;
+                    std::vector<Triangle*> component;
                     DepthFirstSearch(tri, visited, component);
-                    components.push_back(component);
+                    components.push_back(std::move(component));
                 }
             }
         }
@@ -437,15 +439,15 @@ namespace gte
             TrianglePtrIntMap visited;
             for (auto const& element : mTMap)
             {
-                visited.insert(std::make_pair(element.second, 0));
+                visited.insert(std::make_pair(element.second.get(), 0));
             }
 
             for (auto& element : mTMap)
             {
-                std::shared_ptr<Triangle> tri = element.second;
+                Triangle* tri = element.second.get();
                 if (visited[tri] == 0)
                 {
-                    std::vector<std::shared_ptr<Triangle>> component;
+                    std::vector<Triangle*> component;
                     DepthFirstSearch(tri, visited, component);
 
                     std::vector<TriangleKey<true>> keyComponent;
@@ -454,7 +456,7 @@ namespace gte
                     {
                         keyComponent.push_back(TriangleKey<true>(t->V[0], t->V[1], t->V[2]));
                     }
-                    components.push_back(keyComponent);
+                    components.push_back(std::move(keyComponent));
                 }
             }
         }
@@ -495,7 +497,7 @@ namespace gte
             size_t index = 0;
             for (auto const& element : mTMap)
             {
-                triIndexMap.insert(std::make_pair(element.second, index++));
+                triIndexMap.insert(std::make_pair(element.second.get(), index++));
             }
 
             index = 0;
@@ -507,7 +509,7 @@ namespace gte
                 for (size_t j = 0; j < 3; ++j)
                 {
                     tri[j] = triPtr->V[j];
-                    adj[j] = triIndexMap[triPtr->T[j].lock()];
+                    adj[j] = triIndexMap[triPtr->T[j]];
                 }
                 ++index;
             }
@@ -717,7 +719,7 @@ namespace gte
             std::multimap<int, int> vertexGraph;
             for (auto const& element : mEMap)
             {
-                auto adj = element.second->T[1].lock();
+                auto adj = element.second->T[1];
                 if (!adj)
                 {
                     int v0 = element.first.V[0], v1 = element.first.V[1];
@@ -779,7 +781,7 @@ namespace gte
                         EdgeKey<false> ekey(v, vAdjacent);
                         auto edge = mEMap.find(ekey);
                         LogAssert(edge != mEMap.end(), "unexpected condition");
-                        auto tCurrent = edge->second->T[0].lock();
+                        auto tCurrent = edge->second->T[0];
                         LogAssert(tCurrent != nullptr, "unexpected condtion");
 
                         // Traverse the triangle strip to the other boundary
@@ -801,7 +803,7 @@ namespace gte
 
                             ekey = EdgeKey<false>(v, vOpposite);
                             edge = mEMap.find(ekey);
-                            auto tNext = edge->second->T[1].lock();
+                            auto tNext = edge->second->T[1];
                             if (tNext == nullptr)
                             {
                                 // Found the last triangle in the strip.
@@ -812,7 +814,7 @@ namespace gte
                             // to the triangle adjacent to the current one.
                             if (tNext == tCurrent)
                             {
-                                tCurrent = edge->second->T[0].lock();
+                                tCurrent = edge->second->T[0];
                             }
                             else
                             {
@@ -846,7 +848,7 @@ namespace gte
                 EdgeKey<false> boundaryEdge(epIter->first, epIter->second[0]);
                 auto edge = mEMap.find(boundaryEdge);
                 LogAssert(edge != mEMap.end(), "unexpected condtion");
-                auto currentTriangle = edge->second->T[0].lock();
+                auto currentTriangle = edge->second->T[0];
                 LogAssert(currentTriangle != nullptr, "unexpected condtion");
                 int vStart = invalidVertex, vNext = invalidVertex;
                 size_t i0, i1;
@@ -932,22 +934,22 @@ namespace gte
         }
 
     protected:
-        using TrianglePtrIntMap = std::unordered_map<std::shared_ptr<Triangle>, int>;
-        using TrianglePtrSizeTMap = std::unordered_map<std::shared_ptr<Triangle>, size_t>;
+        using TrianglePtrIntMap = std::unordered_map<Triangle*, int>;
+        using TrianglePtrSizeTMap = std::unordered_map<Triangle*, size_t>;
 
         // The edge data and default edge creation.
-        static std::shared_ptr<Edge> CreateEdge(int v0, int v1)
+        static std::unique_ptr<Edge> CreateEdge(int v0, int v1)
         {
-            return std::make_shared<Edge>(v0, v1);
+            return std::make_unique<Edge>(v0, v1);
         }
 
         ECreator mECreator;
         EMap mEMap;
 
         // The triangle data and default triangle creation.
-        static std::shared_ptr<Triangle> CreateTriangle(int v0, int v1, int v2)
+        static std::unique_ptr<Triangle> CreateTriangle(int v0, int v1, int v2)
         {
-            return std::make_shared<Triangle>(v0, v1, v2);
+            return std::make_unique<Triangle>(v0, v1, v2);
         }
 
         TCreator mTCreator;
@@ -959,24 +961,24 @@ namespace gte
         // preallocated stack rather than a recursive function that could
         // possibly overflow the call stack.
         void DepthFirstSearch(
-            std::shared_ptr<Triangle> const& tInitial,
+            Triangle* tInitial,
             TrianglePtrIntMap& visited,
-            std::vector<std::shared_ptr<Triangle>>& component) const
+            std::vector<Triangle*>& component) const
         {
             // Allocate the maximum-size stack that can occur in the
             // depth-first search.  The stack is empty when the index top
             // is -1.
-            std::vector<std::shared_ptr<Triangle>> tStack(mTMap.size());
+            std::vector<Triangle*> tStack(mTMap.size());
             int top = -1;
             tStack[++top] = tInitial;
             while (top >= 0)
             {
-                std::shared_ptr<Triangle> tri = tStack[top];
+                Triangle* tri = tStack[top];
                 visited[tri] = 1;
                 int i;
                 for (i = 0; i < 3; ++i)
                 {
-                    std::shared_ptr<Triangle> adj = tri->T[i].lock();
+                    Triangle* adj = tri->T[i];
                     if (adj && visited[adj] == 0)
                     {
                         tStack[++top] = adj;

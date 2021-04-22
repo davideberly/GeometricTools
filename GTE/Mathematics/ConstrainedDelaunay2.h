@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.03.15
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -231,7 +231,7 @@ namespace gte
             auto const& vmap = this->mGraph.GetVertices();
             auto viter = vmap.find(v);
             LogAssert(viter != vmap.end(), "Failed to find vertex in graph.");
-            auto vertex = viter->second;
+            auto vertex = viter->second.get();
             LogAssert(vertex != nullptr, "Unexpected condition.");
 
             for (auto const& linkTri : vertex->TAdjacent)
@@ -269,7 +269,7 @@ namespace gte
             auto const& tmap = this->mGraph.GetTriangles();
             auto titer = tmap.find(TriangleKey<true>(localEdge[0], v0, v1));
             LogAssert(titer != tmap.end(), CDTMessage());
-            auto tri = titer->second;
+            auto tri = titer->second.get();
             LogAssert(tri, CDTMessage());
 
             // Keep track of the right and left polylines that bound the
@@ -732,7 +732,7 @@ namespace gte
             auto const& vmap = this->mGraph.GetVertices();
             auto viter = vmap.find(v);
             LogAssert(viter != vmap.end(), "Failed to find vertex in graph.");
-            auto vertex = viter->second;
+            auto vertex = viter->second.get();
             LogAssert(vertex != nullptr, "Unexpected condition.");
 
             for (auto const& linkTri : vertex->TAdjacent)
@@ -838,7 +838,7 @@ namespace gte
             auto const& tmap = this->mGraph.GetTriangles();
             auto titer = tmap.find(TriangleKey<true>(localEdge[0], v0, v1));
             LogAssert(titer != tmap.end(), CDTMessage());
-            auto tri = titer->second;
+            auto tri = titer->second.get();
             LogAssert(tri, CDTMessage());
 
             // Keep track of the right and left polylines that bound the

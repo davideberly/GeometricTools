@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.02
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -424,7 +424,7 @@ namespace gte
         void Hull3(std::vector<size_t>& hull, size_t numSorted, size_t* sorted,
             VETManifoldMesh& hullMesh, size_t& current)
         {
-            using TrianglePtr = std::shared_ptr<VETManifoldMesh::Triangle>;
+            using TrianglePtr = VETManifoldMesh::Triangle*;
             // The hull points previous to the current one are coplanar and
             // are the vertices of a convex polygon. To initialize the 3D
             // hull, use triangles from a triangle fan of the convex polygon
@@ -525,7 +525,7 @@ namespace gte
                     visible.pop();
                     for (size_t i = 0; i < 3; ++i)
                     {
-                        auto adj = tri->T[i].lock();
+                        auto adj = tri->T[i];
                         if (adj)
                         {
                             if (ToPlane(adj->V[0], adj->V[1], adj->V[2], h1) <= 0)

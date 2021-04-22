@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -157,7 +157,7 @@ namespace gte
         std::vector<int> mVertexInfo;
         int mNumBoundaryEdges, mBoundaryStart;
         typedef ETManifoldMesh::Edge Edge;
-        std::set<std::shared_ptr<Edge>> mInteriorEdges;
+        std::set<Edge*> mInteriorEdges;
 
         // The vertex graph required to set up a sparse linear system of
         // equations to determine the texture coordinates.
@@ -218,10 +218,10 @@ namespace gte
                 ++numAdjacencies[element.first.V[0]];
                 ++numAdjacencies[element.first.V[1]];
 
-                if (element.second->T[1].lock())
+                if (element.second->T[1])
                 {
                     // This is an interior edge.
-                    mInteriorEdges.insert(element.second);
+                    mInteriorEdges.insert(element.second.get());
                 }
                 else
                 {
@@ -229,7 +229,7 @@ namespace gte
                     // vertex indices to make the edge counterclockwise.
                     ++mNumBoundaryEdges;
                     int v0 = element.second->V[0], v1 = element.second->V[1];
-                    auto tri = element.second->T[0].lock();
+                    auto tri = element.second->T[0];
                     int i;
                     for (i = 0; i < 3; ++i)
                     {
@@ -468,7 +468,7 @@ namespace gte
                         {
                             // Find the vertex of triangle T[j] opposite edge
                             // <X0,X1>.
-                            auto tri = edge->T[j].lock();
+                            auto tri = edge->T[j];
                             int k;
                             for (k = 0; k < 3; ++k)
                             {

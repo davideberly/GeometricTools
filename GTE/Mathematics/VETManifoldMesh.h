@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.17
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -20,8 +20,8 @@ namespace gte
     public:
         // Vertex data types.
         class Vertex;
-        typedef std::shared_ptr<Vertex>(*VCreator)(int);
-        using VMap = std::unordered_map<int, std::shared_ptr<Vertex>>;
+        typedef std::unique_ptr<Vertex>(*VCreator)(int);
+        using VMap = std::unordered_map<int, std::unique_ptr<Vertex>>;
 
         // Vertex object.
         class Vertex
@@ -40,8 +40,8 @@ namespace gte
 
             // Adjacent objects.
             std::unordered_set<int> VAdjacent;
-            std::unordered_set<std::shared_ptr<Edge>> EAdjacent;
-            std::unordered_set<std::shared_ptr<Triangle>> TAdjacent;
+            std::unordered_set<Edge*> EAdjacent;
+            std::unordered_set<Triangle*> TAdjacent;
         };
 
 
@@ -83,9 +83,9 @@ namespace gte
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
         // returned.  If the insertion leads to a nonmanifold mesh, the call
         // fails with a nullptr returned.
-        virtual std::shared_ptr<Triangle> Insert(int v0, int v1, int v2) override
+        virtual Triangle* Insert(int v0, int v1, int v2) override
         {
-            std::shared_ptr<Triangle> tri = ETManifoldMesh::Insert(v0, v1, v2);
+            Triangle* tri = ETManifoldMesh::Insert(v0, v1, v2);
             if (!tri)
             {
                 return nullptr;
@@ -95,22 +95,23 @@ namespace gte
             {
                 int vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
-                std::shared_ptr<Vertex> vertex;
+                Vertex* vertex;
                 if (vItem == mVMap.end())
                 {
-                    vertex = mVCreator(vIndex);
-                    mVMap[vIndex] = vertex;
+                    std::unique_ptr<Vertex> newVertex = mVCreator(vIndex);
+                    vertex = newVertex.get();
+                    mVMap[vIndex] = std::move(newVertex);
                 }
                 else
                 {
-                    vertex = vItem->second;
+                    vertex = vItem->second.get();
                 }
 
                 vertex->TAdjacent.insert(tri);
 
                 for (int j = 0; j < 3; ++j)
                 {
-                    auto edge = tri->E[j].lock();
+                    auto edge = tri->E[j];
                     LogAssert(edge != nullptr, "Malformed mesh.");
                     if (edge->V[0] == vIndex)
                     {
@@ -138,18 +139,18 @@ namespace gte
                 return false;
             }
 
-            std::shared_ptr<Triangle> tri = tItem->second;
+            Triangle* tri = tItem->second.get();
             for (int i = 0; i < 3; ++i)
             {
                 int vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
                 LogAssert(vItem != mVMap.end(), "Malformed mesh.");
-                std::shared_ptr<Vertex> vertex = vItem->second;
+                Vertex* vertex = vItem->second.get();
                 for (int j = 0; j < 3; ++j)
                 {
-                    auto edge = tri->E[j].lock();
+                    auto edge = tri->E[j];
                     LogAssert(edge != nullptr, "Malformed mesh.");
-                    if (edge->T[0].lock() && !edge->T[1].lock())
+                    if (edge->T[0] && !edge->T[1])
                     {
                         if (edge->V[0] == vIndex)
                         {
@@ -187,9 +188,9 @@ namespace gte
 
     protected:
         // The vertex data and default vertex creation.
-        static std::shared_ptr<Vertex> CreateVertex(int vIndex)
+        static std::unique_ptr<Vertex> CreateVertex(int vIndex)
         {
-            return std::make_shared<Vertex>(vIndex);
+            return std::make_unique<Vertex>(vIndex);
         }
 
         VCreator mVCreator;

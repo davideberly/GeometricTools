@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.30
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -439,7 +439,7 @@ namespace gte
                 LogAssert(eiter != emap.end(), "Unexpected condition.");
                 auto const& edge = eiter->second;
                 LogAssert(edge, "Unexpected condition.");
-                auto tri0 = edge->T[0].lock();
+                auto tri0 = edge->T[0];
                 LogAssert(tri0, "Unexpected condition.");
                 if (tri0->WhichSideOfEdge(v0, v1) == node.chirality)
                 {
@@ -447,7 +447,7 @@ namespace gte
                 }
                 else
                 {
-                    auto tri1 = edge->T[1].lock();
+                    auto tri1 = edge->T[1];
                     if (tri1)
                     {
                         region.insert(TriangleKey<true>(tri1->V[0], tri1->V[1], tri1->V[2]));
@@ -487,7 +487,7 @@ namespace gte
                 LogAssert(tri, "Unexpected condition.");
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto edge = tri->E[j].lock();
+                    auto edge = tri->E[j];
                     if (edge)
                     {
                         auto siter = edges.find(EdgeKey<false>(edge->V[0], edge->V[1]));
@@ -495,7 +495,7 @@ namespace gte
                         {
                             // The edge is not constrained, so it allows the
                             // search to continue.
-                            auto adj = tri->T[j].lock();
+                            auto adj = tri->T[j];
                             if (adj)
                             {
                                 TriangleKey<true> akey(adj->V[0], adj->V[1], adj->V[2]);
@@ -948,7 +948,7 @@ namespace gte
                 LogAssert(eiter != emap.end(), "Unexpected condition.");
                 auto const& edge = eiter->second;
                 LogAssert(edge, "Unexpected condition.");
-                auto tri0 = edge->T[0].lock();
+                auto tri0 = edge->T[0];
                 LogAssert(tri0, "Unexpected condition.");
                 if (tri0->WhichSideOfEdge(v0, v1) == node.chirality)
                 {
@@ -956,7 +956,7 @@ namespace gte
                 }
                 else
                 {
-                    auto tri1 = edge->T[1].lock();
+                    auto tri1 = edge->T[1];
                     if (tri1)
                     {
                         region.insert(TriangleKey<true>(tri1->V[0], tri1->V[1], tri1->V[2]));
@@ -996,7 +996,7 @@ namespace gte
                 LogAssert(tri, "Unexpected condition.");
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto edge = tri->E[j].lock();
+                    auto edge = tri->E[j];
                     if (edge)
                     {
                         auto siter = edges.find(EdgeKey<false>(edge->V[0], edge->V[1]));
@@ -1004,7 +1004,7 @@ namespace gte
                         {
                             // The edge is not constrained, so it allows the
                             // search to continue.
-                            auto adj = tri->T[j].lock();
+                            auto adj = tri->T[j];
                             if (adj)
                             {
                                 TriangleKey<true> akey(adj->V[0], adj->V[1], adj->V[2]);

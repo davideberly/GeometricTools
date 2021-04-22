@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2021.01.17
+// Version: 4.9.2021.04.22
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -442,10 +442,10 @@ namespace gte
             // is a std::unordered_map. The vertices must be sorted here to
             // satisfy condition2.
             auto const& vmap = mesh.GetVertices();
-            std::map<int, std::shared_ptr<VETManifoldMesh::Vertex>> sortedVMap;
+            std::map<int, VETManifoldMesh::Vertex*> sortedVMap;
             for (auto const& element : vmap)
             {
-                sortedVMap.insert(element);
+                sortedVMap.emplace(element.first, element.second.get());
             }
 
             size_t numAdjacentPool = 0;
@@ -472,11 +472,11 @@ namespace gte
             mEdges.resize(emap.size());
             mTriangles.resize(tmap.size());
 
-            std::map<std::shared_ptr<ETManifoldMesh::Edge>, size_t> edgeIndexMap;
+            std::map<ETManifoldMesh::Edge*, size_t> edgeIndexMap;
             size_t index = 0;
             for (auto const& element : emap)
             {
-                edgeIndexMap.insert(std::make_pair(element.second, index));
+                edgeIndexMap.emplace(element.second.get(), index);
                 for (size_t j = 0; j < 2; ++j)
                 {
                     mEdges[index].V[j] = (size_t)element.second->V[j];
@@ -484,11 +484,11 @@ namespace gte
                 ++index;
             }
 
-            std::map<std::shared_ptr<ETManifoldMesh::Triangle>, size_t> triangleIndexMap;
+            std::map<ETManifoldMesh::Triangle*, size_t> triangleIndexMap;
             index = 0;
             for (auto const& element : tmap)
             {
-                triangleIndexMap.insert(std::make_pair(element.second, index));
+                triangleIndexMap.emplace(element.second.get(), index);
                 for (size_t j = 0; j < 3; ++j)
                 {
                     mTriangles[index].V[j] = (size_t)element.second->V[j];
@@ -501,7 +501,7 @@ namespace gte
             {
                 for (size_t j = 0; j < 2; ++j)
                 {
-                    auto tri = element.second->T[j].lock();
+                    auto tri = element.second->T[j];
                     auto titer = triangleIndexMap.find(tri);
                     mEdges[index].T[j] = titer->second;
                 }
@@ -513,13 +513,13 @@ namespace gte
             {
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto edg = element.second->E[j].lock();
+                    auto edg = element.second->E[j];
                     auto eiter = edgeIndexMap.find(edg);
                     mTriangles[index].E[j] = eiter->second;
                 }
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto tri = element.second->T[j].lock();
+                    auto tri = element.second->T[j];
                     auto titer = triangleIndexMap.find(tri);
                     mTriangles[index].T[j] = titer->second;
                 }

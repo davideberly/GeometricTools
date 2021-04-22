@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.8.2021.04.16
+// Version: 4.8.2021.04.22
 
 #pragma once
 
@@ -36,12 +36,12 @@
 // The weight function for the priority queue, implemented as a min-heap, is
 // the negative of the function power(p,circle(q0,q1,q2)) function described
 // in the paper.
-// 
+//
 // The paper appears to assume that the removal point is an interior point of
 // the trianglation. Just as the insertion algorithms are different for
 // interior points and for boundary points, the removal algorithms are
 // different for interior points and for boundary points.
-// 
+//
 // The paper mentions that degeneracies (colinear points, cocircular points)
 // are handled by jittering. Although one hopes that jittering prevents
 // degeneracies--and perhaps probabilistically this is acceptable, the only
@@ -539,7 +539,7 @@ namespace gte
         // is the current triangulation. The mIndex array provides indexing
         using Triangle = VETManifoldMesh::Triangle;
         using DirectedEdgeKeySet = std::set<EdgeKey<true>>;
-        using TrianglePtrSet = std::set<std::shared_ptr<Triangle>>;
+        using TrianglePtrSet = std::set<Triangle*>;
         VETManifoldMesh mGraph;
 
         // Indexing for the vertices of the triangle adjacent to a vertex.
@@ -565,7 +565,7 @@ namespace gte
             return vIndex < 3;
         }
 
-        bool GetContainingTriangle(size_t pIndex, std::shared_ptr<Triangle>& tri) const
+        bool GetContainingTriangle(size_t pIndex, Triangle*& tri) const
         {
             size_t const numTriangles = mGraph.GetTriangles().size();
             for (size_t t = 0; t < numTriangles; ++t)
@@ -578,7 +578,7 @@ namespace gte
                     if (ToLine(pIndex, v0Index, v1Index) > 0)
                     {
                         // Point i sees edge <v0,v1> from outside the triangle.
-                        auto adjTri = tri->T[j].lock();
+                        auto adjTri = tri->T[j];
                         if (adjTri)
                         {
                             // Traverse to the triangle sharing the face.
@@ -614,12 +614,12 @@ namespace gte
             ETManifoldMesh polygon;
             while (candidates.size() > 0)
             {
-                std::shared_ptr<Triangle> tri = *candidates.begin();
+                Triangle* tri = *candidates.begin();
                 candidates.erase(candidates.begin());
 
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto adj = tri->T[j].lock();
+                    auto adj = tri->T[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
                         size_t v0Index = adj->V[0];
@@ -647,10 +647,10 @@ namespace gte
             // Get the boundary edges of the insertion polygon.
             for (auto const& element : polygon.GetTriangles())
             {
-                std::shared_ptr<Triangle> tri = element.second;
+                Triangle* tri = element.second.get();
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    if (!tri->T[j].lock())
+                    if (!tri->T[j])
                     {
                         EdgeKey<true> ekey(tri->V[mIndex[j][0]], tri->V[mIndex[j][1]]);
                         boundary.insert(ekey);
@@ -662,7 +662,7 @@ namespace gte
         void Update(size_t pIndex)
         {
             auto const& tmap = mGraph.GetTriangles();
-            std::shared_ptr<Triangle> tri = tmap.begin()->second;
+            Triangle* tri = tmap.begin()->second.get();
             if (GetContainingTriangle(pIndex, tri))
             {
                 // The point is inside the convex hull. The insertion polygon
@@ -706,10 +706,10 @@ namespace gte
                 DirectedEdgeKeySet hull;
                 for (auto const& element : tmap)
                 {
-                    std::shared_ptr<Triangle> t = element.second;
+                    Triangle* t = element.second.get();
                     for (size_t j = 0; j < 3; ++j)
                     {
-                        if (!t->T[j].lock())
+                        if (!t->T[j])
                         {
                             hull.insert(EdgeKey<true>(t->V[mIndex[j][0]], t->V[mIndex[j][1]]));
                         }
@@ -728,9 +728,9 @@ namespace gte
                     if (ToLine(pIndex, v0Index, v1Index) > 0)
                     {
                         auto iter = emap.find(EdgeKey<false>(key.V[0], key.V[1]));
-                        if (iter != emap.end() && iter->second->T[1].lock() == nullptr)
+                        if (iter != emap.end() && iter->second->T[1] == nullptr)
                         {
-                            auto adj = iter->second->T[0].lock();
+                            auto adj = iter->second->T[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
                                 size_t a0Index = static_cast<size_t>(adj->V[0]);
@@ -1082,7 +1082,7 @@ namespace gte
         //     = -det | Vc.y-Vp.y      Vn.y-Vp.y      P.y-Vp.y     |
         //            | |Vc|^2-|Vp|^2  |Vn|^2-|Vp|^2  |P|^2-|Vp|^2 |
         //            +-                                          -+
-        // 
+        //
         // To use BSNumber-based rationals, the weight is a ratio stored as a
         // pair (WNumer, WDenom) with WDenom > 0. The comparison of weights is
         // WN0/WD0 < WN1/WD1, implemented as WN0*WD1 < WN1*WD0. Additionally,
@@ -1439,7 +1439,7 @@ namespace gte
         }
 
         void DeleteRemovalPolygon(int32_t vRemovalIndex,
-            std::unordered_set<std::shared_ptr<Triangle>> const& adjacents,
+            std::unordered_set<Triangle*> const& adjacents,
             std::vector<int32_t>& polygon)
         {
             // Get the edges of the removal polygon. The polygon is star
@@ -1733,7 +1733,7 @@ namespace gte
                 return;
             }
 
-            std::unordered_map<std::shared_ptr<Triangle>, size_t> permute;
+            std::unordered_map<Triangle*, size_t> permute;
             permute[nullptr] = invalid;
             size_t numTriangles = 0;
             for (auto const& element : tmap)
@@ -1742,11 +1742,11 @@ namespace gte
                     IsDelaunayVertex(element.first.V[1]) &&
                     IsDelaunayVertex(element.first.V[2]))
                 {
-                    permute[element.second] = numTriangles++;
+                    permute[element.second.get()] = numTriangles++;
                 }
                 else
                 {
-                    permute[element.second] = invalid;
+                    permute[element.second.get()] = invalid;
                 }
             }
 
@@ -1756,12 +1756,12 @@ namespace gte
             for (auto const& element : tmap)
             {
                 auto const& tri = element.second;
-                if (permute[element.second] != invalid)
+                if (permute[element.second.get()] != invalid)
                 {
                     for (size_t j = 0; j < 3; ++j)
                     {
                         mTriangles[t][j] = tri->V[j];
-                        mAdjacencies[t][j] = permute[tri->T[j].lock()];
+                        mAdjacencies[t][j] = permute[tri->T[j]];
                     }
                     ++t;
                 }

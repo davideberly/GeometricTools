@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.03.15
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -335,12 +335,12 @@ namespace gte
         {
             // Assign integer values to the triangles.
             auto const& tmap = mGraph.GetTriangles();
-            std::map<std::shared_ptr<Triangle>, int> permute;
+            std::map<Triangle*, int> permute;
             int i = -1;
             permute[nullptr] = i++;
             for (auto const& element : tmap)
             {
-                permute[element.second] = i++;
+                permute[element.second.get()] = i++;
             }
 
             mNumTriangles = static_cast<int>(tmap.size());
@@ -352,11 +352,11 @@ namespace gte
                 i = 0;
                 for (auto const& element : tmap)
                 {
-                    std::shared_ptr<Triangle> tri = element.second;
+                    Triangle* tri = element.second.get();
                     for (size_t j = 0; j < 3; ++j, ++i)
                     {
                         mIndices[i] = tri->V[j];
-                        mAdjacencies[i] = permute[tri->T[j].lock()];
+                        mAdjacencies[i] = permute[tri->T[j]];
                     }
                 }
             }
@@ -533,7 +533,7 @@ namespace gte
         // Support for incremental Delaunay triangulation.
         typedef ETManifoldMesh::Triangle Triangle;
 
-        bool GetContainingTriangle(int i, std::shared_ptr<Triangle>& tri) const
+        bool GetContainingTriangle(int i, Triangle*& tri) const
         {
             int numTriangles = static_cast<int>(mGraph.GetTriangles().size());
             for (int t = 0; t < numTriangles; ++t)
@@ -546,7 +546,7 @@ namespace gte
                     if (mQuery.ToLine(i, v0, v1) > 0)
                     {
                         // Point i sees edge <v0,v1> from outside the triangle.
-                        auto adjTri = tri->T[j].lock();
+                        auto adjTri = tri->T[j];
                         if (adjTri)
                         {
                             // Traverse to the triangle sharing the face.
@@ -574,19 +574,19 @@ namespace gte
             LogError("Unexpected termination of loop.");
         }
 
-        bool GetAndRemoveInsertionPolygon(int i, std::set<std::shared_ptr<Triangle>>& candidates,
+        bool GetAndRemoveInsertionPolygon(int i, std::set<Triangle*>& candidates,
             std::set<EdgeKey<true>>& boundary)
         {
             // Locate the triangles that make up the insertion polygon.
             ETManifoldMesh polygon;
             while (candidates.size() > 0)
             {
-                std::shared_ptr<Triangle> tri = *candidates.begin();
+                Triangle* tri = *candidates.begin();
                 candidates.erase(candidates.begin());
 
                 for (int j = 0; j < 3; ++j)
                 {
-                    auto adj = tri->T[j].lock();
+                    auto adj = tri->T[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
                         int a0 = adj->V[0];
@@ -613,10 +613,10 @@ namespace gte
             // Get the boundary edges of the insertion polygon.
             for (auto const& element : polygon.GetTriangles())
             {
-                std::shared_ptr<Triangle> tri = element.second;
+                Triangle* tri = element.second.get();
                 for (int j = 0; j < 3; ++j)
                 {
-                    if (!tri->T[j].lock())
+                    if (!tri->T[j])
                     {
                         boundary.insert(EdgeKey<true>(tri->V[mIndex[j][0]], tri->V[mIndex[j][1]]));
                     }
@@ -632,7 +632,7 @@ namespace gte
             // when the insertion fails.
 
             auto const& tmap = mGraph.GetTriangles();
-            std::shared_ptr<Triangle> tri = tmap.begin()->second;
+            Triangle* tri = tmap.begin()->second.get();
             if (GetContainingTriangle(i, tri))
             {
                 // The point is inside the convex hull.  The insertion polygon
@@ -641,7 +641,7 @@ namespace gte
 
                 // Use a depth-first search for those triangles whose
                 // circumcircles contain point i.
-                std::set<std::shared_ptr<Triangle>> candidates;
+                std::set<Triangle*> candidates;
                 candidates.insert(tri);
 
                 // Get the boundary of the insertion polygon C that contains
@@ -680,10 +680,10 @@ namespace gte
                 std::set<EdgeKey<true>> hull;
                 for (auto const& element : tmap)
                 {
-                    std::shared_ptr<Triangle> t = element.second;
+                    Triangle* t = element.second.get();
                     for (int j = 0; j < 3; ++j)
                     {
-                        if (!t->T[j].lock())
+                        if (!t->T[j])
                         {
                             hull.insert(EdgeKey<true>(t->V[mIndex[j][0]], t->V[mIndex[j][1]]));
                         }
@@ -693,7 +693,7 @@ namespace gte
                 // Iterate over all the hull edges and use the ones visible to
                 // point i to locate the insertion polygon.
                 auto const& emap = mGraph.GetEdges();
-                std::set<std::shared_ptr<Triangle>> candidates;
+                std::set<Triangle*> candidates;
                 std::set<EdgeKey<true>> visible;
                 for (auto const& key : hull)
                 {
@@ -702,9 +702,9 @@ namespace gte
                     if (mQuery.ToLine(i, v0, v1) > 0)
                     {
                         auto iter = emap.find(EdgeKey<false>(v0, v1));
-                        if (iter != emap.end() && iter->second->T[1].lock() == nullptr)
+                        if (iter != emap.end() && iter->second->T[1] == nullptr)
                         {
-                            auto adj = iter->second->T[0].lock();
+                            auto adj = iter->second->T[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
                                 int a0 = adj->V[0];
@@ -1094,12 +1094,12 @@ namespace gte
         {
             // Assign integer values to the triangles.
             auto const& tmap = mGraph.GetTriangles();
-            std::unordered_map<std::shared_ptr<Triangle>, int32_t> permute;
+            std::unordered_map<Triangle*, int32_t> permute;
             int32_t i = -1;
             permute[nullptr] = i++;
             for (auto const& element : tmap)
             {
-                permute[element.second] = i++;
+                permute[element.second.get()] = i++;
             }
 
             mNumTriangles = tmap.size();
@@ -1111,11 +1111,11 @@ namespace gte
                 i = 0;
                 for (auto const& element : tmap)
                 {
-                    std::shared_ptr<Triangle> tri = element.second;
+                    Triangle* tri = element.second.get();
                     for (size_t j = 0; j < 3; ++j, ++i)
                     {
                         mIndices[i] = tri->V[j];
-                        mAdjacencies[i] = permute[tri->T[j].lock()];
+                        mAdjacencies[i] = permute[tri->T[j]];
                     }
                 }
             }
@@ -1341,7 +1341,7 @@ namespace gte
         using DirectedEdgeKeySet = std::unordered_set<
             EdgeKey<true>, EdgeKey<true>, EdgeKey<true>>;
 
-        using TrianglePtrSet = std::unordered_set<std::shared_ptr<Triangle>>;
+        using TrianglePtrSet = std::unordered_set<Triangle*>;
 
         static ComputeRational const& Copy(InputRational const& source,
             ComputeRational& target)
@@ -1580,7 +1580,7 @@ namespace gte
             return -crDet.GetSign();
         }
 
-        bool GetContainingTriangle(size_t pIndex, std::shared_ptr<Triangle>& tri) const
+        bool GetContainingTriangle(size_t pIndex, Triangle*& tri) const
         {
             size_t const numTriangles = mGraph.GetTriangles().size();
             for (size_t t = 0; t < numTriangles; ++t)
@@ -1593,7 +1593,7 @@ namespace gte
                     if (ToLine(pIndex, v0Index, v1Index) > 0)
                     {
                         // Point i sees edge <v0,v1> from outside the triangle.
-                        auto adjTri = tri->T[j].lock();
+                        auto adjTri = tri->T[j];
                         if (adjTri)
                         {
                             // Traverse to the triangle sharing the face.
@@ -1628,12 +1628,12 @@ namespace gte
             ETManifoldMesh polygon;
             while (candidates.size() > 0)
             {
-                std::shared_ptr<Triangle> tri = *candidates.begin();
+                Triangle* tri = *candidates.begin();
                 candidates.erase(candidates.begin());
 
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    auto adj = tri->T[j].lock();
+                    auto adj = tri->T[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
                         size_t v0Index = adj->V[0];
@@ -1656,10 +1656,10 @@ namespace gte
             // Get the boundary edges of the insertion polygon.
             for (auto const& element : polygon.GetTriangles())
             {
-                std::shared_ptr<Triangle> tri = element.second;
+                Triangle* tri = element.second.get();
                 for (size_t j = 0; j < 3; ++j)
                 {
-                    if (!tri->T[j].lock())
+                    if (!tri->T[j])
                     {
                         EdgeKey<true> ekey(tri->V[mIndex[j][0]], tri->V[mIndex[j][1]]);
                         boundary.insert(ekey);
@@ -1671,7 +1671,7 @@ namespace gte
         void Update(size_t pIndex)
         {
             auto const& tmap = mGraph.GetTriangles();
-            std::shared_ptr<Triangle> tri = tmap.begin()->second;
+            Triangle* tri = tmap.begin()->second.get();
             if (GetContainingTriangle(pIndex, tri))
             {
                 // The point is inside the convex hull. The insertion polygon
@@ -1713,10 +1713,10 @@ namespace gte
                 DirectedEdgeKeySet hull;
                 for (auto const& element : tmap)
                 {
-                    std::shared_ptr<Triangle> t = element.second;
+                    Triangle* t = element.second.get();
                     for (size_t j = 0; j < 3; ++j)
                     {
-                        if (!t->T[j].lock())
+                        if (!t->T[j])
                         {
                             hull.insert(EdgeKey<true>(t->V[mIndex[j][0]], t->V[mIndex[j][1]]));
                         }
@@ -1735,9 +1735,9 @@ namespace gte
                     if (ToLine(pIndex, v0Index, v1Index) > 0)
                     {
                         auto iter = emap.find(EdgeKey<false>(key.V[0], key.V[1]));
-                        if (iter != emap.end() && iter->second->T[1].lock() == nullptr)
+                        if (iter != emap.end() && iter->second->T[1] == nullptr)
                         {
-                            auto adj = iter->second->T[0].lock();
+                            auto adj = iter->second->T[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
                                 size_t a0Index = static_cast<size_t>(adj->V[0]);
