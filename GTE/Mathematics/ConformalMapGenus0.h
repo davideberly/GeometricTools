@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -77,7 +77,7 @@ namespace gte
                 value = (Real)0;
                 for (int j = 0; j < 2; ++j)
                 {
-                    auto triangle = element.second->T[j].lock();
+                    auto triangle = element.second->T[j];
                     for (i = 0; i < 3; ++i)
                     {
                         v2 = triangle->V[i];

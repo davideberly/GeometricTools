@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -50,13 +50,13 @@ namespace gte
             auto const& vmap = mMesh.GetVertices();
             for (auto const& eelement : mMesh.GetEdges())
             {
-                auto edge = eelement.second;
-                if (!edge->T[1].lock())
+                auto edge = eelement.second.get();
+                if (!edge->T[1])
                 {
                     for (int i = 0; i < 2; ++i)
                     {
                         auto velement = vmap.find(edge->V[i]);
-                        auto vertex = std::static_pointer_cast<VCVertex>(velement->second);
+                        auto vertex = static_cast<VCVertex*>(velement->second.get());
                         vertex->isBoundary = true;
                     }
                 }
@@ -66,7 +66,7 @@ namespace gte
             mMinHeap.Reset((int)vmap.size());
             for (auto const& velement : vmap)
             {
-                auto vertex = std::static_pointer_cast<VCVertex>(velement.second);
+                auto vertex = static_cast<VCVertex*>(velement.second.get());
 
                 Real weight;
                 if (vertex->isBoundary)
@@ -135,7 +135,7 @@ namespace gte
                     return false;
                 }
 
-                auto vertex = std::static_pointer_cast<VCVertex>(velement->second);
+                auto vertex = static_cast<VCVertex*>(velement->second.get());
                 std::vector<TriangleKey<true>> removed, inserted;
                 std::vector<int> linkVertices;
                 int result = TriangulateLink(vertex, removed, inserted, linkVertices);
@@ -168,7 +168,7 @@ namespace gte
                                 return false;
                             }
 
-                            vertex = std::static_pointer_cast<VCVertex>(velement->second);
+                            vertex = static_cast<VCVertex*>(velement->second.get());
                             if (!vertex->isBoundary)
                             {
                                 auto iter = mHeapRecords.find(vlink);
@@ -229,9 +229,9 @@ namespace gte
             {
             }
 
-            static std::shared_ptr<Vertex> Create(int v)
+            static std::unique_ptr<Vertex> Create(int v)
             {
-                return std::make_shared<VCVertex>(v);
+                return std::make_unique<VCVertex>(v);
             }
 
             // The weight depends on the area of the triangles sharing the
@@ -309,7 +309,7 @@ namespace gte
             VCM_UNEXPECTED_ERROR
         };
 
-        int TriangulateLink(std::shared_ptr<VCVertex> const& vertex, std::vector<TriangleKey<true>>& removed,
+        int TriangulateLink(VCVertex* vertex, std::vector<TriangleKey<true>>& removed,
             std::vector<TriangleKey<true>>& inserted, std::vector<int>& linkVertices) const
         {
             // Create the (CCW) polygon boundary of the link of the vertex.
@@ -435,7 +435,7 @@ namespace gte
                         auto eelement = emap.find(edge);
                         if (eelement != emap.end())
                         {
-                            if (eelement->second->T[1].lock())
+                            if (eelement->second->T[1])
                             {
                                 // The edge will not allow a manifold
                                 // connection.
@@ -482,13 +482,13 @@ namespace gte
                     return VCM_UNEXPECTED_ERROR;
                 }
 
-                auto edge = eelement->second;
+                auto edge = eelement->second.get();
                 if (!edge)
                 {
                     return VCM_UNEXPECTED_ERROR;
                 }
 
-                if (edge->T[0].lock() && !edge->T[1].lock())
+                if (edge->T[0] && !edge->T[1])
                 {
                     for (int k = 0; k < 2; ++k)
                     {
@@ -498,7 +498,7 @@ namespace gte
                             return VCM_UNEXPECTED_ERROR;
                         }
 
-                        auto vertex = std::static_pointer_cast<VCVertex>(velement->second);
+                        auto vertex = static_cast<VCVertex*>(velement->second.get());
                         vertex->isBoundary = true;
                     }
                 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.22
 
 #pragma once
 
@@ -144,7 +144,7 @@ namespace gte
                 auto element = tmap.find(key);
                 for (int i = 0; i < 3; ++i)
                 {
-                    auto adj = element->second->T[i].lock();
+                    auto adj = element->second->T[i];
                     if (adj)
                     {
                         key = TriangleKey<true>(adj->V[0], adj->V[1], adj->V[2]);
@@ -194,7 +194,7 @@ namespace gte
             {
                 for (int i = 0; i < 3; ++i, ++vIndex)
                 {
-                    auto adj = element.second->T[i].lock();
+                    auto adj = element.second->T[i];
                     if (adj)
                     {
                         TriangleKey<true> key(adj->V[0], adj->V[1], adj->V[2]);
