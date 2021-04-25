@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 4.0.2021.04.25
 
 #pragma once
 
@@ -165,7 +165,7 @@ namespace gte
                         Real weight;
                     };
 
-                    buffer vertexGraph { ivec3 data[]; } vertexGraphSB;
+                    buffer vertexGraph { ivec4 data[]; } vertexGraphSB;
                     buffer vertexGraphData { VertexGraphData data[]; } vertexGraphDataSB;
                     buffer orderedVertices { int data[]; } orderedVerticesSB;
                     buffer inTCoords { Real2 data[]; } inTCoordsSB;
@@ -209,7 +209,7 @@ namespace gte
                         Real weight;
                     };
 
-                    StructuredBuffer<int3> vertexGraph;
+                    StructuredBuffer<int4> vertexGraph;
                     StructuredBuffer<VertexGraphData> vertexGraphData;
                     StructuredBuffer<int> orderedVertices;
                     StructuredBuffer<Real2> inTCoords;
@@ -227,9 +227,9 @@ namespace gte
                             Real weightSum = 0;
                             for (int j = 0; j < range.y; ++j)
                             {
-                                VertexGraphData data = vertexGraphData[range.x + j];
-                                weightSum += data.weight;
-                                tcoord += data.weight * inTCoords[data.adjacent];
+                                VertexGraphData vgd = vertexGraphData[range.x + j];
+                                weightSum += vgd.weight;
+                                tcoord += vgd.weight * inTCoords[vgd.adjacent];
                             }
                             tcoord /= weightSum;
                             outTCoords[v] = tcoord;

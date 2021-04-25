@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.25
 
 #pragma once
 
@@ -11,9 +11,9 @@
 using namespace gte;
 
 // Enable only one of these.
-//#define GENERATE_MESH_UVS_CPU_SINGLE_THREADED
+#define GENERATE_MESH_UVS_CPU_SINGLE_THREADED
 //#define GENERATE_MESH_UVS_CPU_MULTITHREADED
-#define GENERATE_MESH_UVS_GPU
+//#define GENERATE_MESH_UVS_GPU
 
 class GenerateMeshUVsWindow3 : public Window3
 {

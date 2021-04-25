@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 4.0.2021.04.25
 
 #pragma once
 
@@ -171,8 +171,8 @@ namespace gte
             // adjacent vertices.
             int range0, range1;
 
-            // Unused.  The padding is necessary for the GLSL program in the
-            // derived class for GL45.
+            // Unused on the CPU. The padding is necessary for the HLSL and
+            // GLSL programs in GPUGenerateMeshUV.h.
             int padding;
         };
 
