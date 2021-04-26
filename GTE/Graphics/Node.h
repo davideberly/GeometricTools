@@ -9,7 +9,7 @@
 
 #include <Graphics/Spatial.h>
 
-// This class represents grouping nodes in a spatial hiearchy.
+// This class represents grouping nodes in a spatial hierarchy.
 
 namespace gte
 {
