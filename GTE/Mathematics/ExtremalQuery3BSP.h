@@ -178,8 +178,8 @@ namespace gte
         typedef VETManifoldMesh::Triangle Triangle;
 
         void SortAdjacentTriangles(int vIndex,
-            std::set<std::shared_ptr<Triangle>> const& tAdj,
-            std::vector<std::shared_ptr<Triangle>>& tAdjSorted)
+            std::unordered_set<Triangle*> const& tAdj,
+            std::vector<Triangle*>& tAdjSorted)
         {
             // Copy the set of adjacent triangles into a vector container.
             int const numTriangles = static_cast<int>(tAdj.size());
@@ -188,7 +188,7 @@ namespace gte
             // Traverse the triangles adjacent to vertex V using edge-triangle
             // adjacency information to produce a sorted array of adjacent
             // triangles.
-            std::shared_ptr<Triangle> tri = *tAdj.begin();
+            Triangle* tri = *tAdj.begin();
             for (int i = 0; i < numTriangles; ++i)
             {
                 for (int prev = 2, curr = 0; curr < 3; prev = curr++)
@@ -196,33 +196,7 @@ namespace gte
                     if (tri->V[curr] == vIndex)
                     {
                         tAdjSorted[i] = tri;
-                        tri = tri->T[prev].lock();
-                        break;
-                    }
-                }
-            }
-        }
-
-        void SortAdjacentTriangles(int vIndex,
-            std::unordered_set<std::shared_ptr<Triangle>> const& tAdj,
-            std::vector<std::shared_ptr<Triangle>>& tAdjSorted)
-        {
-            // Copy the set of adjacent triangles into a vector container.
-            int const numTriangles = static_cast<int>(tAdj.size());
-            tAdjSorted.resize(tAdj.size());
-
-            // Traverse the triangles adjacent to vertex V using edge-triangle
-            // adjacency information to produce a sorted array of adjacent
-            // triangles.
-            std::shared_ptr<Triangle> tri = *tAdj.begin();
-            for (int i = 0; i < numTriangles; ++i)
-            {
-                for (int prev = 2, curr = 0; curr < 3; prev = curr++)
-                {
-                    if (tri->V[curr] == vIndex)
-                    {
-                        tAdjSorted[i] = tri;
-                        tri = tri->T[prev].lock();
+                        tri = tri->T[prev];
                         break;
                     }
                 }
@@ -242,12 +216,12 @@ namespace gte
                 // initialized." Incorrect, because the default constructor
                 // initializes all the members.
                 SphericalArc arc;
-                arc.nIndex[0] = mTriToNormal[edge->T[0].lock()];
-                arc.nIndex[1] = mTriToNormal[edge->T[1].lock()];
+                arc.nIndex[0] = mTriToNormal[edge->T[0]];
+                arc.nIndex[1] = mTriToNormal[edge->T[1]];
                 arc.separation = 1;
                 arc.normal = Cross(this->mFaceNormals[arc.nIndex[0]], this->mFaceNormals[arc.nIndex[1]]);
 
-                auto adj = edge->T[0].lock();
+                Triangle* adj = edge->T[0];
                 int j;
                 for (j = 0; j < 3; ++j)
                 {
@@ -275,7 +249,7 @@ namespace gte
                 // when viewed from outside the sphere.
                 auto const& vertex = element.second;
                 int const vIndex = vertex->V;
-                std::vector<std::shared_ptr<Triangle>> tAdjSorted;
+                std::vector<Triangle*> tAdjSorted;
                 SortAdjacentTriangles(vIndex, vertex->TAdjacent, tAdjSorted);
                 int const numTriangles = static_cast<int>(vertex->TAdjacent.size());
                 queue.push(std::make_pair(0, numTriangles));
@@ -444,7 +418,7 @@ namespace gte
         }
 
         // Lookup table for indexing into mFaceNormals.
-        std::map<std::shared_ptr<Triangle>, int> mTriToNormal;
+        std::map<Triangle*, int> mTriToNormal;
 
         // Fixed-size storage for the BSP nodes.
         std::vector<SphericalArc> mNodes;
