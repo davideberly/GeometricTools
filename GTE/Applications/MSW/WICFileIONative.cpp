@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.7.2020.06.06
+// Version: 4.7.2021.04.09
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/WICFileIONative.h>
@@ -16,6 +16,7 @@
 #include <wincodec.h>
 #include <wrl.h>
 #include <algorithm>
+#include <iterator>
 using namespace gte;
 
 class ComInitializer
