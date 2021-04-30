@@ -299,6 +299,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectPlaneConvexPolyhed
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IncrementalDelaunay2DX11.v16", "Samples\Geometrics\IncrementalDelaunay2\IncrementalDelaunay2DX11.v16.vcxproj", "{159AF9E8-E1AF-4675-9877-F06DB88ED74C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectTriangleCylinderDX11.v16", "Samples\Intersection\IntersectTriangleCylinder\IntersectTriangleCylinderDX11.v16.vcxproj", "{1FC03102-3897-4C1B-961D-EE54CA55D23B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1411,6 +1413,14 @@ Global
 		{159AF9E8-E1AF-4675-9877-F06DB88ED74C}.Release|x64.Build.0 = Release|x64
 		{159AF9E8-E1AF-4675-9877-F06DB88ED74C}.Release|x86.ActiveCfg = Release|Win32
 		{159AF9E8-E1AF-4675-9877-F06DB88ED74C}.Release|x86.Build.0 = Release|Win32
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Debug|x64.ActiveCfg = Debug|x64
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Debug|x64.Build.0 = Debug|x64
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Debug|x86.ActiveCfg = Debug|Win32
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Debug|x86.Build.0 = Debug|Win32
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Release|x64.ActiveCfg = Release|x64
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Release|x64.Build.0 = Release|x64
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Release|x86.ActiveCfg = Release|Win32
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1562,6 +1572,7 @@ Global
 		{5EB207A7-BDEB-4248-A254-EC6F00BF1F91} = {7572A45C-CD71-4915-80AB-46CB96142436}
 		{73500C1A-EE64-4CCB-8B58-3618EB0934E0} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
 		{159AF9E8-E1AF-4675-9877-F06DB88ED74C} = {F3718E7E-726C-4CB8-A68B-8C73E9F950C7}
+		{1FC03102-3897-4C1B-961D-EE54CA55D23B} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}

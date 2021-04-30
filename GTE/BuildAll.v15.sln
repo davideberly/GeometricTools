@@ -605,6 +605,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IncrementalDelaunay2DX11.v1
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IncrementalDelaunay2GL45.v15", "Samples\Geometrics\IncrementalDelaunay2\IncrementalDelaunay2GL45.v15.vcxproj", "{2BDB0DA2-B345-40FB-8A5E-1E9CC90996D4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectTriangleCylinderDX11.v15", "Samples\Intersection\IntersectTriangleCylinder\IntersectTriangleCylinderDX11.v15.vcxproj", "{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectTriangleCylinderGL45.v15", "Samples\Intersection\IntersectTriangleCylinder\IntersectTriangleCylinderGL45.v15.vcxproj", "{33EA8E3A-A128-49EF-973A-E916BA11F8E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -2797,6 +2801,22 @@ Global
 		{2BDB0DA2-B345-40FB-8A5E-1E9CC90996D4}.Release|x64.Build.0 = Release|x64
 		{2BDB0DA2-B345-40FB-8A5E-1E9CC90996D4}.Release|x86.ActiveCfg = Release|Win32
 		{2BDB0DA2-B345-40FB-8A5E-1E9CC90996D4}.Release|x86.Build.0 = Release|Win32
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Debug|x64.ActiveCfg = Debug|x64
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Debug|x64.Build.0 = Debug|x64
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Debug|x86.ActiveCfg = Debug|Win32
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Debug|x86.Build.0 = Debug|Win32
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Release|x64.ActiveCfg = Release|x64
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Release|x64.Build.0 = Release|x64
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Release|x86.ActiveCfg = Release|Win32
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC}.Release|x86.Build.0 = Release|Win32
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Debug|x64.ActiveCfg = Debug|x64
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Debug|x64.Build.0 = Debug|x64
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Debug|x86.ActiveCfg = Debug|Win32
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Debug|x86.Build.0 = Debug|Win32
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Release|x64.ActiveCfg = Release|x64
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Release|x64.Build.0 = Release|x64
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Release|x86.ActiveCfg = Release|Win32
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3101,6 +3121,8 @@ Global
 		{93E340C2-BA79-4D8D-AD65-0A533224E5E6} = {C76AD314-62DD-4A6C-9129-72D68D841743}
 		{D52E0C68-196D-4A68-9513-E8466CE9626F} = {9D1F39EF-9207-4BC3-BD73-B2BAE268E14A}
 		{2BDB0DA2-B345-40FB-8A5E-1E9CC90996D4} = {13F7A62F-D9DD-4DE9-B93E-F43BA1EB3C01}
+		{12E2A8D2-FF23-4E4E-9442-F9DCA6C831EC} = {71DE2BDE-B07D-4B90-B437-617320B93291}
+		{33EA8E3A-A128-49EF-973A-E916BA11F8E3} = {C76AD314-62DD-4A6C-9129-72D68D841743}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {853C99A2-1A49-4F91-9961-4DCA2B656C52}

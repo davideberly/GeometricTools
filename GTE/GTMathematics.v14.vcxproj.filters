@@ -1434,5 +1434,8 @@
     <ClInclude Include="Mathematics\IncrementalDelaunay2.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrTriangle3Cylinder3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

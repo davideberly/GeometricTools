@@ -326,6 +326,7 @@
     <ClInclude Include="Mathematics\IntrSphere3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrSphere3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrTriangle2Triangle2.h" />
+    <ClInclude Include="Mathematics\IntrTriangle3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrTriangle3OrientedBox3.h" />
     <ClInclude Include="Mathematics\InvSqrtEstimate.h" />
     <ClInclude Include="Mathematics\IsPlanarGraph.h" />
