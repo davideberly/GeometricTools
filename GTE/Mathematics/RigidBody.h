@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.04.30
 
 #pragma once
 
@@ -247,6 +247,7 @@ namespace gte
 
             newPosition = mPosition + halfDT * A1DXDT;
             newQuatOrient = mQuatOrient + halfDT * A1DQDT;
+            Normalize(newQuatOrient);
             newLinearMomentum = mLinearMomentum + halfDT * A1DPDT;
             newAngularMomentum = mAngularMomentum + halfDT * A1DLDT;
             newRotOrient = Rotation<3, Real>(newQuatOrient);
@@ -271,6 +272,7 @@ namespace gte
 
             newPosition = mPosition + halfDT * A2DXDT;
             newQuatOrient = mQuatOrient + halfDT * A2DQDT;
+            Normalize(newQuatOrient);
             newLinearMomentum = mLinearMomentum + halfDT * A2DPDT;
             newAngularMomentum = mAngularMomentum + halfDT * A2DLDT;
             newRotOrient = Rotation<3, Real>(newQuatOrient);
@@ -295,6 +297,7 @@ namespace gte
 
             newPosition = mPosition + dt * A3DXDT;
             newQuatOrient = mQuatOrient + dt * A3DQDT;
+            Normalize(newQuatOrient);
             newLinearMomentum = mLinearMomentum + dt * A3DPDT;
             newAngularMomentum = mAngularMomentum + dt * A3DLDT;
             newRotOrient = Rotation<3, Real>(newQuatOrient);
@@ -322,6 +325,7 @@ namespace gte
             mLinearMomentum += sixthDT * (A1DPDT + (Real)2 * (A2DPDT + A3DPDT) + A4DPDT);
             mAngularMomentum += sixthDT * (A1DLDT + (Real)2 * (A2DLDT + A3DLDT) + A4DLDT);
 
+            Normalize(mQuatOrient);
             mRotOrient = Rotation<3, Real>(mQuatOrient);
             mLinearVelocity = mInvMass * mLinearMomentum;
             mAngularVelocity = mAngularMomentum * mRotOrient;
