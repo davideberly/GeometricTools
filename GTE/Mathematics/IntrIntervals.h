@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.05.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 #include <array>
 
 // The intervals are of the form [t0,t1], [t0,+infinity) or (-infinity,t1].
-// Degenerate intervals are allowed (t0 = t1).  The queries do not perform
+// Degenerate intervals are allowed (t0 = t1). The queries do not perform
 // validation on the input intervals to test whether t0 <= t1.
 
 namespace gte
@@ -25,40 +25,47 @@ namespace gte
         // interval.
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                firstTime(static_cast<Real>(0)),
+                lastTime(static_cast<Real>(0))
+            {
+            }
+
             bool intersect;
 
-            // Dynamic queries (intervals moving with constant speeds).  If
+            // Dynamic queries (intervals moving with constant speeds). If
             // 'intersect' is true, the contact times are valid and
             //     0 <= firstTime <= lastTime,  firstTime <= maxTime
-            // If 'intersect' is false, there are two cases reported.  If the
+            // If 'intersect' is false, there are two cases reported. If the
             // intervals will intersect at firstTime > maxTime, the contact
-            // times are reported just as when 'intersect' is true.  However,
+            // times are reported just as when 'intersect' is true. However,
             // if the intervals will not intersect, then firstTime and
             // lastTime are both set to zero (invalid because 'intersect' is
             // false).
             Real firstTime, lastTime;
         };
 
-        // Static query.  The firstTime and lastTime values are invalid
+        // Static query. The firstTime and lastTime values are set to zero by
+        // the Result constructor, but they are invalid for the static query
         // regardless of the value of 'intersect'.
         Result operator()(std::array<Real, 2> const& interval0, std::array<Real, 2> const& interval1)
         {
-            Result result;
+            Result result{};
             result.intersect = (interval0[0] <= interval1[1] && interval0[1] >= interval1[0]);
-            result.firstTime = (Real)0;
-            result.lastTime = (Real)0;
             return result;
         }
 
-        // Static queries where at least one interval is semiinfinite.  The
+        // Static queries where at least one interval is semiinfinite. The
         // two types of semiinfinite intervals are [a,+infinity), which I call
         // a positive-infinite interval, and (-infinity,a], which I call a
-        // negative-infinite interval.
+        // negative-infinite interval. The firstTime and lastTime values are
+        // set to zero by the Result constructor, but they are invalid for the
+        // static query regardless of the value of 'intersect'.
         Result operator()(std::array<Real, 2> const& finite, Real const& a, bool isPositiveInfinite)
         {
-            Result result;
-            result.firstTime = (Real)0;
-            result.lastTime = (Real)0;
+            Result result{};
 
             if (isPositiveInfinite)
             {
@@ -75,9 +82,7 @@ namespace gte
         Result operator()(Real const& a0, bool isPositiveInfinite0,
             Real const& a1, bool isPositiveInfinite1)
         {
-            Result result;
-            result.firstTime = (Real)0;
-            result.lastTime = (Real)0;
+            Result result{};
 
             if (isPositiveInfinite0)
             {
@@ -105,25 +110,25 @@ namespace gte
             return result;
         }
 
-        // Dynamic query.  Current time is 0, maxTime > 0 is required.
+        // Dynamic query. Current time is 0, maxTime > 0 is required.
         Result operator()(Real maxTime, std::array<Real, 2> const& interval0,
             Real speed0, std::array<Real, 2> const& interval1, Real speed1)
         {
-            Result result;
+            Real const zero = static_cast<Real>(0);
+            Result result{};
 
             if (interval0[1] < interval1[0])
             {
                 // interval0 initially to the left of interval1.
                 Real diffSpeed = speed0 - speed1;
-                if (diffSpeed > (Real)0)
+                if (diffSpeed > zero)
                 {
                     // The intervals must move towards each other. 'intersect'
                     // is true when the intervals will intersect by maxTime.
                     Real diffPos = interval1[0] - interval0[1];
-                    Real invDiffSpeed = (Real)1 / diffSpeed;
                     result.intersect = (diffPos <= maxTime * diffSpeed);
-                    result.firstTime = diffPos * invDiffSpeed;
-                    result.lastTime = (interval1[1] - interval0[0]) * invDiffSpeed;
+                    result.firstTime = diffPos / diffSpeed;
+                    result.lastTime = (interval1[1] - interval0[0]) / diffSpeed;
                     return result;
                 }
             }
@@ -131,15 +136,14 @@ namespace gte
             {
                 // interval0 initially to the right of interval1.
                 Real diffSpeed = speed1 - speed0;
-                if (diffSpeed > (Real)0)
+                if (diffSpeed > zero)
                 {
                     // The intervals must move towards each other. 'intersect'
                     // is true when the intervals will intersect by maxTime.
                     Real diffPos = interval0[0] - interval1[1];
-                    Real invDiffSpeed = (Real)1 / diffSpeed;
                     result.intersect = (diffPos <= maxTime * diffSpeed);
-                    result.firstTime = diffPos * invDiffSpeed;
-                    result.lastTime = (interval0[1] - interval1[0]) * invDiffSpeed;
+                    result.firstTime = diffPos / diffSpeed;
+                    result.lastTime = (interval0[1] - interval1[0]) / diffSpeed;
                     return result;
                 }
             }
@@ -147,7 +151,7 @@ namespace gte
             {
                 // The intervals are initially intersecting.
                 result.intersect = true;
-                result.firstTime = (Real)0;
+                result.firstTime = zero;
                 if (speed1 > speed0)
                 {
                     result.lastTime = (interval0[1] - interval1[0]) / (speed1 - speed0);
@@ -163,9 +167,8 @@ namespace gte
                 return result;
             }
 
-            result.intersect = false;
-            result.firstTime = (Real)0;
-            result.lastTime = (Real)0;
+            // The Result constructor set 'intersect' to false and the
+            // 'firstTime' and 'lastTime' to zero.
             return result;
         }
     };
@@ -182,22 +185,22 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                overlap{ (Real)0, (Real)0 },
+                overlap{ static_cast<Real>(0), static_cast<Real>(0) },
                 type(isEmpty),
-                firstTime((Real)0),
-                lastTime((Real)0)
+                firstTime(static_cast<Real>(0)),
+                lastTime(static_cast<Real>(0))
             {
             }
 
             bool intersect;
 
-            // Static queries (no motion of intervals over time).  The number
+            // Static queries (no motion of intervals over time). The number
             // of number of intersections is 0 (no overlap), 1 (intervals are
-            // just touching), or 2 (intervals overlap in an interval).  If
+            // just touching), or 2 (intervals overlap in an interval). If
             // 'intersect' is false, numIntersections is 0 and 'overlap' is
-            // set to [0,0].  If 'intersect' is true, numIntersections is
-            // 1 or 2.  When 1, 'overlap' is set to [x,x], which is degenerate
-            // and represents the single intersection point x.  When 2,
+            // set to [0,0]. If 'intersect' is true, numIntersections is
+            // 1 or 2. When 1, 'overlap' is set to [x,x], which is degenerate
+            // and represents the single intersection point x. When 2,
             // 'overlap' is the interval of intersection.
             int numIntersections;
             std::array<Real, 2> overlap;
@@ -218,9 +221,9 @@ namespace gte
             static int const isPositiveInfinite = 3;
 
             // Semiinfinite interval of intersection, (-infinity,t1]. The
-            // result.overlap[0] is =1 as a message that the left endpoint is
+            // result.overlap[0] is -1 as a message that the left endpoint is
             // -infinity (you still need the result.type to know this
-            // interpretation).  The result.overlap[1] is t1.
+            // interpretation). The result.overlap[1] is t1.
             static int const isNegativeInfinite = 4;
 
             // The dynamic queries all set the type to isDynamicQuery because
@@ -231,12 +234,12 @@ namespace gte
             // isPositiveInfinite, isNegativeInfinite or isDynamicQuery.
             int type;
 
-            // Dynamic queries (intervals moving with constant speeds).  If
+            // Dynamic queries (intervals moving with constant speeds). If
             // 'intersect' is true, the contact times are valid and
             //     0 <= firstTime <= lastTime,  firstTime <= maxTime
-            // If 'intersect' is false, there are two cases reported.  If the
+            // If 'intersect' is false, there are two cases reported. If the
             // intervals will intersect at firstTime > maxTime, the contact
-            // times are reported just as when 'intersect' is true.  However,
+            // times are reported just as when 'intersect' is true. However,
             // if the intervals will not intersect, then firstTime and
             // lastTime are both set to zero (invalid because 'intersect' is
             // false).
@@ -246,13 +249,13 @@ namespace gte
         // Static query.
         Result operator()(std::array<Real, 2> const& interval0, std::array<Real, 2> const& interval1)
         {
-            Result result;
+            Result result{};
 
             if (interval0[1] < interval1[0] || interval0[0] > interval1[1])
             {
                 result.numIntersections = 0;
-                result.overlap[0] = (Real)0;
-                result.overlap[1] = (Real)0;
+                result.overlap[0] = static_cast<Real>(0);
+                result.overlap[1] = static_cast<Real>(0);
                 result.type = Result::isEmpty;
             }
             else if (interval0[1] > interval1[0])
@@ -292,13 +295,13 @@ namespace gte
             return result;
         }
 
-        // Static queries where at least one interval is semiinfinite.  The
+        // Static queries where at least one interval is semiinfinite. The
         // two types of semiinfinite intervals are [a,+infinity), which I call
         // a positive-infinite interval, and (-infinity,a], which I call a
         // negative-infinite interval.
         Result operator()(std::array<Real, 2> const& finite, Real const& a, bool isPositiveInfinite)
         {
-            Result result;
+            Result result{};
 
             if (isPositiveInfinite)
             {
@@ -327,8 +330,8 @@ namespace gte
                 else
                 {
                     result.numIntersections = 0;
-                    result.overlap[0] = (Real)0;
-                    result.overlap[1] = (Real)0;
+                    result.overlap[0] = static_cast<Real>(0);
+                    result.overlap[1] = static_cast<Real>(0);
                     result.type = Result::isEmpty;
                 }
             }
@@ -359,8 +362,8 @@ namespace gte
                 else
                 {
                     result.numIntersections = 0;
-                    result.overlap[0] = (Real)0;
-                    result.overlap[1] = (Real)0;
+                    result.overlap[0] = static_cast<Real>(0);
+                    result.overlap[1] = static_cast<Real>(0);
                     result.type = Result::isEmpty;
                 }
             }
@@ -372,19 +375,19 @@ namespace gte
         Result operator()(Real const& a0, bool isPositiveInfinite0,
             Real const& a1, bool isPositiveInfinite1)
         {
-            Result result;
+            Result result{};
 
             if (isPositiveInfinite0)
             {
                 if (isPositiveInfinite1)
                 {
                     // overlap[1] is +infinity, but set it to +1 because Real
-                    // might not have a representation for +infinity.  The
+                    // might not have a representation for +infinity. The
                     // type indicates the interval is positive-infinite, so
                     // the +1 is a reminder that overlap[1] is +infinity.
                     result.numIntersections = 1;
                     result.overlap[0] = std::max(a0, a1);
-                    result.overlap[1] = (Real)+1;
+                    result.overlap[1] = static_cast<Real>(+1);
                     result.type = Result::isPositiveInfinite;
                 }
                 else  // interval1 is negative-infinite
@@ -392,8 +395,8 @@ namespace gte
                     if (a0 > a1)
                     {
                         result.numIntersections = 0;
-                        result.overlap[0] = (Real)0;
-                        result.overlap[1] = (Real)0;
+                        result.overlap[0] = static_cast<Real>(0);
+                        result.overlap[1] = static_cast<Real>(0);
                         result.type = Result::isEmpty;
                     }
                     else if (a0 < a1)
@@ -419,8 +422,8 @@ namespace gte
                     if (a0 < a1)
                     {
                         result.numIntersections = 0;
-                        result.overlap[0] = (Real)0;
-                        result.overlap[1] = (Real)0;
+                        result.overlap[0] = static_cast<Real>(0);
+                        result.overlap[1] = static_cast<Real>(0);
                         result.type = Result::isEmpty;
                     }
                     else if (a0 > a1)
@@ -442,11 +445,11 @@ namespace gte
                 else  // interval1 is negative-infinite
                 {
                     // overlap[0] is -infinity, but set it to -1 because Real
-                    // might not have a representation for -infinity.  The
+                    // might not have a representation for -infinity. The
                     // type indicates the interval is negative-infinite, so
                     // the -1 is a reminder that overlap[0] is -infinity.
                     result.numIntersections = 1;
-                    result.overlap[0] = (Real)-1;
+                    result.overlap[0] = static_cast<Real>(-1);
                     result.overlap[1] = std::min(a0, a1);
                     result.type = Result::isNegativeInfinite;
                 }
@@ -456,27 +459,26 @@ namespace gte
             return result;
         }
 
-        // Dynamic query.  Current time is 0, maxTime > 0 is required.
+        // Dynamic query. Current time is 0, maxTime > 0 is required.
         Result operator()(Real maxTime, std::array<Real, 2> const& interval0,
             Real speed0, std::array<Real, 2> const& interval1, Real speed1)
         {
-            Result result;
+            Result result{};
             result.type = Result::isDynamicQuery;
 
             if (interval0[1] < interval1[0])
             {
                 // interval0 initially to the left of interval1.
                 Real diffSpeed = speed0 - speed1;
-                if (diffSpeed > (Real)0)
+                if (diffSpeed > static_cast<Real>(0))
                 {
                     // The intervals must move towards each other. 'intersect'
                     // is true when the intervals will intersect by maxTime.
                     Real diffPos = interval1[0] - interval0[1];
-                    Real invDiffSpeed = (Real)1 / diffSpeed;
                     result.intersect = (diffPos <= maxTime * diffSpeed);
                     result.numIntersections = 1;
-                    result.firstTime = diffPos * invDiffSpeed;
-                    result.lastTime = (interval1[1] - interval0[0]) * invDiffSpeed;
+                    result.firstTime = diffPos / diffSpeed;
+                    result.lastTime = (interval1[1] - interval0[0]) / diffSpeed;
                     result.overlap[0] = interval0[0] + result.firstTime * speed0;
                     result.overlap[1] = result.overlap[0];
                     return result;
@@ -486,16 +488,15 @@ namespace gte
             {
                 // interval0 initially to the right of interval1.
                 Real diffSpeed = speed1 - speed0;
-                if (diffSpeed > (Real)0)
+                if (diffSpeed > static_cast<Real>(0))
                 {
                     // The intervals must move towards each other. 'intersect'
                     // is true when the intervals will intersect by maxTime.
                     Real diffPos = interval0[0] - interval1[1];
-                    Real invDiffSpeed = (Real)1 / diffSpeed;
                     result.intersect = (diffPos <= maxTime * diffSpeed);
                     result.numIntersections = 1;
-                    result.firstTime = diffPos * invDiffSpeed;
-                    result.lastTime = (interval0[1] - interval1[0]) * invDiffSpeed;
+                    result.firstTime = diffPos / diffSpeed;
+                    result.lastTime = (interval0[1] - interval1[0]) / diffSpeed;
                     result.overlap[0] = interval1[1] + result.firstTime * speed1;
                     result.overlap[1] = result.overlap[0];
                     return result;
@@ -505,7 +506,7 @@ namespace gte
             {
                 // The intervals are initially intersecting.
                 result.intersect = true;
-                result.firstTime = (Real)0;
+                result.firstTime = static_cast<Real>(0);
                 if (speed1 > speed0)
                 {
                     result.lastTime = (interval0[1] - interval1[0]) / (speed1 - speed0);
@@ -543,12 +544,7 @@ namespace gte
                 return result;
             }
 
-            result.intersect = false;
-            result.numIntersections = 0;
-            result.overlap[0] = (Real)0;
-            result.overlap[1] = (Real)0;
-            result.firstTime = (Real)0;
-            result.lastTime = (Real)0;
+            // The Result constructor sets the correct state for no-intersection.
             return result;
         }
     };

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.05.06
 
 #pragma once
 
@@ -21,12 +21,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Ray2<Real> const& ray, Triangle2<Real> const& triangle)
         {
-            Result result;
+            Result result{};
             FIQuery<Real, Ray2<Real>, Triangle2<Real>> rtQuery;
             result.intersect = rtQuery(ray, triangle).intersect;
             return result;
@@ -48,12 +54,19 @@ namespace gte
 
         Result operator()(Ray2<Real> const& ray, Triangle2<Real> const& triangle)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, triangle, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.numIntersections == 2)
             {
-                result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                result.point[0] = ray.origin + result.parameter[0] * ray.direction;
+                result.point[1] = ray.origin + result.parameter[1] * ray.direction;
             }
+            else if (result.numIntersections == 1)
+            {
+                result.point[0] = ray.origin + result.parameter[0] * ray.direction;
+                result.point[1] = result.point[0];
+            }
+            // else: result set to no-intersection in DoQuery(...)
             return result;
         }
 
@@ -67,13 +80,22 @@ namespace gte
 
             if (result.intersect)
             {
-                // The line containing the ray intersects the disk; the
-                // t-interval is [t0,t1].  The ray intersects the disk as long
-                // as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval =
-                    { (Real)0, std::numeric_limits<Real>::max() };
+                // The line containing the ray intersects the triangle; the
+                // t-interval is [t0,t1]. The ray intersects the triangle as
+                // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
+                std::array<Real, 2> rayInterval{ static_cast<Real>(0), std::numeric_limits<Real>::max() };
                 FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
-                result.parameter = iiQuery(result.parameter, rayInterval).overlap;
+                auto iiResult = iiQuery(result.parameter, rayInterval);
+                if (iiResult.intersect)
+                {
+                    result.numIntersections = iiResult.numIntersections;
+                    result.parameter = iiResult.overlap;
+                }
+                else
+                {
+                    // Set the state to no-intersection.
+                    result = Result{};
+                }
             }
         }
     };

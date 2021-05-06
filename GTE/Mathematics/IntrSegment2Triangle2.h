@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.05.06
 
 #pragma once
 
@@ -21,12 +21,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Segment2<Real> const& segment, Triangle2<Real> const& triangle)
         {
-            Result result;
+            Result result{};
             FIQuery<Real, Segment2<Real>, Triangle2<Real>> stQuery;
             result.intersect = stQuery(segment, triangle).intersect;
             return result;
@@ -52,12 +58,19 @@ namespace gte
             Real segExtent;
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, triangle, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.numIntersections == 2)
             {
-                result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                result.point[0] = segOrigin + result.parameter[0] * segDirection;
+                result.point[1] = segOrigin + result.parameter[1] * segDirection;
             }
+            else if (result.numIntersections == 1)
+            {
+                result.point[0] = segOrigin + result.parameter[0] * segDirection;
+                result.point[1] = result.point[0];
+            }
+            // else: result set to no-intersection in DoQuery(...)
             return result;
         }
 
@@ -71,13 +84,23 @@ namespace gte
 
             if (result.intersect)
             {
-                // The line containing the segment intersects the disk; the
-                // t-interval is [t0,t1].  The segment intersects the disk as
-                // long as [t0,t1] overlaps the segment t-interval
+                // The line containing the segment intersects the triangle;
+                // the t-interval is [t0,t1]. The segment intersects the
+                // triangle as long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
+                std::array<Real, 2> segInterval{ -segExtent, segExtent };
                 FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
-                result.parameter = iiQuery(result.parameter, segInterval).overlap;
+                auto iiResult = iiQuery(result.parameter, segInterval);
+                if (iiResult.intersect)
+                {
+                    result.numIntersections = iiResult.numIntersections;
+                    result.parameter = iiResult.overlap;
+                }
+                else
+                {
+                    // Set the state to no-intersection.
+                    result = Result{};
+                }
             }
         }
     };
