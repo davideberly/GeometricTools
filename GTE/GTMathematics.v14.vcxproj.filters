@@ -1437,5 +1437,8 @@
     <ClInclude Include="Mathematics\IntrTriangle3Cylinder3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\LDLTDecomposition.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

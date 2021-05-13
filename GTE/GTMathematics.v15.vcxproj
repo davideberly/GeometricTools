@@ -333,6 +333,7 @@
     <ClInclude Include="Mathematics\InvSqrtEstimate.h" />
     <ClInclude Include="Mathematics\IsPlanarGraph.h" />
     <ClInclude Include="Mathematics\LCPSolver.h" />
+    <ClInclude Include="Mathematics\LDLTDecomposition.h" />
     <ClInclude Include="Mathematics\LevenbergMarquardtMinimizer.h" />
     <ClInclude Include="Mathematics\LexicoArray2.h" />
     <ClInclude Include="Mathematics\Line.h" />
