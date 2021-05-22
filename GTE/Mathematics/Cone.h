@@ -3,13 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.05.22
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/Math.h>
 #include <Mathematics/Ray.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
 
 // An infinite cone is defined by a vertex V, a unit-length direction D and an
 // angle A with 0 < A < pi/2. A point X is on the cone when
@@ -52,12 +55,12 @@
 //
 // A technical problem when creating a data structure to represent a cone is
 // deciding how to represent +infinity in the height range. When the template
-// type Real is 'float' or 'double', we could represent it as
-// std::numeric_limits<Real>::infinity(). The geometric queries must be
+// type T is 'float' or 'double', we could represent it as
+// std::numeric_limits<T>::infinity(). The geometric queries must be
 // structured properly to conform to the semantics associated with the
 // floating-point infinity. We could also use the largest finite
-// floating-point number, std::numeric_limits<Real>::max(). Either choice is
-// problematic when instead Real is an arbitrary precision type that does not
+// floating-point number, std::numeric_limits<T>::max(). Either choice is
+// problematic when instead T is an arbitrary precision type that does not
 // have a representation for infinity; this is the case for the types
 // BSNumber<T> and BSRational<T>, where T is UIntegerAP or UIntegerFP<N>.
 //
@@ -78,7 +81,7 @@
 //   Vector point = <some point>;
 //   Cone cone = <some cone>;
 //   Vector delta = point - cone.V;
-//   Real h = Dot(cone.D, delta);
+//   T h = Dot(cone.D, delta);
 //   bool pointInCone =
 //       cone.hmin <= h &&
 //       h <= cone.hmax &&
@@ -103,7 +106,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int N, typename T>
     class Cone
     {
     public:
@@ -117,7 +120,7 @@ namespace gte
         {
             ray.origin.MakeZero();
             ray.direction.MakeUnit(N - 1);
-            SetAngle((Real)GTE_C_QUARTER_PI);
+            SetAngle((T)GTE_C_QUARTER_PI);
             MakeInfiniteCone();
         }
 
@@ -125,7 +128,7 @@ namespace gte
         // angle and with heights
         //   minimum height = 0
         //   maximum height = +infinity
-        Cone(Ray<N, Real> const& inRay, Real const& inAngle)
+        Cone(Ray<N, T> const& inRay, T const& inAngle)
             :
             ray(inRay)
         {
@@ -137,7 +140,7 @@ namespace gte
         // direction, angle and positive minimum height. The maximum height
         // is +infinity. If you specify a minimum height of 0, you get the 
         // equivalent of calling the constructor for an infinite cone.
-        Cone(Ray<N, Real> const& inRay, Real const& inAngle, Real const& inMinHeight)
+        Cone(Ray<N, T> const& inRay, T const& inAngle, T const& inMinHeight)
             :
             ray(inRay)
         {
@@ -149,7 +152,7 @@ namespace gte
         // specified. If you specify a minimum height of 0, you get a finite
         // cone. If you specify a positive minimum height, you get a frustum
         // of a cone.
-        Cone(Ray<N, Real> const& inRay, Real inAngle, Real inMinHeight, Real inMaxHeight)
+        Cone(Ray<N, T> const& inRay, T inAngle, T inMinHeight, T inMaxHeight)
             :
             ray(inRay)
         {
@@ -160,16 +163,16 @@ namespace gte
         // The angle must be in (0,pi/2). The function sets 'angle' and
         // computes 'cosAngle', 'sinAngle', 'tanAngle', 'cosAngleSqr',
         // 'sinAngleSqr' and 'invSinAngle'.
-        void SetAngle(Real const& inAngle)
+        void SetAngle(T const& inAngle)
         {
-            LogAssert((Real)0 < inAngle && inAngle < (Real)GTE_C_HALF_PI, "Invalid angle.");
+            LogAssert((T)0 < inAngle && inAngle < (T)GTE_C_HALF_PI, "Invalid angle.");
             angle = inAngle;
             cosAngle = std::cos(angle);
             sinAngle = std::sin(angle);
             tanAngle = std::tan(angle);
             cosAngleSqr = cosAngle * cosAngle;
             sinAngleSqr = sinAngle * sinAngle;
-            invSinAngle = (Real)1 / sinAngle;
+            invSinAngle = (T)1 / sinAngle;
         }
 
         // Set the heights to obtain one of the four types of cones. Be aware
@@ -177,27 +180,27 @@ namespace gte
         // use maxHeight without understanding this interpretation.
         void MakeInfiniteCone()
         {
-            mMinHeight = (Real)0;
-            mMaxHeight = (Real)-1;
+            mMinHeight = (T)0;
+            mMaxHeight = (T)-1;
         }
 
-        void MakeInfiniteTruncatedCone(Real const& inMinHeight)
+        void MakeInfiniteTruncatedCone(T const& inMinHeight)
         {
-            LogAssert(inMinHeight >= (Real)0, "Invalid minimum height.");
+            LogAssert(inMinHeight >= (T)0, "Invalid minimum height.");
             mMinHeight = inMinHeight;
-            mMaxHeight = (Real)-1;
+            mMaxHeight = (T)-1;
         }
 
-        void MakeFiniteCone(Real const& inMaxHeight)
+        void MakeFiniteCone(T const& inMaxHeight)
         {
-            LogAssert(inMaxHeight > (Real)0, "Invalid maximum height.");
-            mMinHeight = (Real)0;
+            LogAssert(inMaxHeight > (T)0, "Invalid maximum height.");
+            mMinHeight = (T)0;
             mMaxHeight = inMaxHeight;
         }
 
-        void MakeConeFrustum(Real const& inMinHeight, Real const& inMaxHeight)
+        void MakeConeFrustum(T const& inMinHeight, T const& inMaxHeight)
         {
-            LogAssert(inMinHeight >= (Real)0 && inMaxHeight > inMinHeight,
+            LogAssert(inMinHeight >= (T)0 && inMaxHeight > inMinHeight,
                 "Invalid minimum or maximum height.");
             mMinHeight = inMinHeight;
             mMaxHeight = inMaxHeight;
@@ -207,58 +210,58 @@ namespace gte
         // to -1. For a finite cone, maxHeight is set to a positive number.
         // Be careful not to use maxHeight without understanding this
         // interpretation.
-        inline Real GetMinHeight() const
+        inline T GetMinHeight() const
         {
             return mMinHeight;
         }
 
-        inline Real GetMaxHeight() const
+        inline T GetMaxHeight() const
         {
             return mMaxHeight;
         }
 
-        inline bool HeightInRange(Real const& h) const
+        inline bool HeightInRange(T const& h) const
         {
-            return mMinHeight <= h && (mMaxHeight != (Real)-1 ? h <= mMaxHeight : true);
+            return mMinHeight <= h && (mMaxHeight != (T)-1 ? h <= mMaxHeight : true);
         }
 
-        inline bool HeightLessThanMin(Real const& h) const
+        inline bool HeightLessThanMin(T const& h) const
         {
             return h < mMinHeight;
         }
 
-        inline bool HeightGreaterThanMax(Real const& h) const
+        inline bool HeightGreaterThanMax(T const& h) const
         {
-            return (mMaxHeight != (Real)-1 ? h > mMaxHeight : false);
+            return (mMaxHeight != (T)-1 ? h > mMaxHeight : false);
         }
 
         inline bool IsFinite() const
         {
-            return mMaxHeight != (Real)-1;
+            return mMaxHeight != (T)-1;
         }
 
         inline bool IsInfinite() const
         {
-            return mMaxHeight == (Real)-1;
+            return mMaxHeight == (T)-1;
         }
 
         // The cone axis direction (ray.direction) must be unit length.
-        Ray<N, Real> ray;
+        Ray<N, T> ray;
 
         // The angle must be in (0,pi/2). The other members are derived from
         // angle to avoid calling trigonometric functions in geometric queries
         // (for speed). You may set the angle and compute these by calling
         // SetAngle(inAngle).
-        Real angle;
-        Real cosAngle, sinAngle, tanAngle;
-        Real cosAngleSqr, sinAngleSqr, invSinAngle;
+        T angle;
+        T cosAngle, sinAngle, tanAngle;
+        T cosAngleSqr, sinAngleSqr, invSinAngle;
 
     private:
         // The heights must satisfy 0 <= minHeight < maxHeight <= +infinity.
         // For an infinite cone, maxHeight is set to -1.  For a finite cone,
         // maxHeight is set to a positive number.  Be careful not to use
         // maxHeight without understanding this interpretation.
-        Real mMinHeight, mMaxHeight;
+        T mMinHeight, mMaxHeight;
 
     public:
         // Comparisons to support sorted containers.  These based only on
@@ -325,9 +328,178 @@ namespace gte
         {
             return !operator<(cone);
         }
+
+    public:
+        // Support for visualization.
+        template <int Dummy = N>
+        typename std::enable_if<(Dummy == 3), void>::type
+        CreateMesh(size_t numMinVertices, bool inscribed,
+            std::vector<Vector<3, T>>& vertices, std::vector<int32_t>& indices)
+        {
+            LogAssert(IsFinite(), "Meshes can be generated only for finite cones.");
+
+            T hMin = GetMinHeight();
+            T hMax = GetMaxHeight();
+            T rMin = hMin * tanAngle;
+            T rMax = hMax * tanAngle;
+            T tNumExtra = static_cast<T>(0.5) * rMax/ rMin - static_cast<T>(1);
+            size_t numExtra = 0;
+            if (tNumExtra > static_cast<T>(0))
+            {
+                numExtra = static_cast<size_t>(std::ceil(tNumExtra));
+            }
+            size_t numMaxVertices = 2 * numMinVertices * (1 + numExtra);
+            vertices.clear();
+            indices.clear();
+
+            std::vector<Vector<2, T>> polygonMin, polygonMax;
+            if (inscribed)
+            {
+                GenerateInscribed(numMinVertices, rMin, polygonMin);
+                GenerateInscribed(numMaxVertices, rMax, polygonMax);
+            }
+            else
+            {
+                GenerateCircumscribed(numMinVertices, rMin, polygonMin);
+                GenerateCircumscribed(numMaxVertices, rMax, polygonMax);
+            }
+
+            if (hMin > static_cast<T>(0))
+            {
+                CreateConeFrustumMesh(numMinVertices, numMaxVertices, numExtra,
+                    hMin, hMax, polygonMin, polygonMax, vertices, indices);
+            }
+            else
+            {
+                // TODO:
+                // CreateFiniteTruncatedConeMesh(numMaxVertices, numExtra,
+                //     hMax, polygonMax, vertices, indices);
+            }
+
+            // Transform to the coordinate system of the cone.
+            std::array<Vector<3, T>, 3> basis{};
+            basis[0] = ray.direction;
+            ComputeOrthogonalComplement(1, basis.data());
+            Matrix<3, 3, T> rotate{};
+            rotate.SetCol(0, basis[1]);
+            rotate.SetCol(1, basis[2]);
+            rotate.SetCol(2, basis[0]);
+            for (size_t i = 0; i < vertices.size(); ++i)
+            {
+                vertices[i] = rotate * vertices[i] + ray.origin;
+            }
+        }
+
+    private:
+        template <int Dummy = N>
+        static typename std::enable_if<(Dummy == 3), void>::type
+        GenerateInscribed(size_t numVertices, T const& radius,
+            std::vector<Vector<2, T>>& polygon)
+        {
+            T theta = static_cast<T>(GTE_C_TWO_PI) / static_cast<T>(numVertices);
+            polygon.resize(numVertices + 1);
+            for (size_t i = 0; i < numVertices; ++i)
+            {
+                T angle = static_cast<T>(i) * theta;
+                polygon[i][0] = radius * std::cos(angle);
+                polygon[i][1] = radius * std::sin(angle);
+            }
+            polygon.back() = polygon[0];
+        }
+
+        template <int Dummy = N>
+        static typename std::enable_if<(Dummy == 3), void>::type
+        GenerateCircumscribed(size_t numVertices, T const& radius,
+            std::vector<Vector<2, T>>& polygon)
+        {
+            T theta = static_cast<T>(GTE_C_TWO_PI) / static_cast<T>(numVertices);
+            std::vector<Vector<2, T>> inscribed(numVertices + 1);
+            for (size_t i = 0; i < numVertices; ++i)
+            {
+                T angle = static_cast<T>(i) * theta;
+                inscribed[i][0] = radius * std::cos(angle);
+                inscribed[i][1] = radius * std::sin(angle);
+            }
+            inscribed.back() = inscribed[0];
+
+            T divisor = static_cast<T>(1) + std::cos(theta);
+            polygon.resize(numVertices + 1);
+            for (size_t i = 0, ip1 = 1; i < numVertices; ++i, ++ip1)
+            {
+                polygon[i] = (inscribed[i] + inscribed[ip1]) / divisor;
+            }
+            polygon.back() = polygon[0];
+        }
+
+        template <int Dummy = N>
+        static typename std::enable_if<(Dummy == 3), void>::type
+        CreateConeFrustumMesh(size_t numMinVertices, size_t numMaxVertices,
+            size_t numExtra, T const& hMin, T const& hMax,
+            std::vector<Vector<2, T>> const& polygonMin,
+            std::vector<Vector<2, T>> const& polygonMax,
+            std::vector<Vector<3, T>>& vertices, std::vector<int32_t>& indices)
+        {
+            std::vector<Vector<3, T>> vertexPool;
+            Vector<3, T> V0, V1, V2;
+            for (size_t i0 = 0, i1 = 1; i0 < numMinVertices; i0 = i1++)
+            {
+                size_t j0 = 2 * (numExtra + 1) * i0;
+                V0 = HLift(polygonMin[i0], hMin);
+                for (size_t k0 = 0, k1 = 1; k0 <= numExtra; k0 = k1++)
+                {
+                    V1 = HLift(polygonMax[j0 + k1], hMax);
+                    V2 = HLift(polygonMax[j0 + k0], hMax);
+                    vertexPool.push_back(V0);
+                    vertexPool.push_back(V1);
+                    vertexPool.push_back(V2);
+                }
+
+                size_t j1 = 2 * (numExtra + 1) * i1;
+                V0 = HLift(polygonMin[i1], hMin);
+                for (size_t k0 = 0, k1 = 1; k0 <= numExtra; k0 = k1++)
+                {
+                    V1 = HLift(polygonMax[j1 - k0], hMax);
+                    V2 = HLift(polygonMax[j1 - k1], hMax);
+                    vertexPool.push_back(V0);
+                    vertexPool.push_back(V1);
+                    vertexPool.push_back(V2);
+                }
+
+                size_t jmid = j0 + (numExtra + 1);
+                V0 = HLift(polygonMax[jmid], hMax);
+                V1 = HLift(polygonMin[i0], hMin);
+                V2 = HLift(polygonMin[i1], hMin);
+                vertexPool.push_back(V0);
+                vertexPool.push_back(V1);
+                vertexPool.push_back(V2);
+            }
+
+            V0 = { static_cast<T>(0), static_cast<T>(0), hMin };
+            for (size_t i0 = 0, i1 = 1; i0 < numMinVertices; i0 = i1++)
+            {
+                V1 = HLift(polygonMin[i1], hMin);
+                V2 = HLift(polygonMin[i0], hMin);
+                vertexPool.push_back(V0);
+                vertexPool.push_back(V1);
+                vertexPool.push_back(V2);
+            }
+
+            V0 = { static_cast<T>(0), static_cast<T>(0), hMax };
+            for (size_t i0 = 0, i1 = 1; i0 < numMaxVertices; i0 = i1++)
+            {
+                V1 = HLift(polygonMax[i0], hMax);
+                V2 = HLift(polygonMax[i1], hMax);
+                vertexPool.push_back(V0);
+                vertexPool.push_back(V1);
+                vertexPool.push_back(V2);
+            }
+
+            UniqueVerticesSimplices<Vector<3, T>, int32_t, 3> uvs;
+            uvs.GenerateIndexedSimplices(vertexPool, vertices, indices);
+        }
     };
 
     // Template alias for convenience.
-    template <typename Real>
-    using Cone3 = Cone<3, Real>;
+    template <typename T>
+    using Cone3 = Cone<3, T>;
 }

@@ -111,6 +111,7 @@
     <ClInclude Include="Mathematics\DisjointIntervals.h" />
     <ClInclude Include="Mathematics\DisjointRectangles.h" />
     <ClInclude Include="Mathematics\DistAlignedBox3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistOrientedBox3Cone3.h" />
     <ClInclude Include="Mathematics\EllipsoidGeodesic.h" />
     <ClInclude Include="Mathematics\EulerAngles.h" />
     <ClInclude Include="Mathematics\ExtremalQuery3.h" />

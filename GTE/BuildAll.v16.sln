@@ -609,6 +609,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectTriangleCylinderDX
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectTriangleCylinderGL45.v16", "Samples\Intersection\IntersectTriangleCylinder\IntersectTriangleCylinderGL45.v16.vcxproj", "{5A6E9387-6429-4612-B3AA-272F4D718946}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceOrientedBoxConeFrustumDX11.v16", "Samples\Distance\DistanceOrientedBoxConeFrustum\DistanceOrientedBoxConeFrustumDX11.v16.vcxproj", "{90D5D5F3-FC34-4D32-A220-5D24B964294F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceOrientedBoxConeFrustumGL45.v16", "Samples\Distance\DistanceOrientedBoxConeFrustum\DistanceOrientedBoxConeFrustumGL45.v16.vcxproj", "{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -2817,6 +2821,22 @@ Global
 		{5A6E9387-6429-4612-B3AA-272F4D718946}.Release|x64.Build.0 = Release|x64
 		{5A6E9387-6429-4612-B3AA-272F4D718946}.Release|x86.ActiveCfg = Release|Win32
 		{5A6E9387-6429-4612-B3AA-272F4D718946}.Release|x86.Build.0 = Release|Win32
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Debug|x64.ActiveCfg = Debug|x64
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Debug|x64.Build.0 = Debug|x64
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Debug|x86.ActiveCfg = Debug|Win32
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Debug|x86.Build.0 = Debug|Win32
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Release|x64.ActiveCfg = Release|x64
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Release|x64.Build.0 = Release|x64
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Release|x86.ActiveCfg = Release|Win32
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F}.Release|x86.Build.0 = Release|Win32
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Debug|x64.ActiveCfg = Debug|x64
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Debug|x64.Build.0 = Debug|x64
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Debug|x86.ActiveCfg = Debug|Win32
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Debug|x86.Build.0 = Debug|Win32
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Release|x64.ActiveCfg = Release|x64
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Release|x64.Build.0 = Release|x64
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Release|x86.ActiveCfg = Release|Win32
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3123,6 +3143,8 @@ Global
 		{A2E7F2B9-C417-4471-9B99-081D3A0D281E} = {9D0EE1E3-7D3A-419C-ABDE-7EBF0F025608}
 		{1FC03102-3897-4C1B-961D-EE54CA55D23B} = {8E3CCD18-49C2-46DF-95F5-20E175937BEA}
 		{5A6E9387-6429-4612-B3AA-272F4D718946} = {1D2C011A-D685-4767-BBDD-6870A39D3133}
+		{90D5D5F3-FC34-4D32-A220-5D24B964294F} = {D5A207D1-E180-47C6-AD69-134ACFEA688A}
+		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2} = {C4E621FD-BDC6-4640-8186-AAE188015557}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA181D3A-34ED-4371-B94B-6E560CCE35ED}

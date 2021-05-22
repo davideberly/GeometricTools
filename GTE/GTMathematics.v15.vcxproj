@@ -133,6 +133,7 @@
     <ClInclude Include="Mathematics\DistLineLine.h" />
     <ClInclude Include="Mathematics\DistLineRay.h" />
     <ClInclude Include="Mathematics\DistLineSegment.h" />
+    <ClInclude Include="Mathematics\DistOrientedBox3Cone3.h" />
     <ClInclude Include="Mathematics\DistOrientedBox3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistPoint3Circle3.h" />
     <ClInclude Include="Mathematics\DistPoint3ConvexPolyhedron3.h" />
