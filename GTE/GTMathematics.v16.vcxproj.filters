@@ -1449,5 +1449,8 @@
     <ClInclude Include="Mathematics\LDLTDecomposition.h">
       <Filter>NumericalMethods</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\DistOrientedBox3Cone3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
