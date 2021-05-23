@@ -3,7 +3,7 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-project(DistanceOrientedBoxes)
+project(DistanceOrientedBoxConeFrustum)
 
 cmake_minimum_required(VERSION 3.8)
 option(BUILD_RELEASE_LIB, "Build release library" OFF)
