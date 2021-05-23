@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 5.9.2021.05.13
 
 #pragma once
 
@@ -621,7 +621,7 @@ namespace gte
             if (verifySize)
             {
                 LogAssert(
-                    VBlock.size() == NumBlocks,
+                    VBlock.size() == static_cast<size_t>(NumBlocks),
                     "Invalid size.");
 
                 for (auto const& current : VBlock)
