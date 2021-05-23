@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.8.2021.04.16
+// Version: 5.8.2021.05.23
 
 #include "IncrementalDelaunay2Window2.h"
 #include <random>
@@ -12,7 +12,7 @@ IncrementalDelaunay2Window2::IncrementalDelaunay2Window2(Parameters& parameters)
     :
     Window2(parameters),
     mSize(static_cast<float>(mXSize)),
-    mDelaunay(0.0f, 0.0f, mSize, mSize),
+    mDelaunay(0.0f, 0.0f, mSize - 1.0f, mSize - 1.0f),
     mInputs{},
     mVertices{},
     mTriangles{},
@@ -51,7 +51,6 @@ void IncrementalDelaunay2Window2::OnDisplay()
     uint32_t const white = 0xFFFFFFFF;
     uint32_t const gray = 0xFF808080;
     uint32_t const blue = 0xFFFF0000;
-    uint32_t const green = 0xFF00FF00;
     uint32_t const red = 0xFF0000FF;
     uint32_t const cyan = 0xFFFFFF00;
     uint32_t const rose = 0xFFC9AEFF;
@@ -120,73 +119,29 @@ void IncrementalDelaunay2Window2::OnDisplay()
     for (size_t t = 0; t < mTriangles.size(); ++t)
     {
         auto const& tri = mTriangles[t];
-
-        v0 = mVertices[tri[0]];
-        x0 = static_cast<int32_t>(v0[0] + 0.5f);
-        y0 = static_cast<int32_t>(v0[1] + 0.5f);
-
-        v1 = mVertices[tri[1]];
-        x1 = static_cast<int32_t>(v1[0] + 0.5f);
-        y1 = static_cast<int32_t>(v1[1] + 0.5f);
-
-        v2 = mVertices[tri[2]];
-        x2 = static_cast<int32_t>(v2[0] + 0.5f);
-        y2 = static_cast<int32_t>(v2[1] + 0.5f);
-
-        if (tri[0] >= 3 && tri[1] >= 3)
+        if (tri[0] >= 3 && tri[1] >= 3 && tri[2] >= 3)
         {
+            v0 = mVertices[tri[0]];
+            x0 = static_cast<int32_t>(v0[0] + 0.5f);
+            y0 = static_cast<int32_t>(v0[1] + 0.5f);
+
+            v1 = mVertices[tri[1]];
+            x1 = static_cast<int32_t>(v1[0] + 0.5f);
+            y1 = static_cast<int32_t>(v1[1] + 0.5f);
+
+            v2 = mVertices[tri[2]];
+            x2 = static_cast<int32_t>(v2[0] + 0.5f);
+            y2 = static_cast<int32_t>(v2[1] + 0.5f);
+
             DrawLine(x0, y0, x1, y1, gray);
-        }
-        else
-        {
-            if ((tri[0] < 3 && tri[1] >= 3) || (tri[0] >= 3 && tri[1] < 3))
-            {
-                DrawLine(x0, y0, x1, y1, green);
-            }
-        }
-
-        if (tri[1] >= 3 && tri[2] >= 3)
-        {
             DrawLine(x1, y1, x2, y2, gray);
-        }
-        else
-        {
-            if ((tri[1] < 3 && tri[2] >= 3) || (tri[1] >= 3 && tri[2] < 3))
-            {
-                DrawLine(x1, y1, x2, y2, green);
-            }
-        }
-
-        if (tri[2] >= 3 && tri[0] >= 3)
-        {
             DrawLine(x2, y2, x0, y0, gray);
-        }
-        else
-        {
-            if ((tri[2] < 3 && tri[0] >= 3) || (tri[2] >= 3 && tri[0] < 3))
-            {
-                DrawLine(x2, y2, x0, y0, green);
-            }
-        }
 
-        used.insert(v0);
-        used.insert(v1);
-        used.insert(v2);
+            used.insert(v0);
+            used.insert(v1);
+            used.insert(v2);
+        }
     }
-
-    // Draw the supertriangle boundaries.
-    v0 = mVertices[0];
-    x0 = static_cast<int32_t>(v0[0] + 0.5f);
-    y0 = static_cast<int32_t>(v0[1] + 0.5f);
-    v1 = mVertices[1];
-    x1 = static_cast<int32_t>(v1[0] + 0.5f);
-    y1 = static_cast<int32_t>(v1[1] + 0.5f);
-    v2 = mVertices[2];
-    x2 = static_cast<int32_t>(v2[0] + 0.5f);
-    y2 = static_cast<int32_t>(v2[1] + 0.5f);
-    DrawLine(x0, y0, x1, y1, green);
-    DrawLine(x1, y1, x2, y2, green);
-    DrawLine(x2, y2, x0, y0, green);
 
     // Draw only the Delaunay triangles (skip the triangles with at least
     // one supervertex).
@@ -261,6 +216,18 @@ bool IncrementalDelaunay2Window2::OnCharPress(unsigned char key, int x, int y)
         mInfo = IncrementalDelaunay2<float>::SearchInfo{};
         mContainingTriangle = mDelaunay.invalid;
         return true;
+
+    case 'f':
+    case 'F':
+        if (mDelaunay.FinalizeTriangulation())
+        {
+            mDelaunay.GetTriangulation(mVertices, mTriangles);
+            mVertices[0] = { 0.0f, 0.0f };
+            mVertices[1] = { mSize, 0.0f };
+            mVertices[2] = { 0.0f, mSize };
+            OnDisplay();
+        }
+        return true;
     }
     return Window2::OnCharPress(key, x, y);
 }
@@ -278,6 +245,7 @@ bool IncrementalDelaunay2Window2::OnMouseClick(int button, int state,
     {
         if (button == MOUSE_LEFT)
         {
+            size_t index = std::numeric_limits<size_t>::max();
             if (modifiers & MODIFIER_SHIFT)
             {
                 // Remove a point from the triangulation.
@@ -293,17 +261,25 @@ bool IncrementalDelaunay2Window2::OnMouseClick(int button, int state,
                         iMin = i;
                     }
                 }
-                mDelaunay.Remove(mVertices[iMin]);
+
+                if (iMin >= 7)
+                {
+                    index = mDelaunay.Remove(mVertices[iMin]);
+                }
             }
             else
             {
                 // Insert a point into the triangulation.
-                mDelaunay.Insert(position);
+                index = mDelaunay.Insert(position);
             }
-            mDelaunay.GetTriangulation(mVertices, mTriangles);
-            mVertices[0] = { 0.0f, 0.0f };
-            mVertices[1] = { mSize, 0.0f };
-            mVertices[2] = { 0.0f, mSize };
+
+            if (index != std::numeric_limits<size_t>::max())
+            {
+                mDelaunay.GetTriangulation(mVertices, mTriangles);
+                mVertices[0] = { 0.0f, 0.0f };
+                mVertices[1] = { mSize, 0.0f };
+                mVertices[2] = { 0.0f, mSize };
+            }
         }
         else if (button == MOUSE_RIGHT)
         {

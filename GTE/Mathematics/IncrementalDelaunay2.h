@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.8.2021.04.22
+// Version: 5.8.2021.05.23
 
 #pragma once
 
@@ -71,13 +71,18 @@ namespace gte
     {
     public:
         // Construction and destruction. A bounding rectangle for the input
-        // points must be specified.
+        // points must be specified. NOTE: The bounding rectangle is inserted
+        // automatically into the triangulation as two triangles. Once you
+        // are finished inserting and removing points, call the function
+        // FinalizeTriangulation(). After this call, you cannot insert or
+        // remove points.
         IncrementalDelaunay2(T const& xMin, T const& yMin, T const& xMax, T const& yMax)
             :
             mXMin(xMin),
             mYMin(yMin),
             mXMax(xMax),
             mYMax(yMax),
+            mRectangleRemoved(0),
             mCRPool(maxNumCRPool),
             mGraph{},
             mIndex{ { { 0, 1 }, { 1, 2 }, { 2, 0 } } },
@@ -100,7 +105,16 @@ namespace gte
                 return ToLine(vPrev, vCurr, vNext);
             };
 
-            // Create a supertriangle that contains the input rectangle.
+            // Create the vertices for a supertriangle that contains the
+            // input rectangle
+            //   V[0] = (x0,y0) = (xmin - dx, ymin - dy)
+            //   V[1] = (x1,y1) = (xmin + 5 * dx, ymin - dy)
+            //   V[2] = (x2,y2) = (xmin - dx, ymax - 5 * dy)
+            // Create the vertices for the input rectangle
+            //   V[3] = (x3,y3) = (xmin, ymin)
+            //   V[4] = (x4,y4) = (xmax, ymin)
+            //   V[5] = (x5,y5) = (xmin, ymax)
+            //   V[6] = (x6,y6) = (xmax, ymax)
             T xDelta = mXMax - mXMin;
             T yDelta = mYMax - mYMin;
             T x0 = mXMin - xDelta;
@@ -109,44 +123,67 @@ namespace gte
             T y1 = y0;
             T x2 = x0;
             T y2 = mYMin + static_cast<T>(5) * yDelta;
-            Vector2<T> supervertex0{ x0, y0 };
-            Vector2<T> supervertex1{ x1, y1 };
-            Vector2<T> supervertex2{ x2, y2 };
+            std::array<Vector2<T>, 7> vertices
+            {
+                Vector2<T>{ x0, y0 },
+                Vector2<T>{ x1, y1 },
+                Vector2<T>{ x2, y2 },
+                Vector2<T>{ mXMin, mYMin },
+                Vector2<T>{ mXMax, mYMin },
+                Vector2<T>{ mXMin, mYMax },
+                Vector2<T>{ mXMax, mYMax }
+            };
 
-            // Insert the supertriangle vertices into the vertex storage.
-            mVertexIndexMap.emplace(supervertex0, 0);
-            mVertexIndexMap.emplace(supervertex1, 1);
-            mVertexIndexMap.emplace(supervertex2, 2);
-            mVertices.emplace_back(supervertex0);
-            mVertices.emplace_back(supervertex1);
-            mVertices.emplace_back(supervertex2);
-            mIRVertices.emplace_back(IRVector{ x0, y0 });
-            mIRVertices.emplace_back(IRVector{ x1, y1 });
-            mIRVertices.emplace_back(IRVector{ x2, y2 });
+            // Insert the vertices into the vertex storage.
+            for (size_t i = 0; i < vertices.size(); ++i)
+            {
+                auto const& vertex = vertices[i];
+                mVertexIndexMap.emplace(vertex, i);
+                mVertices.emplace_back(vertex);
+                mIRVertices.emplace_back(IRVector{ vertex[0], vertex[1] });
+            }
 
-            // Insert the supertriangle into the triangulation.
-            auto inserted = mGraph.Insert(0, 1, 2);
-            LogAssert(
-                inserted != nullptr,
-                "Failed to insert supertriangle.");
+            // Create the triangles formed by the supervertices and the
+            // input rectangle vertices.
+            std::array<std::array<int32_t, 3>, 9> triangles
+            { {
+                { 0, 5, 2 }, { 0, 3, 5 }, { 0, 4, 3 }, { 0, 1, 4 }, { 1, 6, 4 },
+                { 1, 2, 6 }, { 2, 5, 6 }, { 3, 4, 6 }, { 3, 6, 5 }
+            } };
+
+            // Insert the triangles into the triangulation.
+            for (auto const& tri : triangles)
+            {
+                auto inserted = mGraph.Insert(tri[0], tri[1], tri[2]);
+                LogAssert(
+                    inserted != nullptr,
+                    "Failed to insert initial triangle.");
+            }
         }
 
         ~IncrementalDelaunay2() = default;
 
-        // Insert a point into the triangulation. The return value is the
-        // index associated with the vertex in the vertex map. The
-        // supertriangle vertices are at indices 0, 1, and 2. If the input
-        // point already exists, its vertex-map index is simply returned. If
-        // the position is outside the domain specified in the constructor,
-        // an exception is thrown.
+        // Insert a point into the triangulation. It is required that the
+        // point be strictly inside the input rectangle; if it is not, an
+        // exception is thrown. If the input point already exists, its
+        // vertex map index is returned; otherwise, the point is inserted
+        // into the vertex map and an index associated with the insertion
+        // is retured.
         size_t Insert(Vector2<T> const& position)
         {
-            mTrianglesAndAdjacenciesNeedUpdate = true;
-
             LogAssert(
-                mXMin <= position[0] && position[0] <= mXMax &&
-                mYMin <= position[1] && position[1] <= mYMax,
-                "The position is outside the domain specified in the constructor.");
+                mXMin < position[0] && position[0] < mXMax &&
+                mYMin < position[1] && position[1] < mYMax,
+                "The position must be strictly inside the domain specified in the constructor.");
+
+            if (mRectangleRemoved == 2)
+            {
+                // You cannot insert points after the input rectangle is
+                // removed.
+                return std::numeric_limits<size_t>::max();
+            }
+
+            mTrianglesAndAdjacenciesNeedUpdate = true;
 
             auto iter = mVertexIndexMap.find(position);
             if (iter != mVertexIndexMap.end())
@@ -171,6 +208,21 @@ namespace gte
         // std::numeric_limit<size_t>::max().
         size_t Remove(Vector2<T> const& position)
         {
+            if (mRectangleRemoved == 0)
+            {
+                LogAssert(
+                    mXMin < position[0] && position[0] < mXMax &&
+                    mYMin < position[1] && position[1] < mYMax,
+                    "The position must be strictly inside the domain specified in the constructor.");
+            }
+
+            if (mRectangleRemoved == 2)
+            {
+                // You cannot remove points after the input rectangle is
+                // removed.
+                return std::numeric_limits<size_t>::max();
+            }
+
             mTrianglesAndAdjacenciesNeedUpdate = true;
 
             auto iter = mVertexIndexMap.find(position);
@@ -183,8 +235,7 @@ namespace gte
 
             if (mVertexIndexMap.size() == 4)
             {
-                // Only a single point has been inserted previously into the
-                // triangulation.
+                // The last vertex of the input rectangle is to be removed.
                 for (int32_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
                 {
                     auto removed = mGraph.Remove(vRemovalIndex, i0, i1);
@@ -236,6 +287,40 @@ namespace gte
 
             mVertexIndexMap.erase(iter);
             return static_cast<size_t>(vRemovalIndex);
+        }
+
+        // Call this only after you are finished inserting points into or
+        // removing points from the triangulation.
+        bool FinalizeTriangulation()
+        {
+            if (mRectangleRemoved == 2)
+            {
+                // You cannot remove the input rectangle more than once.
+                return false;
+            }
+
+            // Remove the input rectangle vertices. The triangles strictly
+            // interior to the input rectangle form the Delaunay
+            // triangulation. However, the triangles sharing a supervertex
+            // still exist in the graph.
+            std::array<Vector2<T>, 4> vertex
+            {
+                Vector2<T>{ mXMin, mYMin },
+                Vector2<T>{ mXMax, mYMin },
+                Vector2<T>{ mXMin, mYMax },
+                Vector2<T>{ mXMax, mYMax }
+            };
+
+            mRectangleRemoved = 1;
+            for (size_t i = 0; i < vertex.size(); ++i)
+            {
+                size_t index = Remove(vertex[i]);
+                LogAssert(
+                    index == i + 3,
+                    "Incorrect index for vertex.");
+            }
+            mRectangleRemoved = 2;
+            return true;
         }
 
         // Get the current triangulation including the supervertices and
@@ -525,6 +610,19 @@ namespace gte
         // The rectangular domain in which all input points live.
         T mXMin, mYMin, mXMax, mYMax;
 
+        // The rectangular domain is always inserted into the triangulation
+        // first. After all your insert and remove calls, if you remove the
+        // rectangle via FinalizeTriangulation(), you can no longer insert
+        // or remove points. That is, the triangulation is final. The values
+        // of this member are
+        //   0: rectangle has not been removed
+        //   1: rectangle is in the process of being removed
+        //   2: rectangle is removed
+        // The 3-valued member allows us to throw an exception in the
+        // Remove(position) call when the state is 2, but finalization can
+        // use Remove(position) without exceptions when the state is 1.
+        uint32_t mRectangleRemoved;
+
         // The current vertices.
         std::map<Vector2<T>, size_t> mVertexIndexMap;
         std::vector<Vector2<T>> mVertices;
@@ -557,6 +655,12 @@ namespace gte
         inline bool IsDelaunayVertex(IntegerType vIndex) const
         {
             return vIndex >= 3;
+        }
+
+        template <typename IntegerType>
+        inline bool IsDelaunayTriangle(IntegerType v0, IntegerType v1, IntegerType v2) const
+        {
+            return v0 >= 3 && v1 >= 3 && v2 >= 3;
         }
 
         template <typename IntegerType>
@@ -622,10 +726,11 @@ namespace gte
                     auto adj = tri->T[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
-                        size_t v0Index = adj->V[0];
-                        size_t v1Index = adj->V[1];
-                        size_t v2Index = adj->V[2];
-                        if (ToCircumcircle(pIndex, v0Index, v1Index, v2Index) <= 0)
+                        size_t v0 = adj->V[0];
+                        size_t v1 = adj->V[1];
+                        size_t v2 = adj->V[2];
+                        if (IsDelaunayTriangle(v0, v1, v2) &&
+                            ToCircumcircle(pIndex, v0, v1, v2) <= 0)
                         {
                             // Point P is in the circumcircle.
                             candidates.insert(adj);
@@ -1730,6 +1835,8 @@ namespace gte
             auto const& tmap = mGraph.GetTriangles();
             if (tmap.size() == 0)
             {
+                mTriangles.clear();
+                mAdjacencies.clear();
                 return;
             }
 
