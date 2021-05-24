@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.4.2020.11.16
+// Version: 5.4.2021.05.24
 
 #pragma once
 
+#include <cstddef>
 #include <functional>
 
 // Support for creating hash values for a list of types, each such type T
