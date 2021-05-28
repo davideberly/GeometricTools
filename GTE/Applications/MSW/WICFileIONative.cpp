@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.7.2021.04.09
+// Version: 4.7.2021.05.27
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/WICFileIONative.h>
@@ -280,7 +280,7 @@ void WICFileIONative::DoLoad(void* factory, void* frameDecode, TextureCreator co
     // is an R8G8B8A8 format with texels converted from the source format.
     WICPixelFormatGUID wicConvertGUID = GUID_WICPixelFormat32bppRGBA;
     uint32_t format = R8G8B8A8;
-    for (int i = 0; i < NUM_LOAD_FORMATS; ++i)
+    for (size_t i = 0; i < NUM_LOAD_FORMATS; ++i)
     {
         if (IsEqualGUID(wicSourceGUID, *msLoadFormatMap[i].wicInputGUID))
         {
@@ -369,7 +369,7 @@ void WICFileIONative::SaveTo(std::string const& filename, uint32_t inFormat,
 
     // Select the WIC format that matches the input texture format.
     WICPixelFormatGUID wicSourceGUID = GUID_WICPixelFormatUndefined;
-    for (int i = 0; i < NUM_SAVE_FORMATS; ++i)
+    for (size_t i = 0; i < NUM_SAVE_FORMATS; ++i)
     {
         if (msSaveFormatMap[i].format == inFormat)
         {
