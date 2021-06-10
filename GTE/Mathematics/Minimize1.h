@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.21
+// Version: 4.0.2021.06.09
 
 #pragma once
 
@@ -47,7 +47,7 @@ namespace gte
             mTolerance(std::max(tolerance, static_cast<T>(0)))
         {
             LogAssert(
-                mMaxSubdivisions > 0 && maxBisections > 0,
+                mMaxSubdivisions > 0 && mMaxBisections > 0,
                 "Invalid argument.");
 
             SetEpsilon(epsilon);
@@ -123,7 +123,7 @@ namespace gte
                 ((f1 > fInitial) && (f0 >= fInitial)))
             {
                 // The polyline {(f0,f0), (tInitial,fInitial), (t1,f1)} is V-shaped.
-                GetBracketedMinimum(t0, f0, tInitial, fInitial, t1, f1, mMaxSubdivisions);
+                GetBracketedMinimum(t0, f0, tInitial, fInitial, t1, f1);
             }
             else
             {
@@ -160,7 +160,7 @@ namespace gte
             if (((fm < f0) && (f1 >= fm)) || ((f1 > fm) && (f0 >= fm)))
             {
                 // The polyline {(f0,f0), (tm,fm), (t1,f1)} is V-shaped.
-                GetBracketedMinimum(t0, f0, tm, fm, t1, f1, subdivisionsRemaining);
+                GetBracketedMinimum(t0, f0, tm, fm, t1, f1);
             }
             else
             {
@@ -172,9 +172,11 @@ namespace gte
         }
 
         // This is called when {f0,f1,f2} brackets a minimum.
-        void GetBracketedMinimum(T t0, T f0, T tm, T fm, T t1, T f1,
-            int32_t subdivisionsRemaining)
+        void GetBracketedMinimum(T t0, T f0, T tm, T fm, T t1, T f1)
         {
+            T const two = static_cast<T>(2);
+            T const half = static_cast<T>(0.5);
+
             for (int32_t i = 0; i < mMaxBisections; ++i)
             {
                 // Update the minimum location and value.
@@ -186,7 +188,7 @@ namespace gte
 
                 // Test for convergence.
                 T dt10 = t1 - t0;
-                T dtBound = static_cast<T>(2) * mTolerance * std::fabs(tm) + mEpsilon;
+                T dtBound = two * mTolerance * std::fabs(tm) + mEpsilon;
                 if (dt10 <= dtBound)
                 {
                     break;
@@ -207,7 +209,7 @@ namespace gte
 
                 // Compute tv and clamp to [t0,t1] to offset floating-point
                 // rounding errors.
-                T tv = tm + static_cast<T>(0.5) * (dt1m * tmp1 - dt0m * tmp0) / denom;
+                T tv = tm + half * (dt1m * tmp1 - dt0m * tmp0) / denom;
                 tv = std::max(t0, std::min(tv, t1));
                 T fv = mFunction(tv);
                 if (fv < mFMin)
@@ -249,10 +251,85 @@ namespace gte
                 else
                 {
                     // The vertex of parabola is located at the middle sample
-                    // point. A global minimum could occur on either
-                    // subinterval.
-                    Subdivide(t0, f0, tm, fm, subdivisionsRemaining);
-                    Subdivide(tm, fm, t1, f1, subdivisionsRemaining);
+                    // point. A minimum could occur on either subinterval, but
+                    // it is also possible the minimum occurs at the vertex.
+                    // In either case, the search is continued by examining a
+                    // neighborhood of the vertex. When two choices exist for
+                    // a bracket, the one with the smallest function value at
+                    // the midpoint is used.
+                    T tm0 = half * (t0 + tm);
+                    T fm0 = mFunction(tm0);
+                    T tm1 = half * (tm + t1);
+                    T fm1 = mFunction(tm1);
+
+                    if (fm0 < fm)
+                    {
+                        if (fm1 < fm)
+                        {
+                            if (fm0 < fm1)
+                            {
+                                // {(t0,f0),(tm0,fm0),(tm,fm)}
+                                t1 = tm;
+                                f1 = fm;
+                                tm = tm0;
+                                fm = fm0;
+                            }
+                            else
+                            {
+                                // {(tm,fm),(tm1,fm1),(t1,f1)}
+                                t0 = tm;
+                                f0 = fm;
+                                tm = tm1;
+                                fm = fm1;
+                            }
+                        }
+                        else // fm1 >= fm
+                        {
+                            // {(t0,f0),(tm0,fm0),(tm,fm)}
+                            t1 = tm;
+                            f1 = fm;
+                            tm = tm0;
+                            fm = fm0;
+                        }
+                    }
+                    else if (fm0 > fm)
+                    {
+                        if (fm1 < fm)
+                        {
+                            // {(tm,fm),(tm1,fm1),(t1,f1)}
+                            t0 = tm;
+                            f0 = fm;
+                            tm = tm1;
+                            fm = fm1;
+                        }
+                        else // fm1 >= fm
+                        {
+                            // {(tm0,fm0),(tm,fm),(tm1,fm1)}
+                            t0 = tm0;
+                            f0 = fm0;
+                            t1 = tm1;
+                            f1 = fm1;
+                        }
+                    }
+                    else  // fm0 = fm
+                    {
+                        if (fm1 < fm)
+                        {
+                            // {(tm,fm),(tm1,fm1),(t1,f1)}
+                            t0 = tm;
+                            f0 = fm;
+                            tm = tm1;
+                            fm = fm1;
+                        }
+                        else // fm1 >= fm
+                        {
+                            // {(tm0,fm0),(tm,fm),(tm1,fm1)}
+                            t0 = tm0;
+                            f0 = fm0;
+                            t1 = tm1;
+                            f1 = fm1;
+                        }
+                    }
                 }
             }
         }
