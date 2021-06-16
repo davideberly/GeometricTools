@@ -4,13 +4,14 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 5)
-set(GTE_VERSION_MINOR 9)
+set(GTE_VERSION_MINOR 11)
 
 project(Distance VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
 cmake_minimum_required(VERSION 3.8)
 add_subdirectory(DistanceAlignedBoxes)
 add_subdirectory(DistanceAlignedBoxOrientedBox)
+add_subdirectory(DistanceOrientedBoxConeFrustum)
 add_subdirectory(DistanceOrientedBoxes)
 add_subdirectory(DistancePointConvexPolyhedron)
 add_subdirectory(DistancePointHyperellipsoid)

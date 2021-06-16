@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 5)
-set(GTE_VERSION_MINOR 9)
+set(GTE_VERSION_MINOR 11)
 
 project(Geometrics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
