@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.10
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -11,10 +11,21 @@
 #include <Mathematics/IntrLine3Sphere3.h>
 #include <Mathematics/Segment.h>
 
+// The queries consider the sphere to be a solid.
+//
+// The sphere is (X-C)^T*(X-C)-r^2 = 0. The segment has endpoints P0 and P1.
+// The segment origin (center) is P = (P0+P1)/2, the segment direction is
+// D = (P1-P0)/|P1-P0| and the segment extent (half the segment length) is
+// e = |P1-P0|/2. The segment is X = P+t*D for t in [-e,e]. Substitute the
+// segment equation into the sphere equation to obtain a quadratic equation
+// Q(t) = t^2 + 2*a1*t + a0 = 0, where a1 = (P1-P0)^T*(P0-C) and
+// a0 = (P0-C)^T*(P0-C)-r^2. The algorithm involves an analysis of the
+// real-valued roots of Q(t) for -e <= t <= e.
+
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment3<Real>, Sphere3<Real>>
+    template <typename T>
+    class TIQuery<T, Segment3<T>, Sphere3<T>>
     {
     public:
         struct Result
@@ -28,89 +39,104 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Segment3<Real> const& segment, Sphere3<Real> const& sphere)
+        Result operator()(Segment3<T> const& segment, Sphere3<T> const& sphere)
         {
-            // The sphere is (X-C)^T*(X-C)-1 = 0 and the line is X = P+t*D.
-            // Substitute the line equation into the sphere equation to
-            // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
-            // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Real constexpr zero = 0;
             Result result{};
 
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{};     // P
+            Vector3<T> segDirection{};  // D
+            T segExtent{};              // e
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Vector3<Real> diff = segOrigin - sphere.center;
-            Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
-            Real a1 = Dot(segDirection, diff);
-            Real discr = a1 * a1 - a0;
+            T const zero = static_cast<T>(0);
+            Vector3<T> diff = segOrigin - sphere.center;
+            T a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
+            T a1 = Dot(segDirection, diff);
+            T discr = a1 * a1 - a0;
             if (discr < zero)
             {
+                // Q(t) has no real-valued roots. The segment does not
+                // intersect the sphere.
                 result.intersect = false;
                 return result;
             }
 
-            Real constexpr two = 2;
-            Real tmp0 = segExtent * segExtent + a0;
-            Real tmp1 = two * a1 * segExtent;
-            Real qm = tmp0 - tmp1;
-            Real qp = tmp0 + tmp1;
+            // Q(-e) = e^2 - 2*a1*e + a0, Q(e) = e^2 + 2*a1*e + a0
+            T tmp0 = segExtent * segExtent + a0;  // e^2 + a0
+            T tmp1 = static_cast<T>(2) * a1 * segExtent;  // 2*a1*e
+            T qm = tmp0 - tmp1;  // Q(-e)
+            T qp = tmp0 + tmp1;  // Q(e)
             if (qm * qp <= zero)
             {
+                // Q(t) has a root on the interval [-e,e]. The segment
+                // intesects the sphere.
                 result.intersect = true;
                 return result;
             }
 
+            // Either (Q(-e) > 0 and Q(e) > 0) or (Q(-e) < 0 and Q(e) < 0).
+            // When Q at the endpoints is negative, Q(t) < 0 for all t in
+            // [-e,e] and the segment does not intersect the sphere.
+            // Otherwise, Q(-e) > 0 [and Q(e) > 0]. The minimum of Q(t)
+            // occurs at t = -a1. We know that discr >= 0, so Q(t) has a
+            // root on (-e,e) when -a1 is in (-e,e). The combined test for
+            // intersection is (Q(-e) > 0 and |a1| < e).
             result.intersect = (qm > zero && std::fabs(a1) < segExtent);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Sphere3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Sphere3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Sphere3<Real>>
+        public FIQuery<T, Line3<T>, Sphere3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Sphere3<Real>>::Result
+            public FIQuery<T, Line3<T>, Sphere3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, Sphere3<Real> const& sphere)
+        Result operator()(Segment3<T> const& segment, Sphere3<T> const& sphere)
         {
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             Result result{};
             DoQuery(segOrigin, segDirection, segExtent, sphere, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin,
-            Vector3<Real> const& segDirection, Real segExtent,
-            Sphere3<Real> const& sphere, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& segOrigin,
+            Vector3<T> const& segDirection, T segExtent,
+            Sphere3<T> const& sphere, Result& result)
         {
-            FIQuery<Real, Line3<Real>, Sphere3<Real>>::DoQuery(segOrigin,
-                segDirection, sphere, result);
+            FIQuery<T, Line3<T>, Sphere3<T>>::DoQuery(
+                segOrigin, segDirection, sphere, result);
 
             if (result.intersect)
             {
                 // The line containing the segment intersects the sphere; the
-                // t-interval is [t0,t1].  The segment intersects the sphere
+                // t-interval is [t0,t1]. The segment intersects the sphere
                 // as long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
@@ -119,8 +145,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the segment does not intersect
+                    // the sphere.
+                    result = Result{};
                 }
             }
         }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -20,77 +20,82 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray3<Real>, OrientedBox3<Real>>
+    template <typename T>
+    class TIQuery<T, Ray3<T>, OrientedBox3<T>>
         :
-        public TIQuery<Real, Ray3<Real>, AlignedBox3<Real>>
+        public TIQuery<T, Ray3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Ray3<Real>, AlignedBox3<Real>>::Result
+            public TIQuery<T, Ray3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, OrientedBox3<Real> const& box)
+        Result operator()(Ray3<T> const& ray, OrientedBox3<T> const& box)
         {
             // Transform the ray to the oriented-box coordinate system.
-            Vector3<Real> diff = ray.origin - box.center;
-            Vector3<Real> rayOrigin
+            Vector3<T> diff = ray.origin - box.center;
+            Vector3<T> rayOrigin
             {
                 Dot(diff, box.axis[0]),
                 Dot(diff, box.axis[1]),
                 Dot(diff, box.axis[2])
             };
-            Vector3<Real> rayDirection = Vector3<Real>
+            Vector3<T> rayDirection = Vector3<T>
             {
                 Dot(ray.direction, box.axis[0]),
                 Dot(ray.direction, box.axis[1]),
                 Dot(ray.direction, box.axis[2])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(rayOrigin, rayDirection, box.extent, result);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, OrientedBox3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, OrientedBox3<T>>
         :
-        public FIQuery<Real, Ray3<Real>, AlignedBox3<Real>>
+        public FIQuery<T, Ray3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Ray3<Real>, AlignedBox3<Real>>::Result
+            public FIQuery<T, Ray3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, OrientedBox3<Real> const& box)
+        Result operator()(Ray3<T> const& ray, OrientedBox3<T> const& box)
         {
             // Transform the ray to the oriented-box coordinate system.
-            Vector3<Real> diff = ray.origin - box.center;
-            Vector3<Real> rayOrigin
+            Vector3<T> diff = ray.origin - box.center;
+            Vector3<T> rayOrigin
             {
                 Dot(diff, box.axis[0]),
                 Dot(diff, box.axis[1]),
                 Dot(diff, box.axis[2])
             };
-            Vector3<Real> rayDirection = Vector3<Real>
+            Vector3<T> rayDirection = Vector3<T>
             {
                 Dot(ray.direction, box.axis[0]),
                 Dot(ray.direction, box.axis[1]),
                 Dot(ray.direction, box.axis[2])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(rayOrigin, rayDirection, box.extent, result);
-            for (int i = 0; i < result.numPoints; ++i)
+            if (result.intersect)
             {
-                result.point[i] = ray.origin + result.lineParameter[i] * ray.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                }
             }
             return result;
         }

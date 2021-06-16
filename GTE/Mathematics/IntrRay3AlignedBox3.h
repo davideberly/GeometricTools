@@ -3,121 +3,138 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
+#include <Mathematics/IntrIntervals.h>
 #include <Mathematics/IntrLine3AlignedBox3.h>
 #include <Mathematics/Ray.h>
 
 // The test-intersection queries use the method of separating axes.
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The find-intersection queries use parametric clipping against the six
-// faces of the box.  The find-intersection queries use Liang-Barsky
-// clipping.  The queries consider the box to be a solid. The algorithms
+// faces of the box. The find-intersection queries use Liang-Barsky
+// clipping. The queries consider the box to be a solid. The algorithms
 // are described in
 // https://www.geometrictools.com/Documentation/IntersectionLineBox.pdf
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class TIQuery<T, Ray3<T>, AlignedBox3<T>>
         :
-        public TIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+        public TIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Line3<Real>, AlignedBox3<Real>>::Result
+            public TIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, AlignedBox3<Real> const& box)
+        Result operator()(Ray3<T> const& ray, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the ray to the aligned-box coordinate system.
-            Vector3<Real> rayOrigin = ray.origin - boxCenter;
+            Vector3<T> rayOrigin = ray.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(rayOrigin, ray.direction, boxExtent, result);
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& rayOrigin, Vector3<Real> const& rayDirection,
-            Vector3<Real> const& boxExtent, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& rayOrigin, Vector3<T> const& rayDirection,
+            Vector3<T> const& boxExtent, Result& result)
         {
-            for (int i = 0; i < 3; ++i)
+            T const zero = static_cast<T>(0);
+            for (int32_t i = 0; i < 3; ++i)
             {
-                if (std::fabs(rayOrigin[i]) > boxExtent[i] && rayOrigin[i] * rayDirection[i] >= (Real)0)
+                if (std::fabs(rayOrigin[i]) > boxExtent[i] &&
+                    rayOrigin[i] * rayDirection[i] >= zero)
                 {
                     result.intersect = false;
                     return;
                 }
             }
 
-            TIQuery<Real, Line3<Real>, AlignedBox3<Real>>::DoQuery(rayOrigin, rayDirection, boxExtent, result);
+            TIQuery<T, Line3<T>, AlignedBox3<T>>::DoQuery(
+                rayOrigin, rayDirection, boxExtent, result);
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, AlignedBox3<T>>
         :
-        public FIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+        public FIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, AlignedBox3<Real>>::Result
+            public FIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, AlignedBox3<Real> const& box)
+        Result operator()(Ray3<T> const& ray, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the ray to the aligned-box coordinate system.
-            Vector3<Real> rayOrigin = ray.origin - boxCenter;
+            Vector3<T> rayOrigin = ray.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(rayOrigin, ray.direction, boxExtent, result);
-            for (int i = 0; i < result.numPoints; ++i)
+            if (result.intersect)
             {
-                result.point[i] = ray.origin + result.lineParameter[i] * ray.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& rayOrigin, Vector3<Real> const& rayDirection,
-            Vector3<Real> const& boxExtent, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& rayOrigin, Vector3<T> const& rayDirection,
+            Vector3<T> const& boxExtent, Result& result)
         {
-            FIQuery<Real, Line3<Real>, AlignedBox3<Real>>::DoQuery(rayOrigin, rayDirection, boxExtent, result);
+            FIQuery<T, Line3<T>, AlignedBox3<T>>::DoQuery(
+                rayOrigin, rayDirection, boxExtent, result);
+
             if (result.intersect)
             {
                 // The line containing the ray intersects the box; the
-                // t-interval is [t0,t1].  The ray intersects the box as long
+                // t-interval is [t0,t1]. The ray intersects the box as long
                 // as [t0,t1] overlaps the ray t-interval (0,+infinity).
-                if (result.lineParameter[1] >= (Real)0)
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
+                auto iiResult = iiQuery(result.parameter, static_cast<T>(0), true);
+                if (iiResult.intersect)
                 {
-                    if (result.lineParameter[0] < (Real)0)
-                    {
-                        result.lineParameter[0] = (Real)0;
-                    }
+                    result.numIntersections = iiResult.numIntersections;
+                    result.parameter = iiResult.overlap;
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numPoints = 0;
+                    // The line containing the ray does not intersect the box.
+                    result = Result{};
                 }
             }
         }

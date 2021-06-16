@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.10
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -13,11 +13,17 @@
 #include <Mathematics/Matrix3x3.h>
 
 // The queries consider the ellipsoid to be a solid.
+//
+// The ellipsoid is (X-C)^T*M*(X-C)-1 = 0 and the ray is X = P+t*D for t >= 0.
+// Substitute the ray equation into the ellipsoid equation to obtain a
+// quadratic equation Q(t) = a2*t^2 + 2*a1*t + a0 = 0, where a2 = D^T*M*D,
+// a1 = D^T*M*(P-C) and a0 = (P-C)^T*M*(P-C)-1. The algorithm involves an
+// analysis of the real-valued roots of Q(t) for t >= 0.
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray3<Real>, Ellipsoid3<Real>>
+    template <typename T>
+    class TIQuery<T, Ray3<T>, Ellipsoid3<T>>
     {
     public:
         struct Result
@@ -31,97 +37,90 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Ray3<Real> const& ray, Ellipsoid3<Real> const& ellipsoid)
+        Result operator()(Ray3<T> const& ray, Ellipsoid3<T> const& ellipsoid)
         {
-            // The ellipsoid is (X-K)^T*M*(X-K)-1 = 0 and the line is
-            // X = P+t*D.  Substitute the line equation into the ellipsoid
-            // equation to obtain a quadratic equation
-            //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
-            // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
-            // a0 = (P-K)^T*M*(P-K)-1.
-            Real constexpr zero = 0;
             Result result{};
 
-            Matrix3x3<Real> M;
+            Matrix3x3<T> M;
             ellipsoid.GetM(M);
-
-            Vector3<Real> diff = ray.origin - ellipsoid.center;
-            Vector3<Real> matDir = M * ray.direction;
-            Vector3<Real> matDiff = M * diff;
-            Real a2 = Dot(ray.direction, matDir);
-            Real a1 = Dot(ray.direction, matDiff);
-            Real a0 = Dot(diff, matDiff) - (Real)1;
-
-            Real discr = a1 * a1 - a0 * a2;
-            if (discr >= zero)
+            T const zero = static_cast<T>(0);
+            Vector3<T> diff = ray.origin - ellipsoid.center;
+            Vector3<T> matDir = M * ray.direction;
+            Vector3<T> matDiff = M * diff;
+            T a0 = Dot(diff, matDiff) - static_cast<T>(1);
+            if (a0 <= zero)
             {
-                // Test whether ray origin is inside ellipsoid.
-                if (a0 <= zero)
-                {
-                    result.intersect = true;
-                }
-                else
-                {
-                    // At this point, Q(0) = a0 > 0 and Q(t) has real roots.
-                    // It is also the case that a2 > 0, since M is positive
-                    // definite, implying that D^T*M*D > 0 for any nonzero
-                    // vector D.  Thus, an intersection occurs only when
-                    // Q'(0) < 0.
-                    result.intersect = (a1 < zero);
-                }
+                // P is inside the ellipsoid.
+                result.intersect = true;
+                return result;
             }
-            else
+            // else: P is outside the ellipsoid
+
+            T a1 = Dot(ray.direction, matDiff);
+            if (a1 >= zero)
             {
-                // No intersection if Q(t) has no real roots.
+                // Q(t) >= a0 > 0 for t >= 0, so Q(t) cannot be zero for
+                // t in [0,+infinity) and the ray does not intersect the
+                // ellipsoid.
                 result.intersect = false;
+                return result;
             }
 
+            // The minimum of Q(t) occurs for some t in (0,+infinity). An
+            // intersection occurs when Q(t) has real roots.
+            T a2 = Dot(ray.direction, matDir);
+            T discr = a1 * a1 - a0 * a2;
+            result.intersect = (discr >= zero);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, Ellipsoid3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, Ellipsoid3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>
+        public FIQuery<T, Line3<T>, Ellipsoid3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>::Result
+            public FIQuery<T, Line3<T>, Ellipsoid3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, Ellipsoid3<Real> const& ellipsoid)
+        Result operator()(Ray3<T> const& ray, Ellipsoid3<T> const& ellipsoid)
         {
             Result result{};
             DoQuery(ray.origin, ray.direction, ellipsoid, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& rayOrigin,
-            Vector3<Real> const& rayDirection, Ellipsoid3<Real> const& ellipsoid,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& rayOrigin,
+            Vector3<T> const& rayDirection, Ellipsoid3<T> const& ellipsoid,
             Result& result)
         {
-            FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>::DoQuery(rayOrigin,
+            FIQuery<T, Line3<T>, Ellipsoid3<T>>::DoQuery(rayOrigin,
                 rayDirection, ellipsoid, result);
 
             if (result.intersect)
             {
                 // The line containing the ray intersects the ellipsoid; the
-                // t-interval is [t0,t1].  The ray intersects the capsule as
+                // t-interval is [t0,t1]. The ray intersects the capsule as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                Real constexpr zero = 0;
-                Real constexpr rmax = std::numeric_limits<Real>::max();
-                std::array<Real, 2> rayInterval = { zero, rmax };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
-                auto iiResult = iiQuery(result.parameter, rayInterval);
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
+                auto iiResult = iiQuery(result.parameter, static_cast<T>(0), true);
                 if (iiResult.intersect)
                 {
                     result.numIntersections = iiResult.numIntersections;
@@ -129,8 +128,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the ray does not intersect the
+                    // ellipsoid.
+                    result = Result{};
                 }
             }
         }

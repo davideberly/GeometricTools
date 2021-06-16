@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -21,43 +21,44 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class TIQuery<T, Segment3<T>, AlignedBox3<T>>
         :
-        public TIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+        public TIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Line3<Real>, AlignedBox3<Real>>::Result
+            public TIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, AlignedBox3<Real> const& box)
+        Result operator()(Segment3<T> const& segment, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the segment to a centered form in the aligned-box
             // coordinate system.
-            Vector3<Real> transformedP0 = segment.p[0] - boxCenter;
-            Vector3<Real> transformedP1 = segment.p[1] - boxCenter;
-            Segment3<Real> transformedSegment(transformedP0, transformedP1);
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> transformedP0 = segment.p[0] - boxCenter;
+            Vector3<T> transformedP1 = segment.p[1] - boxCenter;
+            Segment3<T> transformedSegment(transformedP0, transformedP1);
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             transformedSegment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, boxExtent, result);
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin, Vector3<Real> const& segDirection,
-            Real segExtent, Vector3<Real> const& boxExtent, Result& result)
+        void DoQuery(Vector3<T> const& segOrigin, Vector3<T> const& segDirection,
+            T segExtent, Vector3<T> const& boxExtent, Result& result)
         {
             for (int i = 0; i < 3; ++i)
             {
@@ -68,88 +69,87 @@ namespace gte
                 }
             }
 
-            TIQuery<Real, Line3<Real>, AlignedBox3<Real>>::DoQuery(segOrigin, segDirection, boxExtent, result);
+            TIQuery<T, Line3<T>, AlignedBox3<T>>::DoQuery(
+                segOrigin, segDirection, boxExtent, result);
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, AlignedBox3<T>>
         :
-        public FIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+        public FIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, AlignedBox3<Real>>::Result
+            public FIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, AlignedBox3<Real> const& box)
+        Result operator()(Segment3<T> const& segment, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the segment to a centered form in the aligned-box
             // coordinate system.
-            Vector3<Real> transformedP0 = segment.p[0] - boxCenter;
-            Vector3<Real> transformedP1 = segment.p[1] - boxCenter;
-            Segment3<Real> transformedSegment(transformedP0, transformedP1);
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> transformedP0 = segment.p[0] - boxCenter;
+            Vector3<T> transformedP1 = segment.p[1] - boxCenter;
+            Segment3<T> transformedSegment(transformedP0, transformedP1);
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             transformedSegment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, boxExtent, result);
-
-            // The segment origin is in aligned-box coordinates.  Transform it
-            // back to the original space.
-            segOrigin += boxCenter;
-            for (int i = 0; i < result.numPoints; ++i)
+            if (result.intersect)
             {
-                result.point[i] = segOrigin + result.lineParameter[i] * segDirection;
+                // The segment origin is in aligned-box coordinates. Transform
+                // it back to the original space.
+                segOrigin += boxCenter;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin, Vector3<Real> const& segDirection,
-            Real segExtent, Vector3<Real> const& boxExtent, Result& result)
+        // The caller must ensure that on entry, 'output' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'output' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& segOrigin, Vector3<T> const& segDirection,
+            T segExtent, Vector3<T> const& boxExtent, Result& result)
         {
-            FIQuery<Real, Line3<Real>, AlignedBox3<Real>>::DoQuery(segOrigin, segDirection, boxExtent, result);
+            FIQuery<T, Line3<T>, AlignedBox3<T>>::DoQuery(
+                segOrigin, segDirection, boxExtent, result);
+
             if (result.intersect)
             {
                 // The line containing the segment intersects the box; the
-                // t-interval is [t0,t1].  The segment intersects the box as
+                // t-interval is [t0,t1]. The segment intersects the box as
                 // long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
 
-                std::array<Real, 2> interval0 =
-                {
-                    result.lineParameter[0], result.lineParameter[1]
-                };
-
-                std::array<Real, 2> interval1 =
-                {
-                    -segExtent, segExtent
-                };
-
+                std::array<T, 2> interval0{ result.parameter[0], result.parameter[1]  };
+                std::array<T, 2> interval1{ -segExtent, segExtent };
                 auto iiResult = iiQuery(interval0, interval1);
                 if (iiResult.numIntersections > 0)
                 {
-                    result.numPoints = iiResult.numIntersections;
-                    for (int i = 0; i < result.numPoints; ++i)
-                    {
-                        result.lineParameter[i] = iiResult.overlap[i];
-                    }
+                    result.numIntersections = iiResult.numIntersections;
+                    result.parameter = iiResult.overlap;
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numPoints = 0;
+                    // The line containing the segment does not intersect
+                    // the box.
+                    result = Result{};
                 }
             }
         }

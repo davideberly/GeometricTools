@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -17,69 +17,83 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment3<Real>, Capsule3<Real>>
+    template <typename T>
+    class TIQuery<T, Segment3<T>, Capsule3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Segment3<Real> const& segment, Capsule3<Real> const& capsule)
+        Result operator()(Segment3<T> const& segment, Capsule3<T> const& capsule)
         {
-            Result result;
-            DCPQuery<Real, Segment3<Real>, Segment3<Real>> ssQuery;
+            Result result{};
+            DCPQuery<T, Segment3<T>, Segment3<T>> ssQuery{};
             auto ssResult = ssQuery(segment, capsule.segment);
             result.intersect = (ssResult.distance <= capsule.radius);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Capsule3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Capsule3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Capsule3<Real>>
+        public FIQuery<T, Line3<T>, Capsule3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Capsule3<Real>>::Result
+            public FIQuery<T, Line3<T>, Capsule3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, Capsule3<Real> const& capsule)
+        Result operator()(Segment3<T> const& segment, Capsule3<T> const& capsule)
         {
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{};     // P
+            Vector3<T> segDirection{};  // D
+            T segExtent{};              // e
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, capsule, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin,
-            Vector3<Real> const& segDirection, Real segExtent,
-            Capsule3<Real> const& capsule, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& segOrigin,
+            Vector3<T> const& segDirection, T segExtent,
+            Capsule3<T> const& capsule, Result& result)
         {
-            FIQuery<Real, Line3<Real>, Capsule3<Real>>::DoQuery(segOrigin,
-                segDirection, capsule, result);
+            FIQuery<T, Line3<T>, Capsule3<T>>::DoQuery(
+                segOrigin, segDirection, capsule, result);
 
             if (result.intersect)
             {
                 // The line containing the segment intersects the capsule; the
-                // t-interval is [t0,t1].  The segment intersects the capsule
+                // t-interval is [t0,t1]. The segment intersects the capsule
                 // as long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
@@ -88,8 +102,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the segment does not intersect the
+                    // capsule.
+                    result = Result{};
                 }
             }
         }

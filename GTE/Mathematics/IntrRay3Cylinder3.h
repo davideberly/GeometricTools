@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -15,46 +15,52 @@
 
 namespace gte
 {
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, Cylinder3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, Cylinder3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Cylinder3<Real>>
+        public FIQuery<T, Line3<T>, Cylinder3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Cylinder3<Real>>::Result
+            public FIQuery<T, Line3<T>, Cylinder3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, Cylinder3<Real> const& cylinder)
+        Result operator()(Ray3<T> const& ray, Cylinder3<T> const& cylinder)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, cylinder, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& rayOrigin,
-            Vector3<Real> const& rayDirection, Cylinder3<Real> const& cylinder,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& rayOrigin,
+            Vector3<T> const& rayDirection, Cylinder3<T> const& cylinder,
             Result& result)
         {
-            FIQuery<Real, Line3<Real>, Cylinder3<Real>>::DoQuery(rayOrigin,
-                rayDirection, cylinder, result);
+            FIQuery<T, Line3<T>, Cylinder3<T>>::DoQuery(
+                rayOrigin, rayDirection, cylinder, result);
 
             if (result.intersect)
             {
                 // The line containing the ray intersects the cylinder; the
                 // t-interval is [t0,t1].  The ray intersects the cylinder as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval = { (Real)0, std::numeric_limits<Real>::max() };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
-                auto iiResult = iiQuery(result.parameter, rayInterval);
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
+                auto iiResult = iiQuery(result.parameter, static_cast<T>(0), true);
                 if (iiResult.intersect)
                 {
                     result.numIntersections = iiResult.numIntersections;
@@ -62,8 +68,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the ray does not intersect the
+                    // cylinder.
+                    result = Result{};
                 }
             }
         }

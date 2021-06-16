@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -15,50 +15,58 @@
 
 namespace gte
 {
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Cylinder3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Cylinder3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Cylinder3<Real>>
+        public FIQuery<T, Line3<T>, Cylinder3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Cylinder3<Real>>::Result
+            public FIQuery<T, Line3<T>, Cylinder3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, Cylinder3<Real> const& cylinder)
+        Result operator()(Segment3<T> const& segment, Cylinder3<T> const& cylinder)
         {
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{};     // P
+            Vector3<T> segDirection{};  // D
+            T segExtent{};              // e
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, cylinder, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin,
-            Vector3<Real> const& segDirection, Real segExtent,
-            Cylinder3<Real> const& cylinder, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& segOrigin,
+            Vector3<T> const& segDirection, T segExtent,
+            Cylinder3<T> const& cylinder, Result& result)
         {
-            FIQuery<Real, Line3<Real>, Cylinder3<Real>>::DoQuery(segOrigin,
-                segDirection, cylinder, result);
+            FIQuery<T, Line3<T>, Cylinder3<T>>::DoQuery(
+                segOrigin, segDirection, cylinder, result);
 
             if (result.intersect)
             {
                 // The line containing the segment intersects the cylinder;
-                // the t-interval is [t0,t1].  The segment intersects the
+                // the t-interval is [t0,t1]. The segment intersects the
                 // cylinder as long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
@@ -67,8 +75,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the segment does not intersect
+                    // the cylinder.
+                    result = Result{};
                 }
             }
         }

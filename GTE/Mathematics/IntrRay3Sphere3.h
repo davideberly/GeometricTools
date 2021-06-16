@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.10
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -11,10 +11,18 @@
 #include <Mathematics/IntrLine3Sphere3.h>
 #include <Mathematics/Ray.h>
 
+// The queries consider the sphere to be a solid.
+//
+// The sphere is (X-C)^T*(X-C)-r^2 = 0 and the ray is X = P+t*D for t >= 0.
+// Substitute the ray equation into the sphere equation to obtain a quadratic
+// equation Q(t) = t^2 + 2*a1*t + a0 = 0, where a1 = D^T*(P-C) and
+// a0 = (P-C)^T*(P-C)-r^2. The algorithm involves an analysis of the
+// real-valued roots of Q(t) for t >= 0.
+
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray3<Real>, Sphere3<Real>>
+    template <typename T>
+    class TIQuery<T, Ray3<T>, Sphere3<T>>
     {
     public:
         struct Result
@@ -28,17 +36,13 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Ray3<Real> const& ray, Sphere3<Real> const& sphere)
+        Result operator()(Ray3<T> const& ray, Sphere3<T> const& sphere)
         {
-            // The sphere is (X-C)^T*(X-C)-1 = 0 and the line is X = P+t*D.
-            // Substitute the line equation into the sphere equation to
-            // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
-            // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Real constexpr zero = 0;
             Result result{};
 
-            Vector3<Real> diff = ray.origin - sphere.center;
-            Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
+            T const zero = static_cast<T>(0);
+            Vector3<T> diff = ray.origin - sphere.center;
+            T a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
             if (a0 <= zero)
             {
                 // P is inside the sphere.
@@ -47,7 +51,7 @@ namespace gte
             }
             // else: P is outside the sphere
 
-            Real a1 = Dot(ray.direction, diff);
+            T a1 = Dot(ray.direction, diff);
             if (a1 >= zero)
             {
                 result.intersect = false;
@@ -55,54 +59,58 @@ namespace gte
             }
 
             // Intersection occurs when Q(t) has real roots.
-            Real discr = a1 * a1 - a0;
+            T discr = a1 * a1 - a0;
             result.intersect = (discr >= zero);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, Sphere3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, Sphere3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Sphere3<Real>>
+        public FIQuery<T, Line3<T>, Sphere3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Sphere3<Real>>::Result
+            public FIQuery<T, Line3<T>, Sphere3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Ray3<Real> const& ray, Sphere3<Real> const& sphere)
+        Result operator()(Ray3<T> const& ray, Sphere3<T> const& sphere)
         {
             Result result{};
             DoQuery(ray.origin, ray.direction, sphere, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = ray.origin + result.parameter[i] * ray.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& rayOrigin,
-            Vector3<Real> const& rayDirection, Sphere3<Real> const& sphere,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& rayOrigin,
+            Vector3<T> const& rayDirection, Sphere3<T> const& sphere,
             Result& result)
         {
-            FIQuery<Real, Line3<Real>, Sphere3<Real>>::DoQuery(rayOrigin,
-                rayDirection, sphere, result);
+            FIQuery<T, Line3<T>, Sphere3<T>>::DoQuery(
+                rayOrigin, rayDirection, sphere, result);
 
             if (result.intersect)
             {
                 // The line containing the ray intersects the sphere; the
-                // t-interval is [t0,t1].  The ray intersects the sphere as
+                // t-interval is [t0,t1]. The ray intersects the sphere as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                Real constexpr zero = 0;
-                Real constexpr rmax = std::numeric_limits<Real>::max();
-                std::array<Real, 2> rayInterval = { zero, rmax };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
-                auto iiResult = iiQuery(result.parameter, rayInterval);
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
+                auto iiResult = iiQuery(result.parameter, static_cast<T>(0), true);
                 if (iiResult.intersect)
                 {
                     result.numIntersections = iiResult.numIntersections;
@@ -110,8 +118,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the ray does not intersect the
+                    // sphere.
+                    result = Result{};
                 }
             }
         }

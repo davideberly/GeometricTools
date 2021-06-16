@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -16,43 +16,52 @@
 // The test-intersection queries use the method of separating axes.
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The find-intersection queries use parametric clipping against the six
-// faces of the box.  The find-intersection queries use Liang-Barsky
-// clipping.  The queries consider the box to be a solid.  The algorithms
+// faces of the box. The find-intersection queries use Liang-Barsky
+// clipping. The queries consider the box to be a solid. The algorithms
 // are described in
 // https://www.geometrictools.com/Documentation/IntersectionLineBox.pdf
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class TIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Line3<Real> const& line, AlignedBox3<Real> const& box)
+        Result operator()(Line3<T> const& line, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the line to the aligned-box coordinate system.
-            Vector3<Real> lineOrigin = line.origin - boxCenter;
+            Vector3<T> lineOrigin = line.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(lineOrigin, line.direction, boxExtent, result);
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& lineOrigin, Vector3<Real> const& lineDirection,
-            Vector3<Real> const& boxExtent, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& lineOrigin, Vector3<T> const& lineDirection,
+            Vector3<T> const& boxExtent, Result& result)
         {
-            Vector3<Real> WxD = Cross(lineDirection, lineOrigin);
-            Real absWdU[3] =
+            Vector3<T> WxD = Cross(lineDirection, lineOrigin);
+            std::array<T, 3> absWdU
             {
                 std::fabs(lineDirection[0]),
                 std::fabs(lineDirection[1]),
@@ -61,19 +70,16 @@ namespace gte
 
             if (std::fabs(WxD[0]) > boxExtent[1] * absWdU[2] + boxExtent[2] * absWdU[1])
             {
-                result.intersect = false;
                 return;
             }
 
             if (std::fabs(WxD[1]) > boxExtent[0] * absWdU[2] + boxExtent[2] * absWdU[0])
             {
-                result.intersect = false;
                 return;
             }
 
             if (std::fabs(WxD[2]) > boxExtent[0] * absWdU[1] + boxExtent[1] * absWdU[0])
             {
-                result.intersect = false;
                 return;
             }
 
@@ -81,49 +87,64 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Line3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class FIQuery<T, Line3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{ static_cast<T>(0), static_cast<T>(0) },
+                point{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
             bool intersect;
-            int numPoints;
-            Real lineParameter[2];
-            Vector3<Real> point[2];
+            size_t numIntersections;
+            std::array<T, 2> parameter;
+            std::array<Vector3<T>, 2> point;
         };
 
-        Result operator()(Line3<Real> const& line, AlignedBox3<Real> const& box)
+        Result operator()(Line3<T> const& line, AlignedBox3<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector3<Real>::Unit(d).
-            Vector3<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly axis[d] = Vector3<T>::Unit(d).
+            Vector3<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the line to the aligned-box coordinate system.
-            Vector3<Real> lineOrigin = line.origin - boxCenter;
+            Vector3<T> lineOrigin = line.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(lineOrigin, line.direction, boxExtent, result);
-            for (int i = 0; i < result.numPoints; ++i)
+            if (result.intersect)
             {
-                result.point[i] = line.origin + result.lineParameter[i] * line.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = line.origin + result.parameter[i] * line.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& lineOrigin, Vector3<Real> const& lineDirection,
-            Vector3<Real> const& boxExtent, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& lineOrigin, Vector3<T> const& lineDirection,
+            Vector3<T> const& boxExtent, Result& result)
         {
             // The line t-values are in the interval (-infinity,+infinity).
             // Clip the line against all six planes of an aligned box in
-            // centered form.  The result.numPoints is
+            // centered form. The result.numIntersections is
             //   0, no intersection
             //   1, intersect in a single point (t0 is line parameter of point)
             //   2, intersect in a segment (line parameter interval is [t0,t1])
-            Real t0 = -std::numeric_limits<Real>::max();
-            Real t1 = std::numeric_limits<Real>::max();
+            T t0 = -std::numeric_limits<T>::max();
+            T t1 = std::numeric_limits<T>::max();
             if (Clip(+lineDirection[0], -lineOrigin[0] - boxExtent[0], t0, t1) &&
                 Clip(-lineDirection[0], +lineOrigin[0] - boxExtent[0], t0, t1) &&
                 Clip(+lineDirection[1], -lineOrigin[1] - boxExtent[1], t0, t1) &&
@@ -134,21 +155,17 @@ namespace gte
                 result.intersect = true;
                 if (t1 > t0)
                 {
-                    result.numPoints = 2;
-                    result.lineParameter[0] = t0;
-                    result.lineParameter[1] = t1;
+                    result.numIntersections = 2;
+                    result.parameter[0] = t0;
+                    result.parameter[1] = t1;
                 }
                 else
                 {
-                    result.numPoints = 1;
-                    result.lineParameter[0] = t0;
-                    result.lineParameter[1] = t0;  // Used by derived classes.
+                    result.numIntersections = 1;
+                    result.parameter[0] = t0;
+                    result.parameter[1] = t0;
                 }
-                return;
             }
-
-            result.intersect = false;
-            result.numPoints = 0;
         }
 
     private:
@@ -156,9 +173,10 @@ namespace gte
         // test plane.  If the return value is 'true', the segment does
         // intersect the plane and is clipped; otherwise, the segment is
         // culled (no intersection with box).
-        static bool Clip(Real denom, Real numer, Real& t0, Real& t1)
+        static bool Clip(T const& denom, T const& numer, T& t0, T& t1)
         {
-            if (denom > (Real)0)
+            T const zero = static_cast<T>(0);
+            if (denom > zero)
             {
                 if (numer > denom * t1)
                 {
@@ -170,7 +188,7 @@ namespace gte
                 }
                 return true;
             }
-            else if (denom < (Real)0)
+            else if (denom < zero)
             {
                 if (numer > denom * t0)
                 {
@@ -184,7 +202,7 @@ namespace gte
             }
             else
             {
-                return numer <= (Real)0;
+                return numer <= zero;
             }
         }
     };

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.10
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -13,10 +13,18 @@
 #include <Mathematics/Hypersphere.h>
 #include <Mathematics/Line.h>
 
+// The queries consider the sphere to be a solid.
+//
+// The sphere is (X-C)^T*(X-C)-r^2 = 0 and the line is X = P+t*D. Substitute
+// the line equation into the sphere equation to obtain a quadratic equation
+// Q(t) = t^2 + 2*a1*t + a0 = 0, where a1 = D^T*(P-C) and
+// a0 = (P-C)^T*(P-C)-r^2. The algorithm involves an analysis of the
+// real-valued roots of Q(t) for all real t.
+
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Line3<Real>, Sphere3<Real>>
+    template <typename T>
+    class TIQuery<T, Line3<T>, Sphere3<T>>
     {
     public:
         struct Result
@@ -30,28 +38,23 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Line3<Real> const& line, Sphere3<Real> const& sphere)
+        Result operator()(Line3<T> const& line, Sphere3<T> const& sphere)
         {
-            // The sphere is (X-C)^T*(X-C)-1 = 0 and the line is X = P+t*D.
-            // Substitute the line equation into the sphere equation to
-            // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
-            // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Real constexpr zero = 0;
             Result result{};
 
-            Vector3<Real> diff = line.origin - sphere.center;
-            Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
-            Real a1 = Dot(line.direction, diff);
+            Vector3<T> diff = line.origin - sphere.center;
+            T a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
+            T a1 = Dot(line.direction, diff);
 
-            // Intersection occurs when Q(t) has real roots.
-            Real discr = a1 * a1 - a0;
-            result.intersect = (discr >= zero);
+            // An intersection occurs when Q(t) has real roots.
+            T discr = a1 * a1 - a0;
+            result.intersect = (discr >= static_cast<T>(0));
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Line3<Real>, Sphere3<Real>>
+    template <typename T>
+    class FIQuery<T, Line3<T>, Sphere3<T>>
     {
     public:
         struct Result
@@ -60,68 +63,56 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                parameter{},
-                point{}
+                parameter{ static_cast<T>(0), static_cast<T>(0) },
+                point{ Vector3<T>::Zero(), Vector3<T>::Zero() }
             {
-                Real constexpr rmax = std::numeric_limits<Real>::max();
-                parameter.fill(rmax);
-                point.fill(Vector3<Real>{ rmax, rmax, rmax });
             }
 
             bool intersect;
-            int numIntersections;
-            std::array<Real, 2> parameter;
-            std::array<Vector3<Real>, 2> point;
+            size_t numIntersections;
+            std::array<T, 2> parameter;
+            std::array<Vector3<T>, 2> point;
         };
 
-        Result operator()(Line3<Real> const& line, Sphere3<Real> const& sphere)
+        Result operator()(Line3<T> const& line, Sphere3<T> const& sphere)
         {
             Result result{};
             DoQuery(line.origin, line.direction, sphere, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = line.origin + result.parameter[i] * line.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = line.origin + result.parameter[i] * line.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& lineOrigin,
-            Vector3<Real> const& lineDirection, Sphere3<Real> const& sphere,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& lineOrigin,
+            Vector3<T> const& lineDirection, Sphere3<T> const& sphere,
             Result& result)
         {
-            // The sphere is (X-C)^T*(X-C)-1 = 0 and the line is X = P+t*D.
-            // Substitute the line equation into the sphere equation to
-            // obtain a quadratic equation Q(t) = t^2 + 2*a1*t + a0 = 0, where
-            // a1 = D^T*(P-C) and a0 = (P-C)^T*(P-C)-1.
-            Real constexpr zero = 0;
-            Vector3<Real> diff = lineOrigin - sphere.center;
-            Real a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
-            Real a1 = Dot(lineDirection, diff);
+            Vector3<T> diff = lineOrigin - sphere.center;
+            T a0 = Dot(diff, diff) - sphere.radius * sphere.radius;
+            T a1 = Dot(lineDirection, diff);
 
             // Intersection occurs when Q(t) has real roots.
-            Real discr = a1 * a1 - a0;
+            T const zero = static_cast<T>(0);
+            T discr = a1 * a1 - a0;
             if (discr > zero)
             {
                 // The line intersects the sphere in 2 distinct points.
                 result.intersect = true;
                 result.numIntersections = 2;
-                Real root = std::sqrt(discr);
+                T root = std::sqrt(discr);
                 result.parameter[0] = -a1 - root;
                 result.parameter[1] = -a1 + root;
             }
-            else if (discr < zero)
-            {
-                // The line does not intersect the sphere. The parameter[]
-                // values are initialized to invalid numbers, but they should
-                // not be used by the caller.
-                Real constexpr rmax = std::numeric_limits<Real>::max();
-                result.intersect = false;
-                result.numIntersections = 0;
-                result.parameter[0] = +rmax;
-                result.parameter[1] = -rmax;
-            }
-            else
+            else if (discr == zero)
             {
                 // The line is tangent to the sphere, so the intersection is
                 // a single point. The parameter[1] value is set, because
@@ -131,6 +122,7 @@ namespace gte
                 result.parameter[0] = -a1;
                 result.parameter[1] = result.parameter[0];
             }
+            // else:  The line is outside the sphere, no intersection.
         }
     };
 }

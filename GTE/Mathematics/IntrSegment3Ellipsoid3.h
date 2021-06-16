@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.02.10
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -13,11 +13,20 @@
 #include <Mathematics/Matrix3x3.h>
 
 // The queries consider the ellipsoid to be a solid.
+//
+// The ellipsoid is (X-C)^T*M*(X-C)-1 = 0. The segment has endpoints P0 and
+// P1. The segment origin (center) is P = (P0+P1)/2, the segment direction is
+// D = (P1-P0)/|P1-P0| and the segment extent (half the segment length) is
+// e = |P1-P0|/2. The segment is X = P+t*D for t in [-e,e]. Substitute the
+// segment equation into the ellipsoid equation to obtain a quadratic equation
+// Q(t) = a2*t^2 + 2*a1*t + a0 = 0, where a2 = D^T*M*D,
+// a1 = (P1-P0)^T*M*(P0-C) and a0 = (P0-C)^T*M*(P0-C)-r^2. The algorithm
+// involves an analysis of the real-valued roots of Q(t) for -e <= t <= e.
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment3<Real>, Ellipsoid3<Real>>
+    template <typename T>
+    class TIQuery<T, Segment3<T>, Ellipsoid3<T>>
     {
     public:
         struct Result
@@ -31,137 +40,110 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Segment3<Real> const& segment, Ellipsoid3<Real> const& ellipsoid)
+        Result operator()(Segment3<T> const& segment, Ellipsoid3<T> const& ellipsoid)
         {
-            // The ellipsoid is (X-K)^T*M*(X-K)-1 = 0 and the line is
-            // X = P+t*D.  Substitute the line equation into the ellipsoid
-            // equation to obtain a quadratic equation
-            //   Q(t) = a2*t^2 + 2*a1*t + a0 = 0
-            // where a2 = D^T*M*D, a1 = D^T*M*(P-K) and
-            // a0 = (P-K)^T*M*(P-K)-1.
-            Real constexpr zero = 0;
             Result result{};
 
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{};     // P
+            Vector3<T> segDirection{};  // D
+            T segExtent{};              // e
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Matrix3x3<Real> M;
+            Matrix3x3<T> M{};
             ellipsoid.GetM(M);
-
-            Real constexpr one = 1;
-            Vector3<Real> diff = segOrigin - ellipsoid.center;
-            Vector3<Real> matDir = M * segDirection;
-            Vector3<Real> matDiff = M * diff;
-            Real a2 = Dot(segDirection, matDir);
-            Real a1 = Dot(segDirection, matDiff);
-            Real a0 = Dot(diff, matDiff) - one;
-
-            Real discr = a1 * a1 - a0 * a2;
-            if (discr >= zero)
+            T const zero = static_cast<T>(0);
+            Vector3<T> diff = segOrigin - ellipsoid.center;
+            Vector3<T> matDir = M * segDirection;
+            Vector3<T> matDiff = M * diff;
+            T a0 = Dot(diff, matDiff) - static_cast<T>(1);
+            T a1 = Dot(segDirection, matDiff);
+            T a2 = Dot(segDirection, matDir);
+            T discr = a1 * a1 - a0 * a2;
+            if (discr < zero)
             {
-                // Test whether ray origin is inside ellipsoid.
-                if (a0 <= zero)
-                {
-                    result.intersect = true;
-                }
-                else
-                {
-                    // At this point, Q(0) = a0 > 0 and Q(t) has real roots.
-                    // It is also the case that a2 > 0, since M is positive
-                    // definite, implying that D^T*M*D > 0 for any nonzero
-                    // vector D.
-                    Real q, qder;
-                    if (a1 >= zero)
-                    {
-                        // Roots are possible only on [-e,0], e is the segment
-                        // extent.  At least one root occurs if Q(-e) <= 0 or
-                        // if Q(-e) > 0 and Q'(-e) < 0.
-                        Real constexpr negTwo = -2;
-                        q = a0 + segExtent * (negTwo * a1 + a2 * segExtent);
-                        if (q <= zero)
-                        {
-                            result.intersect = true;
-                        }
-                        else
-                        {
-                            qder = a1 - a2 * segExtent;
-                            result.intersect = (qder < zero);
-                        }
-                    }
-                    else
-                    {
-                        // Roots are only possible on [0,e], e is the segment
-                        // extent.  At least one root occurs if Q(e) <= 0 or
-                        // if Q(e) > 0 and Q'(e) > 0.
-                        Real constexpr two = 2;
-                        q = a0 + segExtent * (two * a1 + a2 * segExtent);
-                        if (q <= zero)
-                        {
-                            result.intersect = true;
-                        }
-                        else
-                        {
-                            qder = a1 + a2 * segExtent;
-                            result.intersect = (qder < zero);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // No intersection if Q(t) has no real roots.
+                // Q(t) has no real-valued roots. The segment does not
+                // intersect the ellipsoid.
                 result.intersect = false;
+                return result;
             }
 
+            // Q(-e) = a2*e^2 - 2*a1*e + a0, Q(e) = a2*e^2 + 2*a1*e + a0
+            T a2e = a2 * segExtent;
+            T tmp0 = a2e * segExtent + a0;  // a2*e^2 + a0
+            T tmp1 = static_cast<T>(2) * a1 * segExtent;  // 2*a1*e
+            T qm = tmp0 - tmp1;  // Q(-e)
+            T qp = tmp0 + tmp1;  // Q(e)
+            if (qm * qp <= zero)
+            {
+                // Q(t) has a root on the interval [-e,e]. The segment
+                // intesects the ellipsoid.
+                result.intersect = true;
+                return result;
+            }
+
+            // Either (Q(-e) > 0 and Q(e) > 0) or (Q(-e) < 0 and Q(e) < 0).
+            // When Q at the endpoints is negative, Q(t) < 0 for all t in
+            // [-e,e] and the segment does not intersect the ellipsoid.
+            // Otherwise, Q(-e) > 0 [and Q(e) > 0]. The minimum of Q(t)
+            // occurs at t = -a1/a2. We know that discr >= 0, so Q(t) has a
+            // root on (-e,e) when -a1/2 is in (-e,e). The combined test for
+            // intersection is (Q(-e) > 0 and |a1| < a3*e).
+            result.intersect = (qm > zero && std::fabs(a1) < a2e);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Ellipsoid3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Ellipsoid3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>
+        public FIQuery<T, Line3<T>, Ellipsoid3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>::Result
+            public FIQuery<T, Line3<T>, Ellipsoid3<T>>::Result
         {
             // No additional information to compute.
+            Result() = default;
         };
 
-        Result operator()(Segment3<Real> const& segment, Ellipsoid3<Real> const& ellipsoid)
+        Result operator()(Segment3<T> const& segment, Ellipsoid3<T> const& ellipsoid)
         {
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             Result result{};
             DoQuery(segOrigin, segDirection, segExtent, ellipsoid, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin,
-            Vector3<Real> const& segDirection, Real segExtent,
-            Ellipsoid3<Real> const& ellipsoid, Result& result)
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& segOrigin,
+            Vector3<T> const& segDirection, T segExtent,
+            Ellipsoid3<T> const& ellipsoid, Result& result)
         {
-            FIQuery<Real, Line3<Real>, Ellipsoid3<Real>>::DoQuery(segOrigin,
-                segDirection, ellipsoid, result);
+            FIQuery<T, Line3<T>, Ellipsoid3<T>>::DoQuery(
+                segOrigin, segDirection, ellipsoid, result);
 
             if (result.intersect)
             {
                 // The line containing the segment intersects the ellipsoid;
-                // the t-interval is [t0,t1].  The segment intersects the
+                // the t-interval is [t0,t1]. The segment intersects the
                 // ellipsoid as long as [t0,t1] overlaps the segment
                 // t-interval [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
@@ -170,8 +152,9 @@ namespace gte
                 }
                 else
                 {
-                    result.intersect = false;
-                    result.numIntersections = 0;
+                    // The line containing the segment does not intersect
+                    // the ellipsoid.
+                    result = Result{};
                 }
             }
         }

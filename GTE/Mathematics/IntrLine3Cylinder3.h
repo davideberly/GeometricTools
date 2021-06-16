@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.06.16
 
 #pragma once
 
@@ -15,70 +15,83 @@
 
 namespace gte
 {
-    template <typename Real>
-    class FIQuery<Real, Line3<Real>, Cylinder3<Real>>
+    template <typename T>
+    class FIQuery<T, Line3<T>, Cylinder3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{ static_cast<T>(0), static_cast<T>(0) },
+                point{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
             bool intersect;
-            int numIntersections;
-            std::array<Real, 2> parameter;
-            std::array<Vector3<Real>, 2> point;
+            size_t numIntersections;
+            std::array<T, 2> parameter;
+            std::array<Vector3<T>, 2> point;
         };
 
-        Result operator()(Line3<Real> const& line, Cylinder3<Real> const& cylinder)
+        Result operator()(Line3<T> const& line, Cylinder3<T> const& cylinder)
         {
-            Result result;
+            Result result{};
             DoQuery(line.origin, line.direction, cylinder, result);
-            for (int i = 0; i < result.numIntersections; ++i)
+            if (result.intersect)
             {
-                result.point[i] = line.origin + result.parameter[i] * line.direction;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = line.origin + result.parameter[i] * line.direction;
+                }
             }
             return result;
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& lineOrigin,
-            Vector3<Real> const& lineDirection, Cylinder3<Real> const& cylinder,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector3<T> const& lineOrigin,
+            Vector3<T> const& lineDirection, Cylinder3<T> const& cylinder,
             Result& result)
         {
-            // Initialize the result as if there is no intersection.  If we
-            // discover an intersection, these values will be modified
-            // accordingly.
-            result.intersect = false;
-            result.numIntersections = 0;
-
-            // Create a coordinate system for the cylinder.  In this system,
+            // Create a coordinate system for the cylinder. In this system,
             // the cylinder segment center C is the origin and the cylinder
-            // axis direction W is the z-axis.  U and V are the other
-            // coordinate axis directions.  If P = x*U+y*V+z*W, the cylinder
-            // is x^2 + y^2 = r^2, where r is the cylinder radius.  The end
+            // axis direction W is the z-axis. U and V are the other
+            // coordinate axis directions. If P = x*U+y*V+z*W, the cylinder
+            // is x^2 + y^2 = r^2, where r is the cylinder radius. The end
             // caps are |z| = h/2, where h is the cylinder height.
-            Vector3<Real> basis[3];  // {W, U, V}
+            std::array<Vector3<T>, 3> basis{};  // {W, U, V}
             basis[0] = cylinder.axis.direction;
-            ComputeOrthogonalComplement(1, basis);
-            Real halfHeight = (Real)0.5 * cylinder.height;
-            Real rSqr = cylinder.radius * cylinder.radius;
+            ComputeOrthogonalComplement(1, basis.data());
+            auto const& W = basis[0];
+            auto const& U = basis[1];
+            auto const& V = basis[2];
+            T halfHeight = static_cast<T>(0.5) * cylinder.height;
+            T rSqr = cylinder.radius * cylinder.radius;
 
             // Convert incoming line origin to capsule coordinates.
-            Vector3<Real> diff = lineOrigin - cylinder.axis.origin;
-            Vector3<Real> P{ Dot(basis[1], diff), Dot(basis[2], diff), Dot(basis[0], diff) };
+            Vector3<T> diff = lineOrigin - cylinder.axis.origin;
+            Vector3<T> P{ Dot(U, diff), Dot(V, diff), Dot(W, diff) };
 
             // Get the z-value, in cylinder coordinates, of the incoming
             // line's unit-length direction.
-            Real dz = Dot(basis[0], lineDirection);
-            if (std::fabs(dz) == (Real)1)
+            T const zero = static_cast<T>(0);
+            T dz = Dot(W, lineDirection);
+            if (std::fabs(dz) == static_cast<T>(1))
             {
-                // The line is parallel to the cylinder axis.  Determine
+                // The line is parallel to the cylinder axis. Determine
                 // whether the line intersects the cylinder end disks.
-                Real radialSqrDist = rSqr - P[0] * P[0] - P[1] * P[1];
-                if (radialSqrDist >= (Real)0)
+                T radialSqrDist = rSqr - P[0] * P[0] - P[1] * P[1];
+                if (radialSqrDist >= zero)
                 {
                     // The line intersects the cylinder end disks.
                     result.intersect = true;
                     result.numIntersections = 2;
-                    if (dz > (Real)0)
+                    if (dz > zero)
                     {
                         result.parameter[0] = -P[2] - halfHeight;
                         result.parameter[1] = -P[2] + halfHeight;
@@ -95,42 +108,36 @@ namespace gte
 
             // Convert the incoming line unit-length direction to cylinder
             // coordinates.
-            Vector3<Real> D{ Dot(basis[1], lineDirection), Dot(basis[2], lineDirection), dz };
-
-            Real a0, a1, a2, discr, root, inv, tValue;
-
-            if (D[2] == (Real)0)
+            Vector3<T> D{ Dot(U, lineDirection), Dot(V, lineDirection), dz };
+            if (D[2] == zero)
             {
                 // The line is perpendicular to the cylinder axis.
                 if (std::fabs(P[2]) <= halfHeight)
                 {
                     // Test intersection of line P+t*D with infinite cylinder
-                    // x^2+y^2 = r^2.  This reduces to computing the roots of
-                    // a quadratic equation.  If P = (px,py,pz) and
+                    // x^2+y^2 = r^2. This reduces to computing the roots of a
+                    // quadratic equation. If P = (px,py,pz) and
                     // D = (dx,dy,dz), then the quadratic equation is
-                    //   (dx^2+dy^2)*t^2 + 2*(px*dx+py*dy)*t
-                    //     + (px^2+py^2-r^2) = 0
-                    a0 = P[0] * P[0] + P[1] * P[1] - rSqr;
-                    a1 = P[0] * D[0] + P[1] * D[1];
-                    a2 = D[0] * D[0] + D[1] * D[1];
-                    discr = a1 * a1 - a0 * a2;
-                    if (discr > (Real)0)
+                    // (dx^2+dy^2)*t^2+2*(px*dx+py*dy)*t+(px^2+py^2-r^2) = 0.
+                    T a0 = P[0] * P[0] + P[1] * P[1] - rSqr;
+                    T a1 = P[0] * D[0] + P[1] * D[1];
+                    T a2 = D[0] * D[0] + D[1] * D[1];
+                    T discr = a1 * a1 - a0 * a2;
+                    if (discr > zero)
                     {
                         // The line intersects the cylinder in two places.
                         result.intersect = true;
                         result.numIntersections = 2;
-                        root = std::sqrt(discr);
-                        inv = ((Real)1) / a2;
-                        result.parameter[0] = (-a1 - root) * inv;
-                        result.parameter[1] = (-a1 + root) * inv;
+                        T root = std::sqrt(discr);
+                        result.parameter[0] = (-a1 - root) / a2;
+                        result.parameter[1] = (-a1 + root) / a2;
                     }
-                    else if (discr == (Real)0)
+                    else if (discr == zero)
                     {
                         // The line is tangent to the cylinder.
                         result.intersect = true;
                         result.numIntersections = 1;
                         result.parameter[0] = -a1 / a2;
-                        // Used by derived classes.
                         result.parameter[1] = result.parameter[0];
                     }
                     // else: The line does not intersect the cylinder.
@@ -140,39 +147,42 @@ namespace gte
                 return;
             }
 
-            // Test for intersections with the planes of the end disks.
-            inv = (Real)1 / D[2];
+            // At this time, the line direction is neither parallel nor
+            // perpendicular to the cylinder axis. The line must
+            // intersect both planes of the end disk, the intersection with
+            // the cylinder being a segment. The t-interval of the segment
+            // is [t0,t1].
 
-            Real t0 = (-halfHeight - P[2]) * inv;
-            Real xTmp = P[0] + t0 * D[0];
-            Real yTmp = P[1] + t0 * D[1];
+            // Test for intersections with the planes of the end disks.
+            T t0 = (-halfHeight - P[2]) / D[2];
+            T xTmp = P[0] + t0 * D[0];
+            T yTmp = P[1] + t0 * D[1];
             if (xTmp * xTmp + yTmp * yTmp <= rSqr)
             {
-                // Plane intersection inside the top cylinder end disk.
+                // Plane intersection inside the bottom cylinder end disk.
                 result.parameter[result.numIntersections++] = t0;
             }
 
-            Real t1 = (+halfHeight - P[2]) * inv;
+            T t1 = (+halfHeight - P[2]) / D[2];
             xTmp = P[0] + t1 * D[0];
             yTmp = P[1] + t1 * D[1];
             if (xTmp * xTmp + yTmp * yTmp <= rSqr)
             {
-                // Plane intersection inside the bottom cylinder end disk.
+                // Plane intersection inside the top cylinder end disk.
                 result.parameter[result.numIntersections++] = t1;
             }
 
             if (result.numIntersections < 2)
             {
                 // Test for intersection with the cylinder wall.
-                a0 = P[0] * P[0] + P[1] * P[1] - rSqr;
-                a1 = P[0] * D[0] + P[1] * D[1];
-                a2 = D[0] * D[0] + D[1] * D[1];
-                discr = a1 * a1 - a0 * a2;
-                if (discr > (Real)0)
+                T a0 = P[0] * P[0] + P[1] * P[1] - rSqr;
+                T a1 = P[0] * D[0] + P[1] * D[1];
+                T a2 = D[0] * D[0] + D[1] * D[1];
+                T discr = a1 * a1 - a0 * a2;
+                if (discr > zero)
                 {
-                    root = std::sqrt(discr);
-                    inv = (Real)1 / a2;
-                    tValue = (-a1 - root) * inv;
+                    T root = std::sqrt(discr);
+                    T tValue = (-a1 - root) / a2;
                     if (t0 <= t1)
                     {
                         if (t0 <= tValue && tValue <= t1)
@@ -190,7 +200,7 @@ namespace gte
 
                     if (result.numIntersections < 2)
                     {
-                        tValue = (-a1 + root) * inv;
+                        tValue = (-a1 + root) / a2;
                         if (t0 <= t1)
                         {
                             if (t0 <= tValue && tValue <= t1)
@@ -208,9 +218,9 @@ namespace gte
                     }
                     // else: Line intersects end disk and cylinder wall.
                 }
-                else if (discr == (Real)0)
+                else if (discr == zero)
                 {
-                    tValue = -a1 / a2;
+                    T tValue = -a1 / a2;
                     if (t0 <= t1)
                     {
                         if (t0 <= tValue && tValue <= t1)
@@ -241,7 +251,6 @@ namespace gte
             else if (result.numIntersections == 1)
             {
                 result.intersect = true;
-                // Used by derived classes.
                 result.parameter[1] = result.parameter[0];
             }
         }
