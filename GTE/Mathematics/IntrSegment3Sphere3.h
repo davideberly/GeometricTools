@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.06.16
+// Version: 4.0.2021.06.17
 
 #pragma once
 
@@ -135,8 +135,8 @@ namespace gte
                 // t-interval is [t0,t1]. The segment intersects the sphere
                 // as long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<T, 2> segInterval = { -segExtent, segExtent };
                 FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
