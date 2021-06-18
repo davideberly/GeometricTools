@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.06
+// Version: 4.0.2021.06.17
 
 #pragma once
 
@@ -30,6 +30,7 @@ namespace gte
             bool intersect;
         };
 
+        // The segment is P0 + t * (P1 - P0) for t in [0,1].
         Result operator()(Segment2<Real> const& segment, Triangle2<Real> const& triangle)
         {
             Result result{};
@@ -52,44 +53,41 @@ namespace gte
             // No additional information to compute.
         };
 
+        // The segment is P0 + t * (P1 - P0) for t in [0,1].
         Result operator()(Segment2<Real> const& segment, Triangle2<Real> const& triangle)
         {
-            Vector2<Real> segOrigin, segDirection;
-            Real segExtent;
-            segment.GetCenteredForm(segOrigin, segDirection, segExtent);
-
             Result result{};
-            DoQuery(segOrigin, segDirection, segExtent, triangle, result);
-            if (result.numIntersections == 2)
+            Vector2<Real> const& segOrigin = segment.p[0];
+            Vector2<Real> segDirection = segment.p[1] - segment.p[0];
+            DoQuery(segOrigin, segDirection, triangle, result);
+            if (result.intersect)
             {
-                result.point[0] = segOrigin + result.parameter[0] * segDirection;
-                result.point[1] = segOrigin + result.parameter[1] * segDirection;
+                for (size_t i = 0; i < 2; ++i)
+                {
+                    result.point[i] = segOrigin + result.parameter[i] * segDirection;
+                }
             }
-            else if (result.numIntersections == 1)
-            {
-                result.point[0] = segOrigin + result.parameter[0] * segDirection;
-                result.point[1] = result.point[0];
-            }
-            // else: result set to no-intersection in DoQuery(...)
             return result;
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& segOrigin,
-            Vector2<Real> const& segDirection, Real segExtent,
+        // The caller must ensure that on entry, 'result' is default
+        // constructed as if there is no intersection. If an intersection is
+        // found, the 'result' values will be modified accordingly.
+        void DoQuery(Vector2<Real> const& origin, Vector2<Real> const& direction,
             Triangle2<Real> const& triangle, Result& result)
         {
-            FIQuery<Real, Line2<Real>, Triangle2<Real>>::DoQuery(segOrigin,
-                segDirection, triangle, result);
+            FIQuery<Real, Line2<Real>, Triangle2<Real>>::DoQuery(
+                origin, direction, triangle, result);
 
             if (result.intersect)
             {
                 // The line containing the segment intersects the triangle;
                 // the t-interval is [t0,t1]. The segment intersects the
                 // triangle as long as [t0,t1] overlaps the segment t-interval
-                // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval{ -segExtent, segExtent };
+                // [0,1].
                 FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<Real, 2> segInterval{ static_cast<Real>(0), static_cast<Real>(1) };
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 if (iiResult.intersect)
                 {
@@ -98,7 +96,8 @@ namespace gte
                 }
                 else
                 {
-                    // Set the state to no-intersection.
+                    // The line containing the segment does not intersect the
+                    // triangle.
                     result = Result{};
                 }
             }
