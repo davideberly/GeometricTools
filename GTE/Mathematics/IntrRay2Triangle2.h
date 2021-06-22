@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.06.17
+// Version: 4.0.2021.06.21
 
 #pragma once
 
@@ -88,8 +88,8 @@ namespace gte
                 // The line containing the ray intersects the triangle; the
                 // t-interval is [t0,t1]. The ray intersects the triangle as
                 // long as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
-                auto iiResult = iiQuery(result.parameter, static_cast<T>(0), true);
+                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                auto iiResult = iiQuery(result.parameter, static_cast<Real>(0), true);
                 if (iiResult.intersect)
                 {
                     result.numIntersections = iiResult.numIntersections;
