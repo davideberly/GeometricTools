@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.07.12
 
 #pragma once
 
@@ -15,40 +15,43 @@
 namespace gte
 {
     // The quadratic fit is
-    //   0 = C[0] + C[1]*X + C[2]*Y + C[3]*Z + C[4]*X^2 + C[5]*Y^2
-    //       + C[6]*Z^2 + C[7]*X*Y + C[8]*X*Z + C[9]*Y*Z
-    // subject to Length(C) = 1.  Minimize E(C) = C^t M C with Length(C) = 1
-    // and M = (sum_i V_i)(sum_i V_i)^t where
-    //   V = (1, X, Y, Z, X^2, Y^2, Z^2, X*Y, X*Z, Y*Z)
+    //   0 = C[0] + C[1]*x + C[2]*y + C[3]*z + C[4]*x^2 + C[5]*x*y
+    //       + C[6]*x*z + C[7]*y^2 + C[8]*y*z + C[9]*z^2
+    // which has one degree of freedom in the coefficients. Eliminate the
+    // degree of freedom by minimizing the quadratic form E(C) = C^T M C
+    // subject to Length(C) = 1 with M = (sum_i V_i)(sum_i V_i)^t where
+    //   V = (1, x, y, z, x^2, x*y, x*z, y^2, y*z, z^2)
     // The minimum value is the smallest eigenvalue of M and C is a
     // corresponding unit length eigenvector.
     //
     // Input:
     //   n = number of points to fit
-    //   p[0..n-1] = array of points to fit
+    //   P[0..n-1] = array of points to fit
     //
     // Output:
-    //   c[0..9] = coefficients of quadratic fit (the eigenvector)
+    //   C[0..9] = coefficients of quadratic fit (the eigenvector)
     //   return value of function is nonnegative and a measure of the fit
     //   (the minimum eigenvalue; 0 = exact fit, positive otherwise)
     //
     // Canonical forms. The quadratic equation can be factored into
-    // P^T A P + B^T P + K = 0 where P = (X,Y,Z), K = C[0],
-    // B = (C[1],C[2],C[3]), and A is a 3x3 symmetric matrix with
-    // A00 = C[4], A11 = C[5], A22 = C[6], A01 = C[7]/2, A02 = C[8]/2, and
-    // A12 = C[9]/2. Matrix A = R^T D R where R is orthogonal and D is
-    // diagonal (using an eigendecomposition). Define V = R P = (v0,v1,v2),
-    // E = R B = (e0,e1,e2), D = diag(d0,d1,d2), and f = K to obtain
+    // P^T A P + B^T P + K = 0 where P = (x,y,z), K = C[0],
+    // B = (C[1],C[2],C[3]) and A is a 3x3 symmetric matrix with
+    // A00 = C[4], A01 = C[5]/2, A02 = C[6]/2, A11 = C[7], A12 = C[8]/2 and
+    // A22 = C[9]. Using an eigendecomposition, matrix A = R^T D R where
+    // R is orthogonal and D is diagonal. Define V = R*P = (v0,v1,v2),
+    // E = R*B = (e0,e1,e2), D = diag(d0,d1,d2) and f = K to obtain
     //   d0 v0^2 + d1 v1^2 + d2 v^2 + e0 v0 + e1 v1 + e2 v2 + f = 0
-    // The characterization depends on the signs of the d_i.
+    // The classification depends on the signs of the d_i. See the file
+    // QuadricSurface.h for determining the type of quadric surface. 
 
     template <typename Real>
     class ApprQuadratic3
     {
     public:
-        Real operator()(int numPoints, Vector3<Real> const* points, Real coefficients[10])
+        Real operator()(int numPoints, Vector3<Real> const* points,
+            std::array<Real, 10>& coefficients)
         {
-            Matrix<10, 10, Real> A;  // constructor sets A to zero
+            Matrix<10, 10, Real> M{};  // constructor sets M to zero
             for (int i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
@@ -65,7 +68,7 @@ namespace gte
                 Real xz2 = x * z2;
                 Real x2y = x * xy;
                 Real x2z = x * xz;
-                Real xyz = x * y * z;
+                Real xyz = x * yz;
                 Real y3 = y * y2;
                 Real yz2 = y * z2;
                 Real y2z = y * yz;
@@ -86,109 +89,141 @@ namespace gte
                 Real xz3 = x * z3;
                 Real yz3 = y * z3;
 
-                A(0, 1) += x;
-                A(0, 2) += y;
-                A(0, 3) += z;
-                A(0, 4) += x2;
-                A(0, 5) += y2;
-                A(0, 6) += z2;
-                A(0, 7) += xy;
-                A(0, 8) += xz;
-                A(0, 9) += yz;
-                A(1, 4) += x3;
-                A(1, 5) += xy2;
-                A(1, 6) += xz2;
-                A(1, 7) += x2y;
-                A(1, 8) += x2z;
-                A(1, 9) += xyz;
-                A(2, 5) += y3;
-                A(2, 6) += yz2;
-                A(2, 9) += y2z;
-                A(3, 6) += z3;
-                A(4, 4) += x4;
-                A(4, 5) += x2y2;
-                A(4, 6) += x2z2;
-                A(4, 7) += x3y;
-                A(4, 8) += x3z;
-                A(4, 9) += x2yz;
-                A(5, 5) += y4;
-                A(5, 6) += y2z2;
-                A(5, 7) += xy3;
-                A(5, 8) += xy2z;
-                A(5, 9) += y3z;
-                A(6, 6) += z4;
-                A(6, 7) += xyz2;
-                A(6, 8) += xz3;
-                A(6, 9) += yz3;
-                A(9, 9) += y2z2;
+                // M(0, 0) += 1
+                M(0, 1) += x;
+                M(0, 2) += y;
+                M(0, 3) += z;
+                M(0, 4) += x2;
+                M(0, 5) += xy;
+                M(0, 6) += xz;
+                M(0, 7) += y2;
+                M(0, 8) += yz;
+                M(0, 9) += z2;
+
+                // M(1, 1) += x2    [M(0,4)]
+                // M(1, 2) += xy    [M(0,5)]
+                // M(1, 3) += xz    [M(0,6)]
+                M(1, 4) += x3;
+                M(1, 5) += x2y;
+                M(1, 6) += x2z;
+                M(1, 7) += xy2;
+                M(1, 8) += xyz;
+                M(1, 9) += xz2;
+
+                // M(2, 2) += y2    [M(0,7)]
+                // M(2, 3) += yz    [M(0,8)]
+                // M(2, 4) += x2y   [M(1,5)]
+                M(2, 5) += xy2;
+                // M(2, 6) += xyz   [M(1,8)]
+                M(2, 7) += y3;
+                M(2, 8) += y2z;
+                M(2, 9) += yz2;
+
+                // M(3, 3) += z2    [M(0,9)]
+                // M(3, 4) += x2z   [M(1,6)]
+                // M(3, 5) += xyz   [M(1,8)]
+                // M(3, 6) += xz2   [M(1,9)]
+                // M(3, 7) += y2z   [M(2,8)]
+                // M(3, 8) += yz2   [M(2,9)]
+                M(3, 9) += z3;
+
+                M(4, 4) += x4;
+                M(4, 5) += x3y;
+                M(4, 6) += x3z;
+                M(4, 7) += x2y2;
+                M(4, 8) += x2yz;
+                M(4, 9) += x2z2;
+
+                // M(5, 5) += x2y2  [M(4,7)]
+                // M(5, 6) += x2yz  [M(4,8)]
+                M(5, 7) += xy3;
+                M(5, 8) += xy2z;
+                M(5, 9) += xyz2;
+
+                // M(6, 6) += x2z2  [M(4,9)]
+                // M(6, 7) += xy2z  [M(5,8)]
+                // M(6, 8) += xyz2  [M(5,9)]
+                M(6, 9) += xz3;
+
+                M(7, 7) += y4;
+                M(7, 8) += y3z;
+                M(7, 9) += y2z2;
+
+                // M(8, 8) += y2z2  [M(7,9)]
+                M(8, 9) += yz3;
+
+                M(9, 9) += z4;
             }
 
-            A(0, 0) = static_cast<Real>(numPoints);
-            A(1, 1) = A(0, 4);
-            A(1, 2) = A(0, 7);
-            A(1, 3) = A(0, 8);
-            A(2, 2) = A(0, 5);
-            A(2, 3) = A(0, 9);
-            A(2, 4) = A(1, 7);
-            A(2, 7) = A(1, 5);
-            A(2, 8) = A(1, 9);
-            A(3, 3) = A(0, 6);
-            A(3, 4) = A(1, 8);
-            A(3, 5) = A(2, 9);
-            A(3, 7) = A(1, 9);
-            A(3, 8) = A(1, 6);
-            A(3, 9) = A(2, 6);
-            A(7, 7) = A(4, 5);
-            A(7, 8) = A(4, 9);
-            A(7, 9) = A(5, 8);
-            A(8, 8) = A(4, 6);
-            A(8, 9) = A(6, 7);
-            A(9, 9) = A(5, 6);
+            Real const rNumPoints = static_cast<Real>(numPoints);
+            M(0, 0) = rNumPoints;
+            M(1, 1) = M(0, 4);  // x2
+            M(1, 2) = M(0, 5);  // xy
+            M(1, 3) = M(0, 6);  // xz
+            M(2, 2) = M(0, 7);  // y2
+            M(2, 3) = M(0, 8);  // yz
+            M(2, 4) = M(1, 5);  // x2y
+            M(2, 6) = M(1, 8);  // xyz
+            M(3, 3) = M(0, 9);  // z2
+            M(3, 4) = M(1, 6);  // x2z
+            M(3, 5) = M(1, 8);  // xyz
+            M(3, 6) = M(1, 9);  // xz2
+            M(3, 7) = M(2, 8);  // y2z
+            M(3, 8) = M(2, 9);  // yz2
+            M(5, 5) = M(4, 7);  // x2y2
+            M(5, 6) = M(4, 8);  // x2yz
+            M(6, 6) = M(4, 9);  // x2z2
+            M(6, 7) = M(5, 8);  // xy2z
+            M(6, 8) = M(5, 9);  // xyz2
+            M(8, 8) = M(7, 9);  // y2z2
 
             for (int row = 0; row < 10; ++row)
             {
                 for (int col = 0; col < row; ++col)
                 {
-                    A(row, col) = A(col, row);
+                    M(row, col) = M(col, row);
                 }
             }
 
-            Real invNumPoints = (Real)1 / static_cast<Real>(numPoints);
             for (int row = 0; row < 10; ++row)
             {
                 for (int col = 0; col < 10; ++col)
                 {
-                    A(row, col) *= invNumPoints;
+                    M(row, col) /= rNumPoints;
                 }
             }
 
             SymmetricEigensolver<Real> es(10, 1024);
-            es.Solve(&A[0], +1);
-            es.GetEigenvector(0, &coefficients[0]);
+            es.Solve(&M[0], +1);
+            es.GetEigenvector(0, coefficients.data());
 
             // For an exact fit, numeric round-off errors might make the
-            // minimum eigenvalue just slightly negative. Return the absolute
+            // minimum eigenvalue just slightly negative. Return the clamped
             // value because the application might rely on the return value
             // being nonnegative.
-            return std::fabs(es.GetEigenvalue(0));
+            return std::max(es.GetEigenvalue(0), static_cast<Real>(0));
         }
     };
 
 
-    // If you think your points are nearly spherical, use this. The sphere is
-    // of form C'[0]+C'[1]*X+C'[2]*Y+C'[3]*Z+C'[4]*(X^2+Y^2+Z^2) where
-    // Length(C') = 1. The function returns
-    // C = (C'[0]/C'[4],C'[1]/C'[4],C'[2]/C'[4],C'[3]/C'[4]), so the fitted
-    // sphere is C[0]+C[1]*X+C[2]*Y+C[3]*Z+X^2+Y^2+Z^2. The center is
-    // (xc,yc,zc) = -0.5*(C[1],C[2],C[3]) and the radius is
-    // r = sqrt(xc*xc+yc*yc+zc*zc-C[0]).
+    // If you believe your points are nearly spherical, use this. The sphere
+    // is of the form
+    //   C'[0] + C'[1]*x + C'[2]*y + C'[3]*z + C'[4]*(x^2 + y^2 + z^2) = 0
+    // where Length(C') = 1. The function returns
+    //   C = (C'[0] / C'[4], C'[1] / C'[4], C'[2] / C'[4], C'[3] / C'[4])
+    //     = (C[0], C[1], C[2], C[3])
+    // so the fitted sphere is
+    //   C[0] + C[1]*x + C[2]*y + C[3]*z + x^2 + y^2 + z^2 = 0
+    // The center is (xc,yc,zc) = -0.5*(C[1],C[2],C[3]) and the radius is
+    // r = sqrt(xc * xc + yc * yc + zc * zc - C[0]).
+
     template <typename Real>
     class ApprQuadraticSphere3
     {
     public:
         Real operator()(int numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
         {
-            Matrix<5, 5, Real> A;  // constructor sets A to zero
+            Matrix<5, 5, Real> M{};  // constructor sets M to zero
             for (int i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
@@ -206,64 +241,73 @@ namespace gte
                 Real zr2 = z * r2;
                 Real r4 = r2 * r2;
 
-                A(0, 1) += x;
-                A(0, 2) += y;
-                A(0, 3) += z;
-                A(0, 4) += r2;
-                A(1, 1) += x2;
-                A(1, 2) += xy;
-                A(1, 3) += xz;
-                A(1, 4) += xr2;
-                A(2, 2) += y2;
-                A(2, 3) += yz;
-                A(2, 4) += yr2;
-                A(3, 3) += z2;
-                A(3, 4) += zr2;
-                A(4, 4) += r4;
+                // M(0, 0) += 1
+                M(0, 1) += x;
+                M(0, 2) += y;
+                M(0, 3) += z;
+                M(0, 4) += r2;
+
+                M(1, 1) += x2;
+                M(1, 2) += xy;
+                M(1, 3) += xz;
+                M(1, 4) += xr2;
+
+                M(2, 2) += y2;
+                M(2, 3) += yz;
+                M(2, 4) += yr2;
+
+                M(3, 3) += z2;
+                M(3, 4) += zr2;
+
+                M(4, 4) += r4;
             }
 
-            A(0, 0) = static_cast<Real>(numPoints);
+            Real const rNumPoints = static_cast<Real>(numPoints);
+            M(0, 0) = rNumPoints;
 
             for (int row = 0; row < 5; ++row)
             {
                 for (int col = 0; col < row; ++col)
                 {
-                    A(row, col) = A(col, row);
+                    M(row, col) = M(col, row);
                 }
             }
 
-            Real invNumPoints = (Real)1 / static_cast<Real>(numPoints);
             for (int row = 0; row < 5; ++row)
             {
                 for (int col = 0; col < 5; ++col)
                 {
-                    A(row, col) *= invNumPoints;
+                    M(row, col) /= rNumPoints;
                 }
             }
 
+            M(0, 0) = static_cast<Real>(1);
+
             SymmetricEigensolver<Real> es(5, 1024);
-            es.Solve(&A[0], +1);
-            Vector<5, Real> evector;
+            es.Solve(&M[0], +1);
+            Vector<5, Real> evector{};
             es.GetEigenvector(0, &evector[0]);
 
-            // TODO: Guard against zero divide?
-            Real inv = (Real)1 / evector[4];
-            Real coefficients[4];
+            std::array<Real, 4> coefficients{};
             for (int row = 0; row < 4; ++row)
             {
-                coefficients[row] = inv * evector[row];
+                coefficients[row] = evector[row] / evector[4];
             }
 
-            sphere.center[0] = (Real)-0.5 * coefficients[1];
-            sphere.center[1] = (Real)-0.5 * coefficients[2];
-            sphere.center[2] = (Real)-0.5 * coefficients[3];
-            sphere.radius = std::sqrt(std::fabs(Dot(sphere.center, sphere.center) - coefficients[0]));
+            // Clamp the radius to nonnegative values in case rounding errors
+            // cause sqrRadius to be slightly negative.
+            Real const negHalf = static_cast<Real>(-0.5);
+            sphere.center[0] = negHalf * coefficients[1];
+            sphere.center[1] = negHalf * coefficients[2];
+            sphere.center[2] = negHalf * coefficients[3];
+            Real sqrRadius = Dot(sphere.center, sphere.center) - coefficients[0];
+            sphere.radius = std::sqrt(std::max(sqrRadius, static_cast<Real>(0)));
 
             // For an exact fit, numeric round-off errors might make the
-            // minimum eigenvalue just slightly negative. Return the
-            // absolute value because the application might rely on the
-            // return value being nonnegative.
-            return std::fabs(es.GetEigenvalue(0));
+            // minimum eigenvalue just slightly negative. Return the clamped
+            // value because the application might rely on the return value
+            // being nonnegative.
+            return std::max(es.GetEigenvalue(0), static_cast<Real>(0));
         }
     };
 }

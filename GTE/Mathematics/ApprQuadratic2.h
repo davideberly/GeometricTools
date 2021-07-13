@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.07.12
 
 #pragma once
 
@@ -15,40 +15,40 @@
 namespace gte
 {
     // The quadratic fit is
-    //   0 = C[0] + C[1]*X + C[2]*Y + C[3]*X^2 + C[4]*Y^2 + C[5]*X*Y
-    // subject to Length(C) = 1.  Minimize E(C) = C^t M C with Length(C) = 1
-    // and M = (sum_i V_i)(sum_i V_i)^t where
-    //   V = (1, X, Y, X^2, Y^2, X*Y)
+    //   0 = C[0] + C[1]*x + C[2]*y + C[3]*x^2 + C[4]*x*y + C[5]*y^2
+    // which has one degree of freedom in the coefficients. Eliminate the
+    // degree of freedom by minimizing the quadratic form E(C) = C^T M C
+    // subject to Length(C) = 1 with M = (sum_i V[i])(sum_i V[i])^T where
+    //   V = (1, x, y, x^2, x*y, y^2)
     // The minimum value is the smallest eigenvalue of M and C is a
     // corresponding unit length eigenvector.
     //
     // Input:
     //   n = number of points to fit
-    //   p[0..n-1] = array of points to fit
+    //   P[0..n-1] = array of points to fit
     //
     // Output:
-    //   c[0..5] = coefficients of quadratic fit (the eigenvector)
+    //   C[0..5] = coefficients of quadratic fit (the eigenvector)
     //   return value of function is nonnegative and a measure of the fit
     //   (the minimum eigenvalue; 0 = exact fit, positive otherwise)
     //
     // Canonical forms. The quadratic equation can be factored into
-    // P^T A P + B^T P + K = 0 where P = (X,Y,Z), K = C[0],
-    // B = (C[1],C[2],C[3]), and A is a 3x3 symmetric matrix with
-    // A00 = C[4], A11 = C[5], A22 = C[6], A01 = C[7]/2, A02 = C[8]/2,
-    // and A12 = C[9]/2. Matrix A = R^T D R where R is orthogonal and
-    // D is diagonal (using an eigendecomposition). Define
-    // V = R P = (v0,v1,v2), E = R B = (e0,e1,e2), D = diag(d0,d1,d2)
-    // and f = K to obtain
-    //   d0 v0^2 + d1 v1^2 + d2 v^2 + e0 v0 + e1 v1 + e2 v2 + f = 0
-    // The characterization depends on the signs of the d_i.
+    // P^T A P + B^T P + K = 0 where P = (x,y), K = C[0],B = (C[1],C[2])
+    // and A is a 2x2 symmetric matrix with A00 = C[3], A01 = C[4]/2 and
+    // A11 = C[5]. Using an eigendecomposition, matrix A = R^T D R where
+    // R is orthogonal and D is diagonal. Define V = R*P = (v0,v1),
+    // E = R*B = (e0,e1), D = diag(d0,d1) and f = K to obtain
+    //   d0 v0^2 + d1 v1^2 + e0 v0 + e1 v1 + f = 0
+    // The classification depends on the signs of the d_i.
 
     template <typename Real>
     class ApprQuadratic2
     {
     public:
-        Real operator()(int numPoints, Vector2<Real> const* points, Real coefficients[6])
+        Real operator()(int numPoints, Vector2<Real> const* points,
+            std::array<Real, 6>& coefficients)
         {
-            Matrix<6, 6, Real> A;  // constructor sets A to zero
+            Matrix<6, 6, Real> M{};  // constructor sets M to zero
             for (int i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
@@ -66,66 +66,84 @@ namespace gte
                 Real y4 = y * y3;
                 Real xy3 = x * y3;
 
-                A(0, 1) += x;
-                A(0, 2) += y;
-                A(0, 3) += x2;
-                A(0, 4) += y2;
-                A(0, 5) += xy;
-                A(1, 3) += x3;
-                A(1, 4) += xy2;
-                A(1, 5) += x2y;
-                A(2, 4) += y3;
-                A(3, 3) += x4;
-                A(3, 4) += x2y2;
-                A(3, 5) += x3y;
-                A(4, 4) += y4;
-                A(4, 5) += xy3;
+                // M(0, 0) += 1
+                M(0, 1) += x;
+                M(0, 2) += y;
+                M(0, 3) += x2;
+                M(0, 4) += xy;
+                M(0, 5) += y2;
+
+                // M(1, 1) += x2    [M(0,3)]
+                // M(1, 2) += xy    [M(0,4)]
+                M(1, 3) += x3;
+                M(1, 4) += x2y;
+                M(1, 5) += xy2;
+
+                // M(2, 2) += y2    [M(0,5)]
+                // M(2, 3) += x2y   [M(1,4)]
+                // M(2, 4) += xy2   [M(1,5)]
+                M(2, 5) += y3;
+
+                M(3, 3) += x4;
+                M(3, 4) += x3y;
+                M(3, 5) += x2y2;
+
+                // M(4, 4) += x2y2  [M(3,5)]
+                M(4, 5) += xy3;
+
+                M(5, 5) += y4;
             }
 
-            A(0, 0) = static_cast<Real>(numPoints);
-            A(1, 1) = A(0, 3);
-            A(1, 2) = A(0, 5);
-            A(2, 2) = A(0, 4);
-            A(2, 3) = A(1, 5);
-            A(2, 5) = A(1, 4);
-            A(5, 5) = A(3, 4);
+            Real const rNumPoints = static_cast<Real>(numPoints);
+            M(0, 0) = rNumPoints;
+            M(1, 1) = M(0, 3);  // x2
+            M(1, 2) = M(0, 4);  // xy
+            M(2, 2) = M(0, 5);  // y2
+            M(2, 3) = M(1, 4);  // x2y
+            M(2, 4) = M(1, 5);  // xy2
+            M(4, 4) = M(3, 5);  // x2y2
 
             for (int row = 0; row < 6; ++row)
             {
                 for (int col = 0; col < row; ++col)
                 {
-                    A(row, col) = A(col, row);
+                    M(row, col) = M(col, row);
                 }
             }
 
-            Real invNumPoints = (Real)1 / static_cast<Real>(numPoints);
             for (int row = 0; row < 6; ++row)
             {
                 for (int col = 0; col < 6; ++col)
                 {
-                    A(row, col) *= invNumPoints;
+                    M(row, col) /= rNumPoints;
                 }
             }
 
+            M(0, 0) = static_cast<Real>(1);
+
             SymmetricEigensolver<Real> es(6, 1024);
-            es.Solve(&A[0], +1);
-            es.GetEigenvector(0, &coefficients[0]);
+            es.Solve(&M[0], +1);
+            es.GetEigenvector(0, coefficients.data());
 
             // For an exact fit, numeric round-off errors might make the
-            // minimum eigenvalue just slightly negative. Return the
-            // absolute value because the application might rely on the
-            // return value being nonnegative.
-            return std::fabs(es.GetEigenvalue(0));
+            // minimum eigenvalue just slightly negative. Return the clamped
+            // value because the application might rely on the return value
+            // being nonnegative.
+            return std::max(es.GetEigenvalue(0), static_cast<Real>(0));
         }
     };
 
 
-    // If you think your points are nearly circular, use this. The circle is
-    // of the form C'[0]+C'[1]*X+C'[2]*Y+C'[3]*(X^2+Y^2), where
-    // Length(C') = 1.  The function returns
-    // C = (C'[0]/C'[3],C'[1]/C'[3],C'[2]/C'[3]), so the fitted circle is
-    // C[0]+C[1]*X+C[2]*Y+X^2+Y^2. The center is (xc,yc) = -0.5*(C[1],C[2])
-    // and the radius is r = sqrt(xc*xc+yc*yc-C[0]).
+    // If you believe your points are nearly circular, use this function. The
+    // circle is of the form
+    //   C'[0] + C'[1]*x + C'[2]*y + C'[3]*(x^2 + y^2) = 0
+    // where Length(C') = 1. The function returns
+    //   C = (C'[0] / C'[3], C'[1] / C'[3], C'[2] / C'[3])
+    //     = (C[0], C[1], C[2])
+    // so the fitted circle is
+    //   C[0] + C[1]*x + C[2]*y + x^2 + y^2 = 0
+    // The center is (xc,yc) = -(C[1],C[2])/2 and the radius is
+    // r = sqrt(xc * xc + yc * yc - C[0]).
 
     template <typename Real>
     class ApprQuadraticCircle2
@@ -133,7 +151,7 @@ namespace gte
     public:
         Real operator()(int numPoints, Vector2<Real> const* points, Circle2<Real>& circle)
         {
-            Matrix<4, 4, Real> A;  // constructor sets A to zero
+            Matrix<4, 4, Real> M{};  // constructor sets M to zero
             for (int i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
@@ -146,58 +164,66 @@ namespace gte
                 Real yr2 = y * r2;
                 Real r4 = r2 * r2;
 
-                A(0, 1) += x;
-                A(0, 2) += y;
-                A(0, 3) += r2;
-                A(1, 1) += x2;
-                A(1, 2) += xy;
-                A(1, 3) += xr2;
-                A(2, 2) += y2;
-                A(2, 3) += yr2;
-                A(3, 3) += r4;
+                // M(0, 0) += 1
+                M(0, 1) += x;
+                M(0, 2) += y;
+                M(0, 3) += r2;
+
+                M(1, 1) += x2;
+                M(1, 2) += xy;
+                M(1, 3) += xr2;
+
+                M(2, 2) += y2;
+                M(2, 3) += yr2;
+
+                M(3, 3) += r4;
             }
 
-            A(0, 0) = static_cast<Real>(numPoints);
+            Real const rNumPoints = static_cast<Real>(numPoints);
+            M(0, 0) = rNumPoints;
 
             for (int row = 0; row < 4; ++row)
             {
                 for (int col = 0; col < row; ++col)
                 {
-                    A(row, col) = A(col, row);
+                    M(row, col) = M(col, row);
                 }
             }
 
-            Real invNumPoints = (Real)1 / static_cast<Real>(numPoints);
             for (int row = 0; row < 4; ++row)
             {
                 for (int col = 0; col < 4; ++col)
                 {
-                    A(row, col) *= invNumPoints;
+                    M(row, col) /= rNumPoints;
                 }
             }
 
+            M(0, 0) = static_cast<Real>(1);
+
             SymmetricEigensolver<Real> es(4, 1024);
-            es.Solve(&A[0], +1);
-            Vector<4, Real> evector;
+            es.Solve(&M[0], +1);
+            Vector<4, Real> evector{};
             es.GetEigenvector(0, &evector[0]);
 
-            // TODO: Guard against zero divide?
-            Real inv = (Real)1 / evector[3];
-            Real coefficients[3];
+            std::array<Real, 3> coefficients{};
             for (int row = 0; row < 3; ++row)
             {
-                coefficients[row] = inv * evector[row];
+                coefficients[row] = evector[row] / evector[3];
             }
 
-            circle.center[0] = (Real)-0.5 * coefficients[1];
-            circle.center[1] = (Real)-0.5 * coefficients[2];
-            circle.radius = std::sqrt(std::fabs(Dot(circle.center, circle.center) - coefficients[0]));
+            // Clamp the radius to nonnegative values in case rounding errors
+            // cause sqrRadius to be slightly negative.
+            Real const negHalf = static_cast<Real>(-0.5);
+            circle.center[0] = negHalf * coefficients[1];
+            circle.center[1] = negHalf * coefficients[2];
+            Real sqrRadius = Dot(circle.center, circle.center) - coefficients[0];
+            circle.radius = std::sqrt(std::max(sqrRadius, static_cast<Real>(0)));
 
             // For an exact fit, numeric round-off errors might make the
-            // minimum eigenvalue just slightly negative. Return the
-            // absolute value because the application might rely on the
-            // return value being nonnegative.
-            return std::fabs(es.GetEigenvalue(0));
+            // minimum eigenvalue just slightly negative. Return the clamped
+            // value because the application might rely on the return value
+            // being nonnegative.
+            return std::max(es.GetEigenvalue(0), static_cast<Real>(0));
         }
     };
 }
