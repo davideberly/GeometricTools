@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.08.01
 
 #include "DistanceAlignedBoxesWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -201,8 +201,8 @@ void DistanceAlignedBoxesWindow3::DoQuery()
     }
 
     Vector3<float>* vertices = mSegment->GetVertexBuffer()->Get<Vector3<float>>();
-    vertices[0] = 0.5f * (result.closestPoints[0].min + result.closestPoints[0].max);
-    vertices[1] = 0.5f * (result.closestPoints[1].min + result.closestPoints[1].max);
+    vertices[0] = 0.5f * (result.closest[0].min + result.closest[0].max);
+    vertices[1] = 0.5f * (result.closest[1].min + result.closest[1].max);
     mEngine->Update(mSegment->GetVertexBuffer());
 
     mPoint0->localTransform.SetTranslation(vertices[0]);

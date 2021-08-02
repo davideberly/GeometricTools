@@ -3,75 +3,64 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
-#include <Mathematics/DCPQuery.h>
+#include <Mathematics/DistPointCanonicalBox.h>
 #include <Mathematics/AlignedBox.h>
+
+// Compute the distance from a point to a solid aligned box in nD.
+// 
+// The aligned box has minimum corner A and maximum corner B. A box point is X
+// where A <= X <= B; the comparisons are componentwise.
+// 
+// The input point is stored in closest[0]. The closest point on the box is
+// stored in closest[1]. When there are infinitely many choices for the pair
+// of closest points, only one of them is returned.
 
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Vector<N, Real>, AlignedBox<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Vector<N, T>, AlignedBox<N, T>>
     {
     public:
-        struct Result
-        {
-            Real distance, sqrDistance;
-            Vector<N, Real> boxClosest;
-        };
+        using PCQuery = DCPQuery<T, Vector<N, T>, CanonicalBox<N, T>>;
+        using Result = typename PCQuery::Result;
 
-        Result operator()(Vector<N, Real> const& point, AlignedBox<N, Real> const& box)
+        Result operator()(Vector<N, T> const& point, AlignedBox<N, T> const& box)
         {
+            Result result{};
+
             // Translate the point and box so that the box has center at the
             // origin.
-            Vector<N, Real> boxCenter, boxExtent;
-            box.GetCenteredForm(boxCenter, boxExtent);
-            Vector<N, Real> closest = point - boxCenter;
+            Vector<N, T> boxCenter{};
+            CanonicalBox<N, T> cbox{};
+            box.GetCenteredForm(boxCenter, cbox.extent);
+            Vector<N, T> xfrmPoint = point - boxCenter;
 
-            Result result;
-            DoQuery(closest, boxExtent, result);
+            // The query computes 'output' relative to the box with center
+            // at the origin.
+            PCQuery pcQuery{};
+            result = pcQuery(xfrmPoint, cbox);
 
-            // Compute the closest point on the box.
-            result.boxClosest = boxCenter + closest;
+            // Store the input point.
+            result.closest[0] = point;
+
+            // Translate the closest box point to the original coordinates.
+            result.closest[1] += boxCenter;
+
             return result;
-        }
-
-    protected:
-        // On input, 'point' is the difference of the query point and the box
-        // center.  On output, 'point' is the point on the box closest to the
-        // query point.
-        void DoQuery(Vector<N, Real>& point, Vector<N, Real> const& boxExtent,
-            Result& result)
-        {
-            result.sqrDistance = (Real)0;
-            for (int i = 0; i < N; ++i)
-            {
-                if (point[i] < -boxExtent[i])
-                {
-                    Real delta = point[i] + boxExtent[i];
-                    result.sqrDistance += delta * delta;
-                    point[i] = -boxExtent[i];
-                }
-                else if (point[i] > boxExtent[i])
-                {
-                    Real delta = point[i] - boxExtent[i];
-                    result.sqrDistance += delta * delta;
-                    point[i] = boxExtent[i];
-                }
-            }
-            result.distance = std::sqrt(result.sqrDistance);
         }
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPPointAlignedBox = DCPQuery<Real, Vector<N, Real>, AlignedBox<N, Real>>;
+    template <int N, typename T>
+    using DCPPointAlignedBox = DCPQuery<T, Vector<N, T>, AlignedBox<N, T>>;
 
-    template <typename Real>
-    using DCPPoint2AlignedBox2 = DCPPointAlignedBox<2, Real>;
+    template <typename T>
+    using DCPPoint2AlignedBox2 = DCPPointAlignedBox<2, T>;
 
-    template <typename Real>
-    using DCPPoint3AlignedBox3 = DCPPointAlignedBox<3, Real>;
+    template <typename T>
+    using DCPPoint3AlignedBox3 = DCPPointAlignedBox<3, T>;
 }

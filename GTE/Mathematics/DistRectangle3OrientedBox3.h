@@ -3,148 +3,77 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
-#include <Mathematics/DCPQuery.h>
-#include <Mathematics/LCPSolver.h>
+#include <Mathematics/DistRectangle3CanonicalBox3.h>
 #include <Mathematics/OrientedBox.h>
-#include <Mathematics/Rectangle.h>
-#include <Mathematics/Vector3.h>
 
-// Compute the distance between a rectangle and an oriented box in 3D.  The
-// algorithm is based on using an LCP solver for the convex quadratic
-// programming problem.  For details, see
-// https://www.geometrictools.com/Documentation/ConvexQuadraticProgramming.pdf
+// Compute the distance between a rectangle and a solid oriented box in 3D.
+//
+// The rectangle has center C, unit-length axis directions W[0] and W[1], and
+// extents e[0] and e[1]. A rectangle point is X = C + sum_{i=0}^2 s[i] * W[i]
+// where |s[i]| <= e[i] for all i.
+//
+// The oriented box has center C, unit-length axis directions U[i] and extents
+// e[i] for all i. A box point is X = C + sum_i y[i] * U[i], where
+// |y[i]| <= e[i] for all i.
+// 
+// The closest point on the rectangle is stored in closest[0] with
+// W-coordinates (s[0],s[1]). The closest point on the box is stored in
+// closest[1]. When there are infinitely many choices for the pair of closest
+// points, only one of them is returned.
+//
+// TODO: Modify to support non-unit-length W[].
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Rectangle3<Real>, OrientedBox3<Real>>
+    template <typename T>
+    class DCPQuery<T, Rectangle3<T>, OrientedBox3<T>>
     {
     public:
-        struct Result
+        using RBQuery = DCPQuery<T, Rectangle3<T>, CanonicalBox3<T>>;
+        using Result = typename RBQuery::Result;
+
+        Result operator()(Rectangle3<T> const& rectangle, OrientedBox3<T> const& box)
         {
-            bool queryIsSuccessful;
+            Result result{};
 
-            // These members are valid only when queryIsSuccessful is true;
-            // otherwise, they are all set to zero.
-            Real distance, sqrDistance;
-            std::array<Real, 2> rectangleParameter;
-            std::array<Real, 3> boxParameter;
-            Vector3<Real> closestPoint[2];
-
-            // The number of iterations used by LCPSolver regardless of
-            // whether the query is successful.
-            int numLCPIterations;
-        };
-
-        // The default maximum iterations is 81 (n = 9, maxIterations = n*n).
-        // If the solver fails to converge, try increasing the maximum number
-        // of iterations.
-        void SetMaxLCPIterations(int maxLCPIterations)
-        {
-            mLCP.SetMaxIterations(maxLCPIterations);
-        }
-
-        Result operator()(Rectangle3<Real> const& rectangle, OrientedBox3<Real> const& box)
-        {
-            Result result;
-
-            // Rigidly transform the rectangle and oriented box so that the
-            // oriented box becomes a canonical box.
-            Vector3<Real> K = box.extent * (Real)2;
-            Vector3<Real> tempV = rectangle.center - box.center;
-            Vector3<Real> V, E0, E1;
-            for (int i = 0; i < 3; ++i)
+            // Rotate and translate the rectangle and box so that the box is
+            // aligned and has center at the origin.
+            CanonicalBox3<T> cbox(box.extent);
+            Vector3<T> delta = rectangle.center - box.center;
+            Vector3<T> xfrmCenter{};
+            std::array<Vector3<T>, 2> xfrmAxis{};
+            for (int32_t i = 0; i < 3; ++i)
             {
-                V[i] = Dot(box.axis[i], tempV) + box.extent[i];
-                E0[i] = Dot(box.axis[i], rectangle.axis[0]);
-                E1[i] = Dot(box.axis[i], rectangle.axis[1]);
+                xfrmCenter[i] = Dot(box.axis[i], delta);
+                for (size_t j = 0; j < 2; ++j)
+                {
+                    xfrmAxis[j][i] = Dot(box.axis[i], rectangle.axis[j]);
+                }
             }
 
-            // Convert the oriented rectangle to a regular one (origin at a
-            // corner).
-            Vector3<Real> scaledE0 = E0 * rectangle.extent[0];
-            Vector3<Real> scaledE1 = E1 * rectangle.extent[1];
-            V -= scaledE0 + scaledE1;
-            E0 = scaledE0 * (Real)2;
-            E1 = scaledE1 * (Real)2;
+            // The query computes 'output' relative to the box with center
+            // at the origin.
+            Rectangle3<T> xfrmRectangle(xfrmCenter, xfrmAxis, rectangle.extent);
+            RBQuery rbQuery{};
+            result = rbQuery(xfrmRectangle, cbox);
 
-            // Compute quantities to initialize q and M in the LCP.
-            Real dotVE0 = Dot(V, E0);
-            Real dotVE1 = Dot(V, E1);
-            Real dotE0E0 = Dot(E0, E0);
-            Real dotE1E1 = Dot(E1, E1);
-
-            // The LCP has 5 variables and 5 (nontrivial) inequality
-            // constraints.
-            std::array<Real, 10> q =
+            // Rotate and translate the closest points to the original
+            // coordinates.
+            std::array<Vector3<T>, 2> closest{ box.center, box.center };
+            for (size_t i = 0; i < 2; ++i)
             {
-                -V[0], -V[1], -V[2], dotVE0, dotVE1, K[0], K[1], K[2], (Real)1, (Real)1
-            };
-
-            std::array<std::array<Real, 10>, 10> M;
-            M[0] = { (Real)1, (Real)0, (Real)0, -E0[0], -E1[0], (Real)1, (Real)0, (Real)0, (Real)0, (Real)0 };
-            M[1] = { (Real)0, (Real)1, (Real)0, -E0[1], -E1[1], (Real)0, (Real)1, (Real)0, (Real)0, (Real)0 };
-            M[2] = { (Real)0, (Real)0, (Real)1, -E0[2], -E1[2], (Real)0, (Real)0, (Real)1, (Real)0 , (Real)0 };
-            M[3] = { -E0[0], -E0[1], -E0[2], dotE0E0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)1, (Real)0 };
-            M[4] = { -E1[0], -E1[1], -E1[2], (Real)0, dotE1E1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)1 };
-            M[5] = { (Real)-1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0 };
-            M[6] = { (Real)0, (Real)-1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0 };
-            M[7] = { (Real)0, (Real)0, (Real)-1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0 };
-            M[8] = { (Real)0, (Real)0, (Real)0, (Real)-1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0 };
-            M[9] = { (Real)0, (Real)0, (Real)0, (Real)0, (Real)-1, (Real)0, (Real)0, (Real)0, (Real)0, (Real)0 };
-
-            std::array<Real, 10> w, z;
-            if (mLCP.Solve(q, M, w, z))
-            {
-                result.queryIsSuccessful = true;
-
-                Real t0 = (z[3] * (Real)2 - (Real)1) * rectangle.extent[0];
-                Real t1 = (z[4] * (Real)2 - (Real)1) * rectangle.extent[1];
-                result.rectangleParameter[0] = t0;
-                result.rectangleParameter[1] = t1;
-                result.closestPoint[0] = rectangle.center + t0 * rectangle.axis[0] + t1 * rectangle.axis[1];
-                result.closestPoint[1] = box.center;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t j = 0; j < 3; ++j)
                 {
-                    result.boxParameter[i] = z[i] - box.extent[i];
-                    result.closestPoint[1] += result.boxParameter[i] * box.axis[i];
+                    closest[i] += result.closest[i][j] * box.axis[j];
                 }
-
-                Vector3<Real> diff = result.closestPoint[1] - result.closestPoint[0];
-                result.sqrDistance = Dot(diff, diff);
-                result.distance = std::sqrt(result.sqrDistance);
             }
-            else
-            {
-                // If you reach this case, the maximum number of iterations
-                // was not specified to be large enough or there is a problem
-                // due to floating-point rounding errors.  If you believe the
-                // latter is true, file a bug report.
-                result.queryIsSuccessful = false;
+            result.closest = closest;
 
-                for (int i = 0; i < 2; ++i)
-                {
-                    result.rectangleParameter[i] = (Real)0;
-                }
-                for (int i = 0; i < 3; ++i)
-                {
-                    result.boxParameter[i] = (Real)0;
-                    result.closestPoint[0][i] = (Real)0;
-                    result.closestPoint[1][i] = (Real)0;
-                }
-                result.distance = (Real)0;
-                result.sqrDistance = (Real)0;
-            }
-
-            result.numLCPIterations = mLCP.GetNumIterations();
             return result;
         }
-
-    private:
-        LCPSolver<Real, 10> mLCP;
     };
 }

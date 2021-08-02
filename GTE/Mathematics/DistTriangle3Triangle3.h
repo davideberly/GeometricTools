@@ -3,82 +3,100 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DistSegment3Triangle3.h>
 
+// Compute the distance between two solid triangles in 3D.
+// 
+// Each triangle has vertices <V[0],V[1],V[2]>. A triangle point is
+// X = sum_{i=0}^2 b[i] * V[i], where 0 <= b[i] <= 1 for all i and
+// sum_{i=0}^2 b[i] = 1.
+// 
+// The closest point on triangle0 is stored in closest[0] with barycentric
+// coordinates (b[0],b[1],b[2]) relative to its vertices. The closest point on
+// triangle1 is stored in closest[1] with barycentric coordinates relative to
+// its vertices. When there are infinitely many choices for the pair of closest
+// points, only one of them is returned.
+
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Triangle3<Real>, Triangle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Triangle3<T>, Triangle3<T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real triangle0Parameter[3], triangle1Parameter[3];
-            Vector3<Real> closestPoint[2];
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                barycentric0{ static_cast<T>(0), static_cast<T>(0), static_cast<T>(0) },
+                barycentric1{ static_cast<T>(0), static_cast<T>(0), static_cast<T>(0) },
+                closest{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<T, 3> barycentric0;
+            std::array<T, 3> barycentric1;
+            std::array<Vector3<T>, 2> closest;
         };
 
-        Result operator()(Triangle3<Real> const& triangle0, Triangle3<Real> const& triangle1)
+        Result operator()(Triangle3<T> const& triangle0, Triangle3<T> const& triangle1)
         {
-            Result result;
+            Result result{};
 
-            DCPQuery<Real, Segment3<Real>, Triangle3<Real>> stQuery;
-            typename DCPQuery<Real, Segment3<Real>, Triangle3<Real>>::Result
-                stResult;
-            result.sqrDistance = std::numeric_limits<Real>::max();
+            DCPQuery<T, Segment3<T>, Triangle3<T>> stQuery{};
+            typename DCPQuery<T, Segment3<T>, Triangle3<T>>::Result stResult;
+            Segment3<T> segment{};
+
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            T const invalid = static_cast<T>(-1);
+            result.distance = invalid;
+            result.sqrDistance = invalid;
 
             // Compare edges of triangle0 to the interior of triangle1.
-            for (int i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+            for (size_t i0 = 2, i1 = 0, i2 = 1; i1 < 3; i2 = i0, i0 = i1++)
             {
-                Vector3<Real> segCenter = (Real)0.5 * (triangle0.v[i0] + triangle0.v[i1]);
-                Vector3<Real> segDirection = triangle0.v[i1] - triangle0.v[i0];
-                Real segExtent = (Real)0.5 * Normalize(segDirection);
-                Segment3<Real> edge(segCenter, segDirection, segExtent);
+                segment.p[0] = triangle0.v[i0];
+                segment.p[1] = triangle0.v[i1];
 
-                stResult = stQuery(edge, triangle1);
-                if (stResult.sqrDistance < result.sqrDistance)
+                stResult = stQuery(segment, triangle1);
+                if (result.sqrDistance == invalid ||
+                    stResult.sqrDistance < result.sqrDistance)
                 {
                     result.distance = stResult.distance;
                     result.sqrDistance = stResult.sqrDistance;
-                    // ratio is in [-1,1]
-                    Real ratio = stResult.segmentParameter / segExtent;
-                    result.triangle0Parameter[i0] = (Real)0.5 * ((Real)1 - ratio);
-                    result.triangle0Parameter[i1] = (Real)1 - result.triangle0Parameter[i0];
-                    result.triangle0Parameter[3 - i0 - i1] = (Real)0;
-                    result.triangle1Parameter[0] = stResult.triangleParameter[0];
-                    result.triangle1Parameter[1] = stResult.triangleParameter[1];
-                    result.triangle1Parameter[2] = stResult.triangleParameter[2];
-                    result.closestPoint[0] = stResult.closestPoint[0];
-                    result.closestPoint[1] = stResult.closestPoint[1];
+                    result.barycentric0[i0] = one - stResult.parameter;
+                    result.barycentric0[i1] = stResult.parameter;
+                    result.barycentric0[i2] = zero;
+                    result.barycentric1 = stResult.barycentric;
+                    result.closest = stResult.closest;
                 }
             }
 
             // Compare edges of triangle1 to the interior of triangle0.
-            for (int i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+            for (size_t i0 = 2, i1 = 0, i2 = 1; i1 < 3; i2 = i0, i0 = i1++)
             {
-                Vector3<Real> segCenter = (Real)0.5 * (triangle1.v[i0] + triangle1.v[i1]);
-                Vector3<Real> segDirection = triangle1.v[i1] - triangle1.v[i0];
-                Real segExtent = (Real)0.5 * Normalize(segDirection);
-                Segment3<Real> edge(segCenter, segDirection, segExtent);
+                segment.p[0] = triangle1.v[i0];
+                segment.p[1] = triangle1.v[i1];
 
-                stResult = stQuery(edge, triangle0);
-                if (stResult.sqrDistance < result.sqrDistance)
+                stResult = stQuery(segment, triangle0);
+                if (result.sqrDistance == invalid ||
+                    stResult.sqrDistance < result.sqrDistance)
                 {
                     result.distance = stResult.distance;
                     result.sqrDistance = stResult.sqrDistance;
-                    Real ratio = stResult.segmentParameter / segExtent;  // in [-1,1]
-                    result.triangle0Parameter[0] = stResult.triangleParameter[0];
-                    result.triangle0Parameter[1] = stResult.triangleParameter[1];
-                    result.triangle0Parameter[2] = stResult.triangleParameter[2];
-                    result.triangle1Parameter[i0] = (Real)0.5 * ((Real)1 - ratio);
-                    result.triangle1Parameter[i1] = (Real)1 - result.triangle0Parameter[i0];
-                    result.triangle1Parameter[3 - i0 - i1] = (Real)0;
-                    result.closestPoint[0] = stResult.closestPoint[0];
-                    result.closestPoint[1] = stResult.closestPoint[1];
+                    result.barycentric0 = stResult.barycentric;
+                    result.barycentric1[i0] = one - stResult.parameter;
+                    result.barycentric1[i1] = stResult.parameter;
+                    result.barycentric1[i2] = zero;
+                    result.closest[0] = stResult.closest[1];
+                    result.closest[1] = stResult.closest[0];
                 }
             }
             return result;

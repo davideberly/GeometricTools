@@ -3,67 +3,88 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Segment.h>
 
+// Compute the distance between a point and a segment in nD.
+// 
+// The segment is P0 + t * (P1 - P0) for 0 <= t <= 1. The direction D = P1-P0
+// is generally not unit length.
+// 
+// The input point is stored in closest[0]. The closest point on the segment
+// is stored in closest[1]. When there are infinitely many choices for the
+// pair of closest points, only one of them is returned.
+
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Vector<N, Real>, Segment<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Vector<N, T>, Segment<N, T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real segmentParameter;  // t in [0,1]
-            Vector<N, Real> segmentClosest;  // (1-t)*p[0] + t*p[1]
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                parameter(static_cast<T>(0)),
+                closest{ Vector<N, T>::Zero(), Vector<N, T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            T parameter;
+            std::array<Vector<N, T>, 2> closest;
         };
 
-        Result operator()(Vector<N, Real> const& point, Segment<N, Real> const& segment)
+        Result operator()(Vector<N, T> const& point, Segment<N, T> const& segment)
         {
-            Result result;
+            Result result{};
 
-            // The direction vector is not unit length.  The normalization is
+            // The direction vector is not unit length. The normalization is
             // deferred until it is needed.
-            Vector<N, Real> direction = segment.p[1] - segment.p[0];
-            Vector<N, Real> diff = point - segment.p[1];
-            Real t = Dot(direction, diff);
-            if (t >= (Real)0)
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            Vector<N, T> direction = segment.p[1] - segment.p[0];
+            Vector<N, T> diff = point - segment.p[1];
+            T t = Dot(direction, diff);
+            if (t >= zero)
             {
-                result.segmentParameter = (Real)1;
-                result.segmentClosest = segment.p[1];
+                result.parameter = one;
+                result.closest[1] = segment.p[1];
             }
             else
             {
                 diff = point - segment.p[0];
                 t = Dot(direction, diff);
-                if (t <= (Real)0)
+                if (t <= zero)
                 {
-                    result.segmentParameter = (Real)0;
-                    result.segmentClosest = segment.p[0];
+                    result.parameter = zero;
+                    result.closest[1] = segment.p[0];
                 }
                 else
                 {
-                    Real sqrLength = Dot(direction, direction);
-                    if (sqrLength > (Real)0)
+                    T sqrLength = Dot(direction, direction);
+                    if (sqrLength > zero)
                     {
                         t /= sqrLength;
-                        result.segmentParameter = t;
-                        result.segmentClosest = segment.p[0] + t * direction;
+                        result.parameter = t;
+                        result.closest[1] = segment.p[0] + t * direction;
                     }
                     else
                     {
-                        result.segmentParameter = (Real)0;
-                        result.segmentClosest = segment.p[0];
+                        result.parameter = zero;
+                        result.closest[1] = segment.p[0];
                     }
                 }
             }
+            result.closest[0] = point;
 
-            diff = point - result.segmentClosest;
+            diff = result.closest[0] - result.closest[1];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
 
@@ -72,12 +93,12 @@ namespace gte
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPPointSegment = DCPQuery<Real, Vector<N, Real>, Segment<N, Real>>;
+    template <int N, typename T>
+    using DCPPointSegment = DCPQuery<T, Vector<N, T>, Segment<N, T>>;
 
-    template <typename Real>
-    using DCPPoint2Segment2 = DCPPointSegment<2, Real>;
+    template <typename T>
+    using DCPPoint2Segment2 = DCPPointSegment<2, T>;
 
-    template <typename Real>
-    using DCPPoint3Segment3 = DCPPointSegment<3, Real>;
+    template <typename T>
+    using DCPPoint3Segment3 = DCPPointSegment<3, T>;
 }

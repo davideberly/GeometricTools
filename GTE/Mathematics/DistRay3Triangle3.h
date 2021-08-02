@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
@@ -11,50 +11,50 @@
 #include <Mathematics/DistPointTriangle.h>
 #include <Mathematics/Ray.h>
 
+// Compute the distance between a ray and a triangle in 3D.
+// 
+// The ray is P + t * D for t >= 0, where D is not required to be unit length.
+// 
+// The triangle has vertices <V[0],V[1],V[2]>. A triangle point is
+// X = sum_{i=0}^2 b[i] * V[i], where 0 <= b[i] <= 1 for all i and
+// sum_{i=0}^2 b[i] = 1.
+// 
+// The closest point on the ray is stored in closest[0] with parameter t. The
+// closest point on the triangle is closest[1] with barycentric coordinates
+// (b[0],b[1],b[2]). When there are infinitely many choices for the pair of
+// closest points, only one of them is returned.
+
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Ray3<Real>, Triangle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Ray3<T>, Triangle3<T>>
     {
     public:
-        struct Result
-        {
-            Real distance, sqrDistance;
-            Real rayParameter, triangleParameter[3];
-            Vector3<Real> closestPoint[2];
-        };
+        using LTQuery = DCPQuery<T, Line3<T>, Triangle3<T>>;
+        using Result = typename LTQuery::Result;
 
-        Result operator()(Ray3<Real> const& ray, Triangle3<Real> const& triangle)
+        Result operator()(Ray3<T> const& ray, Triangle3<T> const& triangle)
         {
-            Result result;
+            Result result{};
 
-            Line3<Real> line(ray.origin, ray.direction);
-            DCPQuery<Real, Line3<Real>, Triangle3<Real>> ltQuery;
+            T const zero = static_cast<T>(0);
+            Line3<T> line(ray.origin, ray.direction);
+            LTQuery ltQuery{};
             auto ltResult = ltQuery(line, triangle);
-
-            if (ltResult.lineParameter >= (Real)0)
+            if (ltResult.parameter >= zero)
             {
-                result.distance = ltResult.distance;
-                result.sqrDistance = ltResult.sqrDistance;
-                result.rayParameter = ltResult.lineParameter;
-                result.triangleParameter[0] = ltResult.triangleParameter[0];
-                result.triangleParameter[1] = ltResult.triangleParameter[1];
-                result.triangleParameter[2] = ltResult.triangleParameter[2];
-                result.closestPoint[0] = ltResult.closestPoint[0];
-                result.closestPoint[1] = ltResult.closestPoint[1];
+                result = ltResult;
             }
             else
             {
-                DCPQuery<Real, Vector3<Real>, Triangle3<Real>> ptQuery;
+                DCPQuery<T, Vector3<T>, Triangle3<T>> ptQuery{};
                 auto ptResult = ptQuery(ray.origin, triangle);
                 result.distance = ptResult.distance;
                 result.sqrDistance = ptResult.sqrDistance;
-                result.rayParameter = (Real)0;
-                result.triangleParameter[0] = ptResult.parameter[0];
-                result.triangleParameter[1] = ptResult.parameter[1];
-                result.triangleParameter[2] = ptResult.parameter[2];
-                result.closestPoint[0] = ray.origin;
-                result.closestPoint[1] = ptResult.closest;
+                result.parameter = zero;
+                result.barycentric = ptResult.barycentric;
+                result.closest[0] = ray.origin;
+                result.closest[1] = ptResult.closest[1];
             }
             return result;
         }

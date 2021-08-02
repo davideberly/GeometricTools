@@ -3,51 +3,55 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DistLine3AlignedBox3.h>
+#include <Mathematics/DistPointAlignedBox.h>
 #include <Mathematics/Ray.h>
+
+// Compute the distance between a ray and a solid aligned box in 3D.
+// 
+// The ray is P + t * D for t >= 0, where D is not required to be unit length.
+// 
+// The aligned box has minimum corner A and maximum corner B. A box point is X
+// where A <= X <= B; the comparisons are componentwise.
+// 
+// The closest point on the ray is stored in closest[0] with parameter t. The
+// closest point on the box is stored in closest[1]. When there are infinitely
+// many choices for the pair of closest points, only one of them is returned.
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Ray3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class DCPQuery<T, Ray3<T>, AlignedBox3<T>>
     {
     public:
-        struct Result
+        using AlignedQuery = DCPQuery<T, Line3<T>, AlignedBox3<T>>;
+        using Result = typename AlignedQuery::Result;
+
+        Result operator()(Ray3<T> const& ray, AlignedBox3<T> const& box)
         {
-            Real distance, sqrDistance;
-            Real rayParameter;
-            Vector3<Real> closestPoint[2];
-        };
+            Result result{};
 
-        Result operator()(Ray3<Real> const& ray, AlignedBox3<Real> const& box)
-        {
-            Result result;
-
-            Line3<Real> line(ray.origin, ray.direction);
-            DCPQuery<Real, Line3<Real>, AlignedBox3<Real>> lbQuery;
-            auto lbResult = lbQuery(line, box);
-
-            if (lbResult.lineParameter >= (Real)0)
+            Line3<T> line(ray.origin, ray.direction);
+            AlignedQuery lbQuery{};
+            auto lbOutput = lbQuery(line, box);
+            T const zero = static_cast<T>(0);
+            if (lbOutput.parameter >= zero)
             {
-                result.sqrDistance = lbResult.sqrDistance;
-                result.distance = lbResult.distance;
-                result.rayParameter = lbResult.lineParameter;
-                result.closestPoint[0] = lbResult.closestPoint[0];
-                result.closestPoint[1] = lbResult.closestPoint[1];
+                result = lbOutput;
             }
             else
             {
-                DCPQuery<Real, Vector3<Real>, AlignedBox3<Real>> pbQuery;
-                auto pbResult = pbQuery(ray.origin, box);
-                result.sqrDistance = pbResult.sqrDistance;
-                result.distance = pbResult.distance;
-                result.rayParameter = (Real)0;
-                result.closestPoint[0] = ray.origin;
-                result.closestPoint[1] = pbResult.boxClosest;
+                DCPQuery<T, Vector3<T>, AlignedBox3<T>> pbQuery{};
+                auto pbOutput = pbQuery(ray.origin, box);
+                result.distance = pbOutput.distance;
+                result.sqrDistance = pbOutput.sqrDistance;
+                result.parameter = zero;
+                result.closest[0] = ray.origin;
+                result.closest[1] = pbOutput.closest[1];
             }
             return result;
         }

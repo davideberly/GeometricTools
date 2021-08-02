@@ -3,68 +3,90 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Line.h>
 
+// Compute the distance between two lines in nD.
+// 
+// The lines are P[i] + s[i] * D[i], where D[i] is not required to be unit
+// length.
+// 
+// The closest point on line[i] is stored in closest[i] with parameter[i]
+// storing s[i]. When there are infinitely many choices for the pair of
+// closest points, only one of them is returned.
+
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Line<N, Real>, Line<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Line<N, T>, Line<N, T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real parameter[2];
-            Vector<N, Real> closestPoint[2];
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                parameter{ static_cast<T>(0), static_cast<T>(0) },
+                closest{ Vector<N, T>::Zero(), Vector<N, T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<T, 2> parameter;
+            std::array<Vector<N, T>, 2> closest;
         };
 
-        Result operator()(Line<N, Real> const& line0, Line<N, Real> const& line1)
+        Result operator()(Line<N, T> const& line0, Line<N, T> const& line1)
         {
-            Result result;
+            Result result{};
 
-            Vector<N, Real> diff = line0.origin - line1.origin;
-            Real a01 = -Dot(line0.direction, line1.direction);
-            Real b0 = Dot(diff, line0.direction);
-            Real s0, s1;
+            T const zero = static_cast<T>(0);
+            Vector<N, T> diff = line0.origin - line1.origin;
+            T a00 = Dot(line0.direction, line0.direction);
+            T a01 = -Dot(line0.direction, line1.direction);
+            T a11 = Dot(line1.direction, line1.direction);
+            T b0 = Dot(line0.direction, diff);
+            T det = std::max(a00 * a11 - a01 * a01, zero);
+            T s0{}, s1{};
 
-            if (std::fabs(a01) < (Real)1)
+            if (det > zero)
             {
-                // Lines are not parallel.
-                Real det = (Real)1 - a01 * a01;
-                Real b1 = -Dot(diff, line1.direction);
-                s0 = (a01 * b1 - b0) / det;
-                s1 = (a01 * b0 - b1) / det;
+                // The lines are not parallel.
+                T b1 = -Dot(line1.direction, diff);
+                s0 = (a01 * b1 - a11 * b0) / det;
+                s1 = (a01 * b0 - a00 * b1) / det;
             }
             else
             {
-                // Lines are parallel, select any pair of closest points.
-                s0 = -b0;
-                s1 = (Real)0;
+                // The lines are parallel. Select any pair of closest points.
+                s0 = -b0 / a00;
+                s1 = zero;
             }
 
             result.parameter[0] = s0;
             result.parameter[1] = s1;
-            result.closestPoint[0] = line0.origin + s0 * line0.direction;
-            result.closestPoint[1] = line1.origin + s1 * line1.direction;
-            diff = result.closestPoint[0] - result.closestPoint[1];
+            result.closest[0] = line0.origin + s0 * line0.direction;
+            result.closest[1] = line1.origin + s1 * line1.direction;
+            diff = result.closest[0] - result.closest[1];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
+
             return result;
         }
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPLineLine = DCPQuery<Real, Line<N, Real>, Line<N, Real>>;
+    template <int N, typename T>
+    using DCPLineLine = DCPQuery<T, Line<N, T>, Line<N, T>>;
 
-    template <typename Real>
-    using DCPLine2Line2 = DCPLineLine<2, Real>;
+    template <typename T>
+    using DCPLine2Line2 = DCPLineLine<2, T>;
 
-    template <typename Real>
-    using DCPLine3Line3 = DCPLineLine<3, Real>;
+    template <typename T>
+    using DCPLine3Line3 = DCPLineLine<3, T>;
 }

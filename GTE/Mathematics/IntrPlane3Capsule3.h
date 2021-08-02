@@ -3,12 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.101
 
 #pragma once
 
 #include <Mathematics/TIQuery.h>
-#include <Mathematics/DistPoint3Plane3.h>
+#include <Mathematics/DistPointHyperplane.h>
 #include <Mathematics/Capsule.h>
 
 namespace gte

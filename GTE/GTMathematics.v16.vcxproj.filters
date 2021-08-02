@@ -771,12 +771,6 @@
     <ClInclude Include="Mathematics\DistPoint3Frustum3.h">
       <Filter>Distance\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\DistPoint3Plane3.h">
-      <Filter>Distance\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\DistPoint3Rectangle3.h">
-      <Filter>Distance\3D</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\DistPoint3Tetrahedron3.h">
       <Filter>Distance\3D</Filter>
     </ClInclude>
@@ -858,9 +852,6 @@
     <ClInclude Include="Mathematics\DistPointTriangle.h">
       <Filter>Distance\ND</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\DistPointTriangleExact.h">
-      <Filter>Distance\ND</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\DistRayRay.h">
       <Filter>Distance\ND</Filter>
     </ClInclude>
@@ -868,9 +859,6 @@
       <Filter>Distance\ND</Filter>
     </ClInclude>
     <ClInclude Include="Mathematics\DistSegmentSegment.h">
-      <Filter>Distance\ND</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\DistSegmentSegmentExact.h">
       <Filter>Distance\ND</Filter>
     </ClInclude>
     <ClInclude Include="Mathematics\EdgeKey.h">
@@ -1454,6 +1442,60 @@
     </ClInclude>
     <ClInclude Include="Mathematics\IntrTriangle3Triangle3.h">
       <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine2OrientedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine2AlignedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRay2AlignedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRay2OrientedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPlane3AlignedBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\CanonicalBox.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPointCanonicalBox.h">
+      <Filter>Distance\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPointHyperplane.h">
+      <Filter>Distance\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPointRectangle.h">
+      <Filter>Distance\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPlane3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h">
+      <Filter>Distance\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

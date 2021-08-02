@@ -3,56 +3,60 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DistLine3Rectangle3.h>
-#include <Mathematics/DistPoint3Rectangle3.h>
+#include <Mathematics/DistPointRectangle.h>
 #include <Mathematics/Ray.h>
+
+// Compute the distance between a ray and a solid rectangle in 3D.
+// 
+// The ray is P + t * D for t >= 0, where D is not required to be unit length.
+// 
+// The rectangle has center C, unit-length axis directions W[0] and W[1], and
+// extents e[0] and e[1]. A rectangle point is X = C + sum_{i=0}^2 s[i] * W[i]
+// where |s[i]| <= e[i] for all i.
+// 
+// The closest point on the ray is stored in closest[0] with parameter t. The
+// closest point on the rectangle is stored in closest[1] with U-coordinates
+// (s[0],s[1]). When there are infinitely many choices for the pair of closest
+// points, only one of them is returned.
+//
+// TODO: Modify to support non-unit-length W[].
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Ray3<Real>, Rectangle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Ray3<T>, Rectangle3<T>>
     {
     public:
-        struct Result
-        {
-            Real distance, sqrDistance;
-            Real rayParameter, rectangleParameter[2];
-            Vector3<Real> closestPoint[2];
-        };
+        using LRQuery = DCPQuery<T, Line3<T>, Rectangle3<T>>;
+        using Result = typename LRQuery::Result;
 
-        Result operator()(Ray3<Real> const& ray, Rectangle3<Real> const& rectangle)
+        Result operator()(Ray3<T> const& ray, Rectangle3<T> const& rectangle)
         {
-            Result result;
+            Result result{};
 
-            Line3<Real> line(ray.origin, ray.direction);
-            DCPQuery<Real, Line3<Real>, Rectangle3<Real>> lrQuery;
+            T const zero = static_cast<T>(0);
+            Line3<T> line(ray.origin, ray.direction);
+            LRQuery lrQuery{};
             auto lrResult = lrQuery(line, rectangle);
-
-            if (lrResult.lineParameter >= (Real)0)
+            if (lrResult.parameter >= zero)
             {
-                result.distance = lrResult.distance;
-                result.sqrDistance = lrResult.sqrDistance;
-                result.rayParameter = lrResult.lineParameter;
-                result.rectangleParameter[0] = lrResult.rectangleParameter[0];
-                result.rectangleParameter[1] = lrResult.rectangleParameter[1];
-                result.closestPoint[0] = lrResult.closestPoint[0];
-                result.closestPoint[1] = lrResult.closestPoint[1];
+                result = lrResult;
             }
             else
             {
-                DCPQuery<Real, Vector3<Real>, Rectangle3<Real>> prQuery;
+                DCPQuery<T, Vector3<T>, Rectangle3<T>> prQuery{};
                 auto prResult = prQuery(ray.origin, rectangle);
                 result.distance = prResult.distance;
                 result.sqrDistance = prResult.sqrDistance;
-                result.rayParameter = (Real)0;
-                result.rectangleParameter[0] = prResult.rectangleParameter[0];
-                result.rectangleParameter[1] = prResult.rectangleParameter[1];
-                result.closestPoint[0] = ray.origin;
-                result.closestPoint[1] = prResult.rectangleClosestPoint;
+                result.parameter = zero;
+                result.cartesian = prResult.cartesian;
+                result.closest[0] = ray.origin;
+                result.closest[1] = prResult.closest[1];
             }
             return result;
         }

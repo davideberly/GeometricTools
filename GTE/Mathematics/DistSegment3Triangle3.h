@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.05.03
+// Version: 4.0.2021.08.01
 
 #pragma once
 
@@ -11,72 +11,67 @@
 #include <Mathematics/DistPointTriangle.h>
 #include <Mathematics/Segment.h>
 
+// Compute the distance between a segment and a solid triangle in 3D.
+// 
+// The segment is P0 + t * (P1 - P0) for 0 <= t <= 1. The direction D = P1-P0
+// is generally not unit length.
+// 
+// The triangle has vertices <V[0],V[1],V[2]>. A triangle point is
+// X = sum_{i=0}^2 b[i] * V[i], where 0 <= b[i] <= 1 for all i and
+// sum_{i=0}^2 b[i] = 1.
+// 
+// The closest point on the segment is stored in closest[0] with parameter t.
+// The closest point on the triangle is closest[1] with barycentric
+// coordinates (b[0],b[1],b[2]). When there are infinitely many choices for the pair of closest
+// points, only one of them is returned.
+
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Segment3<Real>, Triangle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Segment3<T>, Triangle3<T>>
     {
     public:
-        struct Result
+        using LTQuery = DCPQuery<T, Line3<T>, Triangle3<T>>;
+        using Result = typename LTQuery::Result;
+
+        Result operator()(Segment3<T> const& segment, Triangle3<T> const& triangle)
         {
-            Real distance, sqrDistance;
-            Real segmentParameter, triangleParameter[3];
-            Vector3<Real> closestPoint[2];
-        };
+            Result result{};
 
-        Result operator()(Segment3<Real> const& segment, Triangle3<Real> const& triangle)
-        {
-            Result result;
-
-            Vector3<Real> segCenter, segDirection;
-            Real segExtent;
-            segment.GetCenteredForm(segCenter, segDirection, segExtent);
-
-            Line3<Real> line(segCenter, segDirection);
-            DCPQuery<Real, Line3<Real>, Triangle3<Real>> ltQuery;
-            auto ltResult = ltQuery(line, triangle);
-
-            if (ltResult.lineParameter >= -segExtent)
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            Vector3<T> segDirection = segment.p[1] - segment.p[0];
+            Line3<T> line(segment.p[0], segDirection);
+            LTQuery ltQuery{};
+            auto ltOutput = ltQuery(line, triangle);
+            if (ltOutput.parameter >= zero)
             {
-                if (ltResult.lineParameter <= segExtent)
+                if (ltOutput.parameter <= one)
                 {
-                    result.distance = ltResult.distance;
-                    result.sqrDistance = ltResult.sqrDistance;
-                    result.segmentParameter = ltResult.lineParameter;
-                    result.triangleParameter[0] = ltResult.triangleParameter[0];
-                    result.triangleParameter[1] = ltResult.triangleParameter[1];
-                    result.triangleParameter[2] = ltResult.triangleParameter[2];
-                    result.closestPoint[0] = ltResult.closestPoint[0];
-                    result.closestPoint[1] = ltResult.closestPoint[1];
+                    result = ltOutput;
                 }
                 else
                 {
-                    DCPQuery<Real, Vector3<Real>, Triangle3<Real>> ptQuery;
-                    Vector3<Real> point = segCenter + segExtent * segDirection;
-                    auto ptResult = ptQuery(point, triangle);
-                    result.sqrDistance = ptResult.sqrDistance;
-                    result.distance = ptResult.distance;
-                    result.segmentParameter = segExtent;
-                    result.triangleParameter[0] = ptResult.parameter[0];
-                    result.triangleParameter[1] = ptResult.parameter[1];
-                    result.triangleParameter[2] = ptResult.parameter[2];
-                    result.closestPoint[0] = point;
-                    result.closestPoint[1] = ptResult.closest;
+                    DCPQuery<T, Vector3<T>, Triangle3<T>> ptQuery{};
+                    auto ptOutput = ptQuery(segment.p[1], triangle);
+                    result.sqrDistance = ptOutput.sqrDistance;
+                    result.distance = ptOutput.distance;
+                    result.parameter = one;
+                    result.barycentric = ptOutput.barycentric;
+                    result.closest[0] = segment.p[1];
+                    result.closest[1] = ptOutput.closest[1];
                 }
             }
             else
             {
-                DCPQuery<Real, Vector3<Real>, Triangle3<Real>> ptQuery;
-                Vector3<Real> point = segCenter - segExtent * segDirection;
-                auto ptResult = ptQuery(point, triangle);
-                result.sqrDistance = ptResult.sqrDistance;
-                result.distance = ptResult.distance;
-                result.segmentParameter = -segExtent;
-                result.triangleParameter[0] = ptResult.parameter[0];
-                result.triangleParameter[1] = ptResult.parameter[1];
-                result.triangleParameter[2] = ptResult.parameter[2];
-                result.closestPoint[0] = point;
-                result.closestPoint[1] = ptResult.closest;
+                DCPQuery<T, Vector3<T>, Triangle3<T>> ptQuery{};
+                auto ptOutput = ptQuery(segment.p[0], triangle);
+                result.sqrDistance = ptOutput.sqrDistance;
+                result.distance = ptOutput.distance;
+                result.parameter = zero;
+                result.barycentric = ptOutput.barycentric;
+                result.closest[0] = segment.p[0];
+                result.closest[1] = ptOutput.closest[1];
             }
             return result;
         }

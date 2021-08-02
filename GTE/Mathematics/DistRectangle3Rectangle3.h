@@ -3,90 +3,122 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DistSegment3Rectangle3.h>
 
+// Compute the distance between two rectangles in 3D.
+//
+// Each rectangle has center C, unit-length axis directions W[0] and W[1], and
+// extents e[0] and e[1]. A rectangle point is X = C + sum_{i=0}^2 s[i] * W[i]
+// where |s[i]| <= e[i] for all i.
+// 
+// The closest point on rectangle0 is stored in closest[0] with W-coordinates
+// (s[0],s[1]) corresponding to its W-axes. The closest point on rectangle1 is
+// stored in closest[1] with W-coordinates (s[0],s[1]) corresponding to its
+// W-axes. When there are infinitely many choices for the pair of closest
+// points, only one of them is returned.
+//
+// TODO: Modify to support non-unit-length W[].
+
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Rectangle3<Real>, Rectangle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Rectangle3<T>, Rectangle3<T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real rectangle0Parameter[2], rectangle1Parameter[2];
-            Vector3<Real> closestPoint[2];
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                cartesian0{ static_cast<T>(0) , static_cast<T>(0) },
+                cartesian1{ static_cast<T>(0) , static_cast<T>(0) },
+                closest{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<T, 2> cartesian0;
+            std::array<T, 2> cartesian1;
+            std::array<Vector3<T>, 2> closest;
         };
 
-        Result operator()(Rectangle3<Real> const& rectangle0, Rectangle3<Real> const& rectangle1)
+        Result operator()(Rectangle3<T> const& rectangle0, Rectangle3<T> const& rectangle1)
         {
-            Result result;
+            Result result{};
 
-            DCPQuery<Real, Segment3<Real>, Rectangle3<Real>> srQuery;
-            typename DCPQuery<Real, Segment3<Real>, Rectangle3<Real>>::Result srResult;
-            result.sqrDistance = std::numeric_limits<Real>::max();
+            DCPQuery<T, Segment3<T>, Rectangle3<T>> srQuery{};
+            typename DCPQuery<T, Segment3<T>, Rectangle3<T>>::Result srResult{};
+            Segment3<T> segment{};
+
+            T const one = static_cast<T>(1);
+            T const negOne = static_cast<T>(-1);
+            T const two = static_cast<T>(2);
+            T const invalid = static_cast<T>(-1);
+            result.distance = invalid;
+            result.sqrDistance = invalid;
+
+            std::array<T, 4> const sign{ negOne, one, negOne, one };
+            std::array<int32_t, 4> j0{ 0, 0, 1, 1 };
+            std::array<int32_t, 4> j1{ 1, 1, 0, 0 };
+            std::array<std::array<size_t, 2>, 4> const edges
+            {{
+                // horizontal edges (y = -e1, +e1)
+                { 0, 1 }, { 2, 3 },
+                // vertical edges (x = -e0, +e0)
+                { 0, 2 }, { 1, 3 }
+            }};
+            std::array<Vector3<T>, 4> vertices{};
 
             // Compare edges of rectangle0 to the interior of rectangle1.
-            for (int i1 = 0; i1 < 2; ++i1)
+            rectangle0.GetVertices(vertices);
+            for (size_t i = 0; i < 4; ++i)
             {
-                for (int i0 = -1; i0 <= 1; i0 += 2)
-                {
-                    Real s = i0 * rectangle0.extent[1 - i1];
-                    Vector3<Real> segCenter = rectangle0.center +
-                        s * rectangle0.axis[1 - i1];
-                    Segment3<Real> edge(segCenter, rectangle0.axis[i1],
-                        rectangle0.extent[i1]);
+                auto const& edge = edges[i];
+                segment.p[0] = vertices[edge[0]];
+                segment.p[1] = vertices[edge[1]];
 
-                    srResult = srQuery(edge, rectangle1);
-                    if (srResult.sqrDistance < result.sqrDistance)
-                    {
-                        result.distance = srResult.distance;
-                        result.sqrDistance = srResult.sqrDistance;
-                        result.rectangle0Parameter[i1] = s;
-                        result.rectangle0Parameter[1 - i1] =
-                            srResult.segmentParameter;
-                        result.rectangle1Parameter[0] =
-                            srResult.rectangleParameter[0];
-                        result.rectangle1Parameter[1] =
-                            srResult.rectangleParameter[1];
-                        result.closestPoint[0] = srResult.closestPoint[0];
-                        result.closestPoint[1] = srResult.closestPoint[1];
-                    }
+                srResult = srQuery(segment, rectangle1);
+                if (result.sqrDistance == invalid ||
+                    srResult.sqrDistance < result.sqrDistance)
+                {
+                    result.distance = srResult.distance;
+                    result.sqrDistance = srResult.sqrDistance;
+                    T const scale = two * srResult.parameter - one;
+                    result.cartesian0[j0[i]] = scale * rectangle0.extent[j0[i]];
+                    result.cartesian0[j1[i]] = sign[i] * rectangle0.extent[j1[i]];
+                    result.cartesian1 = srResult.cartesian;
+                    result.closest = srResult.closest;
                 }
             }
 
             // Compare edges of rectangle1 to the interior of rectangle0.
-            for (int i1 = 0; i1 < 2; ++i1)
+            rectangle1.GetVertices(vertices);
+            for (size_t i = 0; i < 4; ++i)
             {
-                for (int i0 = -1; i0 <= 1; i0 += 2)
-                {
-                    Real s = i0 * rectangle1.extent[1 - i1];
-                    Vector3<Real> segCenter = rectangle1.center +
-                        s * rectangle1.axis[1 - i1];
-                    Segment3<Real> edge(segCenter, rectangle0.axis[i1],
-                        rectangle0.extent[i1]);
+                auto const& edge = edges[i];
+                segment.p[0] = vertices[edge[0]];
+                segment.p[1] = vertices[edge[1]];
 
-                    srResult = srQuery(edge, rectangle0);
-                    if (srResult.sqrDistance < result.sqrDistance)
-                    {
-                        result.distance = srResult.distance;
-                        result.sqrDistance = srResult.sqrDistance;
-                        result.rectangle0Parameter[0] =
-                            srResult.rectangleParameter[0];
-                        result.rectangle0Parameter[1] =
-                            srResult.rectangleParameter[1];
-                        result.rectangle1Parameter[i1] = s;
-                        result.rectangle1Parameter[1 - i1] =
-                            srResult.segmentParameter;
-                        result.closestPoint[0] = srResult.closestPoint[1];
-                        result.closestPoint[1] = srResult.closestPoint[0];
-                    }
+                srResult = srQuery(segment, rectangle0);
+                if (result.sqrDistance == invalid ||
+                    srResult.sqrDistance < result.sqrDistance)
+                {
+                    result.distance = srResult.distance;
+                    result.sqrDistance = srResult.sqrDistance;
+                    T const scale = two * srResult.parameter - one;
+                    result.cartesian0 = srResult.cartesian;
+                    result.cartesian1[j0[i]] = scale * rectangle1.extent[j0[i]];
+                    result.cartesian1[j1[i]] = sign[i] * rectangle1.extent[j1[i]];
+                    result.closest[0] = srResult.closest[1];
+                    result.closest[1] = srResult.closest[0];
                 }
             }
+
             return result;
         }
     };

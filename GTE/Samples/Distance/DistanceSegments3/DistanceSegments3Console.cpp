@@ -33,68 +33,104 @@ void DistanceSegments3Console::Execute()
     // max error02 = 4.44089e-16 at (x,y) = (346,1)
     // max error12 = 4.44089e-16 at (x,y) = (346,1)
     // max error01 = 6.66134e-16 at (x,y) = (520,288)
+    mOutput << "CPUAccuracyTest(true, true)" << std::endl;
     CPUAccuracyTest(true, true);
+    mOutput << std::endl;
 
     // max error02 = 3.52850e-07 at (x,y) = (362,283)
     // max error12 = 4.17519e-08 at (x,y) = (994,186)
     // max error01 = 3.51795e-07 at (x,y) = (722,362)
+    mOutput << "CPUAccuracyTest(true, false)" << std::endl;
     CPUAccuracyTest(true, false);
+    mOutput << std::endl;
 
     // max error01 = 6.66134e-16 at (x,y) = (520,288)
+    mOutput << "CPUAccuracyTest(false, true)" << std::endl;
     CPUAccuracyTest(false, true);
+    mOutput << std::endl;
 
     // max error01 = 1.09974e-06 at (x,y) = (1024,569)
+    mOutput << "CPUAccuracyTest(false, false)" << std::endl;
     CPUAccuracyTest(false, false);
+    mOutput << std::endl;
 
     // seconds = 0.193, numQueries = 8386560, seconds per query = 2.3013e-08
+    mOutput << "CPUPerformanceTest(PERF_SUNDAY, true)" << std::endl;
     CPUPerformanceTest(PERF_SUNDAY, true);
+    mOutput << std::endl;
 
     // seconds = 0.176, numQueries = 8386560, seconds per query = 2.0986e-08
+    mOutput << "CPUPerformanceTest(PERF_SUNDAY, false)" << std::endl;
     CPUPerformanceTest(PERF_SUNDAY, false);
+    mOutput << std::endl;
 
     // seconds = 0.338, numQueries = 8386560, seconds per query = 4.03026e-08
+    mOutput << "CPUPerformanceTest(PERF_ROBUST, true)" << std::endl;
     CPUPerformanceTest(PERF_ROBUST, true);
+    mOutput << std::endl;
 
     // seconds = 0.348, numQueries = 8386560, seconds per query = 4.1495e-08
+    mOutput << "CPUPerformanceTest(PERF_ROBUST, false)" << std::endl;
     CPUPerformanceTest(PERF_ROBUST, false);
+    mOutput << std::endl;
 
     // seconds = 7.29, numQueries = 523776, seconds per query = 1.39182e-05
+    mOutput << "CPUPerformanceTest(PERF_RATIONAL, true)" << std::endl;
     CPUPerformanceTest(PERF_RATIONAL, true);
+    mOutput << std::endl;
 
     // seconds = 2.926, numQueries = 523776, seconds per query = 5.58636e-06
+    mOutput << "CPUPerformanceTest(PERF_RATIONAL, false)" << std::endl;
     CPUPerformanceTest(PERF_RATIONAL, false);
+    mOutput << std::endl;
 
     // DX11,   max error = 0 at (x,y) = (0,0)
     // OpenGL, max error = 6.66134e-16 at (x,y) = (116,79)
+    mOutput << "GPUAccuracyTest(true, true)" << std::endl;
     GPUAccuracyTest(true, true);
+    mOutput << std::endl;
 
     // DX11,   max error = 0 at (x,y) = (0,0)
     // OpenGL, max error = 2.95232e-08 at (x,y) = (931,880)
+    mOutput << "GPUAccuracyTest(true, false)" << std::endl;
     GPUAccuracyTest(true, false);
+    mOutput << std::endl;
 
     // DX11,   max error = 0 at (x,y) = (0,0)
     // OpenGL, max error = 6.66134e-16 at (x,y) = (116,79)
+    mOutput << "GPUAccuracyTest(false, true)" << std::endl;
     GPUAccuracyTest(false, true);
+    mOutput << std::endl;
 
     // DX11,   max error = 0 at (x,y) = (0,0)
     // OpenGL, max error = 2.95232e-08 at (x,y) = (931,880)
+    mOutput << "GPUAccuracyTest(false, false)" << std::endl;
     GPUAccuracyTest(false, false);
+    mOutput << std::endl;
 
     // DX11,   seconds = 0.312, numQueries = 10485760, seconds per query = 2.97546e-08
     // OpenGL, seconds = 0.394, numQueries = 10485760, seconds per query = 3.75748e-08
+    mOutput << "GPUPerformanceTest(true, true)" << std::endl;
     GPUPerformanceTest(true, true);
+    mOutput << std::endl;
 
     // DX11,   seconds = 0.308, numQueries = 10485760, seconds per query = 2.93732e-08
     // OpenGL, seconds = 0.398, numQueries = 10485760, seconds per query = 3.79562e-08
+    mOutput << "GPUPerformanceTest(true, false)" << std::endl;
     GPUPerformanceTest(true, false);
+    mOutput << std::endl;
 
     // DX11,   seconds = 0.127, numQueries = 10485760, seconds per query = 1.21117e-08
     // OpenGL, seconds = 0.172, numQueries = 10485760, seconds per query = 1.64032e-08
+    mOutput << "GPUPerformanceTest(false, true)" << std::endl;
     GPUPerformanceTest(false, true);
+    mOutput << std::endl;
 
     // DX11,   seconds = 0.122, numQueries = 10485760, seconds per query = 1.16348e-08
     // OpenGL, seconds = 0.169, numQueries = 10485760, seconds per query = 1.61171e-08
+    mOutput << "GPUPerformanceTest(false, false)" << std::endl;
     GPUPerformanceTest(false, false);
+    mOutput << std::endl;
 
     mOutput.close();
 }
@@ -277,7 +313,6 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
         if ((y % numBlocks) == 0)
         {
             std::cout << "y = " << y << std::endl;
-            mOutput << "y = " << y << std::endl;
         }
 
         Vector3<double> Q0 = segment[y].p[0];
@@ -296,7 +331,7 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
 
             // robust query
             RobustQuery query1;
-            auto result1 = query1(P0, P1, Q0, Q1);
+            auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
             double distance1 = result1.distance;
 
             if (compareUsingExact)
@@ -389,7 +424,7 @@ void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparall
         {
             for (unsigned int x = y + 1; x < numInputs; ++x, ++numQueries)
             {
-                result = query(segment[x], segment[y]);
+                result = query.ComputeRobust(segment[x], segment[y]);
             }
         }
     }
@@ -487,7 +522,6 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
         for (unsigned int y = 0, i = 0; y < numBlocks; ++y)
         {
             std::cout << "block = " << y << std::endl;
-            mOutput << "block = " << y << std::endl;
             origin[1] = y * blockSize;
             for (unsigned int x = y; x < numBlocks; ++x, ++i)
             {
@@ -513,7 +547,7 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
                         double distance0 = std::sqrt(result0.sqrDistance);
 
                         RobustQuery query1;
-                        auto result1 = query1(P0, P1, Q0, Q1);
+                        auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
                         double distance1 = result1.distance;
 
                         double error = std::fabs(distance0 - distance1);
@@ -547,7 +581,6 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
         for (unsigned int y = 0, i = 0; y < numBlocks; ++y)
         {
             std::cout << "block = " << y << std::endl;
-            mOutput << "block = " << y << std::endl;
             origin[1] = y * blockSize;
             for (unsigned int x = y; x < numBlocks; ++x, ++i)
             {
@@ -573,7 +606,7 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
                         double distance0 = std::sqrt(result0.sqrDistance);
 
                         RobustQuery query1;
-                        auto result1 = query1(P0, P1, Q0, Q1);
+                        auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
                         double distance1 = result1.distance;
 
                         double error = std::fabs(distance0 - distance1);

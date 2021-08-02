@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
@@ -19,26 +19,26 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int N, typename T>
     class OrientedBox
     {
     public:
         // Construction and destruction.  The default constructor sets the
-        // center to (0,...,0), axis d to Vector<N,Real>::Unit(d) and
+        // center to (0,...,0), axis d to Vector<N,T>::Unit(d) and
         // extent d to +1.
         OrientedBox()
         {
             center.MakeZero();
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 axis[i].MakeUnit(i);
-                extent[i] = (Real)1;
+                extent[i] = (T)1;
             }
         }
 
-        OrientedBox(Vector<N, Real> const& inCenter,
-            std::array<Vector<N, Real>, N> const& inAxis,
-            Vector<N, Real> const& inExtent)
+        OrientedBox(Vector<N, T> const& inCenter,
+            std::array<Vector<N, T>, N> const& inAxis,
+            Vector<N, T> const& inExtent)
             :
             center(inCenter),
             axis(inAxis),
@@ -50,31 +50,36 @@ namespace gte
         // i = b[N-1]...b[0], then
         // vertex[i] = center + sum_{d=0}^{N-1} sign[d] * extent[d] * axis[d]
         // where sign[d] = 2*b[d] - 1.
-        void GetVertices(std::array<Vector<N, Real>, (1 << N)>& vertex) const
+        void GetVertices(std::array<Vector<N, T>, (1 << N)>& vertex) const
         {
-            unsigned int const dsup = static_cast<unsigned int>(N);
-            std::array<Vector<N, Real>, N> product;
-            for (unsigned int d = 0; d < dsup; ++d)
+            std::array<Vector<N, T>, N> product;
+            for (int32_t d = 0; d < N; ++d)
             {
                 product[d] = extent[d] * axis[d];
             }
 
-            int const imax = (1 << N);
-            for (int i = 0; i < imax; ++i)
+            int32_t const imax = (1 << N);
+            for (int32_t i = 0; i < imax; ++i)
             {
                 vertex[i] = center;
-                for (unsigned int d = 0, mask = 1; d < dsup; ++d, mask <<= 1)
+                for (int32_t d = 0, mask = 1; d < N; ++d, mask <<= 1)
                 {
-                    Real sign = (i & mask ? (Real)1 : (Real)-1);
-                    vertex[i] += sign * product[d];
+                    if ((i & mask) > 0)
+                    {
+                        vertex[i] += product[d];
+                    }
+                    else
+                    {
+                        vertex[i] -= product[d];
+                    }
                 }
             }
         }
 
         // Public member access.  It is required that extent[i] >= 0.
-        Vector<N, Real> center;
-        std::array<Vector<N, Real>, N> axis;
-        Vector<N, Real> extent;
+        Vector<N, T> center;
+        std::array<Vector<N, T>, N> axis;
+        Vector<N, T> extent;
 
     public:
         // Comparisons to support sorted containers.
@@ -130,9 +135,9 @@ namespace gte
     };
 
     // Template aliases for convenience.
-    template <typename Real>
-    using OrientedBox2 = OrientedBox<2, Real>;
+    template <typename T>
+    using OrientedBox2 = OrientedBox<2, T>;
 
-    template <typename Real>
-    using OrientedBox3 = OrientedBox<3, Real>;
+    template <typename T>
+    using OrientedBox3 = OrientedBox<3, T>;
 }

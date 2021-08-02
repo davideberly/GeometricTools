@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
@@ -139,6 +139,9 @@ namespace gte
     };
 
     // Template alias for convenience.
+    template <typename Real>
+    using Rectangle2 = Rectangle<2, Real>;
+
     template <typename Real>
     using Rectangle3 = Rectangle<3, Real>;
 }

@@ -3,95 +3,117 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Ray.h>
 
+// Compute the distance between two rays in nD.
+//
+// The rays are P[i] + s[i] * D[i] for s[i] >= 0, where D[i] is not required
+// to be unit length.
+// 
+// The closest point on ray[i] is stored in closest[i] with parameter[i]
+// storing s[i]. When there are infinitely many choices for the pair of
+// closest points, only one of them is returned.
+
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Ray<N, Real>, Ray<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Ray<N, T>, Ray<N, T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real parameter[2];
-            Vector<N, Real> closestPoint[2];
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                parameter{ static_cast<T>(0), static_cast<T>(0) },
+                closest{ Vector<N, T>::Zero(), Vector<N, T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<T, 2> parameter;
+            std::array<Vector<N, T>, 2> closest;
         };
 
-        Result operator()(Ray<N, Real> const& ray0, Ray<N, Real> const& ray1)
+        Result operator()(Ray<N, T> const& ray0, Ray<N, T> const& ray1)
         {
-            Result result;
+            Result result{};
 
-            Vector<N, Real> diff = ray0.origin - ray1.origin;
-            Real a01 = -Dot(ray0.direction, ray1.direction);
-            Real b0 = Dot(diff, ray0.direction), b1;
-            Real s0, s1;
+            T const zero = static_cast<T>(0);
+            Vector<N, T> diff = ray0.origin - ray1.origin;
+            T a00 = Dot(ray0.direction, ray0.direction);
+            T a01 = -Dot(ray0.direction, ray1.direction);
+            T a11 = Dot(ray1.direction, ray1.direction);
+            T b0 = Dot(ray0.direction, diff);
+            T det = std::max(a00 * a11 - a01 * a01, zero);
+            T s0{}, s1{};
 
-            if (std::fabs(a01) < (Real)1)
+            if (det > zero)
             {
-                // Rays are not parallel.
-                b1 = -Dot(diff, ray1.direction);
-                s0 = a01 * b1 - b0;
-                s1 = a01 * b0 - b1;
+                // The rays are not parallel.
+                T b1 = -Dot(ray1.direction, diff);
+                s0 = a01 * b1 - a11 * b0;
+                s1 = a01 * b0 - a00 * b1;
 
-                if (s0 >= (Real)0)
+                if (s0 >= zero)
                 {
-                    if (s1 >= (Real)0)  // region 0 (interior)
+                    if (s1 >= zero)  // region 0 (interior)
                     {
-                        // Minimum at two interior points of rays.
-                        Real det = (Real)1 - a01 * a01;
+                        // The minimum occurs at two interior points of
+                        // the rays.
                         s0 /= det;
                         s1 /= det;
                     }
                     else  // region 3 (side)
                     {
-                        s1 = (Real)0;
-                        if (b0 >= (Real)0)
+                        if (b0 >= zero)
                         {
-                            s0 = (Real)0;
+                            s0 = zero;
                         }
                         else
                         {
-                            s0 = -b0;
+                            s0 = -b0 / a00;
                         }
+                        s1 = zero;
                     }
                 }
                 else
                 {
-                    if (s1 >= (Real)0)  // region 1 (side)
+                    if (s1 >= zero)  // region 1 (side)
                     {
-                        s0 = (Real)0;
-                        if (b1 >= (Real)0)
+                        s0 = zero;
+                        if (b1 >= zero)
                         {
-                            s1 = (Real)0;
+                            s1 = zero;
                         }
                         else
                         {
-                            s1 = -b1;
+                            s1 = -b1 / a11;
                         }
                     }
                     else  // region 2 (corner)
                     {
-                        if (b0 < (Real)0)
+                        if (b0 < zero)
                         {
-                            s0 = -b0;
-                            s1 = (Real)0;
+                            s0 = -b0 / a00;
+                            s1 = zero;
                         }
                         else
                         {
-                            s0 = (Real)0;
-                            if (b1 >= (Real)0)
+                            s0 = zero;
+                            if (b1 >= zero)
                             {
-                                s1 = (Real)0;
+                                s1 = zero;
                             }
                             else
                             {
-                                s1 = -b1;
+                                s1 = -b1 / a11;
                             }
                         }
                     }
@@ -99,55 +121,56 @@ namespace gte
             }
             else
             {
-                // Rays are parallel.
-                if (a01 > (Real)0)
+                // The rays are parallel.
+                if (a01 > zero)
                 {
                     // Opposite direction vectors.
-                    s1 = (Real)0;
-                    if (b0 >= (Real)0)
+                    s1 = zero;
+                    if (b0 >= zero)
                     {
-                        s0 = (Real)0;
+                        s0 = zero;
                     }
                     else
                     {
-                        s0 = -b0;
+                        s0 = -b0 / a00;
                     }
                 }
                 else
                 {
                     // Same direction vectors.
-                    if (b0 >= (Real)0)
+                    if (b0 >= zero)
                     {
-                        b1 = -Dot(diff, ray1.direction);
-                        s0 = (Real)0;
-                        s1 = -b1;
+                        T b1 = -Dot(ray1.direction, diff);
+                        s0 = zero;
+                        s1 = -b1 / a11;
                     }
                     else
                     {
-                        s0 = -b0;
-                        s1 = (Real)0;
+                        s0 = -b0 / a00;
+                        s1 = zero;
                     }
                 }
             }
 
             result.parameter[0] = s0;
             result.parameter[1] = s1;
-            result.closestPoint[0] = ray0.origin + s0 * ray0.direction;
-            result.closestPoint[1] = ray1.origin + s1 * ray1.direction;
-            diff = result.closestPoint[0] - result.closestPoint[1];
+            result.closest[0] = ray0.origin + s0 * ray0.direction;
+            result.closest[1] = ray1.origin + s1 * ray1.direction;
+            diff = result.closest[0] - result.closest[1];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
+
             return result;
         }
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPRayRay = DCPQuery<Real, Ray<N, Real>, Ray<N, Real>>;
+    template <int N, typename T>
+    using DCPRayRay = DCPQuery<T, Ray<N, T>, Ray<N, T>>;
 
-    template <typename Real>
-    using DCPRay2Ray2 = DCPRayRay<2, Real>;
+    template <typename T>
+    using DCPRay2Ray2 = DCPRayRay<2, T>;
 
-    template <typename Real>
-    using DCPRay3Ray3 = DCPRayRay<3, Real>;
+    template <typename T>
+    using DCPRay3Ray3 = DCPRayRay<3, T>;
 }

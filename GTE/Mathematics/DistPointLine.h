@@ -3,35 +3,51 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Line.h>
 
+// Compute the distance between a point and a line in nD.
+// 
+// The line is P + t * D, where D is not required to be unit length.
+// 
+// The input point is stored in closest[0]. The closest point on the line is
+// stored in closest[1].
+
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Vector<N, Real>, Line<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Vector<N, T>, Line<N, T>>
     {
     public:
         struct Result
         {
-            Real distance, sqrDistance;
-            Real lineParameter;  // t in (-infinity,+infinity)
-            Vector<N, Real> lineClosest;  // origin + t * direction
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                parameter(static_cast<T>(0)),
+                closest{ Vector<N, T>::Zero(), Vector<N, T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            T parameter;
+            std::array<Vector<N, T>, 2> closest;
         };
 
-        Result operator()(Vector<N, Real> const& point, Line<N, Real> const& line)
+        Result operator()(Vector<N, T> const& point, Line<N, T> const& line)
         {
-            Result result;
+            Result result{};
 
-            Vector<N, Real> diff = point - line.origin;
-            result.lineParameter = Dot(line.direction, diff);
-            result.lineClosest = line.origin + result.lineParameter * line.direction;
-
-            diff = point - result.lineClosest;
+            Vector<N, T> diff = point - line.origin;
+            result.parameter = Dot(line.direction, diff);
+            result.closest[0] = point;
+            result.closest[1] = line.origin + result.parameter * line.direction;
+            diff = result.closest[0] - result.closest[1];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
 
@@ -40,12 +56,12 @@ namespace gte
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPPointLine = DCPQuery<Real, Vector<N, Real>, Line<N, Real>>;
+    template <int N, typename T>
+    using DCPPointLine = DCPQuery<T, Vector<N, T>, Line<N, T>>;
 
-    template <typename Real>
-    using DCPPoint2Line2 = DCPPointLine<2, Real>;
+    template <typename T>
+    using DCPPoint2Line2 = DCPPointLine<2, T>;
 
-    template <typename Real>
-    using DCPPoint3Line3 = DCPPointLine<3, Real>;
+    template <typename T>
+    using DCPPoint3Line3 = DCPPointLine<3, T>;
 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Picker.h>
@@ -415,8 +415,8 @@ void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* pos
             record.bary[0] = 1.0f - result.parameter[1];
             record.bary[1] = result.parameter[1];
             record.bary[2] = 0.0f;
-            record.linePoint = HLift(result.closestPoint[0], 1.0f);
-            record.primitivePoint = HLift(result.closestPoint[1], 1.0f);
+            record.linePoint = HLift(result.closest[0], 1.0f);
+            record.primitivePoint = HLift(result.closest[1], 1.0f);
 
 #if defined (GTE_USE_MAT_VEC)
             record.linePoint = visual->worldTransform * record.linePoint;
@@ -460,7 +460,7 @@ void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* posit
         // Compute point-line distance.
         DCPQuery<float, Vector3<float>, Line3<float>> query;
         auto result = query(p, line);
-        if (result.distance <= mMaxDistance && mTMin <= result.lineParameter && result.lineParameter <= mTMax)
+        if (result.distance <= mMaxDistance && mTMin <= result.parameter && result.parameter <= mTMax)
         {
             PickRecord record;
             record.visual = visual;
@@ -469,11 +469,11 @@ void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* posit
             record.vertexIndex[0] = static_cast<int>(v);
             record.vertexIndex[1] = -1;
             record.vertexIndex[2] = -1;
-            record.t = result.lineParameter;
+            record.t = result.parameter;
             record.bary[0] = 1.0f;
             record.bary[1] = 0.0f;
             record.bary[2] = 0.0f;
-            record.linePoint = HLift(result.lineClosest, 1.0f);
+            record.linePoint = HLift(result.closest[1], 1.0f);
             record.primitivePoint = HLift(p, 1.0f);
 
 #if defined (GTE_USE_MAT_VEC)

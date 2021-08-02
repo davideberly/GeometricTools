@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
@@ -17,7 +17,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int N, typename T>
     class AlignedBox
     {
     public:
@@ -25,17 +25,19 @@ namespace gte
         // minimum values to -1 and the maximum values to +1.
         AlignedBox()
         {
-            for (int i = 0; i < N; ++i)
+            T const negOne = static_cast<T>(-1);
+            T const one = static_cast<T>(1);
+            for (int32_t i = 0; i < N; ++i)
             {
-                min[i] = (Real)-1;
-                max[i] = (Real)+1;
+                min[i] = negOne;
+                max[i] = one;
             }
         }
 
         // Please ensure that inMin[i] <= inMax[i] for all i.
-        AlignedBox(Vector<N, Real> const& inMin, Vector<N, Real> const& inMax)
+        AlignedBox(Vector<N, T> const& inMin, Vector<N, T> const& inMax)
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 min[i] = inMin[i];
                 max[i] = inMax[i];
@@ -46,14 +48,37 @@ namespace gte
         // and maximum values, compute C and extents, and then recompute the
         // minimum and maximum values, the numerical round-off errors can lead
         // to results different from what you started with.
-        void GetCenteredForm(Vector<N, Real>& center, Vector<N, Real>& extent) const
+        void GetCenteredForm(Vector<N, T>& center, Vector<N, T>& extent) const
         {
-            center = (max + min) * (Real)0.5;
-            extent = (max - min) * (Real)0.5;
+            T const half = static_cast<T>(0.5);
+            center = (max + min) * half;
+            extent = (max - min) * half;
+        }
+
+        // Compute the vertices of the box. If index i has the bit pattern
+        // i = b[N-1]...b[0], then the corner at index i is vertex[i], where
+        // vertex[i] = min[i] whern b[d] = 0 or max[i] when b[d] = 1.
+        void GetVertices(std::array<Vector<N, T>, (1 << N)>& vertex) const
+        {
+            int32_t const imax = (1 << N);
+            for (int32_t i = 0; i < imax; ++i)
+            {
+                for (int32_t d = 0, mask = 1; d < N; ++d, mask <<= 1)
+                {
+                    if ((i & mask) > 0)
+                    {
+                        vertex[i][d] = max[d];
+                    }
+                    else
+                    {
+                        vertex[i][d] = min[d];
+                    }
+                }
+            }
         }
 
         // Public member access.  It is required that min[i] <= max[i].
-        Vector<N, Real> min, max;
+        Vector<N, T> min, max;
 
     public:
         // Comparisons to support sorted containers.
@@ -99,9 +124,9 @@ namespace gte
     };
 
     // Template aliases for convenience.
-    template <typename Real>
-    using AlignedBox2 = AlignedBox<2, Real>;
+    template <typename T>
+    using AlignedBox2 = AlignedBox<2, T>;
 
-    template <typename Real>
-    using AlignedBox3 = AlignedBox<3, Real>;
+    template <typename T>
+    using AlignedBox3 = AlignedBox<3, T>;
 }

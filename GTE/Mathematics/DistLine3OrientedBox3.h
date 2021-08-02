@@ -3,54 +3,70 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
-#include <Mathematics/DistLine3AlignedBox3.h>
-#include <Mathematics/Line.h>
+#include <Mathematics/DistLine3CanonicalBox3.h>
 #include <Mathematics/OrientedBox.h>
+
+// Compute the distance between a line and a solid oriented box in 3D.
+// 
+// The line is P + t * D, where D is not required to be unit length.
+// 
+// The oriented box has center C, unit-length axis directions U[i] and extents
+// e[i] for all i. A box point is X = C + sum_i y[i] * U[i], where
+// |y[i]| <= e[i] for all i.
+// 
+// The closest point on the line is stored in closest[0] with parameter t. The
+// closest point on the box is stored in closest[1]. When there are infinitely
+// many choices for the pair of closest points, only one of them is returned.
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Line3<Real>, OrientedBox3<Real>>
-        :
-        public DCPQuery<Real, Line3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class DCPQuery<T, Line3<T>, OrientedBox3<T>>
     {
     public:
-        struct Result
-            :
-            public DCPQuery<Real, Line3<Real>, AlignedBox3<Real>>::Result
-        {
-            // No additional information to compute.
-        };
+        using LBQuery = DCPQuery<T, Line3<T>, CanonicalBox3<T>>;
+        using Result = typename LBQuery::Result;
 
-        Result operator()(Line3<Real> const& line, OrientedBox3<Real> const& box)
+        Result operator()(Line3<T> const& line, OrientedBox3<T> const& box)
         {
-            // Transform the line to the coordinate system of the oriented
-            // box.  In this system, the box is axis-aligned with center at
-            // the origin.
-            Vector3<Real> diff = line.origin - box.center;
-            Vector3<Real> point, direction;
-            for (int i = 0; i < 3; ++i)
+            Result result{};
+
+            // Rotate and translate the line and box so that the box is
+            // aligned and has center at the origin.
+            CanonicalBox3<T> cbox(box.extent);
+            Vector3<T> delta = line.origin - box.center;
+            Vector3<T> xfrmOrigin{}, xfrmDirection{};
+            for (int32_t i = 0; i < 3; ++i)
             {
-                point[i] = Dot(diff, box.axis[i]);
-                direction[i] = Dot(line.direction, box.axis[i]);
+                xfrmOrigin[i] = Dot(box.axis[i], delta);
+                xfrmDirection[i] = Dot(box.axis[i], line.direction);
             }
 
-            Result result;
-            this->DoQuery(point, direction, box.extent, result);
+            // The query computes 'result' relative to the box with center
+            // at the origin.
+            Line3<T> xfrmLine(xfrmOrigin, xfrmDirection);
+            LBQuery lbQuery{};
+            result = lbQuery(xfrmLine, cbox);
 
             // Compute the closest point on the line.
-            result.closestPoint[0] = line.origin + result.lineParameter * line.direction;
+            result.closest[0] = line.origin + result.parameter * line.direction;
 
-            // Compute the closest point on the box.
-            result.closestPoint[1] = box.center;
-            for (int i = 0; i < 3; ++i)
+            // Rotate and translate the closest points to the original
+            // coordinates.
+            std::array<Vector3<T>, 2> closest{ box.center, box.center };
+            for (size_t i = 0; i < 2; ++i)
             {
-                result.closestPoint[1] += point[i] * box.axis[i];
+                for (int32_t j = 0; j < 3; ++j)
+                {
+                    closest[i] += result.closest[i][j] * box.axis[j];
+                }
             }
+            result.closest = closest;
+
             return result;
         }
     };

@@ -3,59 +3,73 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
-#include <Mathematics/DistPointAlignedBox.h>
+#include <Mathematics/DistPointCanonicalBox.h>
 #include <Mathematics/OrientedBox.h>
+
+// Compute the distance from a point to a solid oriented box in nD.
+// 
+// The oriented box has center C, unit-length axis directions U[i] and extents
+// e[i] for all i. A box point is X = C + sum_i y[i] * U[i], where
+// |y[i]| <= e[i] for all i.
+// 
+// The input point is stored in closest[0]. The closest point on the box
+// point is stored in closest[1].
 
 namespace gte
 {
-    template <int N, typename Real>
-    class DCPQuery<Real, Vector<N, Real>, OrientedBox<N, Real>>
-        :
-        public DCPQuery<Real, Vector<N, Real>, AlignedBox<N, Real>>
+    template <int N, typename T>
+    class DCPQuery<T, Vector<N, T>, OrientedBox<N, T>>
     {
     public:
-        struct Result
-            :
-            public DCPQuery<Real, Vector<N, Real>, AlignedBox<N, Real>>::Result
-        {
-            // No additional information to compute.
-        };
+        using PCQuery = DCPQuery<T, Vector<N, T>, CanonicalBox<N, T>>;
+        using Result = typename PCQuery::Result;
 
-        Result operator()(Vector<N, Real> const& point, OrientedBox<N, Real> const& box)
+        Result operator()(Vector<N, T> const& point, OrientedBox<N, T> const& box)
         {
-            // Translate the point to the coordinate system of the box.  In
-            // this system, the box is axis-aligned with center at the origin.
-            Vector<N, Real> diff = point - box.center;
-            Vector<N, Real> closest;
-            for (int i = 0; i < N; ++i)
+            Result result{};
+
+            // Rotate and translate the point and box so that the box is
+            // aligned and has center at the origin.
+            CanonicalBox<N, T> cbox(box.extent);
+            Vector<N, T> delta = point - box.center;
+            Vector<N, T> xfrmPoint{};
+            for (int32_t i = 0; i < N; ++i)
             {
-                closest[i] = Dot(diff, box.axis[i]);
+                xfrmPoint[i] = Dot(box.axis[i], delta);
             }
 
-            Result result;
-            this->DoQuery(closest, box.extent, result);
+            // The query computes 'result' relative to the box with center
+            // at the origin.
+            PCQuery pcQuery{};
+            result = pcQuery(xfrmPoint, cbox);
 
-            // Compute the closest point on the box.
-            result.boxClosest = box.center;
-            for (int i = 0; i < N; ++i)
+            // Store the input point.
+            result.closest[0] = point;
+
+            // Rotate and translate the closest box point to the original
+            // coordinates.
+            Vector<N, T> closest1 = box.center;
+            for (int32_t i = 0; i < N; ++i)
             {
-                result.boxClosest += closest[i] * box.axis[i];
+                closest1 += result.closest[1][i] * box.axis[i];
             }
+            result.closest[1] = closest1;
+
             return result;
         }
     };
 
     // Template aliases for convenience.
-    template <int N, typename Real>
-    using DCPPointOrientedBox = DCPQuery<Real, Vector<N, Real>, AlignedBox<N, Real>>;
+    template <int N, typename T>
+    using DCPPointOrientedBox = DCPQuery<T, Vector<N, T>, OrientedBox<N, T>>;
 
-    template <typename Real>
-    using DCPPoint2OrientedBox2 = DCPPointOrientedBox<2, Real>;
+    template <typename T>
+    using DCPPoint2OrientedBox2 = DCPPointOrientedBox<2, T>;
 
-    template <typename Real>
-    using DCPPoint3OrientedBox3 = DCPPointOrientedBox<3, Real>;
+    template <typename T>
+    using DCPPoint3OrientedBox3 = DCPPointOrientedBox<3, T>;
 }

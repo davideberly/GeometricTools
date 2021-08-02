@@ -3,70 +3,72 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Mathematics/DistLine3AlignedBox3.h>
+#include <Mathematics/DistPointAlignedBox.h>
 #include <Mathematics/Segment.h>
+
+// Compute the distance between a segmet and a solid aligned box in 3D.
+// 
+// The segment is P0 + t * (P1 - P0) for 0 <= t <= 1. The direction D = P1-P0
+// is generally not unit length.
+// 
+// The aligned box has minimum corner A and maximum corner B. A box point is X
+// where A <= X <= B; the comparisons are componentwise.
+// 
+// The closest point on the segment is stored in closest[0] with parameter t.
+// The closest point on the box is stored in closest[1]. When there are
+// infinitely many choices for the pair of closest points, only one of them is
+// returned.
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Segment3<Real>, AlignedBox3<Real>>
+    template <typename T>
+    class DCPQuery<T, Segment3<T>, AlignedBox3<T>>
     {
     public:
-        struct Result
+        using LBQuery = DCPQuery<T, Line3<T>, AlignedBox3<T>>;
+        using Result = typename LBQuery::Result;
+
+        Result operator()(Segment3<T> const& segment, AlignedBox3<T> const& box)
         {
-            Real distance, sqrDistance;
-            Real segmentParameter;
-            Vector3<Real> closestPoint[2];
-        };
+            Result result{};
 
-        Result operator()(Segment3<Real> const& segment, AlignedBox3<Real> const& box)
-        {
-            Result result;
-
-            Vector3<Real> segCenter, segDirection;
-            Real segExtent;
-            segment.GetCenteredForm(segCenter, segDirection, segExtent);
-
-            Line3<Real> line(segCenter, segDirection);
-            DCPQuery<Real, Line3<Real>, AlignedBox3<Real>> lbQuery;
-            auto lbResult = lbQuery(line, box);
-
-            if (lbResult.lineParameter >= -segExtent)
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            Vector3<T> segDirection = segment.p[1] - segment.p[0];
+            Line3<T> line(segment.p[0], segDirection);
+            LBQuery lbQuery{};
+            auto lbOutput = lbQuery(line, box);
+            if (lbOutput.parameter >= zero)
             {
-                if (lbResult.lineParameter <= segExtent)
+                if (lbOutput.parameter <= one)
                 {
-                    result.sqrDistance = lbResult.sqrDistance;
-                    result.distance = lbResult.distance;
-                    result.segmentParameter = lbResult.lineParameter;
-                    result.closestPoint[0] = lbResult.closestPoint[0];
-                    result.closestPoint[1] = lbResult.closestPoint[1];
+                    result = lbOutput;
                 }
                 else
                 {
-                    DCPQuery<Real, Vector3<Real>, AlignedBox3<Real>> pbQuery;
-                    Vector3<Real> point = segCenter + segExtent * segDirection;
-                    auto pbResult = pbQuery(point, box);
-                    result.sqrDistance = pbResult.sqrDistance;
-                    result.distance = pbResult.distance;
-                    result.segmentParameter = segExtent;
-                    result.closestPoint[0] = point;
-                    result.closestPoint[1] = pbResult.boxClosest;
+                    DCPQuery<T, Vector3<T>, AlignedBox3<T>> pbQuery{};
+                    auto pbOutput = pbQuery(segment.p[1], box);
+                    result.sqrDistance = pbOutput.sqrDistance;
+                    result.distance = pbOutput.distance;
+                    result.parameter = one;
+                    result.closest[0] = segment.p[1];
+                    result.closest[1] = pbOutput.closest[1];
                 }
             }
             else
             {
-                DCPQuery<Real, Vector3<Real>, AlignedBox3<Real>> pbQuery;
-                Vector3<Real> point = segCenter - segExtent * segDirection;
-                auto pbResult = pbQuery(point, box);
-                result.sqrDistance = pbResult.sqrDistance;
-                result.distance = pbResult.distance;
-                result.segmentParameter = -segExtent;
-                result.closestPoint[0] = point;
-                result.closestPoint[1] = pbResult.boxClosest;
+                DCPQuery<T, Vector3<T>, AlignedBox3<T>> pbQuery{};
+                auto pbOutput = pbQuery(segment.p[0], box);
+                result.sqrDistance = pbOutput.sqrDistance;
+                result.distance = pbOutput.distance;
+                result.parameter = zero;
+                result.closest[0] = segment.p[0];
+                result.closest[1] = pbOutput.closest[1];
             }
             return result;
         }

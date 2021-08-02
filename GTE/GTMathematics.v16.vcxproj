@@ -72,6 +72,7 @@
     <ClInclude Include="Mathematics\BSPPolygon2.h" />
     <ClInclude Include="Mathematics\BSPrecision.h" />
     <ClInclude Include="Mathematics\BSRational.h" />
+    <ClInclude Include="Mathematics\CanonicalBox.h" />
     <ClInclude Include="Mathematics\CholeskyDecomposition.h" />
     <ClInclude Include="Mathematics\CLODPolyline.h" />
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />
@@ -111,7 +112,24 @@
     <ClInclude Include="Mathematics\DisjointIntervals.h" />
     <ClInclude Include="Mathematics\DisjointRectangles.h" />
     <ClInclude Include="Mathematics\DistAlignedBox3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistLine2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistLine2OrientedBox2.h" />
+    <ClInclude Include="Mathematics\DistLine3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistOrientedBox3Cone3.h" />
+    <ClInclude Include="Mathematics\DistPlane3AlignedBox3.h" />
+    <ClInclude Include="Mathematics\DistPlane3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistPointCanonicalBox.h" />
+    <ClInclude Include="Mathematics\DistPointHyperplane.h" />
+    <ClInclude Include="Mathematics\DistPointRectangle.h" />
+    <ClInclude Include="Mathematics\DistRay2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistRay2OrientedBox2.h" />
+    <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h" />
+    <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\EllipsoidGeodesic.h" />
     <ClInclude Include="Mathematics\EulerAngles.h" />
     <ClInclude Include="Mathematics\ExtremalQuery3.h" />
@@ -157,8 +175,6 @@
     <ClInclude Include="Mathematics\DistPoint3ConvexPolyhedron3.h" />
     <ClInclude Include="Mathematics\DistPoint3Cylinder3.h" />
     <ClInclude Include="Mathematics\DistPoint3Frustum3.h" />
-    <ClInclude Include="Mathematics\DistPoint3Plane3.h" />
-    <ClInclude Include="Mathematics\DistPoint3Rectangle3.h" />
     <ClInclude Include="Mathematics\DistPoint3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\DistPointAlignedBox.h" />
     <ClInclude Include="Mathematics\DistPointHyperellipsoid.h" />
@@ -167,7 +183,6 @@
     <ClInclude Include="Mathematics\DistPointRay.h" />
     <ClInclude Include="Mathematics\DistPointSegment.h" />
     <ClInclude Include="Mathematics\DistPointTriangle.h" />
-    <ClInclude Include="Mathematics\DistPointTriangleExact.h" />
     <ClInclude Include="Mathematics\DistRay3AlignedBox3.h" />
     <ClInclude Include="Mathematics\DistRay3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistRay3Rectangle3.h" />
@@ -182,7 +197,6 @@
     <ClInclude Include="Mathematics\DistSegment3Rectangle3.h" />
     <ClInclude Include="Mathematics\DistSegment3Triangle3.h" />
     <ClInclude Include="Mathematics\DistSegmentSegment.h" />
-    <ClInclude Include="Mathematics\DistSegmentSegmentExact.h" />
     <ClInclude Include="Mathematics\DistTriangle3AlignedBox3.h" />
     <ClInclude Include="Mathematics\DistTriangle3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistTriangle3Rectangle3.h" />

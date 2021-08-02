@@ -3,14 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #pragma once
 
 #include <Applications/Console.h>
 #include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/DistSegmentSegment.h>
-#include <Mathematics/DistSegmentSegmentExact.h>
 #include <fstream>
 using namespace gte;
 
@@ -25,7 +24,7 @@ private:
     enum { PERF_SUNDAY, PERF_ROBUST, PERF_RATIONAL };
     typedef BSRational<UIntegerFP32<128>> Rational;
     typedef DCPQuery<double, Segment<3, double>, Segment<3, double>> RobustQuery;
-    typedef DistanceSegmentSegmentExact<3, Rational> RationalQuery;
+    typedef DCPQuery<Rational, Segment<3, Rational>, Segment<3, Rational>> RationalQuery;
 
     bool SetEnvironment();
 

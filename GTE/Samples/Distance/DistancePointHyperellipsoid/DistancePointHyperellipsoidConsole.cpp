@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.08.01
 
 #include "DistancePointHyperellipsoidConsole.h"
 #include <Mathematics/DistPointHyperellipsoid.h>
@@ -57,7 +57,7 @@ void DistancePointHyperellipsoidConsole::TestDistancePointEllipse()
             point[0] = -xExtreme + 2.0 * xExtreme * x / (numXSamples - 1.0);
 
             auto result = query(point, ellipse);
-            K = result.closest;
+            K = result.closest[1];
 
             // Compute the angle between grad[Q](x,y) and (x,y)-closest(x,y).
             grad[0] = c[1] + 2.0 * c[3] * K[0] + c[4] * K[1];
@@ -130,7 +130,7 @@ void DistancePointHyperellipsoidConsole::TestDistancePointEllipsoid()
                 point[0] = -xExtreme + 2.0 * xExtreme * x / (numXSamples - 1.0);
 
                 auto result = query(point, ellipsoid);
-                K = result.closest;
+                K = result.closest[1];
 
                 // Compute the angle between grad[Q](x,y) and (x,y)-closest(x,y).
                 grad[0] = c[1] + 2.0 * c[4] * K[0] + c[5] * K[1] + c[6] * K[2];
