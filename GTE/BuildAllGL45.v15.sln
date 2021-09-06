@@ -305,6 +305,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceOrientedBoxConeFrus
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceLine2Box2GL45.v15", "Samples\Distance\DistanceLine2Box2\DistanceLine2Box2GL45.v15.vcxproj", "{88DC98CC-6E1F-46EA-B616-2303EE5855A0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectCylindersGL45.v15", "Samples\Intersection\IntersectCylinders\IntersectCylindersGL45.v15.vcxproj", "{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1441,6 +1443,14 @@ Global
 		{88DC98CC-6E1F-46EA-B616-2303EE5855A0}.Release|x64.Build.0 = Release|x64
 		{88DC98CC-6E1F-46EA-B616-2303EE5855A0}.Release|x86.ActiveCfg = Release|Win32
 		{88DC98CC-6E1F-46EA-B616-2303EE5855A0}.Release|x86.Build.0 = Release|Win32
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Debug|x64.ActiveCfg = Debug|x64
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Debug|x64.Build.0 = Debug|x64
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Debug|x86.Build.0 = Debug|Win32
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Release|x64.ActiveCfg = Release|x64
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Release|x64.Build.0 = Release|x64
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Release|x86.ActiveCfg = Release|Win32
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1595,6 +1605,7 @@ Global
 		{33EA8E3A-A128-49EF-973A-E916BA11F8E3} = {1BDDDE16-AE33-4493-B347-E6C6BDACE26D}
 		{A3B24ACB-D1E2-4927-A8B4-96E1C3F3DAED} = {9E5178A6-17C9-421A-B4E3-4D696FDCB71A}
 		{88DC98CC-6E1F-46EA-B616-2303EE5855A0} = {9E5178A6-17C9-421A-B4E3-4D696FDCB71A}
+		{4F0F2A04-EAD8-4CF2-8CE5-144628CCC967} = {1BDDDE16-AE33-4493-B347-E6C6BDACE26D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {31534C7B-E13E-49F8-934A-F87578923462}

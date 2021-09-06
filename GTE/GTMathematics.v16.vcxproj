@@ -259,6 +259,7 @@
     <ClInclude Include="Mathematics\IntrCircle2Circle2.h" />
     <ClInclude Include="Mathematics\IntrConvexMesh3Plane3.h" />
     <ClInclude Include="Mathematics\IntrConvexPolygonHyperplane.h" />
+    <ClInclude Include="Mathematics\IntrCylinder3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrDisk2Sector2.h" />
     <ClInclude Include="Mathematics\IntrEllipse2Ellipse2.h" />
     <ClInclude Include="Mathematics\IntrEllipsoid3Ellipsoid3.h" />

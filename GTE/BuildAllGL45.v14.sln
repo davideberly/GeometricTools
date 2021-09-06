@@ -305,6 +305,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceOrientedBoxConeFrus
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceLine2Box2GL45.v14", "Samples\Distance\DistanceLine2Box2\DistanceLine2Box2GL45.v14.vcxproj", "{1164C797-F047-4AF1-9A43-EEAA54648F15}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectCylindersGL45.v14", "Samples\Intersection\IntersectCylinders\IntersectCylindersGL45.v14.vcxproj", "{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1441,6 +1443,14 @@ Global
 		{1164C797-F047-4AF1-9A43-EEAA54648F15}.Release|x64.Build.0 = Release|x64
 		{1164C797-F047-4AF1-9A43-EEAA54648F15}.Release|x86.ActiveCfg = Release|Win32
 		{1164C797-F047-4AF1-9A43-EEAA54648F15}.Release|x86.Build.0 = Release|Win32
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Debug|x64.ActiveCfg = Debug|x64
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Debug|x64.Build.0 = Debug|x64
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Debug|x86.ActiveCfg = Debug|Win32
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Debug|x86.Build.0 = Debug|Win32
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Release|x64.ActiveCfg = Release|x64
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Release|x64.Build.0 = Release|x64
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Release|x86.ActiveCfg = Release|Win32
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1595,5 +1605,6 @@ Global
 		{302DB770-BD52-4CC2-9E94-A5165483A320} = {2BC423E5-F299-438B-99A7-83F07D56B93C}
 		{D8FEC1DA-F6CD-4E3A-9DB0-D32067B44515} = {C15DDAA8-568B-46C5-AD24-93C081053CDB}
 		{1164C797-F047-4AF1-9A43-EEAA54648F15} = {C15DDAA8-568B-46C5-AD24-93C081053CDB}
+		{CB1A3A8C-6DD5-48D8-BBAB-4DA117E653AC} = {2BC423E5-F299-438B-99A7-83F07D56B93C}
 	EndGlobalSection
 EndGlobal

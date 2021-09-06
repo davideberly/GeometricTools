@@ -305,6 +305,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceOrientedBoxConeFrus
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistanceLine2Box2GL45.v16", "Samples\Distance\DistanceLine2Box2\DistanceLine2Box2GL45.v16.vcxproj", "{C064CCE1-1FA2-4FEC-93C2-02104EF3EBB9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectCylindersGL45.v16", "Samples\Intersection\IntersectCylinders\IntersectCylindersGL45.v16.vcxproj", "{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1441,6 +1443,14 @@ Global
 		{C064CCE1-1FA2-4FEC-93C2-02104EF3EBB9}.Release|x64.Build.0 = Release|x64
 		{C064CCE1-1FA2-4FEC-93C2-02104EF3EBB9}.Release|x86.ActiveCfg = Release|Win32
 		{C064CCE1-1FA2-4FEC-93C2-02104EF3EBB9}.Release|x86.Build.0 = Release|Win32
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Debug|x64.ActiveCfg = Debug|x64
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Debug|x64.Build.0 = Debug|x64
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Debug|x86.ActiveCfg = Debug|Win32
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Debug|x86.Build.0 = Debug|Win32
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Release|x64.ActiveCfg = Release|x64
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Release|x64.Build.0 = Release|x64
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Release|x86.ActiveCfg = Release|Win32
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1595,6 +1605,7 @@ Global
 		{5A6E9387-6429-4612-B3AA-272F4D718946} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
 		{D6CA06E4-8F63-448E-BAD0-C54F82F590E2} = {992839F6-D7F1-4517-942A-781EA13DCF08}
 		{C064CCE1-1FA2-4FEC-93C2-02104EF3EBB9} = {992839F6-D7F1-4517-942A-781EA13DCF08}
+		{2432F949-0D1B-4CE8-AB9F-C8D5EACBAB63} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9749CC5-26A0-494D-8B40-181E82654FD5}

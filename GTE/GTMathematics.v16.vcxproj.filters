@@ -1497,5 +1497,8 @@
     <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h">
       <Filter>Distance\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrCylinder3Cylinder3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
