@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.09.07
 
 #pragma once
 
@@ -308,18 +308,17 @@ namespace gte
                 }
             }
 
-            Real minError = std::numeric_limits<Real>::max();
-            std::array<Real, 3> minItem = { (Real)0, (Real)0, minError };
-            for (auto const& item : info)
+            if (info.size() > 0)
             {
-                if (item[2] < minError)
+                std::array<Real, 3> minItem = info.front();
+                for (auto const& item : info)
                 {
-                    minItem = item;
+                    if (item[2] < minItem[2])
+                    {
+                        minItem = item;
+                    }
                 }
-            }
 
-            if (minItem[2] < std::numeric_limits<Real>::max())
-            {
                 // minItem = { minS, minT, minError }
                 coneVertex = center - minItem[1] * coneAxis;
                 coneCosAngle = std::sqrt(minItem[0]);
@@ -327,7 +326,7 @@ namespace gte
             else
             {
                 coneVertex = center;
-                coneCosAngle = (Real)GTE_C_INV_SQRT_2;
+                coneCosAngle = static_cast<Real>(GTE_C_INV_SQRT_2);
             }
         }
 
