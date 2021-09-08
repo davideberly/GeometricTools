@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.09.07
 
 #pragma once
 
@@ -243,11 +243,11 @@ namespace gte
                 Real x = transformed[i][0];
                 Real y = transformed[i][1];
                 Real w = transformed[i][2];
-                for (int j = 1; j <= 2 * twoMaxXDegree; ++j)
+                for (int j = 1; j <= twoMaxXDegree; ++j)
                 {
                     mXPowers[j] = mXPowers[j - 1] * x;
                 }
-                for (int j = 1; j <= 2 * twoMaxYDegree; ++j)
+                for (int j = 1; j <= twoMaxYDegree; ++j)
                 {
                     mYPowers[j] = mYPowers[j - 1] * y;
                 }
