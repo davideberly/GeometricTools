@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.09.23
 
 #pragma once
 
@@ -20,7 +20,7 @@ namespace gte
     {
     public:
         // Construction.  The preconditions for calling the constructor are
-        //   1 <= degree && degree < numControls <= numSamples
+        // 1 <= degree && degree < numControls <= numSamples - degree - 1.
         // The samples points are contiguous blocks of 'dimension' real values
         // stored in sampleData.
         BSplineCurveFit(int dimension, int numSamples, Real const* sampleData,
