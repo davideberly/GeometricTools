@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.18
+// Version: 4.0.2021.09.23
 
 #pragma once
 
@@ -132,7 +132,7 @@ namespace gte
                             int vbase = static_cast<int>(vertices.size());
                             for (int i = 0; i < mesh.topology.numVertices; ++i)
                             {
-                                Vector3<float> position = mesh.vertices[i];
+                                Vector3<Real> position = mesh.vertices[i];
                                 position[0] += static_cast<Real>(x);
                                 position[1] += static_cast<Real>(y);
                                 position[2] += static_cast<Real>(z);

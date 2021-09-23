@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.09.23
 
 #pragma once
 
@@ -328,12 +328,13 @@ namespace gte
             Real f011 = static_cast<Real>(this->mVoxels[i011]);
             Real f111 = static_cast<Real>(this->mVoxels[i111]);
 
+            Real const one = static_cast<Real>(1);
             Real dx = pos[0] - static_cast<Real>(x);
             Real dy = pos[1] - static_cast<Real>(y);
             Real dz = pos[2] - static_cast<Real>(z);
-            Real oneMX = 1.0f - dx;
-            Real oneMY = 1.0f - dy;
-            Real oneMZ = 1.0f - dz;
+            Real oneMX = one - dx;
+            Real oneMY = one - dy;
+            Real oneMZ = one - dz;
 
             std::array<Real, 3> grad;
 
