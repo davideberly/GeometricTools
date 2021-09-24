@@ -36,7 +36,7 @@ namespace gte
             LogAssert(dimension >= 1, "Invalid dimension.");
             LogAssert(1 <= degree && degree < numControls, "Invalid degree.");
             LogAssert(sampleData, "Invalid sample data.");
-            LogAssert(numControls <= numSamples, "Invalid number of controls.");
+            LogAssert(numControls <= numSamples - degree - 1, "Invalid number of controls.");
 
             BasisFunctionInput<Real> input;
             input.numControls = numControls;
