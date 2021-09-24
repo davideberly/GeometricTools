@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 4.0.2021.09.23
 
 #pragma once
 
@@ -17,7 +17,7 @@ namespace gte
     {
     public:
         GradientAnisotropic3(int xBound, int yBound, int zBound, Real xSpacing,
-            Real ySpacing, Real zSpacing, Real const* data, bool const* mask,
+            Real ySpacing, Real zSpacing, Real const* data, int const* mask,
             Real borderValue, typename PdeFilter<Real>::ScaleType scaleType, Real K)
             :
             PdeFilter3<Real>(xBound, yBound, zBound, xSpacing, ySpacing, zSpacing,

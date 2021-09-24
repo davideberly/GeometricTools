@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.09.23
 
 #pragma once
 
@@ -19,7 +19,7 @@ namespace gte
     {
     public:
         // Abstract base class.
-        PdeFilter1(int xBound, Real xSpacing, Real const* data, bool const* mask,
+        PdeFilter1(int xBound, Real xSpacing, Real const* data, int const* mask,
             Real borderValue, typename PdeFilter<Real>::ScaleType scaleType)
             :
             PdeFilter<Real>(xBound, data, borderValue, scaleType),
