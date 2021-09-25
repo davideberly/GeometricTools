@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 4.0.2021.09.25
 
 #pragma once
 
@@ -199,7 +199,7 @@ namespace gte
         {
             auto const& F = mBuffer[mSrc];
             int xp1 = x + 1, yp1 = y + 1, yp2 = y + 2, zp1 = z + 1;
-            return mInvDyDy * (F[zp1][yp2][xp1] - (Real)2 * F[zp1][yp1][zp1] + F[zp1][y][xp1]);
+            return mInvDyDy * (F[zp1][yp2][xp1] - (Real)2 * F[zp1][yp1][xp1] + F[zp1][y][xp1]);
         }
 
         Real GetUyz(int x, int y, int z) const
