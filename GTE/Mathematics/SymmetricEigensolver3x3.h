@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.24
+// Version: 4.0.2021.09.25
 
 #pragma once
 
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <limits>
 
 // The document
 // https://www.geometrictools.com/Documentation/RobustEigenSymmetric3x3.pdf
