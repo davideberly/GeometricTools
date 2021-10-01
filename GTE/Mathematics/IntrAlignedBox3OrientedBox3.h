@@ -50,7 +50,7 @@ namespace gte
         struct Result
         {
             // The 'epsilon' value must be nonnegative.
-            Result(Real inEpsilon = (Real)0)
+           explicit Result(Real inEpsilon = (Real)0)
                 :
                 epsilon(inEpsilon >= (Real)0 ? inEpsilon : (Real)0)
             {

@@ -27,7 +27,7 @@ namespace gte
     public:
         struct Result
         {
-            Result(bool inIntersect = false)
+            explicit Result(bool inIntersect = false)
                 :
                 intersect(inIntersect)
             {
