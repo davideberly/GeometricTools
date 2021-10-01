@@ -48,7 +48,7 @@ namespace gte
         struct Result
         {
             // The 'epsilon' value must be nonnegative.
-            Result(Real inEpsilon = (Real)0)
+            explicit Result(Real inEpsilon = (Real)0)
                 :
                 epsilon(inEpsilon >= (Real)0 ? inEpsilon : (Real)0)
             {
@@ -198,7 +198,8 @@ namespace gte
             // effectively in 2D.  The edge-edge axes do not need to be tested.
             if (existsParallelPair)
             {
-                return true;
+                result.intersect = true;
+                return result;
             }
 
             // Test for separation on the axis C0 + t*A0[0]xA1[0].
