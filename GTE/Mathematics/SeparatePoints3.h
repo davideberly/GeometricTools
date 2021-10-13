@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 4.0.2021.10.12
 
 #pragma once
 
@@ -48,7 +48,7 @@ namespace gte
             auto const& hull0 = ch0.GetHull();
             auto const& hull1 = ch1.GetHull();
             size_t numTriangles0 = hull0.size() / 3;
-            size_t numTriangles1 = hull1.size();
+            size_t numTriangles1 = hull1.size() / 3;
 
             // Test faces of hull 0 for possible separation of points.
             size_t i, i0, i1, i2;
