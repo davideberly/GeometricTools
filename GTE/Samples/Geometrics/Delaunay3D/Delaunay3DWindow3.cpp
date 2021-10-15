@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.10.15
 
 #include "Delaunay3DWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -183,7 +183,16 @@ bool Delaunay3DWindow3::CreateScene()
 
     mScene = std::make_shared<Node>();
     CreateSphere();
+
+    mIBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 4, sizeof(uint32_t));
+    auto* indices = mIBuffer->Get<uint32_t>();
+    indices[0] = 0;  indices[1] = 1;  indices[2] = 2;
+    indices[3] = 0;  indices[4] = 3;  indices[5] = 1;
+    indices[6] = 0;  indices[7] = 2;  indices[8] = 3;
+    indices[9] = 3;  indices[10] = 2;  indices[11] = 1;
+
     mVCEffect = std::make_shared<VertexColorEffect>(mProgramFactory);
+
     for (int j = 0; j < mDelaunay.GetNumTetrahedra(); ++j)
     {
         CreateTetra(j);
@@ -224,8 +233,7 @@ void Delaunay3DWindow3::CreateTetra(int index)
     vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
     vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
 
-    std::shared_ptr<VertexBuffer> vbuffer = std::make_shared<VertexBuffer>(vformat,
-        static_cast<unsigned int>(mVertices.size()));
+    std::shared_ptr<VertexBuffer> vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
     Vertex* vertex = vbuffer->Get<Vertex>();
     for (int j = 0; j < 4; ++j)
@@ -234,15 +242,7 @@ void Delaunay3DWindow3::CreateTetra(int index)
         vertex[j].color = mLightGray;
     }
 
-    std::shared_ptr<IndexBuffer> ibuffer =
-        std::make_shared<IndexBuffer>(IP_TRIMESH, 4, sizeof(unsigned int));
-    unsigned int* indices = ibuffer->Get<unsigned int>();
-    indices[0] = 0;  indices[1] = 1;  indices[2] = 2;
-    indices[3] = 0;  indices[4] = 3;  indices[5] = 1;
-    indices[6] = 0;  indices[7] = 2;  indices[8] = 3;
-    indices[9] = 3;  indices[10] = 2;  indices[11] = 1;
-
-    mWireTetra[index] = std::make_shared<Visual>(vbuffer, ibuffer, mVCEffect);
+    mWireTetra[index] = std::make_shared<Visual>(vbuffer, mIBuffer, mVCEffect);
     mScene->AttachChild(mWireTetra[index]);
 }
 

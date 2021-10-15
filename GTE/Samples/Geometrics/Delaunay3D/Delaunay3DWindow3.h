@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.15
 
 #pragma once
 
@@ -37,6 +37,7 @@ private:
     std::shared_ptr<RasterizerState> mNoCullWireState;
     std::shared_ptr<BlendState> mBlendState;
     std::shared_ptr<VertexColorEffect> mVCEffect;
+    std::shared_ptr<IndexBuffer> mIBuffer;
 
     struct Vertex
     {
