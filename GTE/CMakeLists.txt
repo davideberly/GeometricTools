@@ -5,6 +5,7 @@ endif()
 
 set(GTE_VERSION_MAJOR 5)
 set(GTE_VERSION_MINOR 12)
+set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 project(GTE VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -13,3 +14,8 @@ add_subdirectory(Applications)
 add_subdirectory(Graphics)
 add_subdirectory(Mathematics)
 add_subdirectory(MathematicsGPU)
+
+option(BUILD_SAMPLES "Build Samples" OFF)
+if(BUILD_SAMPLES)
+  add_subdirectory(Samples)
+endif()
