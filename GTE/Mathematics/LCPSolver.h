@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.10.04
+// Version: 4.0.2021.10.15
 
 #pragma once
 
@@ -35,11 +35,11 @@ namespace gte
 {
     // Support templates for number of dimensions known at compile time or
     // known only at run time.
-    template <typename Real, int... Dimensions>
+    template <typename T, int... Dimensions>
     class LCPSolver {};
 
 
-    template <typename Real>
+    template <typename T>
     class LCPSolverShared
     {
     protected:
@@ -58,8 +58,8 @@ namespace gte
             mMinRatio(nullptr),
             mRatio(nullptr),
             mPoly(nullptr),
-            mZero((Real)0),
-            mOne((Real)1)
+            mZero((T)0),
+            mOne((T)1)
         {
             if (n > 0)
             {
@@ -77,7 +77,7 @@ namespace gte
         // zero and of one to be used when manipulating the polynomials of the
         // base class. In particular, this is needed to select the correct
         // zero and correct one for QFNumber objects.
-        LCPSolverShared(int n, Real const& zero, Real const& one)
+        LCPSolverShared(int n, T const& zero, T const& one)
             :
             mNumIterations(0),
             mVarBasic(nullptr),
@@ -127,7 +127,7 @@ namespace gte
             return mNumIterations;
         }
 
-        enum Result
+        enum class Result
         {
             HAS_TRIVIAL_SOLUTION,
             HAS_NONTRIVIAL_SOLUTION,
@@ -147,10 +147,19 @@ namespace gte
         // variables are permuted during the pivoting algorithm).
         struct Variable
         {
+            Variable()
+                :
+                name(0),
+                index(0),
+                complementary(0),
+                tuple(nullptr)
+            {
+            }
+
             char name;
             int index;
             int complementary;
-            Real* tuple;
+            T* tuple;
         };
 
         // The augmented problem is w = q + M*z + z[n]*U = 0, where U is an
@@ -166,7 +175,7 @@ namespace gte
         // The derived classes ensure that the pointers point to the correct
         // of elements for each array.  The matrix M must be stored in
         // row-major order.
-        bool Solve(Real const* q, Real const* M, Real* w, Real* z, Result* result)
+        bool Solve(T const* q, T const* M, T* w, T* z, Result* result)
         {
             // Perturb the q[r] constants to be polynomials of degree r+1
             // represented as an array of n+1 coefficients.  The coefficient
@@ -202,7 +211,7 @@ namespace gte
 
                 if (result)
                 {
-                    *result = HAS_TRIVIAL_SOLUTION;
+                    *result = Result::HAS_TRIVIAL_SOLUTION;
                 }
                 return true;
             }
@@ -286,7 +295,7 @@ namespace gte
                     }
                     if (result)
                     {
-                        *result = HAS_NONTRIVIAL_SOLUTION;
+                        *result = Result::HAS_NONTRIVIAL_SOLUTION;
                     }
                     return true;
                 }
@@ -300,7 +309,7 @@ namespace gte
                 {
                     if (Augmented(r, driving) < mZero)
                     {
-                        Real factor = -mOne / Augmented(r, driving);
+                        T factor = -mOne / Augmented(r, driving);
                         Multiply(mPoly[r], factor, mRatio);
                         if (basic == -1 || LessThan(mRatio, mMinRatio))
                         {
@@ -323,19 +332,19 @@ namespace gte
 
                     if (result)
                     {
-                        *result = NO_SOLUTION;
+                        *result = Result::NO_SOLUTION;
                     }
                     return false;
                 }
 
                 // Solve the basic equation so that z[driving] enters the
                 // dictionary and w[basic] exits the dictionary.
-                Real invDenom = mOne / Augmented(basic, driving);
+                T invDenom = mOne / Augmented(basic, driving);
                 for (int r = 0; r < mDimension; ++r)
                 {
                     if (r != basic && Augmented(r, driving) != mZero)
                     {
-                        Real multiplier = Augmented(r, driving) * invDenom;
+                        T multiplier = Augmented(r, driving) * invDenom;
                         for (int c = 0; c < mNumCols; ++c)
                         {
                             if (c != driving)
@@ -365,7 +374,7 @@ namespace gte
 
             // Numerical round-off errors can cause the Lemke algorithm not to
             // converge.  In particular, the code above has a test
-            //   if (mAugmented[r][driving] < (Real)0) { ... }
+            //   if (mAugmented[r][driving] < (T)0) { ... }
             // to determine the 'basic' equation with which to pivot.  It is
             // possible that theoretically mAugmented[r][driving]is zero but
             // rounding errors cause it to be slightly negative.  If
@@ -382,7 +391,7 @@ namespace gte
             //
             // To determine whether the rounding errors are the problem, you
             // can execute the query using exact arithmetic with the following
-            // type used for 'Real' (replacing 'float' or 'double') of
+            // type used for 'T' (replacing 'float' or 'double') of
             // BSRational<UIntegerAP32> Rational.
             //
             // That said, if the algorithm fails to converge and you believe
@@ -394,25 +403,25 @@ namespace gte
 #endif
             if (result)
             {
-                *result = FAILED_TO_CONVERGE;
+                *result = Result::FAILED_TO_CONVERGE;
             }
             return false;
         }
 
         // Access mAugmented as a 2-dimensional array.
-        inline Real const& Augmented(int row, int col) const
+        inline T const& Augmented(int row, int col) const
         {
             return mAugmented[col + mNumCols * row];
         }
 
-        inline Real& Augmented(int row, int col)
+        inline T& Augmented(int row, int col)
         {
             return mAugmented[col + mNumCols * row];
         }
 
         // Support for polynomials with n+1 coefficients and degree no larger
         // than n.
-        void MakeZero(Real* poly)
+        void MakeZero(T* poly)
         {
             for (int i = 0; i <= mDimension; ++i)
             {
@@ -420,7 +429,7 @@ namespace gte
             }
         }
 
-        void Copy(Real const* poly0, Real* poly1)
+        void Copy(T const* poly0, T* poly1)
         {
             for (int i = 0; i <= mDimension; ++i)
             {
@@ -428,7 +437,7 @@ namespace gte
             }
         }
 
-        bool LessThan(Real const* poly0, Real const* poly1)
+        bool LessThan(T const* poly0, T const* poly1)
         {
             for (int i = 0; i <= mDimension; ++i)
             {
@@ -446,7 +455,7 @@ namespace gte
             return false;
         }
 
-        bool LessThanZero(Real const* poly)
+        bool LessThanZero(T const* poly)
         {
             for (int i = 0; i <= mDimension; ++i)
             {
@@ -464,7 +473,7 @@ namespace gte
             return false;
         }
 
-        void Multiply(Real const* poly, Real scalar, Real* product)
+        void Multiply(T const* poly, T scalar, T* product)
         {
             for (int i = 0; i <= mDimension; ++i)
             {
@@ -485,24 +494,24 @@ namespace gte
         Variable* mVarBasic;
         Variable* mVarNonbasic;
         int mNumCols;
-        Real* mAugmented;
-        Real* mQMin;
-        Real* mMinRatio;
-        Real* mRatio;
-        Real** mPoly;
-        Real mZero, mOne;
+        T* mAugmented;
+        T* mQMin;
+        T* mMinRatio;
+        T* mRatio;
+        T** mPoly;
+        T mZero, mOne;
     };
 
 
-    template <typename Real, int n>
-    class LCPSolver<Real, n> : public LCPSolverShared<Real>
+    template <typename T, int n>
+    class LCPSolver<T, n> : public LCPSolverShared<T>
     {
     public:
         // Construction.  The member mMaxIterations is set by this call to the
         // default value n*n.
         LCPSolver()
             :
-            LCPSolverShared<Real>(n)
+            LCPSolverShared<T>(n)
         {
             this->mVarBasic = mArrayVarBasic.data();
             this->mVarNonbasic = mArrayVarNonbasic.data();
@@ -518,9 +527,9 @@ namespace gte
         // zero and of one to be used when manipulating the polynomials of the
         // base class. In particular, this is needed to select the correct
         // zero and correct one for QFNumber objects.
-        LCPSolver(Real const& zero, Real const& one)
+        LCPSolver(T const& zero, T const& one)
             :
-            LCPSolverShared<Real>(n, zero, one)
+            LCPSolverShared<T>(n, zero, one)
         {
             this->mVarBasic = mArrayVarBasic.data();
             this->mVarNonbasic = mArrayVarNonbasic.data();
@@ -535,33 +544,33 @@ namespace gte
         // If you want to know specifically why 'true' or 'false' was
         // returned, pass the address of a Result variable as the last
         // parameter.
-        bool Solve(std::array<Real, n> const& q, std::array<std::array<Real, n>, n> const& M,
-            std::array<Real, n>& w, std::array<Real, n>& z,
-            typename LCPSolverShared<Real>::Result* result = nullptr)
+        bool Solve(std::array<T, n> const& q, std::array<std::array<T, n>, n> const& M,
+            std::array<T, n>& w, std::array<T, n>& z,
+            typename LCPSolverShared<T>::Result* result = nullptr)
         {
-            return LCPSolverShared<Real>::Solve(q.data(), M.front().data(), w.data(), z.data(), result);
+            return LCPSolverShared<T>::Solve(q.data(), M.front().data(), w.data(), z.data(), result);
         }
 
     private:
-        std::array<typename LCPSolverShared<Real>::Variable, n + 1> mArrayVarBasic;
-        std::array<typename LCPSolverShared<Real>::Variable, n + 1> mArrayVarNonbasic;
-        std::array<Real, 2 * (n + 1)* n> mArrayAugmented;
-        std::array<Real, n + 1> mArrayQMin;
-        std::array<Real, n + 1> mArrayMinRatio;
-        std::array<Real, n + 1> mArrayRatio;
-        std::array<Real*, n> mArrayPoly;
+        std::array<typename LCPSolverShared<T>::Variable, n + 1> mArrayVarBasic;
+        std::array<typename LCPSolverShared<T>::Variable, n + 1> mArrayVarNonbasic;
+        std::array<T, 2 * (n + 1)* n> mArrayAugmented;
+        std::array<T, n + 1> mArrayQMin;
+        std::array<T, n + 1> mArrayMinRatio;
+        std::array<T, n + 1> mArrayRatio;
+        std::array<T*, n> mArrayPoly;
     };
 
 
-    template <typename Real>
-    class LCPSolver<Real> : public LCPSolverShared<Real>
+    template <typename T>
+    class LCPSolver<T> : public LCPSolverShared<T>
     {
     public:
         // Construction.  The member mMaxIterations is set by this call to the
         // default value n*n.
         LCPSolver(int n)
             :
-            LCPSolverShared<Real>(n)
+            LCPSolverShared<T>(n)
         {
             if (n > 0)
             {
@@ -589,16 +598,16 @@ namespace gte
         // elements.  If you want to know specifically why 'true' or 'false'
         // was returned, pass the address of a Result variable as the last
         // parameter.
-        bool Solve(std::vector<Real> const& q, std::vector<Real> const& M,
-            std::vector<Real>& w, std::vector<Real>& z,
-            typename LCPSolverShared<Real>::Result* result = nullptr)
+        bool Solve(std::vector<T> const& q, std::vector<T> const& M,
+            std::vector<T>& w, std::vector<T>& z,
+            typename LCPSolverShared<T>::Result* result = nullptr)
         {
             if (this->mDimension > static_cast<int>(q.size())
                 || this->mDimension * this->mDimension > static_cast<int>(M.size()))
             {
                 if (result)
                 {
-                    *result = this->INVALID_INPUT;
+                    *result = this->Result::INVALID_INPUT;
                 }
                 return false;
             }
@@ -613,16 +622,16 @@ namespace gte
                 z.resize(this->mDimension);
             }
 
-            return LCPSolverShared<Real>::Solve(q.data(), M.data(), w.data(), z.data(), result);
+            return LCPSolverShared<T>::Solve(q.data(), M.data(), w.data(), z.data(), result);
         }
 
     private:
-        std::vector<typename LCPSolverShared<Real>::Variable> mVectorVarBasic;
-        std::vector<typename LCPSolverShared<Real>::Variable> mVectorVarNonbasic;
-        std::vector<Real> mVectorAugmented;
-        std::vector<Real> mVectorQMin;
-        std::vector<Real> mVectorMinRatio;
-        std::vector<Real> mVectorRatio;
-        std::vector<Real*> mVectorPoly;
+        std::vector<typename LCPSolverShared<T>::Variable> mVectorVarBasic;
+        std::vector<typename LCPSolverShared<T>::Variable> mVectorVarNonbasic;
+        std::vector<T> mVectorAugmented;
+        std::vector<T> mVectorQMin;
+        std::vector<T> mVectorMinRatio;
+        std::vector<T> mVectorRatio;
+        std::vector<T*> mVectorPoly;
     };
 }
