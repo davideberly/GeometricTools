@@ -15,17 +15,17 @@
 
 namespace gte
 {
-    template <typename Real>
+    template <typename T>
     class LevenbergMarquardtMinimizer
     {
     public:
         // Convenient types for the domain vectors, the range vectors, the
         // function F and the Jacobian J.
-        typedef GVector<Real> DVector;  // numPDimensions
-        typedef GVector<Real> RVector;  // numFDImensions
-        typedef GMatrix<Real> JMatrix;  // numFDimensions-by-numPDimensions
-        typedef GMatrix<Real> JTJMatrix;  // numPDimensions-by-numPDimensions
-        typedef GVector<Real> JTFVector;  // numPDimensions
+        typedef GVector<T> DVector;  // numPDimensions
+        typedef GVector<T> RVector;  // numFDImensions
+        typedef GMatrix<T> JMatrix;  // numFDimensions-by-numPDimensions
+        typedef GMatrix<T> JTJMatrix;  // numPDimensions-by-numPDimensions
+        typedef GVector<T> JTFVector;  // numPDimensions
         typedef std::function<void(DVector const&, RVector&)> FFunction;
         typedef std::function<void(DVector const&, JMatrix&)> JFunction;
         typedef std::function<void(DVector const&, JTJMatrix&, JTFVector&)> JPlusFunction;
@@ -83,40 +83,53 @@ namespace gte
 
         struct Result
         {
+            Result()
+                :
+                minLocation{},
+                minUpdateLength(static_cast<T>(0)),
+                minErrorDifference(static_cast<T>(0)),
+                minError(static_cast<T>(0)),
+                numIterations(0),
+                numAdjustments(0),
+                converged(false)
+            {
+                minLocation.MakeZero();
+            }
+
             DVector minLocation;
-            Real minError;
-            Real minErrorDifference;
-            Real minUpdateLength;
+            T minError;
+            T minErrorDifference;
+            T minUpdateLength;
             size_t numIterations;
             size_t numAdjustments;
             bool converged;
         };
 
         Result operator()(DVector const& p0, size_t maxIterations,
-            Real updateLengthTolerance, Real errorDifferenceTolerance,
-            Real lambdaFactor, Real lambdaAdjust, size_t maxAdjustments)
+            T updateLengthTolerance, T errorDifferenceTolerance,
+            T lambdaFactor, T lambdaAdjust, size_t maxAdjustments)
         {
-            Result result;
+            Result result{};
             result.minLocation = p0;
-            result.minError = std::numeric_limits<Real>::max();
-            result.minErrorDifference = std::numeric_limits<Real>::max();
-            result.minUpdateLength = (Real)0;
+            result.minError = std::numeric_limits<T>::max();
+            result.minErrorDifference = std::numeric_limits<T>::max();
+            result.minUpdateLength = (T)0;
             result.numIterations = 0;
             result.numAdjustments = 0;
             result.converged = false;
 
             // As a simple precaution, ensure that the lambda inputs are
             // valid.  If invalid, fall back to Gauss-Newton iteration.
-            if (lambdaFactor <= (Real)0 || lambdaAdjust <= (Real)0)
+            if (lambdaFactor <= (T)0 || lambdaAdjust <= (T)0)
             {
                 maxAdjustments = 1;
-                lambdaFactor = (Real)0;
-                lambdaAdjust = (Real)1;
+                lambdaFactor = (T)0;
+                lambdaAdjust = (T)1;
             }
 
             // As a simple precaution, ensure the tolerances are nonnegative.
-            updateLengthTolerance = std::max(updateLengthTolerance, (Real)0);
-            errorDifferenceTolerance = std::max(errorDifferenceTolerance, (Real)0);
+            updateLengthTolerance = std::max(updateLengthTolerance, (T)0);
+            errorDifferenceTolerance = std::max(errorDifferenceTolerance, (T)0);
 
             // Compute the initial error.
             mFFunction(p0, mF);
@@ -185,7 +198,7 @@ namespace gte
         }
 
     private:
-        void ComputeLinearSystemInputs(DVector const& pCurrent, Real lambda)
+        void ComputeLinearSystemInputs(DVector const& pCurrent, T lambda)
         {
             if (mUseJFunction)
             {
@@ -198,13 +211,13 @@ namespace gte
                 mJPlusFunction(pCurrent, mJTJ, mNegJTF);
             }
 
-            Real diagonalSum(0);
+            T diagonalSum(0);
             for (int i = 0; i < mNumPDimensions; ++i)
             {
                 diagonalSum += mJTJ(i, i);
             }
 
-            Real diagonalAdjust = lambda * diagonalSum / static_cast<Real>(mNumPDimensions);
+            T diagonalAdjust = lambda * diagonalSum / static_cast<T>(mNumPDimensions);
             for (int i = 0; i < mNumPDimensions; ++i)
             {
                 mJTJ(i, i) += diagonalAdjust;
@@ -217,8 +230,8 @@ namespace gte
         // (result.converged is true in this case).  When the 'first' value
         // is true, the 'second' value is true when the error is reduced or
         // false when it is not.
-        std::pair<bool, bool> DoIteration(DVector const& pCurrent, Real lambdaFactor,
-            Real updateLengthTolerance, Real errorDifferenceTolerance, DVector& pNext,
+        std::pair<bool, bool> DoIteration(DVector const& pCurrent, T lambdaFactor,
+            T updateLengthTolerance, T errorDifferenceTolerance, DVector& pNext,
             Result& result)
         {
             ComputeLinearSystemInputs(pCurrent, lambdaFactor);
@@ -235,7 +248,7 @@ namespace gte
 
             pNext = pCurrent + mNegJTF;
             mFFunction(pNext, mF);
-            Real error = Dot(mF, mF);
+            T error = Dot(mF, mF);
             if (error < result.minError)
             {
                 result.minErrorDifference = result.minError - error;
@@ -270,7 +283,7 @@ namespace gte
         JTJMatrix mJTJ;
         JTFVector mNegJTF;
 
-        CholeskyDecomposition<Real> mDecomposer;
+        CholeskyDecomposition<T> mDecomposer;
 
         bool mUseJFunction;
     };
