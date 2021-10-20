@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.10.15
 
 #pragma once
 
@@ -30,28 +30,24 @@ namespace gte
             :
             center(Vector3<Real>::Zero()),
             normal(Vector3<Real>::Unit(2)),
+            axis{ Vector3<Real>::Unit(0), Vector3<Real>::Unit(1) },
             extent{ (Real)1, (Real)1 }
         {
-            axis[0] = Vector3<Real>::Unit(0);
-            axis[1] = Vector3<Real>::Unit(1);
         }
 
         Ellipse3(Vector3<Real> const& inCenter, Vector3<Real> const& inNormal,
-            Vector3<Real> const inAxis[2], Vector2<Real> const& inExtent)
+            std::array<Vector3<Real>, 2> const& inAxis, Vector2<Real> const& inExtent)
             :
             center(inCenter),
             normal(inNormal),
+            axis(inAxis),
             extent(inExtent)
         {
-            for (int i = 0; i < 2; ++i)
-            {
-                axis[i] = inAxis[i];
-            }
         }
 
         // Public member access.
         Vector3<Real> center, normal;
-        Vector3<Real> axis[2];
+        std::array<Vector3<Real>, 2> axis;
         Vector2<Real> extent;
 
     public:
