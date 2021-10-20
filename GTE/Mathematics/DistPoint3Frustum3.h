@@ -3,33 +3,47 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.17
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Frustum3.h>
 
+// The algorithm for computing the distance from a point to an orthogonal
+// frustum is described in
+// https://www.geometrictools.com/Documentation/DistancePointToFrustum.pdf
+
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Vector3<Real>, Frustum3<Real>>
+    template <typename T>
+    class DCPQuery<T, Vector3<T>, Frustum3<T>>
     {
     public:
+        // The input point is stored in the member closest[0]. The frustum
+        // point closest to it is stored in the member closest[1].
         struct Result
         {
-            Real distance, sqrDistance;
-            Vector3<Real> frustumClosestPoint;
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                closest{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<Vector3<T>, 2> closest;
         };
 
-        Result operator()(Vector3<Real> const& point, Frustum3<Real> const& frustum)
+        Result operator()(Vector3<T> const& point, Frustum3<T> const& frustum)
         {
-            Result result;
+            Result result{};
 
             // Compute coordinates of point with respect to frustum coordinate
             // system.
-            Vector3<Real> diff = point - frustum.origin;
-            Vector3<Real> test = {
+            Vector3<T> diff = point - frustum.origin;
+            Vector3<T> test = {
                 Dot(diff, frustum.rVector),
                 Dot(diff, frustum.uVector),
                 Dot(diff, frustum.dVector) };
@@ -37,7 +51,7 @@ namespace gte
             // Perform calculations in octant with nonnegative R and U
             // coordinates.
             bool rSignChange;
-            if (test[0] < (Real)0)
+            if (test[0] < (T)0)
             {
                 rSignChange = true;
                 test[0] = -test[0];
@@ -48,7 +62,7 @@ namespace gte
             }
 
             bool uSignChange;
-            if (test[1] < (Real)0)
+            if (test[1] < (T)0)
             {
                 uSignChange = true;
                 test[1] = -test[1];
@@ -59,27 +73,27 @@ namespace gte
             }
 
             // Frustum derived parameters.
-            Real rmin = frustum.rBound;
-            Real rmax = frustum.GetDRatio() * rmin;
-            Real umin = frustum.uBound;
-            Real umax = frustum.GetDRatio() * umin;
-            Real dmin = frustum.dMin;
-            Real dmax = frustum.dMax;
-            Real rminSqr = rmin * rmin;
-            Real uminSqr = umin * umin;
-            Real dminSqr = dmin * dmin;
-            Real minRDDot = rminSqr + dminSqr;
-            Real minUDDot = uminSqr + dminSqr;
-            Real minRUDDot = rminSqr + minUDDot;
-            Real maxRDDot = frustum.GetDRatio() * minRDDot;
-            Real maxUDDot = frustum.GetDRatio() * minUDDot;
-            Real maxRUDDot = frustum.GetDRatio() * minRUDDot;
+            T rmin = frustum.rBound;
+            T rmax = frustum.GetDRatio() * rmin;
+            T umin = frustum.uBound;
+            T umax = frustum.GetDRatio() * umin;
+            T dmin = frustum.dMin;
+            T dmax = frustum.dMax;
+            T rminSqr = rmin * rmin;
+            T uminSqr = umin * umin;
+            T dminSqr = dmin * dmin;
+            T minRDDot = rminSqr + dminSqr;
+            T minUDDot = uminSqr + dminSqr;
+            T minRUDDot = rminSqr + minUDDot;
+            T maxRDDot = frustum.GetDRatio() * minRDDot;
+            T maxUDDot = frustum.GetDRatio() * minUDDot;
+            T maxRUDDot = frustum.GetDRatio() * minRUDDot;
 
             // Algorithm computes closest point in all cases by determining
             // in which Voronoi region of the vertices, edges, and faces of
             // the frustum that the test point lives.
-            Vector3<Real> closest;
-            Real rDot, uDot, rdDot, udDot, rudDot, rEdgeDot, uEdgeDot, t;
+            Vector3<T> closest{};
+            T rDot, uDot, rdDot, udDot, rudDot, rEdgeDot, uEdgeDot, t;
             if (test[2] >= dmax)
             {
                 if (test[0] <= rmax)
@@ -189,7 +203,7 @@ namespace gte
                     {
                         rudDot = rmin * test[0] + umin * test[1] + dmin * test[2];
                         rEdgeDot = umin * rudDot - minRUDDot * test[1];
-                        if (rEdgeDot >= (Real)0)
+                        if (rEdgeDot >= (T)0)
                         {
                             rdDot = rmin * test[0] + dmin * test[2];
                             if (rdDot >= maxRDDot)
@@ -219,7 +233,7 @@ namespace gte
                         else
                         {
                             uEdgeDot = rmin * rudDot - minRUDDot * test[0];
-                            if (uEdgeDot >= (Real)0)
+                            if (uEdgeDot >= (T)0)
                             {
                                 udDot = umin * test[1] + dmin * test[2];
                                 if (udDot >= maxUDDot)
@@ -279,9 +293,9 @@ namespace gte
             {
                 rDot = dmin * test[0] - rmin * test[2];
                 uDot = dmin * test[1] - umin * test[2];
-                if (rDot <= (Real)0)
+                if (rDot <= (T)0)
                 {
-                    if (uDot <= (Real)0)
+                    if (uDot <= (T)0)
                     {
                         // point inside frustum
                         closest = test;
@@ -308,7 +322,7 @@ namespace gte
                 }
                 else
                 {
-                    if (uDot <= (Real)0)
+                    if (uDot <= (T)0)
                     {
                         rdDot = rmin * test[0] + dmin * test[2];
                         if (rdDot >= maxRDDot)
@@ -331,7 +345,7 @@ namespace gte
                     {
                         rudDot = rmin * test[0] + umin * test[1] + dmin * test[2];
                         rEdgeDot = umin * rudDot - minRUDDot * test[1];
-                        if (rEdgeDot >= (Real)0)
+                        if (rEdgeDot >= (T)0)
                         {
                             rdDot = rmin * test[0] + dmin * test[2];
                             if (rdDot >= maxRDDot)
@@ -353,7 +367,7 @@ namespace gte
                         else
                         {
                             uEdgeDot = rmin * rudDot - minRUDDot * test[0];
-                            if (uEdgeDot >= (Real)0)
+                            if (uEdgeDot >= (T)0)
                             {
                                 udDot = umin * test[1] + dmin * test[2];
                                 if (udDot >= maxUDDot)
@@ -409,7 +423,8 @@ namespace gte
             }
 
             // Convert back to original coordinates.
-            result.frustumClosestPoint = frustum.origin +
+            result.closest[0] = point;
+            result.closest[1] = frustum.origin +
                 closest[0] * frustum.rVector +
                 closest[1] * frustum.uVector +
                 closest[2] * frustum.dVector;
