@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.04.08
+// Version: 4.6.2021.10.17
 
 #pragma once
 
 #include <Mathematics/Vector3.h>
+#include <cstdint>
 #include <vector>
 
 namespace gte
@@ -42,16 +43,24 @@ namespace gte
         //          vertices.size() >= 3, triangles.size() > 0 and the
         //          vertices are not coplanar
 
-        static int constexpr CFG_EMPTY = 0x00000000;
-        static int constexpr CFG_POINT = 0x00000001;
-        static int constexpr CFG_SEGMENT = 0x00000002;
-        static int constexpr CFG_POLYGON = 0x00000004;
-        static int constexpr CFG_POLYHEDRON = 0x00000008;
+        static int32_t constexpr CFG_EMPTY = 0x00000000;
+        static int32_t constexpr CFG_POINT = 0x00000001;
+        static int32_t constexpr CFG_SEGMENT = 0x00000002;
+        static int32_t constexpr CFG_POLYGON = 0x00000004;
+        static int32_t constexpr CFG_POLYHEDRON = 0x00000008;
 
         using Vertex = Vector3<Real>;
-        using Triangle = std::array<int, 3>;
+        using Triangle = std::array<int32_t, 3>;
 
-        int configuration = CFG_EMPTY;
+        ConvexMesh3()
+            :
+            configuration(CFG_EMPTY),
+            vertices{},
+            triangles{}
+        {
+        }
+
+        int32_t configuration;
         std::vector<Vertex> vertices;
         std::vector<Triangle> triangles;
     };
