@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.10.2021.05.22
+// Version: 5.10.2021.10.17
 
 #pragma once
 
@@ -25,7 +25,7 @@
 namespace gte
 {
     template <typename T>
-    class DCPQuery<T, OrientedBox<3, T>, Cone<3, T>>
+    class DCPQuery<T, OrientedBox3<T>, Cone3<T>>
     {
     public:
         DCPQuery()
@@ -64,28 +64,26 @@ namespace gte
             Result()
                 :
                 distance(std::numeric_limits<T>::max()),
-                boxClosestPoint{},
-                coneClosestPoint{}
+                boxClosestPoint(Vector3<T>::Zero()),
+                coneClosestPoint(Vector3<T>::Zero())
             {
-                boxClosestPoint.MakeZero();
-                coneClosestPoint.MakeZero();
             }
 
             T distance;
-            Vector<3, T> boxClosestPoint, coneClosestPoint;
+            Vector3<T> boxClosestPoint, coneClosestPoint;
         };
 
         // The default minimizer controls are reasonable choices generally,
         // in which case you can use
-        //   using BCQuery = DCPQuery<T, OrientedBox<3, T>, Cone<3, T>>;
+        //   using BCQuery = DCPQuery<T, OrientedBox3<T>, Cone3<T>>;
         //   BCQuery bcQuery{};
         //   BCQuery::Result bcResult = bcQuery(box, cone);
         // If your application requires specialized controls,
-        //   using BCQuery = DCPQuery<T, OrientedBox<3, T>, Cone<3, T>>;
+        //   using BCQuery = DCPQuery<T, OrientedBox3<T>, Cone3<T>>;
         //   BCQuery bcQuery{};
         //   BCQuery::Control bcControl(your_parameters);
         //   BCQuery::Result bcResult = bcQuery(box, cone, &bcControl);
-        Result operator()(OrientedBox<3, T> const& box, Cone<3, T> const& cone,
+        Result operator()(OrientedBox3<T> const& box, Cone3<T> const& cone,
             Control const* inControl = nullptr)
         {
             Control control{};
@@ -95,11 +93,11 @@ namespace gte
             }
 
             // Compute a basis for the cone coordinate system.
-            std::array<Vector<3, T>, 3> basis{};
+            std::array<Vector3<T>, 3> basis{};
             basis[0] = cone.ray.direction;
             ComputeOrthogonalComplement(1, basis.data());
-            Vector<3, T> coneW0 = basis[1];
-            Vector<3, T> coneW1 = basis[2];
+            Vector3<T> coneW0 = basis[1];
+            Vector3<T> coneW1 = basis[2];
 
             Result result{};
             result.distance = std::numeric_limits<T>::max();
@@ -107,7 +105,7 @@ namespace gte
             auto F = [this, &box, &cone, &coneW0, &coneW1, &result](T angle)
             {
                 T distance = std::numeric_limits<T>::max();
-                Vector<3, T> boxClosestPoint{}, quadClosestPoint{};
+                Vector3<T> boxClosestPoint{}, quadClosestPoint{};
                 DoBoxQuadQuery(box, cone, coneW0, coneW1, angle,
                     distance, boxClosestPoint, quadClosestPoint);
 
@@ -136,16 +134,16 @@ namespace gte
         }
 
     private:
-        void DoBoxQuadQuery(OrientedBox<3, T> const& box, Cone<3, T> const& cone,
-            Vector<3, T> const& coneW0, Vector<3, T> const& coneW1,
-            T const& quadAngle, T& distance, Vector<3, T>& boxClosestPoint,
-            Vector<3, T>& quadClosestPoint)
+        void DoBoxQuadQuery(OrientedBox3<T> const& box, Cone3<T> const& cone,
+            Vector3<T> const& coneW0, Vector3<T> const& coneW1,
+            T const& quadAngle, T& distance, Vector3<T>& boxClosestPoint,
+            Vector3<T>& quadClosestPoint)
         {
             T const zero = static_cast<T>(0);
             T const one = static_cast<T>(1);
             T const two = static_cast<T>(2);
 
-            Vector<3, T> K = box.center, ell{};
+            Vector3<T> K = box.center, ell{};
             for (int32_t i = 0; i < 3; ++i)
             {
                 K -= box.extent[i] * box.axis[i];
@@ -153,8 +151,8 @@ namespace gte
             }
 
             T cs = std::cos(quadAngle), sn = std::sin(quadAngle);
-            Vector<3, T> term = cone.tanAngle * (cs * coneW0 + sn * coneW1);
-            std::array<Vector<3, T>, 2> G{};
+            Vector3<T> term = cone.tanAngle * (cs * coneW0 + sn * coneW1);
+            std::array<Vector3<T>, 2> G{};
             G[0] = cone.ray.direction - term;
             G[1] = cone.ray.direction + term;
 
@@ -185,7 +183,7 @@ namespace gte
             A(4, 3) = A(3, 4);
             A(4, 4) = Dot(G[1], G[1]);
 
-            Vector<3, T> KmV = K - cone.ray.origin;
+            Vector3<T> KmV = K - cone.ray.origin;
             Vector<5, T> b{};
             b[0] = Dot(box.axis[0], KmV);
             b[1] = Dot(box.axis[1], KmV);
