@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.08.22
+// Version: 4.0.2021.10.17
 
 #pragma once
 
@@ -19,7 +19,7 @@ namespace gte
     class BSPrecision
     {
     public:
-        enum Type
+        enum class Type
         {
             IS_FLOAT,
             IS_DOUBLE,
@@ -62,25 +62,28 @@ namespace gte
         BSPrecision() = default;
 
         BSPrecision(Type type)
+            :
+            bsn{},
+            bsr{}
         {
             switch (type)
             {
-            case IS_FLOAT:
+            case Type::IS_FLOAT:
                 bsn = Parameters(-149, 127, 24);
                 break;
-            case IS_DOUBLE:
+            case Type::IS_DOUBLE:
                 bsn = Parameters(-1074, 1023, 53);
                 break;
-            case IS_INT32:
+            case Type::IS_INT32:
                 bsn = Parameters(0, 30, 31);
                 break;
-            case IS_INT64:
+            case Type::IS_INT64:
                 bsn = Parameters(0, 62, 63);
                 break;
-            case IS_UINT32:
+            case Type::IS_UINT32:
                 bsn = Parameters(0, 31, 32);
                 break;
-            case IS_UINT64:
+            case Type::IS_UINT64:
                 bsn = Parameters(0, 63, 64);
                 break;
             }
@@ -97,7 +100,7 @@ namespace gte
 
     inline BSPrecision operator+(BSPrecision const& bsp0, BSPrecision const& bsp1)
     {
-        BSPrecision result;
+        BSPrecision result{};
 
         result.bsn.minExponent = std::min(bsp0.bsn.minExponent, bsp1.bsn.minExponent);
         if (bsp0.bsn.maxExponent >= bsp1.bsn.maxExponent)
@@ -161,7 +164,7 @@ namespace gte
 
     inline BSPrecision operator*(BSPrecision const& bsp0, BSPrecision const& bsp1)
     {
-        BSPrecision result;
+        BSPrecision result{};
 
         result.bsn.minExponent = bsp0.bsn.minExponent + bsp1.bsn.minExponent;
         result.bsn.maxExponent = bsp0.bsn.maxExponent + bsp1.bsn.maxExponent + 1;
@@ -180,7 +183,7 @@ namespace gte
 
     inline BSPrecision operator/(BSPrecision const& bsp0, BSPrecision const& bsp1)
     {
-        BSPrecision result;
+        BSPrecision result{};
 
         // BSNumber does not support division, so result.bsr has all members
         // set to zero.
@@ -200,7 +203,7 @@ namespace gte
     // involve multiplications of numerators and denominators.
     inline BSPrecision operator==(BSPrecision const& bsp0, BSPrecision const& bsp1)
     {
-        BSPrecision result;
+        BSPrecision result{};
 
         result.bsn.minExponent = std::min(bsp0.bsn.minExponent, bsp1.bsn.minExponent);
         result.bsn.maxExponent = std::max(bsp0.bsn.maxExponent, bsp1.bsn.maxExponent);

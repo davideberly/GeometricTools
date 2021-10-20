@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.21
+// Version: 4.0.2021.10.17
 
 #include <Mathematics/ArbitraryPrecision.h>
 using namespace gte;
@@ -494,65 +494,65 @@ int main()
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
     int32_t bsRationalFloatWords, bsRationalDoubleWords;
 
-    bsNumberFloatWords = PrimalQuery2Determinant2(BSPrecision::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = PrimalQuery2Determinant2(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = PrimalQuery2Determinant2(BSPrecision::IS_FLOAT, false);  // 35
-    bsRationalDoubleWords = PrimalQuery2Determinant2(BSPrecision::IS_DOUBLE, false);  // 263
+    bsNumberFloatWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_FLOAT, false);  // 35
+    bsRationalDoubleWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_DOUBLE, false);  // 263
 
-    bsNumberFloatWords = PrimalQuery2Determinant3(BSPrecision::IS_FLOAT, true);  // 27
-    bsNumberDoubleWords = PrimalQuery2Determinant3(BSPrecision::IS_DOUBLE, true);  // 197
-    bsRationalFloatWords = PrimalQuery2Determinant3(BSPrecision::IS_FLOAT, false);  // 130
-    bsRationalDoubleWords = PrimalQuery2Determinant3(BSPrecision::IS_DOUBLE, false);  // 984
+    bsNumberFloatWords = PrimalQuery2Determinant3(BSPrecision::Type::IS_FLOAT, true);  // 27
+    bsNumberDoubleWords = PrimalQuery2Determinant3(BSPrecision::Type::IS_DOUBLE, true);  // 197
+    bsRationalFloatWords = PrimalQuery2Determinant3(BSPrecision::Type::IS_FLOAT, false);  // 130
+    bsRationalDoubleWords = PrimalQuery2Determinant3(BSPrecision::Type::IS_DOUBLE, false);  // 984
 
-    bsNumberFloatWords = PrimalQuery2Determinant4(BSPrecision::IS_FLOAT, true);  // 35
-    bsNumberDoubleWords = PrimalQuery2Determinant4(BSPrecision::IS_DOUBLE, true);  // 263
-    bsRationalFloatWords = PrimalQuery2Determinant4(BSPrecision::IS_FLOAT, false);  // 417
-    bsRationalDoubleWords = PrimalQuery2Determinant4(BSPrecision::IS_DOUBLE, false);  // 3148
+    bsNumberFloatWords = PrimalQuery2Determinant4(BSPrecision::Type::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = PrimalQuery2Determinant4(BSPrecision::Type::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = PrimalQuery2Determinant4(BSPrecision::Type::IS_FLOAT, false);  // 417
+    bsRationalDoubleWords = PrimalQuery2Determinant4(BSPrecision::Type::IS_DOUBLE, false);  // 3148
 
-    bsNumberFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = PrimalQuery2ToLine(BSPrecision::IS_FLOAT, false);  // 70
-    bsRationalDoubleWords = PrimalQuery2ToLine(BSPrecision::IS_DOUBLE, false);  // 525
+    bsNumberFloatWords = PrimalQuery2ToLine(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery2ToLine(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery2ToLine(BSPrecision::Type::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = PrimalQuery2ToLine(BSPrecision::Type::IS_DOUBLE, false);  // 525
 
-    bsNumberFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_FLOAT, true);  // 35
-    bsNumberDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_DOUBLE, true);  // 263
-    bsRationalFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_FLOAT, false);  // 573
-    bsRationalDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::IS_DOUBLE, false);  // 4329
+    bsNumberFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_FLOAT, false);  // 573
+    bsRationalDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_DOUBLE, false);  // 4329
 
-    bsNumberFloatWords = PrimalQuery3ToPlane(BSPrecision::IS_FLOAT, true);  // 27
-    bsNumberDoubleWords = PrimalQuery3ToPlane(BSPrecision::IS_DOUBLE, true);  // 197
-    bsRationalFloatWords = PrimalQuery3ToPlane(BSPrecision::IS_FLOAT, false);  // 261
-    bsRationalDoubleWords = PrimalQuery3ToPlane(BSPrecision::IS_DOUBLE, false);  // 1968
+    bsNumberFloatWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_FLOAT, true);  // 27
+    bsNumberDoubleWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 197
+    bsRationalFloatWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_FLOAT, false);  // 261
+    bsRationalDoubleWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 1968
 
-    bsNumberFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, true);  // 44
-    bsNumberDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, true);  // 329
-    bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_FLOAT, false);  // 1875
-    bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::IS_DOUBLE, false);  // 14167
+    bsNumberFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_FLOAT, true);  // 44
+    bsNumberDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_DOUBLE, true);  // 329
+    bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_FLOAT, false);  // 1875
+    bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_DOUBLE, false);  // 14167
 
-    bsNumberFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, true);  // 70
-    bsNumberDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, true);  // 525
-    bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_FLOAT, false);  // 555
-    bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::IS_DOUBLE, false);  // 4197
+    bsNumberFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_FLOAT, true);  // 70
+    bsNumberDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_DOUBLE, true);  // 525
+    bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_FLOAT, false);  // 555
+    bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_DOUBLE, false);  // 4197
 
-    bsNumberFloatWords = PrimalQuery3Colinear(BSPrecision::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = PrimalQuery3Colinear(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = PrimalQuery3Colinear(BSPrecision::IS_FLOAT, false);  // 70
-    bsRationalDoubleWords = PrimalQuery3Colinear(BSPrecision::IS_DOUBLE, false);  // 525
+    bsNumberFloatWords = PrimalQuery3Colinear(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = PrimalQuery3Colinear(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = PrimalQuery3Colinear(BSPrecision::Type::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = PrimalQuery3Colinear(BSPrecision::Type::IS_DOUBLE, false);  // 525
 
-    bsNumberFloatWords = PrimalQuery3Coplanar(BSPrecision::IS_FLOAT, true);  // 27
-    bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, true);  // 197
-    bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::IS_FLOAT, false);  // 361
-    bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::IS_DOUBLE, false);  // 1968
+    bsNumberFloatWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_FLOAT, true);  // 27
+    bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, true);  // 197
+    bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_FLOAT, false);  // 361
+    bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, false);  // 1968
 
-    bsNumberFloatWords = SumOfTwoSquares(BSPrecision::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = SumOfTwoSquares(BSPrecision::IS_FLOAT, false);  // 35
-    bsRationalDoubleWords = SumOfTwoSquares(BSPrecision::IS_DOUBLE, false);  // 263
+    bsNumberFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, false);  // 35
+    bsRationalDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, false);  // 263
 
-    bsNumberFloatWords = Delaunay2ToPlane(BSPrecision::IS_FLOAT, true);  // 35
-    bsNumberDoubleWords = Delaunay2ToPlane(BSPrecision::IS_DOUBLE, true);  // 263
-    bsRationalFloatWords = Delaunay2ToPlane(BSPrecision::IS_FLOAT, false);  // 417
-    bsRationalDoubleWords = Delaunay2ToPlane(BSPrecision::IS_DOUBLE, false);  // 3148
+    bsNumberFloatWords = Delaunay2ToPlane(BSPrecision::Type::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = Delaunay2ToPlane(BSPrecision::Type::IS_FLOAT, false);  // 417
+    bsRationalDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 3148
 
     return 0;
 }
