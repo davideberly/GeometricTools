@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.10.17
 
 #include "DistancePointConvexPolyhedronWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -231,7 +231,7 @@ void DistancePointConvexPolyhedronWindow3::DoQuery()
     }
 
     auto* vertices = mSegment->GetVertexBuffer()->Get<Vector3<float>>();
-    vertices[0] = result.closestPoint[0];
-    vertices[1] = result.closestPoint[1];
+    vertices[0] = result.closest[0];
+    vertices[1] = result.closest[1];
     mEngine->Update(mSegment->GetVertexBuffer());
 }

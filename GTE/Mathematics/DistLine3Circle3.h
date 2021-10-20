@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.05.30
+// Version: 4.0.2021.10.17
 
 #pragma once
 
@@ -19,8 +19,8 @@
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Line3<Real>, Circle3<Real>>
+    template <typename T>
+    class DCPQuery<T, Line3<T>, Circle3<T>>
     {
     public:
         // The possible number of closest line-circle pairs is 1, 2 or all
@@ -34,70 +34,78 @@ namespace gte
         // and U is a vector perpendicular to N.
         struct Result
         {
-            Real distance, sqrDistance;
-            int numClosestPairs;
-            Vector3<Real> lineClosest[2], circleClosest[2];
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                numClosestPairs(0),
+                lineClosest{ Vector3<T>::Zero(), Vector3<T>::Zero() },
+                circleClosest{ Vector3<T>::Zero(), Vector3<T>::Zero() },
+                equidistant(false)
+            {
+            }
+
+            T distance, sqrDistance;
+            size_t numClosestPairs;
+            std::array<Vector3<T>, 2> lineClosest, circleClosest;
             bool equidistant;
         };
 
-        // The polynomial-based algorithm.  Type Real can be floating-point or
+        // The polynomial-based algorithm.  Type T can be floating-point or
         // rational.
-        Result operator()(Line3<Real> const& line, Circle3<Real> const& circle)
+        Result operator()(Line3<T> const& line, Circle3<T> const& circle)
         {
-            Result result;
-            Vector3<Real> const vzero = Vector3<Real>::Zero();
-            Real const zero = (Real)0;
+            Result result{};
+            Vector3<T> const vzero = Vector3<T>::Zero();
+            T const zero = (T)0;
 
-            Vector3<Real> D = line.origin - circle.center;
-            Vector3<Real> NxM = Cross(circle.normal, line.direction);
-            Vector3<Real> NxD = Cross(circle.normal, D);
-            Real t;
+            Vector3<T> D = line.origin - circle.center;
+            Vector3<T> NxM = Cross(circle.normal, line.direction);
+            Vector3<T> NxD = Cross(circle.normal, D);
+            T t = zero;
 
             if (NxM != vzero)
             {
                 if (NxD != vzero)
                 {
-                    Real NdM = Dot(circle.normal, line.direction);
+                    T NdM = Dot(circle.normal, line.direction);
                     if (NdM != zero)
                     {
                         // H(t) = (a*t^2 + 2*b*t + c)*(t + d)^2
                         //        - r^2*(a*t + b)^2
                         //      = h0 + h1*t + h2*t^2 + h3*t^3 + h4*t^4
-                        Real a = Dot(NxM, NxM), b = Dot(NxM, NxD);
-                        Real c = Dot(NxD, NxD), d = Dot(line.direction, D);
-                        Real rsqr = circle.radius * circle.radius;
-                        Real asqr = a * a, bsqr = b * b, dsqr = d * d;
-                        Real h0 = c * dsqr - bsqr * rsqr;
-                        Real h1 = (Real)2 * (c * d + b * dsqr - a * b * rsqr);
-                        Real h2 = c + (Real)4 * b * d + a * dsqr - asqr * rsqr;
-                        Real h3 = (Real)2 * (b + a * d);
-                        Real h4 = a;
+                        T a = Dot(NxM, NxM), b = Dot(NxM, NxD);
+                        T c = Dot(NxD, NxD), d = Dot(line.direction, D);
+                        T rsqr = circle.radius * circle.radius;
+                        T asqr = a * a, bsqr = b * b, dsqr = d * d;
+                        T h0 = c * dsqr - bsqr * rsqr;
+                        T h1 = (T)2 * (c * d + b * dsqr - a * b * rsqr);
+                        T h2 = c + (T)4 * b * d + a * dsqr - asqr * rsqr;
+                        T h3 = (T)2 * (b + a * d);
+                        T h4 = a;
 
-                        std::map<Real, int> rmMap;
-                        RootsPolynomial<Real>::template SolveQuartic<Real>(
-                            h0, h1, h2, h3, h4, rmMap);
-                        std::array<ClosestInfo, 4> candidates;
-                        int numRoots = 0;
+                        std::map<T, int32_t> rmMap{};
+                        RootsPolynomial<T>::template SolveQuartic<T>(h0, h1, h2, h3, h4, rmMap);
+                        std::array<ClosestInfo, 4> candidates{};
+                        size_t numRoots = 0;
                         for (auto const& rm : rmMap)
                         {
                             t = rm.first;
-                            ClosestInfo info;
-                            Vector3<Real> NxDelta = NxD + t * NxM;
+                            ClosestInfo info{};
+                            Vector3<T> NxDelta = NxD + t * NxM;
                             if (NxDelta != vzero)
                             {
-                                GetPair(line, circle, D, t, info.lineClosest,
-                                    info.circleClosest);
+                                GetPair(line, circle, D, t, info.lineClosest, info.circleClosest);
                                 info.equidistant = false;
                             }
                             else
                             {
-                                Vector3<Real> U = GetOrthogonal(circle.normal, true);
+                                Vector3<T> U = GetOrthogonal(circle.normal, true);
                                 info.lineClosest = circle.center;
-                                info.circleClosest =
-                                    circle.center + circle.radius * U;
+                                info.circleClosest = circle.center + circle.radius * U;
                                 info.equidistant = true;
                             }
-                            Vector3<Real> diff = info.lineClosest - info.circleClosest;
+                            Vector3<T> diff = info.lineClosest - info.circleClosest;
                             info.sqrDistance = Dot(diff, diff);
                             candidates[numRoots++] = info;
                         }
@@ -107,8 +115,8 @@ namespace gte
                         result.numClosestPairs = 1;
                         result.lineClosest[0] = candidates[0].lineClosest;
                         result.circleClosest[0] = candidates[0].circleClosest;
-                        if (numRoots > 1
-                            && candidates[1].sqrDistance == candidates[0].sqrDistance)
+                        if (numRoots > 1 &&
+                            candidates[1].sqrDistance == candidates[0].sqrDistance)
                         {
                             result.numClosestPairs = 2;
                             result.lineClosest[1] = candidates[1].lineClosest;
@@ -120,12 +128,12 @@ namespace gte
                         // The line is parallel to the plane of the circle.
                         // The polynomial has the form
                         // H(t) = (t+v)^2*[(t+v)^2-(r^2-u^2)].
-                        Real u = Dot(NxM, D), v = Dot(line.direction, D);
-                        Real discr = circle.radius * circle.radius - u * u;
+                        T u = Dot(NxM, D), v = Dot(line.direction, D);
+                        T discr = circle.radius * circle.radius - u * u;
                         if (discr > zero)
                         {
                             result.numClosestPairs = 2;
-                            Real rootDiscr = std::sqrt(discr);
+                            T rootDiscr = std::sqrt(discr);
                             t = -v + rootDiscr;
                             GetPair(line, circle, D, t, result.lineClosest[0],
                                 result.circleClosest[0]);
@@ -176,7 +184,7 @@ namespace gte
                 {
                     // The line is C+t*N, so C is the closest point for the
                     // line and all circle points are equidistant from it.
-                    Vector3<Real> U = GetOrthogonal(circle.normal, true);
+                    Vector3<T> U = GetOrthogonal(circle.normal, true);
                     result.numClosestPairs = 1;
                     result.lineClosest[0] = circle.center;
                     result.circleClosest[0] = circle.center + circle.radius * U;
@@ -184,60 +192,60 @@ namespace gte
                 }
             }
 
-            Vector3<Real> diff = result.lineClosest[0] - result.circleClosest[0];
+            Vector3<T> diff = result.lineClosest[0] - result.circleClosest[0];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
             return result;
         }
 
         // The nonpolynomial-based algorithm that uses bisection.  Because the
-        // bisection is iterative, you should choose Real to be a
+        // bisection is iterative, you should choose T to be a
         // floating-point type.  However, the algorithm will still work for a
         // rational type, but it is costly because of the increase in
         // arbitrary-size integers used during the bisection.
-        Result Robust(Line3<Real> const& line, Circle3<Real> const& circle)
+        Result Robust(Line3<T> const& line, Circle3<T> const& circle)
         {
             // The line is P(t) = B+t*M.  The circle is |X-C| = r with
             // Dot(N,X-C)=0.
-            Result result;
-            Vector3<Real> vzero = Vector3<Real>::Zero();
-            Real const zero = (Real)0;
+            Result result{};
+            Vector3<T> vzero = Vector3<T>::Zero();
+            T const zero = (T)0;
 
-            Vector3<Real> D = line.origin - circle.center;
-            Vector3<Real> MxN = Cross(line.direction, circle.normal);
-            Vector3<Real> DxN = Cross(D, circle.normal);
+            Vector3<T> D = line.origin - circle.center;
+            Vector3<T> MxN = Cross(line.direction, circle.normal);
+            Vector3<T> DxN = Cross(D, circle.normal);
 
-            Real m0sqr = Dot(MxN, MxN);
+            T m0sqr = Dot(MxN, MxN);
             if (m0sqr > zero)
             {
                 // Compute the critical points s for F'(s) = 0.
-                Real s, t;
-                int numRoots = 0;
-                std::array<Real, 3> roots;
+                T s{}, t{};
+                size_t numRoots = 0;
+                std::array<T, 3> roots{};
 
                 // The line direction M and the plane normal N are not
                 // parallel.  Move the line origin B = (b0,b1,b2) to
                 // B' = B + lambda*line.direction = (0,b1',b2').
-                Real m0 = std::sqrt(m0sqr);
-                Real rm0 = circle.radius * m0;
-                Real lambda = -Dot(MxN, DxN) / m0sqr;
-                Vector3<Real> oldD = D;
+                T m0 = std::sqrt(m0sqr);
+                T rm0 = circle.radius * m0;
+                T lambda = -Dot(MxN, DxN) / m0sqr;
+                Vector3<T> oldD = D;
                 D += lambda * line.direction;
                 DxN += lambda * MxN;
-                Real m2b2 = Dot(line.direction, D);
-                Real b1sqr = Dot(DxN, DxN);
+                T m2b2 = Dot(line.direction, D);
+                T b1sqr = Dot(DxN, DxN);
                 if (b1sqr > zero)
                 {
                     // B' = (0,b1',b2') where b1' != 0.  See Sections 1.1.2
                     // and 1.2.2 of the PDF documentation.
-                    Real b1 = std::sqrt(b1sqr);
-                    Real rm0sqr = circle.radius * m0sqr;
+                    T b1 = std::sqrt(b1sqr);
+                    T rm0sqr = circle.radius * m0sqr;
                     if (rm0sqr > b1)
                     {
-                        Real const twoThirds = (Real)2 / (Real)3;
-                        Real sHat = std::sqrt(std::pow(rm0sqr * b1sqr, twoThirds) - b1sqr) / m0;
-                        Real gHat = rm0sqr * sHat / std::sqrt(m0sqr * sHat * sHat + b1sqr);
-                        Real cutoff = gHat - sHat;
+                        T const twoThirds = (T)2 / (T)3;
+                        T sHat = std::sqrt(std::pow(rm0sqr * b1sqr, twoThirds) - b1sqr) / m0;
+                        T gHat = rm0sqr * sHat / std::sqrt(m0sqr * sHat * sHat + b1sqr);
+                        T cutoff = gHat - sHat;
                         if (m2b2 <= -cutoff)
                         {
                             s = Bisect(m2b2, rm0sqr, m0sqr, b1sqr, -m2b2, -m2b2 + rm0);
@@ -314,26 +322,24 @@ namespace gte
                 }
 
                 std::array<ClosestInfo, 4> candidates;
-                for (int i = 0; i < numRoots; ++i)
+                for (size_t i = 0; i < numRoots; ++i)
                 {
                     t = roots[i] + lambda;
-                    ClosestInfo info;
-                    Vector3<Real> NxDelta =
-                        Cross(circle.normal, oldD + t * line.direction);
+                    ClosestInfo info{};
+                    Vector3<T> NxDelta = Cross(circle.normal, oldD + t * line.direction);
                     if (NxDelta != vzero)
                     {
-                        GetPair(line, circle, oldD, t, info.lineClosest,
-                            info.circleClosest);
+                        GetPair(line, circle, oldD, t, info.lineClosest, info.circleClosest);
                         info.equidistant = false;
                     }
                     else
                     {
-                        Vector3<Real> U = GetOrthogonal(circle.normal, true);
+                        Vector3<T> U = GetOrthogonal(circle.normal, true);
                         info.lineClosest = circle.center;
                         info.circleClosest = circle.center + circle.radius * U;
                         info.equidistant = true;
                     }
-                    Vector3<Real> diff = info.lineClosest - info.circleClosest;
+                    Vector3<T> diff = info.lineClosest - info.circleClosest;
                     info.sqrDistance = Dot(diff, diff);
                     candidates[i] = info;
                 }
@@ -343,8 +349,8 @@ namespace gte
                 result.numClosestPairs = 1;
                 result.lineClosest[0] = candidates[0].lineClosest;
                 result.circleClosest[0] = candidates[0].circleClosest;
-                if (numRoots > 1
-                    && candidates[1].sqrDistance == candidates[0].sqrDistance)
+                if (numRoots > 1 &&
+                    candidates[1].sqrDistance == candidates[0].sqrDistance)
                 {
                     result.numClosestPairs = 2;
                     result.lineClosest[1] = candidates[1].lineClosest;
@@ -368,7 +374,7 @@ namespace gte
                 {
                     // The line is C+t*N, so C is the closest point for the
                     // line and all circle points are equidistant from it.
-                    Vector3<Real> U = GetOrthogonal(circle.normal, true);
+                    Vector3<T> U = GetOrthogonal(circle.normal, true);
                     result.numClosestPairs = 1;
                     result.lineClosest[0] = circle.center;
                     result.circleClosest[0] = circle.center + circle.radius * U;
@@ -376,7 +382,7 @@ namespace gte
                 }
             }
 
-            Vector3<Real> diff = result.lineClosest[0] - result.circleClosest[0];
+            Vector3<T> diff = result.lineClosest[0] - result.circleClosest[0];
             result.sqrDistance = Dot(diff, diff);
             result.distance = std::sqrt(result.sqrDistance);
             return result;
@@ -386,21 +392,30 @@ namespace gte
         // Support for operator(...).
         struct ClosestInfo
         {
-            Real sqrDistance;
-            Vector3<Real> lineClosest, circleClosest;
-            bool equidistant;
+            ClosestInfo()
+                :
+                sqrDistance(static_cast<T>(0)),
+                lineClosest(Vector3<T>::Zero()),
+                circleClosest(Vector3<T>::Zero()),
+                equidistant(false)
+            {
+            }
 
             bool operator< (ClosestInfo const& info) const
             {
                 return sqrDistance < info.sqrDistance;
             }
+
+            T sqrDistance;
+            Vector3<T> lineClosest, circleClosest;
+            bool equidistant;
         };
 
-        void GetPair(Line3<Real> const& line, Circle3<Real> const& circle,
-            Vector3<Real> const& D, Real t, Vector3<Real>& lineClosest,
-            Vector3<Real>& circleClosest)
+        void GetPair(Line3<T> const& line, Circle3<T> const& circle,
+            Vector3<T> const& D, T t, Vector3<T>& lineClosest,
+            Vector3<T>& circleClosest)
         {
-            Vector3<Real> delta = D + t * line.direction;
+            Vector3<T> delta = D + t * line.direction;
             lineClosest = circle.center + delta;
             delta -= Dot(circle.normal, delta) * circle.normal;
             Normalize(delta);
@@ -410,21 +425,21 @@ namespace gte
         // Support for Robust(...).  Bisect the function
         //   F(s) = s + m2b2 - r*m0sqr*s/sqrt(m0sqr*s*s + b1sqr)
         // on the specified interval [smin,smax].
-        Real Bisect(Real m2b2, Real rm0sqr, Real m0sqr, Real b1sqr, Real smin, Real smax)
+        T Bisect(T m2b2, T rm0sqr, T m0sqr, T b1sqr, T smin, T smax)
         {
-            std::function<Real(Real)> G = [&, m2b2, rm0sqr, m0sqr, b1sqr](Real s)
+            std::function<T(T)> G = [&, m2b2, rm0sqr, m0sqr, b1sqr](T s)
             {
                 return s + m2b2 - rm0sqr * s / std::sqrt(m0sqr * s * s + b1sqr);
             };
 
             // The function is known to be increasing, so we can specify -1 and +1
             // as the function values at the bounding interval endpoints.  The use
-            // of 'double' is intentional in case Real is a BSNumber or BSRational
+            // of 'double' is intentional in case T is a BSNumber or BSRational
             // type.  We want the bisections to terminate in a reasonable amount of
             // time.
-            unsigned int const maxIterations = GTE_C_MAX_BISECTIONS_GENERIC;
-            Real root;
-            RootsBisection<Real>::Find(G, smin, smax, (Real)-1, (Real)+1, maxIterations, root);
+            uint32_t const maxIterations = GTE_C_MAX_BISECTIONS_GENERIC;
+            T root = static_cast<T>(0);
+            RootsBisection<T>::Find(G, smin, smax, (T)-1, (T)+1, maxIterations, root);
             return root;
         }
     };

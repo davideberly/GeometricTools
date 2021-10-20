@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.17
 
 #pragma once
 
@@ -17,11 +17,10 @@
 // programming problem.  For details, see
 // https://www.geometrictools.com/Documentation/ConvexQuadraticProgramming.pdf
 
-
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Vector3<Real>, ConvexPolyhedron3<Real>>
+    template <typename T>
+    class DCPQuery<T, Vector3<T>, ConvexPolyhedron3<T>>
     {
     public:
         // Construction.  If you have no knowledge of the number of faces
@@ -40,7 +39,7 @@ namespace gte
             if (numTriangles > 0)
             {
                 int const n = numTriangles + 3;
-                mLCP = std::make_unique<LCPSolver<Real>>(n);
+                mLCP = std::make_unique<LCPSolver<T>>(n);
                 mMaxLCPIterations = mLCP->GetMaxIterations();
             }
             else
@@ -51,12 +50,22 @@ namespace gte
 
         struct Result
         {
+            Result()
+                :
+                queryIsSuccessful(false),
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                closest{ Vector3<T>::Zero(), Vector3<T>::Zero() },
+                numLCPIterations(0)
+            {
+            }
+
             bool queryIsSuccessful;
 
             // These members are valid only when queryIsSuccessful is true;
             // otherwise, they are all set to zero.
-            Real distance, sqrDistance;
-            Vector3<Real> closestPoint[2];
+            T distance, sqrDistance;
+            std::array<Vector3<T>, 2> closest;
 
             // The number of iterations used by LCPSolver regardless of
             // whether the query is successful.
@@ -75,9 +84,9 @@ namespace gte
             }
         }
 
-        Result operator()(Vector3<Real> const& point, ConvexPolyhedron3<Real> const& polyhedron)
+        Result operator()(Vector3<T> const& point, ConvexPolyhedron3<T> const& polyhedron)
         {
-            Result result;
+            Result result{};
 
             int const numTriangles = static_cast<int>(polyhedron.planes.size());
             if (numTriangles == 0)
@@ -86,11 +95,11 @@ namespace gte
                 result.queryIsSuccessful = false;
                 for (int i = 0; i < 3; ++i)
                 {
-                    result.closestPoint[0][i] = (Real)0;
-                    result.closestPoint[1][i] = (Real)0;
+                    result.closest[0][i] = (T)0;
+                    result.closest[1][i] = (T)0;
                 }
-                result.distance = (Real)0;
-                result.sqrDistance = (Real)0;
+                result.distance = (T)0;
+                result.sqrDistance = (T)0;
                 result.numLCPIterations = 0;
                 return result;
             }
@@ -101,9 +110,9 @@ namespace gte
             // polyhedron is in the first octant.  The translation is not
             // explicit; rather, the q and M for the LCP are initialized using
             // the translation information.
-            Vector4<Real> hmin = HLift(polyhedron.alignedBox.min, (Real)1);
+            Vector4<T> hmin = HLift(polyhedron.alignedBox.min, (T)1);
 
-            std::vector<Real> q(n);
+            std::vector<T> q(n);
             for (int r = 0; r < 3; ++r)
             {
                 q[r] = polyhedron.alignedBox.min[r] - point[r];
@@ -113,13 +122,13 @@ namespace gte
                 q[r] = -Dot(polyhedron.planes[t], hmin);
             }
 
-            std::vector<Real> M(n * n);
-            M[0] = (Real)1;  M[1] = (Real)0;  M[2] = (Real)0;
-            M[n] = (Real)0;  M[n + 1] = (Real)1;  M[n + 2] = (Real)0;
-            M[2 * n] = (Real)0;  M[2 * n + 1] = (Real)0;  M[2 * n + 2] = (Real)1;
+            std::vector<T> M(n * n);
+            M[0] = (T)1;  M[1] = (T)0;  M[2] = (T)0;
+            M[n] = (T)0;  M[n + 1] = (T)1;  M[n + 2] = (T)0;
+            M[2 * n] = (T)0;  M[2 * n + 1] = (T)0;  M[2 * n + 2] = (T)1;
             for (int t = 0, c = 3; t < numTriangles; ++t, ++c)
             {
-                Vector3<Real> normal = HProject(polyhedron.planes[t]);
+                Vector3<T> normal = HProject(polyhedron.planes[t]);
                 for (int r = 0; r < 3; ++r)
                 {
                     M[c + n * r] = normal[r];
@@ -130,31 +139,31 @@ namespace gte
             {
                 for (int c = 3; c < n; ++c)
                 {
-                    M[c + n * r] = (Real)0;
+                    M[c + n * r] = (T)0;
                 }
             }
 
             bool needsLCP = (mLCP == nullptr);
             if (needsLCP)
             {
-                mLCP = std::make_unique<LCPSolver<Real>>(n);
+                mLCP = std::make_unique<LCPSolver<T>>(n);
                 if (mMaxLCPIterations > 0)
                 {
                     mLCP->SetMaxIterations(mMaxLCPIterations);
                 }
             }
 
-            std::vector<Real> w(n), z(n);
+            std::vector<T> w(n), z(n);
             if (mLCP->Solve(q, M, w, z))
             {
                 result.queryIsSuccessful = true;
-                result.closestPoint[0] = point;
+                result.closest[0] = point;
                 for (int i = 0; i < 3; ++i)
                 {
-                    result.closestPoint[1][i] = z[i] + polyhedron.alignedBox.min[i];
+                    result.closest[1][i] = z[i] + polyhedron.alignedBox.min[i];
                 }
 
-                Vector3<Real> diff = result.closestPoint[1] - result.closestPoint[0];
+                Vector3<T> diff = result.closest[1] - result.closest[0];
                 result.sqrDistance = Dot(diff, diff);
                 result.distance = std::sqrt(result.sqrDistance);
             }
@@ -177,6 +186,6 @@ namespace gte
 
     private:
         int mMaxLCPIterations;
-        std::unique_ptr<LCPSolver<Real>> mLCP;
+        std::unique_ptr<LCPSolver<T>> mLCP;
     };
 }
