@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.17
 
 #pragma once
 
@@ -15,36 +15,46 @@
 
 namespace gte
 {
-    template <typename Real>
-    class DCPQuery<Real, Vector3<Real>, Cylinder3<Real>>
+    template <typename T>
+    class DCPQuery<T, Vector3<T>, Cylinder3<T>>
     {
     public:
+        // The input point is stored in the member closest[0]. The cylinder
+        // point closest to it is stored in the member closest[1].
         struct Result
         {
-            Real distance;
-            Vector3<Real> cylinderClosest;
+            Result()
+                :
+                distance(static_cast<T>(0)),
+                sqrDistance(static_cast<T>(0)),
+                closest{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
+            T distance, sqrDistance;
+            std::array<Vector3<T>, 2> closest;
         };
 
-        Result operator()(Vector3<Real> const& point, Cylinder3<Real> const& cylinder)
+        Result operator()(Vector3<T> const& point, Cylinder3<T> const& cylinder)
         {
             Result result;
 
             // Convert the point to the cylinder coordinate system.  In this
             // system, the point believes (0,0,0) is the cylinder axis origin
             // and (0,0,1) is the cylinder axis direction.
-            Vector3<Real> basis[3];
+            std::array<Vector3<T>, 3> basis{};
             basis[0] = cylinder.axis.direction;
-            ComputeOrthogonalComplement(1, basis);
+            ComputeOrthogonalComplement(1, basis.data());
 
-            Vector3<Real> delta = point - cylinder.axis.origin;
-            Vector3<Real> P
+            Vector3<T> delta = point - cylinder.axis.origin;
+            Vector3<T> P
             {
                 Dot(basis[1], delta),
                 Dot(basis[2], delta),
                 Dot(basis[0], delta)
             };
 
-            if (cylinder.height == std::numeric_limits<Real>::max())
+            if (cylinder.height == std::numeric_limits<T>::max())
             {
                 DoQueryInfiniteCylinder(P, cylinder.radius, result);
             }
@@ -55,54 +65,61 @@ namespace gte
 
             // Convert the closest point from the cylinder coordinate system
             // to the original coordinate system.
-            result.cylinderClosest = cylinder.axis.origin +
-                result.cylinderClosest[0] * basis[1] +
-                result.cylinderClosest[1] * basis[2] +
-                result.cylinderClosest[2] * basis[0];
+            result.closest[0] = point;
+            result.closest[1] = cylinder.axis.origin +
+                result.closest[1][0] * basis[1] +
+                result.closest[1][1] * basis[2] +
+                result.closest[1][2] * basis[0];
 
             return result;
         }
 
     private:
-        void DoQueryInfiniteCylinder(Vector3<Real> const& P, Real radius,
+        void DoQueryInfiniteCylinder(Vector3<T> const& P, T const& radius,
             Result& result)
         {
-            Real sqrRadius = radius * radius;
-            Real sqrDistance = P[0] * P[0] + P[1] * P[1];
+            T sqrRadius = radius * radius;
+            T sqrDistance = P[0] * P[0] + P[1] * P[1];
             if (sqrDistance >= sqrRadius)
             {
                 // The point is outside the cylinder or on the cylinder wall.
-                Real distance = std::sqrt(sqrDistance);
+                T distance = std::sqrt(sqrDistance);
                 result.distance = distance - radius;
-                Real temp = radius / distance;
-                result.cylinderClosest[0] = P[0] * temp;
-                result.cylinderClosest[1] = P[1] * temp;
-                result.cylinderClosest[2] = P[2];
+                result.sqrDistance = result.distance * result.distance;
+                T temp = radius / distance;
+                result.closest[1][0] = P[0] * temp;
+                result.closest[1][1] = P[1] * temp;
+                result.closest[1][2] = P[2];
             }
             else
             {
                 // The point is inside the cylinder.
-                result.distance = (Real)0;
-                result.cylinderClosest = P;
+                result.distance = (T)0;
+                result.sqrDistance = (T)0;
+                result.closest[1] = P;
             }
         }
 
-        void DoQueryFiniteCylinder(Vector3<Real> const& P, Real radius,
-            Real height, Result& result)
+        void DoQueryFiniteCylinder(Vector3<T> const& P, T const& radius,
+            T const& height, Result& result)
         {
             DoQueryInfiniteCylinder(P, radius, result);
 
             // Clamp the infinite cylinder's closest point to the finite
             // cylinder.
-            if (result.cylinderClosest[2] > height)
+            if (result.closest[1][2] > height)
             {
-                result.cylinderClosest[2] = height;
-                result.distance = Length(result.cylinderClosest - P);
+                result.closest[1][2] = height;
+                Vector3<T> diff = result.closest[1] - P;
+                result.sqrDistance = Dot(diff, diff);
+                result.distance = std::sqrt(result.sqrDistance);
             }
-            else if (result.cylinderClosest[2] < -height)
+            else if (result.closest[1][2] < -height)
             {
-                result.cylinderClosest[2] = -height;
-                result.distance = Length(result.cylinderClosest - P);
+                result.closest[1][2] = -height;
+                Vector3<T> diff = result.closest[1] - P;
+                result.sqrDistance = Dot(diff, diff);
+                result.distance = std::sqrt(result.sqrDistance);
             }
         }
     };
