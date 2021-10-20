@@ -100,7 +100,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -119,7 +119,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -163,7 +163,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -175,22 +175,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GTApplicationsDX11.v15.vcxproj">
-      <Project>{B8757F4C-106D-4E38-98F6-D013BE27BA74}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphics.v15.vcxproj">
-      <Project>{51BBAD44-0632-4222-A199-F45BB78E5989}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphicsDX11.v15.vcxproj">
-      <Project>{08B9FE3D-A338-42AD-9AE5-3F483FCFD64B}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="FiniteDifferencesConsole.cpp" />
     <ClCompile Include="FiniteDifferencesMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FiniteDifferencesConsole.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GTApplicationsDX11.v15.vcxproj">
+      <Project>{b8757f4c-106d-4e38-98f6-d013be27ba74}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GTGraphics.v15.vcxproj">
+      <Project>{51bbad44-0632-4222-a199-f45bb78e5989}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GTGraphicsDX11.v15.vcxproj">
+      <Project>{08b9fe3d-a338-42ad-9ae5-3f483fcfd64b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

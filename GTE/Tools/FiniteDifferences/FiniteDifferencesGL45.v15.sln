@@ -7,13 +7,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FiniteDifferencesGL45.v15",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Required", "Required", "{1F254FAB-9622-49BA-B528-66739E07B350}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v15", "..\..\..\GTMathematics.v15.vcxproj", "{49616508-0E21-4645-AC0B-7FE8E3628AB0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v15", "..\..\GTMathematics.v15.vcxproj", "{49616508-0E21-4645-AC0B-7FE8E3628AB0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v15", "..\..\..\GTGraphics.v15.vcxproj", "{51BBAD44-0632-4222-A199-F45BB78E5989}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v15", "..\..\GTGraphics.v15.vcxproj", "{51BBAD44-0632-4222-A199-F45BB78E5989}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphicsGL45.v15", "..\..\..\GTGraphicsGL45.v15.vcxproj", "{F85F48E2-4D4A-48F5-8A54-AF1F788DF531}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphicsGL45.v15", "..\..\GTGraphicsGL45.v15.vcxproj", "{F85F48E2-4D4A-48F5-8A54-AF1F788DF531}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplicationsGL45.v15", "..\..\..\GTApplicationsGL45.v15.vcxproj", "{14364644-585C-43A8-9C45-E2EBCD8EEE4F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplicationsGL45.v15", "..\..\GTApplicationsGL45.v15.vcxproj", "{14364644-585C-43A8-9C45-E2EBCD8EEE4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

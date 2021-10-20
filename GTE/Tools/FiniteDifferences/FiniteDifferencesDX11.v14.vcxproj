@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -96,7 +96,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile />
     </ClCompile>
@@ -113,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile />
     </ClCompile>
@@ -132,7 +132,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile />
     </ClCompile>
@@ -153,7 +153,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile />
     </ClCompile>
@@ -173,14 +173,14 @@
     <ClCompile Include="FiniteDifferencesMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GTApplicationsDX11.v14.vcxproj">
-      <Project>{741CFCD7-01A2-4325-AF0D-6678F7686FD8}</Project>
+    <ProjectReference Include="..\..\GTApplicationsDX11.v14.vcxproj">
+      <Project>{741cfcd7-01a2-4325-af0d-6678f7686fd8}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphics.v14.vcxproj">
-      <Project>{7BE071FB-E33C-4903-9278-6D12BBA46E0D}</Project>
+    <ProjectReference Include="..\..\GTGraphics.v14.vcxproj">
+      <Project>{7be071fb-e33c-4903-9278-6d12bba46e0d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphicsDX11.v14.vcxproj">
-      <Project>{56D7218D-8CCB-49A4-A2B9-D38D538EA42E}</Project>
+    <ProjectReference Include="..\..\GTGraphicsDX11.v14.vcxproj">
+      <Project>{56d7218d-8ccb-49a4-a2b9-d38d538ea42e}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

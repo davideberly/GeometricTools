@@ -97,7 +97,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -115,7 +115,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -135,7 +135,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -157,7 +157,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -178,14 +178,14 @@
     <ClInclude Include="FiniteDifferencesConsole.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GTApplicationsDX11.v16.vcxproj">
-      <Project>{85367BB5-0DE5-477A-B880-0005612F8D1C}</Project>
+    <ProjectReference Include="..\..\GTApplicationsDX11.v16.vcxproj">
+      <Project>{85367bb5-0de5-477a-b880-0005612f8d1c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphics.v16.vcxproj">
-      <Project>{ED37722A-40DE-4B07-9A4A-65E978D43643}</Project>
+    <ProjectReference Include="..\..\GTGraphics.v16.vcxproj">
+      <Project>{ed37722a-40de-4b07-9a4a-65e978d43643}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphicsDX11.v16.vcxproj">
-      <Project>{B24EA8FC-D596-42A1-AA46-72DEF1BE24BC}</Project>
+    <ProjectReference Include="..\..\GTGraphicsDX11.v16.vcxproj">
+      <Project>{b24ea8fc-d596-42a1-aa46-72def1be24bc}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
