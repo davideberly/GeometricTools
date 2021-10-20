@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 4.0.2021.10.17
 
 #pragma once
 
@@ -39,7 +39,7 @@ namespace gte
                 distance(static_cast<T>(0)),
                 sqrDistance(static_cast<T>(0)),
                 barycentric{ static_cast<T>(0), static_cast<T>(0), static_cast<T>(0) },
-                closest{}
+                closest{ Vector<N, T>::Zero(), Vector<N, T>::Zero() }
             {
             }
 
