@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.15
 
 #pragma once
 
@@ -12,29 +12,44 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Line2<Real>, Ray2<Real>>
+    template <typename T>
+    class TIQuery<T, Line2<T>, Ray2<T>>
     {
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                numIntersections(0)
+            {
+            }
 
-            // The number is 0 (no intersection), 1 (line and ray intersect
-            // in a single point) or std::numeric_limits<int>::max() (line
-            // and ray are collinear).
-            int numIntersections;
+            // If the line and ray do not intersect,
+            //   intersect = false
+            //   numIntersections = 0
+            //
+            // If the line and ray intersect in a single point,
+            //   intersect = true
+            //   numIntersections = 1
+            //
+            // If the line and ray are collinear,
+            //   intersect = true
+            //   numIntersections = std::numeric_limits<int32_t>::max()
+            bool intersect;
+            int32_t numIntersections;
         };
 
-        Result operator()(Line2<Real> const& line, Ray2<Real> const& ray)
+        Result operator()(Line2<T> const& line, Ray2<T> const& ray)
         {
-            Result result;
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            auto llResult = llQuery(line, Line2<Real>(ray.origin, ray.direction));
+            Result result{};
+
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            auto llResult = llQuery(line, Line2<T>(ray.origin, ray.direction));
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= (Real)0)
+                if (llResult.line1Parameter[0] >= (T)0)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -50,48 +65,74 @@ namespace gte
                 result.intersect = llResult.intersect;
                 result.numIntersections = llResult.numIntersections;
             }
+
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Line2<Real>, Ray2<Real>>
+    template <typename T>
+    class FIQuery<T, Line2<T>, Ray2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                lineParameter{ (T)0, (T)0 },
+                rayParameter{ (T)0, (T)0 },
+                point(Vector2<T>::Zero())
+            {
+            }
+
+            // If the line and ray do not intersect,
+            //   intersect = false
+            //   numIntersections = 0
+            //   lineParameter[] = { 0, 0 }  // invalid
+            //   rayParameter[] = { 0, 0 }  // invalid
+            //   point = { 0, 0 }  // invalid
+            //
+            // If the line and ray intersect in a single point, the parameter
+            // for line is s0 and the parameter for ray is s1 >= 0,
+            //   intersect = true
+            //   numIntersections = 1
+            //   lineParameter = { s0, s0 }
+            //   rayParameter = { s1, s1 }
+            //   point = line.origin + s0 * line.direction
+            //         = ray.origin + s1 * ray.direction
+            //
+            // If the line and ray are collinear, let
+            // maxT = std::numeric_limits<T>::max(),
+            //   intersect = true
+            //   numIntersections = std::numeric_limits<int32_t>::max()
+            //   lineParameter[] = { -maxT, +maxT }
+            //   rayParameter[] = { 0, +maxT }
+            //   point = { 0, 0 }  // invalid
             bool intersect;
-
-            // The number is 0 (no intersection), 1 (line and ray intersect
-            // in a single point) or std::numeric_limits<int>::max() (line
-            // and ray are collinear).
-            int numIntersections;
-
-            // If numIntersections is 1, the intersection is
-            //   point = line.origin + lineParameter[0] * line.direction
-            //         = ray.origin + rayParameter[0] * ray.direction
-            // If numIntersections is maxInt, point is not valid but the
-            // intervals are
-            //   lineParameter[] = { -maxReal, +maxReal }
-            //   rayParameter[] = { 0, +maxReal }
-            Real lineParameter[2], rayParameter[2];
-            Vector2<Real> point;
+            int32_t numIntersections;
+            std::array<T, 2> lineParameter;
+            std::array<T, 2> rayParameter;
+            Vector2<T> point;
         };
 
-        Result operator()(Line2<Real> const& line, Ray2<Real> const& ray)
+        Result operator()(Line2<T> const& line, Ray2<T> const& ray)
         {
-            Result result;
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            auto llResult = llQuery(line, Line2<Real>(ray.origin, ray.direction));
+            Result result{};
+
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            auto llResult = llQuery(line, Line2<T>(ray.origin, ray.direction));
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= (Real)0)
+                if (llResult.line1Parameter[0] >= (T)0)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
                     result.lineParameter[0] = llResult.line0Parameter[0];
+                    result.lineParameter[1] = result.lineParameter[0];
                     result.rayParameter[0] = llResult.line1Parameter[0];
+                    result.rayParameter[1] = result.rayParameter[0];
                     result.point = llResult.point;
                 }
                 else
@@ -100,21 +141,22 @@ namespace gte
                     result.numIntersections = 0;
                 }
             }
-            else if (llResult.numIntersections == std::numeric_limits<int>::max())
+            else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 result.intersect = true;
-                result.numIntersections = std::numeric_limits<int>::max();
-                Real maxReal = std::numeric_limits<Real>::max();
-                result.lineParameter[0] = -maxReal;
-                result.lineParameter[1] = +maxReal;
-                result.rayParameter[0] = (Real)0;
-                result.rayParameter[1] = +maxReal;
+                result.numIntersections = std::numeric_limits<int32_t>::max();
+                T maxT = std::numeric_limits<T>::max();
+                result.lineParameter[0] = -maxT;
+                result.lineParameter[1] = +maxT;
+                result.rayParameter[0] = (T)0;
+                result.rayParameter[1] = +maxT;
             }
             else
             {
                 result.intersect = false;
                 result.numIntersections = 0;
             }
+
             return result;
         }
     };
