@@ -187,7 +187,7 @@ namespace gte
             //     vertices cropped by that crop plane are removed as well by that crop plane.
             // Same consideration for cyl's bottom plane: total no. of vertices <= 8 + 2 + 2 = 12.
             std::array<Vector<2, Real>, 12> points;
-            int numPoints = 0;
+            uint8_t numPoints = 0;
 
             for (uint32_t idx = 0; idx < vertices.size(); ++idx)
             {
