@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 4.0.2021.11.02
 
 #pragma once
 
@@ -988,7 +988,7 @@ namespace gte
             auto const& tmap = graph.GetTriangles();
             while (regionQueue.size() > 0)
             {
-                auto const& tkey = regionQueue.front();
+                TriangleKey<true> tkey = regionQueue.front();
                 regionQueue.pop();
                 auto titer = tmap.find(tkey);
                 LogAssert(titer != tmap.end(), "Unexpected condition.");
