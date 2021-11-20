@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -42,9 +42,9 @@ namespace gte
             LogAssert(mXBound >= 3 && mYBound >= 3 && mF != nullptr, "Invalid input.");
             LogAssert(mXSpacing > (Real)0 && mYSpacing > (Real)0, "Invalid input.");
 
-            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound - 1);
+            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound) - static_cast<Real>(1);
             mInvXSpacing = (Real)1 / mXSpacing;
-            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound - 1);
+            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound) - static_cast<Real>(1);
             mInvYSpacing = (Real)1 / mYSpacing;
 
             if (catmullRom)

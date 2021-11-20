@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -20,13 +20,19 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Plane3<Real> const& plane, Ellipsoid3<Real> const& ellipsoid)
         {
-            Result result;
-            Matrix3x3<Real> MInverse;
+            Result result{};
+            Matrix3x3<Real> MInverse{};
             ellipsoid.GetMInverse(MInverse);
             Real discr = Dot(plane.normal, MInverse * plane.normal);
             Real root = std::sqrt(std::max(discr, (Real)0));

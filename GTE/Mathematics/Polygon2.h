@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -145,7 +145,7 @@ namespace gte
             Real area(0);
             if (mVertexPool)
             {
-                int const numIndices = static_cast<int>(mIndices.size());
+                size_t const numIndices = mIndices.size();
                 Vector2<Real> v0 = mVertexPool[mIndices[numIndices - 2]];
                 Vector2<Real> v1 = mVertexPool[mIndices[numIndices - 1]];
                 for (int index : mIndices)

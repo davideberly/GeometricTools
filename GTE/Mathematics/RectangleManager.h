@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -71,8 +71,8 @@ namespace gte
             mYLookup.resize(endpSize);
             for (int j = 0; j < endpSize; ++j)
             {
-                mXLookup[2 * mXEndpoints[j].index + mXEndpoints[j].type] = j;
-                mYLookup[2 * mYEndpoints[j].index + mYEndpoints[j].type] = j;
+                mXLookup[2 * static_cast<size_t>(mXEndpoints[j].index) + static_cast<size_t>(mXEndpoints[j].type)] = j;
+                mYLookup[2 * static_cast<size_t>(mYEndpoints[j].index) + static_cast<size_t>(mYEndpoints[j].type)] = j;
             }
 
             // Active set of rectangles (stored by index in array).
@@ -127,11 +127,12 @@ namespace gte
         // rectangles information.
         void SetRectangle(int i, AlignedBox2<Real> const& rectangle)
         {
-            mRectangles[i] = rectangle;
-            mXEndpoints[mXLookup[2 * i]].value = rectangle.min[0];
-            mXEndpoints[mXLookup[2 * i + 1]].value = rectangle.max[0];
-            mYEndpoints[mYLookup[2 * i]].value = rectangle.min[1];
-            mYEndpoints[mYLookup[2 * i + 1]].value = rectangle.max[1];
+            size_t szI = static_cast<size_t>(i);
+            mRectangles[szI] = rectangle;
+            mXEndpoints[mXLookup[2 * szI]].value = rectangle.min[0];
+            mXEndpoints[mXLookup[2 * szI + 1]].value = rectangle.max[0];
+            mYEndpoints[mYLookup[2 * szI]].value = rectangle.min[1];
+            mYEndpoints[mYLookup[2 * szI + 1]].value = rectangle.max[1];
         }
 
         inline void GetRectangle(int i, AlignedBox2<Real>& rectangle) const
@@ -195,7 +196,7 @@ namespace gte
                 while (i >= 0 && key < endpoint[i])
                 {
                     Endpoint e0 = endpoint[i];
-                    Endpoint e1 = endpoint[i + 1];
+                    Endpoint e1 = endpoint[static_cast<size_t>(i) + 1];
 
                     // Update the overlap status.
                     if (e0.type == 0)
@@ -234,13 +235,13 @@ namespace gte
 
                     // Reorder the items to maintain the sorted list.
                     endpoint[i] = e1;
-                    endpoint[i + 1] = e0;
-                    lookup[2 * e1.index + e1.type] = i;
-                    lookup[2 * e0.index + e0.type] = i + 1;
+                    endpoint[static_cast<size_t>(i) + 1] = e0;
+                    lookup[2 * static_cast<size_t>(e1.index) + static_cast<size_t>(e1.type)] = i;
+                    lookup[2 * static_cast<size_t>(e0.index) + static_cast<size_t>(e0.type)] = i + 1;
                     --i;
                 }
-                endpoint[i + 1] = key;
-                lookup[2 * key.index + key.type] = i + 1;
+                endpoint[static_cast<size_t>(i) + 1] = key;
+                lookup[2 * static_cast<size_t>(key.index) + static_cast<size_t>(key.type)] = i + 1;
             }
         }
 

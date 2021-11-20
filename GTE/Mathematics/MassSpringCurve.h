@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -22,8 +22,8 @@ namespace gte
         MassSpringCurve(int numParticles, Real step)
             :
             ParticleSystem<N, Real>(numParticles, step),
-            mConstant(numParticles - 1),
-            mLength(numParticles - 1)
+            mConstant(static_cast<size_t>(numParticles) - 1),
+            mLength(static_cast<size_t>(numParticles) - 1)
         {
             std::fill(mConstant.begin(), mConstant.end(), (Real)0);
             std::fill(mLength.begin(), mLength.end(), (Real)0);

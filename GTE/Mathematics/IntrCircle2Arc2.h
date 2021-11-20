@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -12,12 +12,21 @@
 
 namespace gte
 {
-    template <typename Real>
-    class FIQuery<Real, Circle2<Real>, Arc2<Real>>
+    template <typename T>
+    class FIQuery<T, Circle2<T>, Arc2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() },
+                arc(Vector2<T>::Zero(), (T)0, Vector2<T>::Zero(), Vector2<T>::Zero())
+            {
+            }
+
             bool intersect;
 
             // The number of intersections is 0, 1, 2 or maxInt =
@@ -28,18 +37,18 @@ namespace gte
             int numIntersections;
 
             // Valid only when numIntersections = 1 or 2.
-            Vector2<Real> point[2];
+            std::array<Vector2<T>, 2> point;
 
             // Valid only when numIntersections = maxInt.
-            Arc2<Real> arc;
+            Arc2<T> arc;
         };
 
-        Result operator()(Circle2<Real> const& circle, Arc2<Real> const& arc)
+        Result operator()(Circle2<T> const& circle, Arc2<T> const& arc)
         {
-            Result result;
+            Result result{};
 
-            Circle2<Real> circleOfArc(arc.center, arc.radius);
-            FIQuery<Real, Circle2<Real>, Circle2<Real>> ccQuery;
+            Circle2<T> circleOfArc(arc.center, arc.radius);
+            FIQuery<T, Circle2<T>, Circle2<T>> ccQuery;
             auto ccResult = ccQuery(circle, circleOfArc);
             if (!ccResult.intersect)
             {

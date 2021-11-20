@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -11,7 +11,6 @@
 // Delaunay2<InputType, ComputeType> is removed.
 #include <Mathematics/Logger.h>
 #include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/FPInterval.h>
 #include <Mathematics/HashCombine.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/PrimalQuery2.h>
@@ -19,6 +18,7 @@
 #include <Mathematics/Vector2.h>
 #include <Mathematics/VETManifoldMesh.h>
 #include <numeric>
+#include <set>
 
 // Delaunay triangulation of points (intrinsic dimensionality 2).
 //   VQ = number of vertices
@@ -302,13 +302,13 @@ namespace gte
                 if (numEdges > 0)
                 {
                     // Enumerate the edges.
-                    hull.resize(2 * numEdges);
-                    int current = 0, i = 0;
+                    hull.resize(2 * static_cast<size_t>(numEdges));
+                    size_t current = 0, i = 0;
                     for (auto adj : mAdjacencies)
                     {
                         if (adj == -1)
                         {
-                            int tri = i / 3, j = i % 3;
+                            size_t tri = i / 3, j = i % 3;
                             hull[current++] = mIndices[3 * tri + j];
                             hull[current++] = mIndices[3 * tri + ((j + 1) % 3)];
                         }
@@ -373,9 +373,10 @@ namespace gte
                 int numTriangles = static_cast<int>(mIndices.size() / 3);
                 if (0 <= i && i < numTriangles)
                 {
-                    indices[0] = mIndices[3 * i];
-                    indices[1] = mIndices[3 * i + 1];
-                    indices[2] = mIndices[3 * i + 2];
+                    size_t threeI = 3 * static_cast<size_t>(i);
+                    indices[0] = mIndices[threeI];
+                    indices[1] = mIndices[threeI + 1];
+                    indices[2] = mIndices[threeI + 2];
                     return true;
                 }
             }
@@ -397,9 +398,10 @@ namespace gte
                 int numTriangles = static_cast<int>(mIndices.size() / 3);
                 if (0 <= i && i < numTriangles)
                 {
-                    adjacencies[0] = mAdjacencies[3 * i];
-                    adjacencies[1] = mAdjacencies[3 * i + 1];
-                    adjacencies[2] = mAdjacencies[3 * i + 2];
+                    size_t threeI = 3 * static_cast<size_t>(i);
+                    adjacencies[0] = mAdjacencies[threeI];
+                    adjacencies[1] = mAdjacencies[threeI + 1];
+                    adjacencies[2] = mAdjacencies[threeI + 2];
                     return true;
                 }
             }
@@ -495,7 +497,7 @@ namespace gte
 
                     if (mQuery.ToLine(test, v[1], v[2]) > 0)
                     {
-                        triangle = mAdjacencies[ibase + 1];
+                        triangle = mAdjacencies[static_cast<size_t>(ibase) + 1];
                         if (triangle == -1)
                         {
                             info.finalV[0] = v[1];
@@ -508,7 +510,7 @@ namespace gte
 
                     if (mQuery.ToLine(test, v[2], v[0]) > 0)
                     {
-                        triangle = mAdjacencies[ibase + 2];
+                        triangle = mAdjacencies[static_cast<size_t>(ibase) + 2];
                         if (triangle == -1)
                         {
                             info.finalV[0] = v[2];

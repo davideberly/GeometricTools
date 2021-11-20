@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.02.05
+// Version: 4.6.2021.11.11
 
 #pragma once
 
@@ -117,7 +117,6 @@ namespace gte
                 // It is unknown whether the interval contains a root.
                 tRoot = zero;
                 fAtTRoot = zero;
-                LogWarning("Interval might not contain a root.");
                 return 0;
             }
 

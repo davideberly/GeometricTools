@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,8 +15,8 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, OrientedBox2<Real>, Circle2<Real>>
+    template <typename T>
+    class TIQuery<T, OrientedBox2<T>, Circle2<T>>
     {
     public:
         // The intersection query considers the box and circle to be solids;
@@ -26,37 +26,43 @@ namespace gte
         // overlap, the objects intersect.
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(OrientedBox2<Real> const& box, Circle2<Real> const& circle)
+        Result operator()(OrientedBox2<T> const& box, Circle2<T> const& circle)
         {
-            DCPQuery<Real, Vector2<Real>, OrientedBox2<Real>> pbQuery;
+            DCPQuery<T, Vector2<T>, OrientedBox2<T>> pbQuery;
             auto pbResult = pbQuery(circle.center, box);
-            Result result;
+            Result result{};
             result.intersect = (pbResult.sqrDistance <= circle.radius * circle.radius);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, OrientedBox2<Real>, Circle2<Real>>
+    template <typename T>
+    class FIQuery<T, OrientedBox2<T>, Circle2<T>>
         :
-        public FIQuery<Real, AlignedBox2<Real>, Circle2<Real>>
+        public FIQuery<T, AlignedBox2<T>, Circle2<T>>
     {
     public:
         // See the base class for the definition of 'struct Result'.
-        typename FIQuery<Real, AlignedBox2<Real>, Circle2<Real>>::Result
-        operator()(OrientedBox2<Real> const& box, Vector2<Real> const& boxVelocity,
-            Circle2<Real> const& circle, Vector2<Real> const& circleVelocity)
+        typename FIQuery<T, AlignedBox2<T>, Circle2<T>>::Result
+        operator()(OrientedBox2<T> const& box, Vector2<T> const& boxVelocity,
+            Circle2<T> const& circle, Vector2<T> const& circleVelocity)
         {
             // Transform the oriented box to an axis-aligned box centered at
             // the origin and transform the circle accordingly.  Compute the
             // velocity of the circle relative to the box.
-            Real const zero(0), one(1), minusOne(-1);
-            Vector2<Real> cdiff = circle.center - box.center;
-            Vector2<Real> vdiff = circleVelocity - boxVelocity;
-            Vector2<Real> C, V;
+            T const zero(0), one(1), minusOne(-1);
+            Vector2<T> cdiff = circle.center - box.center;
+            Vector2<T> vdiff = circleVelocity - boxVelocity;
+            Vector2<T> C, V;
             for (int i = 0; i < 2; ++i)
             {
                 C[i] = Dot(cdiff, box.axis[i]);
@@ -65,7 +71,7 @@ namespace gte
 
             // Change signs on components, if necessary, to transform C to the
             // first quadrant.  Adjust the velocity accordingly.
-            Real sign[2];
+            std::array<T, 2> sign{ (T)0, (T)0 };
             for (int i = 0; i < 2; ++i)
             {
                 if (C[i] >= zero)
@@ -80,7 +86,7 @@ namespace gte
                 }
             }
 
-            typename FIQuery<Real, AlignedBox2<Real>, Circle2<Real>>::Result result = { 0, zero, { zero, zero } };
+            typename FIQuery<T, AlignedBox2<T>, Circle2<T>>::Result result{};
             this->DoQuery(box.extent, C, circle.radius, V, result);
 
             if (result.intersectionType != 0)

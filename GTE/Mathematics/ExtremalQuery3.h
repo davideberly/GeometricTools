@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -42,14 +42,15 @@ namespace gte
         // The caller must ensure that the input polyhedron is convex.
         ExtremalQuery3(Polyhedron3<Real> const& polytope)
             :
-            mPolytope(polytope)
+            mPolytope(polytope),
+            mFaceNormals{}
         {
             // Create the face normals.
             auto vertexPool = mPolytope.GetVertices();
             auto const& indices = mPolytope.GetIndices();
-            int const numTriangles = static_cast<int>(indices.size()) / 3;
+            size_t const numTriangles = indices.size() / 3;
             mFaceNormals.resize(numTriangles);
-            for (int t = 0; t < numTriangles; ++t)
+            for (size_t t = 0; t < numTriangles; ++t)
             {
                 Vector3<Real> v0 = vertexPool[indices[3 * t + 0]];
                 Vector3<Real> v1 = vertexPool[indices[3 * t + 1]];

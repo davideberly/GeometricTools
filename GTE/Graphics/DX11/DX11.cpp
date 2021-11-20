@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11.h>
@@ -52,6 +52,6 @@ void DX11::Log(HRESULT hr, char const* file, char const* function, int line)
     {
         std::wstring_convert<std::codecvt_utf8<wchar_t>> convl;
         std::string message = convl.to_bytes(_com_error(hr).ErrorMessage());
-        Logger(file, function, line, message).Error();
+        throw std::runtime_error(std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n");
     }
 }

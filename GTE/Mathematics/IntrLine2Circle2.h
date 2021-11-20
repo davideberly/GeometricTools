@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -17,40 +17,55 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Line2<Real>, Circle2<Real>>
+    template <typename T>
+    class TIQuery<T, Line2<T>, Circle2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Line2<Real> const& line, Circle2<Real> const& circle)
+        Result operator()(Line2<T> const& line, Circle2<T> const& circle)
         {
-            Result result;
-            DCPQuery<Real, Vector2<Real>, Line2<Real>> plQuery;
+            Result result{};
+            DCPQuery<T, Vector2<T>, Line2<T>> plQuery;
             auto plResult = plQuery(circle.center, line);
             result.intersect = (plResult.distance <= circle.radius);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Line2<Real>, Circle2<Real>>
+    template <typename T>
+    class FIQuery<T, Line2<T>, Circle2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{ (T)0, (T)0 },
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            {
+            }
+
             bool intersect;
             int numIntersections;
-            std::array<Real, 2> parameter;
-            std::array<Vector2<Real>, 2> point;
+            std::array<T, 2> parameter;
+            std::array<Vector2<T>, 2> point;
         };
 
-        Result operator()(Line2<Real> const& line, Circle2<Real> const& circle)
+        Result operator()(Line2<T> const& line, Circle2<T> const& circle)
         {
-            Result result;
+            Result result{};
             DoQuery(line.origin, line.direction, circle, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -60,8 +75,8 @@ namespace gte
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& lineOrigin,
-            Vector2<Real> const& lineDirection, Circle2<Real> const& circle,
+        void DoQuery(Vector2<T> const& lineOrigin,
+            Vector2<T> const& lineDirection, Circle2<T> const& circle,
             Result& result)
         {
             // Intersection of a the line P+t*D and the circle |X-C| = R.
@@ -71,19 +86,19 @@ namespace gte
             //     = t^2 + 2*Dot(D,P-C)*t + |P-C|^2-R^2
             //     = t^2 + 2*a1*t + a0
             // If there are two distinct roots, the order is t0 < t1.
-            Vector2<Real> diff = lineOrigin - circle.center;
-            Real a0 = Dot(diff, diff) - circle.radius * circle.radius;
-            Real a1 = Dot(lineDirection, diff);
-            Real discr = a1 * a1 - a0;
-            if (discr > (Real)0)
+            Vector2<T> diff = lineOrigin - circle.center;
+            T a0 = Dot(diff, diff) - circle.radius * circle.radius;
+            T a1 = Dot(lineDirection, diff);
+            T discr = a1 * a1 - a0;
+            if (discr > (T)0)
             {
-                Real root = std::sqrt(discr);
+                T root = std::sqrt(discr);
                 result.intersect = true;
                 result.numIntersections = 2;
                 result.parameter[0] = -a1 - root;
                 result.parameter[1] = -a1 + root;
             }
-            else if (discr < (Real)0)
+            else if (discr < (T)0)
             {
                 result.intersect = false;
                 result.numIntersections = 0;

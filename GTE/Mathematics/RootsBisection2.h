@@ -3,13 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.02.05
+// Version: 4.6.2021.11.11
 
 #pragma once
 
 #include <Mathematics/RootsBisection1.h>
-#include <iomanip>
-#include <sstream>
 
 // Estimate a root to continuous functions F(x,y) and G(x,y) define on a
 // rectangle [xMin,xMax]x[yMin,yMax]. The requirements are that for each
@@ -38,7 +36,8 @@ namespace gte
             mXRoot(0),
             mYRoot(0),
             mFAtRoot(0),
-            mGAtRoot(0)
+            mGAtRoot(0),
+            mNoGuaranteeForRootBound(false)
         {
             static_assert(!is_arbitrary_precision<Real>::value,
                 "Template parameter is not a floating-point type.");
@@ -46,15 +45,16 @@ namespace gte
 
         // Use this constructor when Real is an arbitrary-precision type.
         template <typename Dummy = Real>
-            RootsBisection2(uint32_t precision, uint32_t xMaxIterations, uint32_t yMaxIterations,
-                typename std::enable_if<is_arbitrary_precision<Dummy>::value>::type* = nullptr)
+        RootsBisection2(uint32_t precision, uint32_t xMaxIterations, uint32_t yMaxIterations,
+            typename std::enable_if<is_arbitrary_precision<Dummy>::value>::type* = nullptr)
             :
             mXBisector(precision, xMaxIterations),
             mYBisector(precision, yMaxIterations),
             mXRoot(0),
             mYRoot(0),
             mFAtRoot(0),
-            mGAtRoot(0)
+            mGAtRoot(0),
+            mNoGuaranteeForRootBound(false)
         {
             static_assert(is_arbitrary_precision<Real>::value,
                 "Template parameter is not an arbitrary-precision type.");
@@ -83,38 +83,13 @@ namespace gte
 
                 // Bisect in the y-variable to find the root of YFunction(y).
                 uint32_t numYIterations = mYBisector(YFunction, yMin, yMax, mYRoot, mGAtRoot);
-                if (numYIterations == 0)
-                {
-                    // The interval is not guaranteed to bound a root.
-                    std::ostringstream message;
-                    message << std::setprecision(20)
-                        << "yMin = " << (double)yMin
-                        << ", yMax = " << (double)yMax
-                        << ", fMin = " << (double)YFunction(yMin)
-                        << ", fMax = " << (double)YFunction(yMax)
-                        << std::endl;
-                    LogWarning(message.str());
-
-                }
+                mNoGuaranteeForRootBound = (numYIterations == 0);
                 return F(x, mYRoot);
             };
 
             // Bisect in the x-variable to find the root of XFunction(x).
             uint32_t numXIterations = mXBisector(XFunction, xMin, xMax, mXRoot, mFAtRoot);
-            if (numXIterations == 0)
-            {
-                // The interval is not guaranteed to bound a root.
-                std::ostringstream message;
-                message << std::setprecision(20)
-                    << "xMin = " << (double)xMin
-                    << ", xMax = " << (double)xMax
-                    << ", fMin = " << (double)XFunction(xMin)
-                    << ", fMax = " << (double)XFunction(xMax)
-                    << std::endl;
-                LogWarning(message.str());
-
-            }
-
+            mNoGuaranteeForRootBound = (numXIterations == 0);
             xRoot = mXRoot;
             yRoot = mYRoot;
             fAtRoot = mFAtRoot;
@@ -122,8 +97,14 @@ namespace gte
             return numXIterations;
         }
 
+        inline bool NoGuaranteeForRootBound() const
+        {
+            return mNoGuaranteeForRootBound;
+        }
+
     private:
         RootsBisection1<Real> mXBisector, mYBisector;
         Real mXRoot, mYRoot, mFAtRoot, mGAtRoot;
+        bool mNoGuaranteeForRootBound;
     };
 }

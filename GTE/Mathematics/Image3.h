@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -50,12 +50,12 @@ namespace gte
         }
 
         // Support for move semantics.
-        Image3(Image3&& image)
+        Image3(Image3&& image) noexcept
         {
             *this = std::move(image);
         }
 
-        Image3& operator= (Image3&& image)
+        Image3& operator= (Image3&& image) noexcept
         {
             Image<PixelType>::operator=(image);
             return *this;
@@ -244,7 +244,7 @@ namespace gte
 #else
             size_t i = static_cast<size_t>(coord[0]) +
                 static_cast<size_t>(this->mDimensions[0]) * (static_cast<size_t>(coord[1]) +
-                    static_cast<size_t>(this->mDimensions[1] * coord[2]));
+                    static_cast<size_t>(this->mDimensions[1]) * coord[2]);
             return this->mPixels[i];
 #endif
         }
@@ -270,7 +270,7 @@ namespace gte
 #else
             size_t i = static_cast<size_t>(coord[0]) +
                 static_cast<size_t>(this->mDimensions[0]) * (static_cast<size_t>(coord[1]) +
-                    static_cast<size_t>(this->mDimensions[1] * coord[2]));
+                    static_cast<size_t>(this->mDimensions[1]) * coord[2]);
             return this->mPixels[i];
 #endif
         }
@@ -364,7 +364,7 @@ namespace gte
 
             size_t i = static_cast<size_t>(coord[0]) +
                 static_cast<size_t>(this->mDimensions[0]) * (static_cast<size_t>(coord[1]) +
-                    static_cast<size_t>(this->mDimensions[1] * coord[2]));
+                    static_cast<size_t>(this->mDimensions[1]) * coord[2]);
             return this->mPixels[i];
         }
 
@@ -385,7 +385,7 @@ namespace gte
 
             size_t i = static_cast<size_t>(coord[0]) +
                 static_cast<size_t>(this->mDimensions[0]) * (static_cast<size_t>(coord[1]) +
-                    static_cast<size_t>(this->mDimensions[1] * coord[2]));
+                    static_cast<size_t>(this->mDimensions[1]) * coord[2]);
             return this->mPixels[i];
         }
 

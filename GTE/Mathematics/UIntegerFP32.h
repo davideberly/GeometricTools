@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -42,12 +42,17 @@ namespace gte
         UIntegerFP32()
             :
             mNumBits(0),
-            mSize(0)
+            mSize(0),
+            mBits{}
         {
             static_assert(N >= 1, "Invalid size N.");
         }
 
         UIntegerFP32(UIntegerFP32 const& number)
+            :
+            mNumBits(0),
+            mSize(0),
+            mBits{}
         {
             static_assert(N >= 1, "Invalid size N.");
 
@@ -55,6 +60,10 @@ namespace gte
         }
 
         UIntegerFP32(uint32_t number)
+            :
+            mNumBits(0),
+            mSize(0),
+            mBits{}
         {
             static_assert(N >= 1, "Invalid size N.");
 
@@ -78,6 +87,10 @@ namespace gte
         }
 
         UIntegerFP32(uint64_t number)
+            :
+            mNumBits(0),
+            mSize(0),
+            mBits{}
         {
             static_assert(N >= 2, "N not large enough to store 64-bit integers.");
 
@@ -180,12 +193,12 @@ namespace gte
 
         inline void SetBack(uint32_t value)
         {
-            mBits[mSize - 1] = value;
+            mBits[static_cast<size_t>(mSize) - 1] = value;
         }
 
         inline uint32_t GetBack() const
         {
-            return mBits[mSize - 1];
+            return mBits[static_cast<size_t>(mSize) - 1];
         }
 
         inline int32_t GetSize() const

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.07
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -69,9 +69,9 @@ namespace gte
             // constructing the fitted polynomial. Powers of x and y are
             // computed up to the powers for the evaluation of the fitted
             // polynomial.
-            mXPowers.resize(2 * mXDegrees.back() + 1);
+            mXPowers.resize(2 * static_cast<size_t>(mXDegrees.back()) + 1);
             mXPowers[0] = (Real)1;
-            mYPowers.resize(2 * mYDegrees.back() + 1);
+            mYPowers.resize(2 * static_cast<size_t>(mYDegrees.back()) + 1);
             mYPowers[0] = (Real)1;
         }
 
@@ -147,15 +147,15 @@ namespace gte
 
             // Compute relevant powers of x and y.
             int jmax = mXDegrees.back();
-            for (int j = 1; j <= jmax; ++j)
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mXPowers[j] = mXPowers[j - 1] * x;
+                mXPowers[j] = mXPowers[jm1] * x;
             }
 
             jmax = mYDegrees.back();
-            for (int j = 1; j <= jmax; ++j)
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mYPowers[j] = mYPowers[j - 1] * y;
+                mYPowers[j] = mYPowers[jm1] * y;
             }
 
             Real w = (Real)0;
@@ -243,13 +243,13 @@ namespace gte
                 Real x = transformed[i][0];
                 Real y = transformed[i][1];
                 Real w = transformed[i][2];
-                for (int j = 1; j <= twoMaxXDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
                 {
-                    mXPowers[j] = mXPowers[j - 1] * x;
+                    mXPowers[j] = mXPowers[jm1] * x;
                 }
-                for (int j = 1; j <= twoMaxYDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxYDegree; ++j, ++jm1)
                 {
-                    mYPowers[j] = mYPowers[j - 1] * y;
+                    mYPowers[j] = mYPowers[jm1] * y;
                 }
 
                 for (row = 0; row < size; ++row)
@@ -259,8 +259,8 @@ namespace gte
                     Real xp, yp;
                     for (col = row; col < size; ++col)
                     {
-                        xp = mXPowers[mXDegrees[row] + mXDegrees[col]];
-                        yp = mYPowers[mYDegrees[row] + mYDegrees[col]];
+                        xp = mXPowers[static_cast<size_t>(mXDegrees[row]) + static_cast<size_t>(mXDegrees[col])];
+                        yp = mYPowers[static_cast<size_t>(mYDegrees[row]) + static_cast<size_t>(mYDegrees[col])];
                         A(row, col) += xp * yp;
                     }
 

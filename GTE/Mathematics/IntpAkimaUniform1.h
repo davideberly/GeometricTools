@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -25,11 +25,11 @@ namespace gte
         {
             LogAssert(mXSpacing > (Real)0, "Spacing must be positive.");
 
-            mXMax = mXMin + mXSpacing * static_cast<Real>(quantity - 1);
+            mXMax = mXMin + mXSpacing * static_cast<Real>(static_cast<size_t>(quantity) - 1);
 
             // Compute slopes.
             Real invDX = (Real)1 / mXSpacing;
-            std::vector<Real> slope(quantity + 3);
+            std::vector<Real> slope(static_cast<size_t>(quantity) + 3);
             int i, ip1, ip2;
             for (i = 0, ip1 = 1, ip2 = 2; i < quantity - 1; ++i, ++ip1, ++ip2)
             {
@@ -38,8 +38,8 @@ namespace gte
 
             slope[1] = (Real)2 * slope[2] - slope[3];
             slope[0] = (Real)2 * slope[1] - slope[2];
-            slope[quantity + 1] = (Real)2 * slope[quantity] - slope[quantity - 1];
-            slope[quantity + 2] = (Real)2 * slope[quantity + 1] - slope[quantity];
+            slope[static_cast<size_t>(quantity) + 1] = (Real)2 * slope[quantity] - slope[static_cast<size_t>(quantity) - 1];
+            slope[static_cast<size_t>(quantity) + 2] = (Real)2 * slope[static_cast<size_t>(quantity) + 1] - slope[quantity];
 
             // Construct derivatives.
             std::vector<Real> FDer(quantity);
@@ -90,9 +90,10 @@ namespace gte
         virtual void Lookup(Real x, int& index, Real& dx) const override
         {
             // The caller has ensured that mXMin <= x <= mXMax.
-            for (index = 0; index + 1 < this->mQuantity; ++index)
+            int indexP1;
+            for (index = 0, indexP1 = 1; indexP1 < this->mQuantity; ++index, ++indexP1)
             {
-                if (x < mXMin + mXSpacing * (index + 1))
+                if (x < mXMin + mXSpacing * (indexP1))
                 {
                     dx = x - (mXMin + mXSpacing * index);
                     return;

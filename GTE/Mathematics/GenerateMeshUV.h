@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.25
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <set>
 #include <thread>
 
 // This class is an implementation of the barycentric mapping algorithm
@@ -153,7 +154,6 @@ namespace gte
         // The mVertexInfo array stores -1 for the interior vertices.  For a
         // boundary edge <v0,v1> that is counterclockwise,
         // mVertexInfo[v0] = v1, which gives us an orded boundary polyline.
-        enum { INTERIOR_VERTEX = -1 };
         std::vector<int> mVertexInfo;
         int mNumBoundaryEdges, mBoundaryStart;
         typedef ETManifoldMesh::Edge Edge;
@@ -192,7 +192,7 @@ namespace gte
         {
             // Initialize the graph information.
             mVertexInfo.resize(mNumVertices);
-            std::fill(mVertexInfo.begin(), mVertexInfo.end(), INTERIOR_VERTEX);
+            std::fill(mVertexInfo.begin(), mVertexInfo.end(), -1);
             mVertexGraph.resize(mNumVertices);
             mVertexGraphData.resize(2 * mGraph.GetEdges().size());
             std::pair<int, Real> initialData = std::make_pair(-1, (Real)-1);
@@ -264,7 +264,7 @@ namespace gte
                 int v0 = element.second->V[0], v1 = element.second->V[1];
                 for (int i = 0; i < 2; ++i)
                 {
-                    if (mVertexInfo[v0] == INTERIOR_VERTEX)
+                    if (mVertexInfo[v0] == -1)
                     {
                         mVertexGraph[v0].distance = -1;
                     }
@@ -280,7 +280,7 @@ namespace gte
                     int range1 = mVertexGraph[v0].range1;
                     for (int j = 0; j < range1; ++j)
                     {
-                        std::pair<int, Real>& data = mVertexGraphData[range0 + j];
+                        std::pair<int, Real>& data = mVertexGraphData[static_cast<size_t>(range0) + j];
                         if (data.second == (Real)-1)
                         {
                             data.first = v1;
@@ -436,10 +436,10 @@ namespace gte
             v0 = mBoundaryStart;
             mTCoords[v0][0] = (Real)1;
             mTCoords[v0][1] = (Real)0.5;
-            for (int i = 1; i < mNumBoundaryEdges; ++i)
+            for (int i = 1, im1 = 0; i < mNumBoundaryEdges; ++i, ++im1)
             {
                 int v1 = mVertexInfo[v0];
-                Real angle = multiplier * distance[i - 1];
+                Real angle = multiplier * distance[im1];
                 mTCoords[v1][0] = (std::cos(angle) + (Real)1) * (Real)0.5;
                 mTCoords[v1][1] = (std::sin(angle) + (Real)1) * (Real)0.5;
                 v0 = v1;
@@ -504,7 +504,7 @@ namespace gte
                     int range1 = mVertexGraph[v0].range1;
                     for (int j = 0; j < range1; ++j)
                     {
-                        std::pair<int, Real>& data = mVertexGraphData[range0 + j];
+                        std::pair<int, Real>& data = mVertexGraphData[static_cast<size_t>(range0) + j];
                         if (data.first == v1)
                         {
                             data.second = weight;

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -14,37 +14,43 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray2<Real>, Segment2<Real>>
+    template <typename T>
+    class TIQuery<T, Ray2<T>, Segment2<T>>
     {
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                numIntersections(0)
+            {
+            }
 
             // The number is 0 (no intersection), 1 (ray and segment intersect
             // in a single point), or 2 (ray and segment are collinear and
             // intersect in a segment).
+            bool intersect;
             int numIntersections;
         };
 
-        Result operator()(Ray2<Real> const& ray, Segment2<Real> const& segment)
+        Result operator()(Ray2<T> const& ray, Segment2<T> const& segment)
         {
-            Result result;
-            Vector2<Real> segOrigin, segDirection;
-            Real segExtent;
+            Result result{};
+            Vector2<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            Line2<Real> line0(ray.origin, ray.direction);
-            Line2<Real> line1(segOrigin, segDirection);
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            Line2<T> line0(ray.origin, ray.direction);
+            Line2<T> line1(segOrigin, segDirection);
             auto llResult = llQuery(line0, line1);
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray and
                 // segment.
-                if (llResult.line0Parameter[0] >= (Real)0
-                    && std::fabs(llResult.line1Parameter[0]) <= segExtent)
+                if (llResult.line0Parameter[0] >= (T)0 &&
+                    std::fabs(llResult.line1Parameter[0]) <= segExtent)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -59,14 +65,14 @@ namespace gte
             {
                 // Compute the location of the right-most point of the segment
                 // relative to the ray direction.
-                Vector2<Real> diff = segOrigin - ray.origin;
-                Real t = Dot(ray.direction, diff) + segExtent;
-                if (t > (Real)0)
+                Vector2<T> diff = segOrigin - ray.origin;
+                T t = Dot(ray.direction, diff) + segExtent;
+                if (t > (T)0)
                 {
                     result.intersect = true;
                     result.numIntersections = 2;
                 }
-                else if (t < (Real)0)
+                else if (t < (T)0)
                 {
                     result.intersect = false;
                     result.numIntersections = 0;
@@ -87,17 +93,26 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray2<Real>, Segment2<Real>>
+    template <typename T>
+    class FIQuery<T, Ray2<T>, Segment2<T>>
     {
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                rayParameter{ (T)0, (T)0 },
+                segmentParameter{ (T)0, (T)0 },
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            {
+            }
 
             // The number is 0 (no intersection), 1 (ray and segment intersect
             // in a single point), or 2 (ray and segment are collinear and
             // intersect in a segment).
+            bool intersect;
             int numIntersections;
 
             // If numIntersections is 1, the intersection is
@@ -109,27 +124,27 @@ namespace gte
             //     = segment.center + segmentParameter[i] * segment.direction
             // with rayParameter[0] <= rayParameter[1] and
             // segmentParameter[0] <= segmentParameter[1].
-            Real rayParameter[2], segmentParameter[2];
-            Vector2<Real> point[2];
+            std::array<T, 2> rayParameter, segmentParameter;
+            std::array<Vector2<T>, 2> point;
         };
 
-        Result operator()(Ray2<Real> const& ray, Segment2<Real> const& segment)
+        Result operator()(Ray2<T> const& ray, Segment2<T> const& segment)
         {
-            Result result;
-            Vector2<Real> segOrigin, segDirection;
-            Real segExtent;
+            Result result{};
+            Vector2<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            Line2<Real> line0(ray.origin, ray.direction);
-            Line2<Real> line1(segOrigin, segDirection);
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            Line2<T> line0(ray.origin, ray.direction);
+            Line2<T> line1(segOrigin, segDirection);
             auto llResult = llQuery(line0, line1);
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray and
                 // segment.
-                if (llResult.line0Parameter[0] >= (Real)0
-                    && std::fabs(llResult.line1Parameter[0]) <= segExtent)
+                if (llResult.line0Parameter[0] >= (T)0 &&
+                    std::fabs(llResult.line1Parameter[0]) <= segExtent)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -147,21 +162,21 @@ namespace gte
             {
                 // Compute t for which segment.origin =
                 // ray.origin + t*ray.direction.
-                Vector2<Real> diff = segOrigin - ray.origin;
-                Real t = Dot(ray.direction, diff);
+                Vector2<T> diff = segOrigin - ray.origin;
+                T t = Dot(ray.direction, diff);
 
                 // Get the ray interval.
-                std::array<Real, 2> interval0 =
+                std::array<T, 2> interval0 =
                 {
-                    (Real)0, std::numeric_limits<Real>::max()
+                    (T)0, std::numeric_limits<T>::max()
                 };
 
                 // Compute the location of the segment endpoints relative to
                 // the ray.
-                std::array<Real, 2> interval1 = { t - segExtent, t + segExtent };
+                std::array<T, 2> interval1 = { t - segExtent, t + segExtent };
 
                 // Compute the intersection of [0,+infinity) and [tmin,tmax].
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
                 auto iiResult = iiQuery(interval0, interval1);
                 if (iiResult.intersect)
                 {

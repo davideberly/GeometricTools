@@ -18,9 +18,6 @@
     <ClCompile Include="Applications\Environment.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="Applications\LogReporter.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="Applications\OnIdleTimer.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -43,12 +40,6 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="Applications\GTApplications.cpp" />
-    <ClCompile Include="Applications\MSW\LogToMessageBox.cpp">
-      <Filter>MSW</Filter>
-    </ClCompile>
-    <ClCompile Include="Applications\MSW\LogToOutputWindow.cpp">
-      <Filter>MSW</Filter>
-    </ClCompile>
     <ClCompile Include="Applications\MSW\WICFileIO.cpp">
       <Filter>MSW</Filter>
     </ClCompile>
@@ -87,9 +78,6 @@
     <ClInclude Include="Applications\Environment.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="Applications\LogReporter.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Applications\OnIdleTimer.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -116,12 +104,6 @@
     </ClInclude>
     <ClInclude Include="Applications\GTApplications.h" />
     <ClInclude Include="Applications\GTApplicationsPCH.h" />
-    <ClInclude Include="Applications\MSW\LogToMessageBox.h">
-      <Filter>MSW</Filter>
-    </ClInclude>
-    <ClInclude Include="Applications\MSW\LogToOutputWindow.h">
-      <Filter>MSW</Filter>
-    </ClInclude>
     <ClInclude Include="Applications\MSW\WICFileIO.h">
       <Filter>MSW</Filter>
     </ClInclude>

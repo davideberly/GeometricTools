@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -33,6 +33,10 @@ namespace gte
         // topology of a sphere (genus 0 surface).
         ConformalMapGenus0()
             :
+            mPlaneCoordinates{},
+            mMinPlaneCoordinate(Vector2<Real>::Zero()),
+            mMaxPlaneCoordinate(Vector2<Real>::Zero()),
+            mSphereCoordinates{},
             mSphereRadius(0.0f)
         {
         }
@@ -146,7 +150,6 @@ namespace gte
                 numPositions, A, tmp.data(), result.data(), maxIterations, tolerance);
             if (iterations >= maxIterations)
             {
-                LogWarning("Conjugate gradient solver did not converge.");
                 converged = false;
             }
             for (i = 0; i < numPositions; ++i)
@@ -163,7 +166,6 @@ namespace gte
                 tmp.data(), result.data(), maxIterations, tolerance);
             if (iterations >= maxIterations)
             {
-                LogWarning("Conjugate gradient solver did not converge.");
                 converged = false;
             }
             for (i = 0; i < numPositions; ++i)

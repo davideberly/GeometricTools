@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -21,78 +21,90 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class TIQuery<T, Ray2<T>, AlignedBox2<T>>
         :
-        public TIQuery<Real, Line2<Real>, AlignedBox2<Real>>
+        public TIQuery<T, Line2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
+            public TIQuery<T, Line2<T>, AlignedBox2<T>>::Result
         {
+            Result()
+                :
+                TIQuery<T, Line2<T>, AlignedBox2<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Ray2<Real> const& ray, AlignedBox2<Real> const& box)
+        Result operator()(Ray2<T> const& ray, AlignedBox2<T> const& box)
         {
-            // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector2<Real>::Unit(d).
-            Vector2<Real> boxCenter, boxExtent;
+            // Get the centered form of the aligned box. The axes are
+            // implicitly Axis[d] = Vector2<T>::Unit(d).
+            Vector2<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the ray to the aligned-box coordinate system.
-            Vector2<Real> rayOrigin = ray.origin - boxCenter;
+            Vector2<T> rayOrigin = ray.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(rayOrigin, ray.direction, boxExtent, result);
             return result;
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& rayOrigin,
-            Vector2<Real> const& rayDirection, Vector2<Real> const& boxExtent,
+        void DoQuery(Vector2<T> const& rayOrigin,
+            Vector2<T> const& rayDirection, Vector2<T> const& boxExtent,
             Result& result)
         {
             for (int i = 0; i < 2; ++i)
             {
-                if (std::fabs(rayOrigin[i]) > boxExtent[i]
-                    && rayOrigin[i] * rayDirection[i] >= (Real)0)
+                if (std::fabs(rayOrigin[i]) > boxExtent[i] &&
+                    rayOrigin[i] * rayDirection[i] >= (T)0)
                 {
                     result.intersect = false;
                     return;
                 }
             }
 
-            TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::DoQuery(rayOrigin,
+            TIQuery<T, Line2<T>, AlignedBox2<T>>::DoQuery(rayOrigin,
                 rayDirection, boxExtent, result);
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class FIQuery<T, Ray2<T>, AlignedBox2<T>>
         :
-        public FIQuery<Real, Line2<Real>, AlignedBox2<Real>>
+        public FIQuery<T, Line2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
+            public FIQuery<T, Line2<T>, AlignedBox2<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line2<T>, AlignedBox2<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Ray2<Real> const& ray, AlignedBox2<Real> const& box)
+        Result operator()(Ray2<T> const& ray, AlignedBox2<T> const& box)
         {
             // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector2<Real>::Unit(d).
-            Vector2<Real> boxCenter, boxExtent;
+            // implicitly Axis[d] = Vector2<T>::Unit(d).
+            Vector2<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the ray to the aligned-box coordinate system.
-            Vector2<Real> rayOrigin = ray.origin - boxCenter;
+            Vector2<T> rayOrigin = ray.origin - boxCenter;
 
-            Result result;
+            Result result{};
             DoQuery(rayOrigin, ray.direction, boxExtent, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -102,11 +114,11 @@ namespace gte
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& rayOrigin,
-            Vector2<Real> const& rayDirection, Vector2<Real> const& boxExtent,
+        void DoQuery(Vector2<T> const& rayOrigin,
+            Vector2<T> const& rayDirection, Vector2<T> const& boxExtent,
             Result& result)
         {
-            FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::DoQuery(rayOrigin,
+            FIQuery<T, Line2<T>, AlignedBox2<T>>::DoQuery(rayOrigin,
                 rayDirection, boxExtent, result);
 
             if (result.intersect)
@@ -114,9 +126,9 @@ namespace gte
                 // The line containing the ray intersects the box; the
                 // t-interval is [t0,t1].  The ray intersects the box as long
                 // as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval =
-                { (Real)0, std::numeric_limits<Real>::max() };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> rayInterval =
+                    { (T)0, std::numeric_limits<T>::max() };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, rayInterval);
                 result.intersect = iiResult.intersect;
                 result.numIntersections = iiResult.numIntersections;

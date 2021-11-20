@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.09.18
+// Version: 4.6.2021.11.11
 
 #pragma once
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/ArbitraryPrecision.h>
-#include "ConvexMesh3.h"
+#include <Mathematics/ConvexMesh3.h>
 #include <Mathematics/EdgeKey.h>
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/UniqueVerticesSimplices.h>
@@ -92,12 +92,23 @@ namespace gte
 
         struct Result
         {
+            Result()
+                :
+                configuration(CFG_EMPTY),
+                requested(REQ_CONFIGURATION_ONLY),
+                intersectionMesh{},
+                intersectionPolygon{},
+                positivePolyhedron{},
+                negativePolyhedron{}
+            {
+            }
+
             // The configuration describes geometrically how the input convex
             // polyhedron and the plane intersect.
-            int configuration = CFG_EMPTY;
+            int configuration;
 
             // You can specify the information you want from the query.
-            int requested = REQ_CONFIGURATION_ONLY;
+            int requested;
 
             // The intersection of the convex polyhedron and the plane is
             // either empty, a single vertex, a single edge or a convex
@@ -132,7 +143,7 @@ namespace gte
             static_assert(is_arbitrary_precision<Real>::value, "Real must be arbitrary precision.");
             static_assert(has_division_operator<Real>::value, "Real must support division.");
 
-            Result result;
+            Result result{};
             result.requested = requested;
 
             // Storage for (Dot(N,X) - c) for each vertex X, where N is a

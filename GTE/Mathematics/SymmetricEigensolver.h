@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -120,17 +120,18 @@ namespace gte
         {
             if (size > 1 && maxIterations > 0)
             {
+                size_t szSize = static_cast<size_t>(size);
                 mSize = size;
                 mMaxIterations = maxIterations;
-                mMatrix.resize(size * size);
-                mDiagonal.resize(size);
-                mSuperdiagonal.resize(size - 1);
-                mGivens.reserve(maxIterations * (size - 1));
-                mPermutation.resize(size);
-                mVisited.resize(size);
-                mPVector.resize(size);
-                mVVector.resize(size);
-                mWVector.resize(size);
+                mMatrix.resize(szSize * szSize);
+                mDiagonal.resize(szSize);
+                mSuperdiagonal.resize(szSize - 1);
+                mGivens.reserve(static_cast<size_t>(maxIterations) * (szSize - 1));
+                mPermutation.resize(szSize);
+                mVisited.resize(szSize);
+                mPVector.resize(szSize);
+                mVVector.resize(szSize);
+                mWVector.resize(szSize);
             }
         }
 
@@ -146,7 +147,7 @@ namespace gte
 
             if (mSize > 0)
             {
-                std::copy(input, input + mSize * mSize, mMatrix.begin());
+                std::copy(input, input + static_cast<size_t>(mSize) * static_cast<size_t>(mSize), mMatrix.begin());
                 Tridiagonalize();
 
                 mGivens.clear();
@@ -159,7 +160,7 @@ namespace gte
                         // neighbors, it is effectively zero.
                         Real a00 = mDiagonal[i];
                         Real a01 = mSuperdiagonal[i];
-                        Real a11 = mDiagonal[i + 1];
+                        Real a11 = mDiagonal[static_cast<size_t>(i) + 1];
                         Real sum = std::fabs(a00) + std::fabs(a11);
                         if (sum + std::fabs(a01) != sum)
                         {
@@ -238,7 +239,7 @@ namespace gte
             if (eigenvectors && mSize > 0)
             {
                 // Start with the identity matrix.
-                std::fill(eigenvectors, eigenvectors + mSize * mSize, (Real)0);
+                std::fill(eigenvectors, eigenvectors + static_cast<size_t>(mSize) * static_cast<size_t>(mSize), (Real)0);
                 for (int d = 0; d < mSize; ++d)
                 {
                     eigenvectors[d + mSize * d] = (Real)1;
@@ -400,7 +401,20 @@ namespace gte
                     }
 
                     // Compute s = Dot(x,v) * 2/v^T*v.
+                    //
+                    // NOTE: MSVS 2019 16+ generates for Real=double, mSize=6:
+                    //   warning C6385: Reading invalid data from 'x':  the
+                    //   readable size is '_Old_3`mSize*sizeof(Real)' bytes,
+                    //   but '16' bytes may be read.
+                    // This appears to be incorrect. At this point in the
+                    // code, r = i + 1. On i-loop entry, r = mSize-2. On
+                    // i-loop exit, r = 1. This keeps r in the valid range
+                    // for x[].
                     Real s = x[r];  // r = i+1, v[i+1] = 1
+
+                    // Note that on i-loop entry, r = mSize-2 in which
+                    // case r+1 = mSize-1. This keeps index j in the valid
+                    // range for x[].
                     for (int j = r + 1; j < mSize; ++j)
                     {
                         s += x[j] * column[mSize * j];
@@ -470,7 +484,7 @@ namespace gte
                 }
                 for (r = ip1; r < mSize; ++r)
                 {
-                    Real vr = mMatrix[r + mSize * i];
+                    Real vr = mMatrix[r + static_cast<size_t>(mSize) * i];
                     mVVector[r] = vr;
                     length += vr * vr;
                 }
@@ -499,11 +513,11 @@ namespace gte
                     mPVector[r] = (Real)0;
                     for (c = i; c < r; ++c)
                     {
-                        mPVector[r] += mMatrix[r + mSize * c] * mVVector[c];
+                        mPVector[r] += mMatrix[r + static_cast<size_t>(mSize) * c] * mVVector[c];
                     }
                     for (/**/; c < mSize; ++c)
                     {
-                        mPVector[r] += mMatrix[c + mSize * r] * mVVector[c];
+                        mPVector[r] += mMatrix[c + static_cast<size_t>(mSize) * r] * mVVector[c];
                     }
                     mPVector[r] *= twoinvvdv;
                     pdvtvdv += mPVector[r] * mVVector[r];
@@ -521,11 +535,11 @@ namespace gte
                     Real vr = mVVector[r];
                     Real wr = mWVector[r];
                     Real offset = vr * wr * (Real)2;
-                    mMatrix[r + mSize * r] -= offset;
+                    mMatrix[r + static_cast<size_t>(mSize) * r] -= offset;
                     for (c = r + 1; c < mSize; ++c)
                     {
                         offset = vr * mWVector[c] + wr * mVVector[c];
-                        mMatrix[c + mSize * r] -= offset;
+                        mMatrix[c + static_cast<size_t>(mSize) * r] -= offset;
                     }
                 }
 
@@ -535,10 +549,10 @@ namespace gte
                 // instead, the quantity 2/Dot(v,v) is stored for use in
                 // eigenvector construction. That construction must take
                 // into account the implied components that are not stored.
-                mMatrix[i + mSize * ip1] = twoinvvdv;
+                mMatrix[i + static_cast<size_t>(mSize) * ip1] = twoinvvdv;
                 for (r = ip1 + 1; r < mSize; ++r)
                 {
-                    mMatrix[i + mSize * r] = mVVector[r];
+                    mMatrix[i + static_cast<size_t>(mSize) * r] = mVVector[r];
                 }
             }
 
@@ -548,7 +562,7 @@ namespace gte
             for (k = 0; k < ksup; ++k, index += delta)
             {
                 mDiagonal[k] = mMatrix[index];
-                mSuperdiagonal[k] = mMatrix[index + 1];
+                mSuperdiagonal[k] = mMatrix[static_cast<size_t>(index) + 1];
             }
             mDiagonal[k] = mMatrix[index];
         }
@@ -595,7 +609,7 @@ namespace gte
             // lower-right 2x2 block that is closer to a11.
             Real a00 = mDiagonal[imax];
             Real a01 = mSuperdiagonal[imax];
-            Real a11 = mDiagonal[imax + 1];
+            Real a11 = mDiagonal[static_cast<size_t>(imax) + 1];
             Real dif = (a00 - a11) * (Real)0.5;
             Real sgn = (dif >= (Real)0 ? (Real)1 : (Real)-1);
             Real a01sqr = a01 * a01;
@@ -680,6 +694,13 @@ namespace gte
             // start with the identity permutation I = (0,1,...,N-1).
             struct SortItem
             {
+                SortItem()
+                    :
+                    eigenvalue((Real)0),
+                    index(0)
+                {
+                }
+
                 Real eigenvalue;
                 int index;
             };

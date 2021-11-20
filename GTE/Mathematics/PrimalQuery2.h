@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.10.17
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -292,23 +292,23 @@ namespace gte
 
         // An extended classification of the relationship of a point to a line
         // segment.  For noncollinear points, the return value is
-        //   ORDER_POSITIVE when <P,Q0,Q1> is a counterclockwise triangle
-        //   ORDER_NEGATIVE when <P,Q0,Q1> is a clockwise triangle
+        //   OrderType::POSITIVE when <P,Q0,Q1> is a counterclockwise triangle
+        //   OrderType::NEGATIVE when <P,Q0,Q1> is a clockwise triangle
         // For collinear points, the line direction is Q1-Q0.  The return
         // value is
-        //   ORDER_COLLINEAR_LEFT when the line ordering is <P,Q0,Q1>
-        //   ORDER_COLLINEAR_RIGHT when the line ordering is <Q0,Q1,P>
-        //   ORDER_COLLINEAR_CONTAIN when the line ordering is <Q0,P,Q1>
-        enum OrderType
+        //   OrderType::COLLINEAR_LEFT when the line ordering is <P,Q0,Q1>
+        //   OrderType::COLLINEAR_RIGHT when the line ordering is <Q0,Q1,P>
+        //   OrderType::COLLINEAR_CONTAIN when the line ordering is <Q0,P,Q1>
+        enum class OrderType
         {
-            ORDER_Q0_EQUALS_Q1,
-            ORDER_P_EQUALS_Q0,
-            ORDER_P_EQUALS_Q1,
-            ORDER_POSITIVE,
-            ORDER_NEGATIVE,
-            ORDER_COLLINEAR_LEFT,
-            ORDER_COLLINEAR_RIGHT,
-            ORDER_COLLINEAR_CONTAIN
+            Q0_EQUALS_Q1,
+            P_EQUALS_Q0,
+            P_EQUALS_Q1,
+            POSITIVE,
+            NEGATIVE,
+            COLLINEAR_LEFT,
+            COLLINEAR_RIGHT,
+            COLLINEAR_CONTAIN
         };
 
         // Choice of N for UIntegerFP32<N>.
@@ -328,21 +328,21 @@ namespace gte
             Real y0 = Q1[1] - Q0[1];
             if (x0 == zero && y0 == zero)
             {
-                return ORDER_Q0_EQUALS_Q1;
+                return OrderType::Q0_EQUALS_Q1;
             }
 
             Real x1 = P[0] - Q0[0];
             Real y1 = P[1] - Q0[1];
             if (x1 == zero && y1 == zero)
             {
-                return ORDER_P_EQUALS_Q0;
+                return OrderType::P_EQUALS_Q0;
             }
 
             Real x2 = P[0] - Q1[0];
             Real y2 = P[1] - Q1[1];
             if (x2 == zero && y2 == zero)
             {
-                return ORDER_P_EQUALS_Q1;
+                return OrderType::P_EQUALS_Q1;
             }
 
             // The theoretical classification relies on computing exactly the
@@ -357,12 +357,12 @@ namespace gte
                 if (det > zero)
                 {
                     // The points form a counterclockwise triangle <P,Q0,Q1>.
-                    return ORDER_POSITIVE;
+                    return OrderType::POSITIVE;
                 }
                 else
                 {
                     // The points form a clockwise triangle <P,Q1,Q0>.
-                    return ORDER_NEGATIVE;
+                    return OrderType::NEGATIVE;
                 }
             }
             else
@@ -375,7 +375,7 @@ namespace gte
                 if (dot < zero)
                 {
                     // The line ordering is <P,Q0,Q1>.
-                    return ORDER_COLLINEAR_LEFT;
+                    return OrderType::COLLINEAR_LEFT;
                 }
 
                 Real x0x0 = x0 * x0;
@@ -384,12 +384,12 @@ namespace gte
                 if (dot > sqrLength)
                 {
                     // The line ordering is <Q0,Q1,P>.
-                    return ORDER_COLLINEAR_RIGHT;
+                    return OrderType::COLLINEAR_RIGHT;
                 }
 
                 // The line ordering is <Q0,P,Q1> with P strictly between
                 // Q0 and Q1.
-                return ORDER_COLLINEAR_CONTAIN;
+                return OrderType::COLLINEAR_CONTAIN;
             }
         }
 

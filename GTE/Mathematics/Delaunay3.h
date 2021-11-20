@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -332,14 +332,14 @@ namespace gte
                     // viewed outside the tetrahedron, the swap of the last
                     // two indices occurs when face is an odd number;
                     // (face % 2) != 0.
-                    hull.resize(3 * numTriangles);
-                    int current = 0, i = 0;
+                    hull.resize(3 * static_cast<size_t>(numTriangles));
+                    size_t current = 0, i = 0;
                     for (auto adj : mAdjacencies)
                     {
                         if (adj == -1)
                         {
-                            int tetra = i / 4, face = i % 4;
-                            for (int j = 0; j < 4; ++j)
+                            size_t tetra = i / 4, face = i % 4;
+                            for (size_t j = 0; j < 4; ++j)
                             {
                                 if (j != face)
                                 {
@@ -377,10 +377,11 @@ namespace gte
                 int numTetrahedra = static_cast<int>(mIndices.size() / 4);
                 if (0 <= i && i < numTetrahedra)
                 {
-                    indices[0] = mIndices[4 * i];
-                    indices[1] = mIndices[4 * i + 1];
-                    indices[2] = mIndices[4 * i + 2];
-                    indices[3] = mIndices[4 * i + 3];
+                    size_t fourI = 4 * static_cast<size_t>(i);
+                    indices[0] = mIndices[fourI];
+                    indices[1] = mIndices[fourI + 1];
+                    indices[2] = mIndices[fourI + 2];
+                    indices[3] = mIndices[fourI + 3];
                     return true;
                 }
             }
@@ -403,10 +404,11 @@ namespace gte
                 int numTetrahedra = static_cast<int>(mIndices.size() / 4);
                 if (0 <= i && i < numTetrahedra)
                 {
-                    adjacencies[0] = mAdjacencies[4 * i];
-                    adjacencies[1] = mAdjacencies[4 * i + 1];
-                    adjacencies[2] = mAdjacencies[4 * i + 2];
-                    adjacencies[3] = mAdjacencies[4 * i + 3];
+                    size_t fourI = 4 * static_cast<size_t>(i);
+                    adjacencies[0] = mAdjacencies[fourI];
+                    adjacencies[1] = mAdjacencies[fourI + 1];
+                    adjacencies[2] = mAdjacencies[fourI + 2];
+                    adjacencies[3] = mAdjacencies[fourI + 3];
                     return true;
                 }
             }
@@ -437,6 +439,16 @@ namespace gte
         // for the next call, which should reduce search times.
         struct SearchInfo
         {
+            SearchInfo()
+                :
+                initialTetrahedron(0),
+                numPath(0),
+                path{},
+                finalTetrahedron(0),
+                finalV{ 0, 0, 0, 0 }
+            {
+            }
+
             int initialTetrahedron;
             int numPath;
             std::vector<int> path;
@@ -498,7 +510,7 @@ namespace gte
                     // tetrahedron.
                     if (mQuery.ToPlane(test, v[0], v[2], v[3]) < 0)
                     {
-                        tetrahedron = mAdjacencies[ibase + 1];
+                        tetrahedron = mAdjacencies[static_cast<size_t>(ibase) + 1];
                         if (tetrahedron == -1)
                         {
                             info.finalV[0] = v[0];
@@ -514,7 +526,7 @@ namespace gte
                     // tetrahedron.
                     if (mQuery.ToPlane(test, v[0], v[1], v[3]) > 0)
                     {
-                        tetrahedron = mAdjacencies[ibase + 2];
+                        tetrahedron = mAdjacencies[static_cast<size_t>(ibase) + 2];
                         if (tetrahedron == -1)
                         {
                             info.finalV[0] = v[0];
@@ -530,7 +542,7 @@ namespace gte
                     // tetrahedron.
                     if (mQuery.ToPlane(test, v[0], v[1], v[2]) < 0)
                     {
-                        tetrahedron = mAdjacencies[ibase + 3];
+                        tetrahedron = mAdjacencies[static_cast<size_t>(ibase) + 3];
                         if (tetrahedron == -1)
                         {
                             info.finalV[0] = v[0];

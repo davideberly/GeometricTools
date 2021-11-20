@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -13,9 +13,9 @@
 #include <Mathematics/IntrSegment3AlignedBox3.h>
 
 // Test for intersection of a box and a cone.  The cone can be infinite
-//   0 <= minHeight < maxHeight = std::numeric_limits<Real>::max()
+//   0 <= minHeight < maxHeight = std::numeric_limits<T>::max()
 // or finite (cone frustum)
-//   0 <= minHeight < maxHeight < std::numeric_limits<Real>::max().
+//   0 <= minHeight < maxHeight < std::numeric_limits<T>::max().
 // The algorithm is described in
 //   https://www.geometrictools.com/Documentation/IntersectionBoxCone.pdf
 // and reports an intersection only when the intersection set has positive
@@ -27,28 +27,42 @@
 // is reported.
 
 // TODO: These queries were designed when an infinite cone was defined
-// by choosing maxHeight of std::numeric_limits<Real>::max(). The Cone<N,Real>
+// by choosing maxHeight of std::numeric_limits<T>::max(). The Cone<N,T>
 // class has been redesigned not to use std::numeric_limits to allow for
 // arithmetic systems that do not have representations for infinities
 // (such as BSNumber and BSRational).  The intersection queries need to be
 // rewritten for the new class design.  FOR NOW, the queries will work with
 // float/double when you create a cone using the cone-frustum constructor
-// Cone(ray, angle, minHeight, std::numeric_limits<Real>::max()).
+// Cone(ray, angle, minHeight, std::numeric_limits<T>::max()).
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, AlignedBox<3, Real>, Cone<3, Real>>
+    template <typename T>
+    class TIQuery<T, AlignedBox3<T>, Cone3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         TIQuery()
             :
-            mNumCandidateEdges(0)
+            mVertices{},
+            mEdges{},
+            mFaces{},
+            mProjectionMin{},
+            mProjectionMax{},
+            mNumCandidateEdges(0),
+            mCandidateEdges{},
+            mAdjacencyMatrix{},
+            mConfiguration{}
         {
             // An edge is { v0, v1 }, where v0 and v1 are relative to mVertices
             // with v0 < v1.
@@ -80,11 +94,19 @@ namespace gte
             mFaces[5] = { { 4, 5, 7, 6 }, {  4,  5,  6,  7 } };
 
             // Clear the edges.
-            std::array<size_t, 2> ezero = { 0, 0 };
-            mCandidateEdges.fill(ezero);
+            for (size_t r = 0; r < MAX_CANDIDATE_EDGES; ++r)
+            {
+                for (size_t c = 0; c < 2; ++c)
+                {
+                    mCandidateEdges[r][c] = 0;
+                }
+            }
             for (size_t r = 0; r < MAX_VERTICES; ++r)
             {
-                mAdjacencyMatrix[r].fill(0);
+                for (size_t c = 0; c < MAX_VERTICES; ++c)
+                {
+                    mAdjacencyMatrix[r][c] = 0;
+                }
             }
 
             mConfiguration[0] = &TIQuery::NNNN_0;
@@ -170,19 +192,19 @@ namespace gte
             mConfiguration[80] = &TIQuery::PPPP_80;
         }
 
-        Result operator()(AlignedBox<3, Real> const& box, Cone<3, Real> const& cone)
+        Result operator()(AlignedBox3<T> const& box, Cone3<T> const& cone)
         {
-            Result result;
+            Result result{};
 
             // Quick-rejectance test.  Determine whether the box is outside
             // the slab bounded by the minimum and maximum height planes.
             // When outside the slab, the box vertices are not required by the
             // cone-box intersection query, so the vertices are not yet
             // computed.
-            Real boxMinHeight(0), boxMaxHeight(0);
+            T boxMinHeight = (T)0, boxMaxHeight = (T)0;
             ComputeBoxHeightInterval(box, cone, boxMinHeight, boxMaxHeight);
             // TODO: See the comments at the beginning of this file.
-            Real coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<Real>::max());
+            T coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<T>::max());
             if (boxMaxHeight <= cone.GetMinHeight() || boxMinHeight >= coneMaxHeight)
             {
                 // There is no volumetric overlap of the box and the cone. The
@@ -228,17 +250,14 @@ namespace gte
 
     protected:
         // The constants here are described in the comments below.
-        enum
-        {
-            NUM_BOX_VERTICES = 8,
-            NUM_BOX_EDGES = 12,
-            NUM_BOX_FACES = 6,
-            MAX_VERTICES = 32,
-            VERTEX_MIN_BASE = 8,
-            VERTEX_MAX_BASE = 20,
-            MAX_CANDIDATE_EDGES = 496,
-            NUM_CONFIGURATIONS = 81
-        };
+        static size_t constexpr NUM_BOX_VERTICES = 8;
+        static size_t constexpr NUM_BOX_EDGES = 12;
+        static size_t constexpr NUM_BOX_FACES = 6;
+        static size_t constexpr MAX_VERTICES = 32;
+        static size_t constexpr VERTEX_MIN_BASE = 8;
+        static size_t constexpr VERTEX_MAX_BASE = 20;
+        static size_t constexpr MAX_CANDIDATE_EDGES = 496;
+        static size_t constexpr NUM_CONFIGURATIONS = 81;
 
         // The box topology is that of a cube whose vertices have components
         // in {0,1}.  The cube vertices are indexed by
@@ -249,7 +268,7 @@ namespace gte
         // reserved for hmin-edge points and the final 12 vertices are reserved
         // for the hmax-edge points.  The conservative upper bound of the number
         // of vertices is 8 + 12 + 12 = 32.
-        std::array<Vector3<Real>, MAX_VERTICES> mVertices;
+        std::array<Vector3<T>, MAX_VERTICES> mVertices;
 
         // The box has 12 edges stored in mEdges.  An edge is mEdges[i] =
         // { v0, v1 }, where the indices v0 and v1 are relative to mVertices
@@ -277,7 +296,7 @@ namespace gte
         // Store the signed distances from the minimum and maximum height
         // planes for the cone to the projection of the box vertices onto the
         // cone axis.
-        std::array<Real, NUM_BOX_VERTICES> mProjectionMin, mProjectionMax;
+        std::array<T, NUM_BOX_VERTICES> mProjectionMin, mProjectionMax;
 
         // The mCandidateEdges array stores the edges of the clipped box that
         // are candidates for containing the optimizing point.  The maximum
@@ -301,28 +320,28 @@ namespace gte
         typedef void (TIQuery::* ConfigurationFunction)(size_t, Face const&);
         std::array<ConfigurationFunction, NUM_CONFIGURATIONS> mConfiguration;
 
-        static void ComputeBoxHeightInterval(AlignedBox<3, Real> const& box, Cone<3, Real> const& cone,
-            Real& boxMinHeight, Real& boxMaxHeight)
+        static void ComputeBoxHeightInterval(AlignedBox3<T> const& box, Cone3<T> const& cone,
+            T& boxMinHeight, T& boxMaxHeight)
         {
-            Vector<3, Real> C, e;
+            Vector3<T> C, e;
             box.GetCenteredForm(C, e);
-            Vector<3, Real> const& V = cone.ray.origin;
-            Vector<3, Real> const& U = cone.ray.direction;
-            Vector<3, Real> CmV = C - V;
-            Real DdCmV = Dot(U, CmV);
-            Real radius = e[0] * std::abs(U[0]) + e[1] * std::abs(U[1]) + e[2] * std::abs(U[2]);
+            Vector3<T> const& V = cone.ray.origin;
+            Vector3<T> const& U = cone.ray.direction;
+            Vector3<T> CmV = C - V;
+            T DdCmV = Dot(U, CmV);
+            T radius = e[0] * std::abs(U[0]) + e[1] * std::abs(U[1]) + e[2] * std::abs(U[2]);
             boxMinHeight = DdCmV - radius;
             boxMaxHeight = DdCmV + radius;
         }
 
-        static bool ConeAxisIntersectsBox(AlignedBox<3, Real> const& box, Cone<3, Real> const& cone)
+        static bool ConeAxisIntersectsBox(AlignedBox3<T> const& box, Cone3<T> const& cone)
         {
             if (cone.IsFinite())
             {
-                Segment<3, Real> segment;
+                Segment3<T> segment;
                 segment.p[0] = cone.ray.origin + cone.GetMinHeight() * cone.ray.direction;
                 segment.p[1] = cone.ray.origin + cone.GetMaxHeight() * cone.ray.direction;
-                auto sbResult = TIQuery<Real, Segment<3, Real>, AlignedBox<3, Real>>()(segment, box);
+                auto sbResult = TIQuery<T, Segment3<T>, AlignedBox3<T>>()(segment, box);
                 if (sbResult.intersect)
                 {
                     return true;
@@ -330,10 +349,10 @@ namespace gte
             }
             else
             {
-                Ray<3, Real> ray;
+                Ray3<T> ray;
                 ray.origin = cone.ray.origin + cone.GetMinHeight() * cone.ray.direction;
                 ray.direction = cone.ray.direction;
-                auto rbResult = TIQuery<Real, Ray<3, Real>, AlignedBox<3, Real>>()(ray, box);
+                auto rbResult = TIQuery<T, Ray3<T>, AlignedBox3<T>>()(ray, box);
                 if (rbResult.intersect)
                 {
                     return true;
@@ -342,7 +361,7 @@ namespace gte
             return false;
         }
 
-        bool BoxFullyInConeSlab(AlignedBox<3, Real> const& box, Real boxMinHeight, Real boxMaxHeight, Cone<3, Real> const& cone)
+        bool BoxFullyInConeSlab(AlignedBox3<T> const& box, T boxMinHeight, T boxMaxHeight, Cone3<T> const& cone)
         {
             // Compute the box vertices relative to cone vertex as origin.
             mVertices[0] = { box.min[0], box.min[1], box.min[2] };
@@ -353,12 +372,12 @@ namespace gte
             mVertices[5] = { box.max[0], box.min[1], box.max[2] };
             mVertices[6] = { box.min[0], box.max[1], box.max[2] };
             mVertices[7] = { box.max[0], box.max[1], box.max[2] };
-            for (int i = 0; i < NUM_BOX_VERTICES; ++i)
+            for (size_t i = 0; i < NUM_BOX_VERTICES; ++i)
             {
                 mVertices[i] -= cone.ray.origin;
             }
 
-            Real coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<Real>::max());
+            T coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<T>::max());
             if (cone.GetMinHeight() <= boxMinHeight && boxMaxHeight <= coneMaxHeight)
             {
                 // The box is fully inside, so no clipping is necessary.
@@ -369,8 +388,8 @@ namespace gte
             return false;
         }
 
-        static bool HasPointInsideCone(Vector<3, Real> const& P0, Vector<3, Real> const& P1,
-            Cone<3, Real> const& cone)
+        static bool HasPointInsideCone(Vector3<T> const& P0, Vector3<T> const& P1,
+            Cone3<T> const& cone)
         {
             // Define F(X) = Dot(U,X - V)/|X - V|, where U is the unit-length
             // cone axis direction and V is the cone vertex.  The incoming
@@ -381,38 +400,38 @@ namespace gte
             // an equivalent one that does not involve divisions in order to
             // avoid a division by zero if a vertex or edge contain (0,0,0).
             // The function is G(X) = Dot(U,X-V) - cosAngle*Length(X-V).
-            Vector<3, Real> const& U = cone.ray.direction;
+            Vector3<T> const& U = cone.ray.direction;
 
             // Test whether P0 or P1 is inside the cone.
-            Real g = Dot(U, P0) - cone.cosAngle * Length(P0);
-            if (g > (Real)0)
+            T g = Dot(U, P0) - cone.cosAngle * Length(P0);
+            if (g > (T)0)
             {
                 // X0 = P0 + V is inside the cone.
                 return true;
             }
 
             g = Dot(U, P1) - cone.cosAngle * Length(P1);
-            if (g > (Real)0)
+            if (g > (T)0)
             {
                 // X1 = P1 + V is inside the cone.
                 return true;
             }
 
             // Test whether an interior segment point is inside the cone.
-            Vector<3, Real> E = P1 - P0;
-            Vector<3, Real> crossP0U = Cross(P0, U);
-            Vector<3, Real> crossP0E = Cross(P0, E);
-            Real dphi0 = Dot(crossP0E, crossP0U);
-            if (dphi0 > (Real)0)
+            Vector3<T> E = P1 - P0;
+            Vector3<T> crossP0U = Cross(P0, U);
+            Vector3<T> crossP0E = Cross(P0, E);
+            T dphi0 = Dot(crossP0E, crossP0U);
+            if (dphi0 > (T)0)
             {
-                Vector3<Real> crossP1U = Cross(P1, U);
-                Real dphi1 = Dot(crossP0E, crossP1U);
-                if (dphi1 < (Real)0)
+                Vector3<T> crossP1U = Cross(P1, U);
+                T dphi1 = Dot(crossP0E, crossP1U);
+                if (dphi1 < (T)0)
                 {
-                    Real t = dphi0 / (dphi0 - dphi1);
-                    Vector<3, Real> PMax = P0 + t * E;
+                    T t = dphi0 / (dphi0 - dphi1);
+                    Vector3<T> PMax = P0 + t * E;
                     g = Dot(U, PMax) - cone.cosAngle * Length(PMax);
-                    if (g > (Real)0)
+                    if (g > (T)0)
                     {
                         // The edge point XMax = Pmax + V is inside the cone.
                         return true;
@@ -423,13 +442,13 @@ namespace gte
             return false;
         }
 
-        bool CandidatesHavePointInsideCone(Cone<3, Real> const& cone) const
+        bool CandidatesHavePointInsideCone(Cone3<T> const& cone) const
         {
             for (size_t i = 0; i < mNumCandidateEdges; ++i)
             {
                 auto const& edge = mCandidateEdges[i];
-                Vector<3, Real> const& P0 = mVertices[edge[0]];
-                Vector<3, Real> const& P1 = mVertices[edge[1]];
+                Vector3<T> const& P0 = mVertices[edge[0]];
+                Vector3<T> const& P1 = mVertices[edge[1]];
                 if (HasPointInsideCone(P0, P1, cone))
                 {
                     return true;
@@ -438,12 +457,12 @@ namespace gte
             return false;
         }
 
-        void ComputeCandidatesOnBoxEdges(Cone<3, Real> const& cone)
+        void ComputeCandidatesOnBoxEdges(Cone3<T> const& cone)
         {
             for (size_t i = 0; i < NUM_BOX_VERTICES; ++i)
             {
-                Real h = Dot(cone.ray.direction, mVertices[i]);
-                Real coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<Real>::max());
+                T h = Dot(cone.ray.direction, mVertices[i]);
+                T coneMaxHeight = (cone.IsFinite() ? cone.GetMaxHeight() : std::numeric_limits<T>::max());
                 mProjectionMin[i] = cone.GetMinHeight() - h;
                 mProjectionMax[i] = h - coneMaxHeight;
             }
@@ -459,18 +478,18 @@ namespace gte
                 // avoid that approach.
 
                 // Process the hmin-plane.
-                Real p0Min = mProjectionMin[edge[0]];
-                Real p1Min = mProjectionMin[edge[1]];
-                bool clipMin = (p0Min < (Real)0 && p1Min >(Real)0) || (p0Min > (Real)0 && p1Min < (Real)0);
+                T p0Min = mProjectionMin[edge[0]];
+                T p1Min = mProjectionMin[edge[1]];
+                bool clipMin = (p0Min < (T)0 && p1Min >(T)0) || (p0Min > (T)0 && p1Min < (T)0);
                 if (clipMin)
                 {
                     mVertices[v0] = (p1Min * mVertices[edge[0]] - p0Min * mVertices[edge[1]]) / (p1Min - p0Min);
                 }
 
                 // Process the hmax-plane.
-                Real p0Max = mProjectionMax[edge[0]];
-                Real p1Max = mProjectionMax[edge[1]];
-                bool clipMax = (p0Max < (Real)0 && p1Max >(Real)0) || (p0Max > (Real)0 && p1Max < (Real)0);
+                T p0Max = mProjectionMax[edge[0]];
+                T p1Max = mProjectionMax[edge[1]];
+                bool clipMax = (p0Max < (T)0 && p1Max >(T)0) || (p0Max > (T)0 && p1Max < (T)0);
                 if (clipMax)
                 {
                     mVertices[v1] = (p1Max * mVertices[edge[0]] - p0Max * mVertices[edge[1]]) / (p1Max - p0Max);
@@ -485,7 +504,7 @@ namespace gte
                     }
                     else
                     {
-                        if (p0Min < (Real)0)
+                        if (p0Min < (T)0)
                         {
                             InsertEdge(edge[0], v0);
                         }
@@ -497,7 +516,7 @@ namespace gte
                 }
                 else if (clipMax)
                 {
-                    if (p0Max < (Real)0)
+                    if (p0Max < (T)0)
                     {
                         InsertEdge(edge[0], v1);
                     }
@@ -511,7 +530,7 @@ namespace gte
                     // No clipping has occurred.  If the edge is inside the box,
                     // it is a candidate edge.  To be inside the box, the p*min
                     // and p*max values must be nonpositive.
-                    if (p0Min <= (Real)0 && p1Min <= (Real)0 && p0Max <= (Real)0 && p1Max <= (Real)0)
+                    if (p0Min <= (T)0 && p1Min <= (T)0 && p0Max <= (T)0 && p1Max <= (T)0)
                     {
                         InsertEdge(edge[0], edge[1]);
                     }
@@ -521,7 +540,7 @@ namespace gte
 
         void ComputeCandidatesOnBoxFaces()
         {
-            Real p0, p1, p2, p3;
+            T p0, p1, p2, p3;
             size_t b0, b1, b2, b3, index;
             for (size_t i = 0; i < NUM_BOX_FACES; ++i)
             {
@@ -532,10 +551,10 @@ namespace gte
                 p1 = mProjectionMin[face.v[1]];
                 p2 = mProjectionMin[face.v[2]];
                 p3 = mProjectionMin[face.v[3]];
-                b0 = (p0 < (Real)0 ? 0 : (p0 > (Real)0 ? 2 : 1));
-                b1 = (p1 < (Real)0 ? 0 : (p1 > (Real)0 ? 2 : 1));
-                b2 = (p2 < (Real)0 ? 0 : (p2 > (Real)0 ? 2 : 1));
-                b3 = (p3 < (Real)0 ? 0 : (p3 > (Real)0 ? 2 : 1));
+                b0 = (p0 < (T)0 ? 0 : (p0 > (T)0 ? 2 : 1));
+                b1 = (p1 < (T)0 ? 0 : (p1 > (T)0 ? 2 : 1));
+                b2 = (p2 < (T)0 ? 0 : (p2 > (T)0 ? 2 : 1));
+                b3 = (p3 < (T)0 ? 0 : (p3 > (T)0 ? 2 : 1));
                 index = b3 + 3 * (b2 + 3 * (b1 + 3 * b0));
                 (this->*mConfiguration[index])(VERTEX_MIN_BASE, face);
 
@@ -544,10 +563,10 @@ namespace gte
                 p1 = mProjectionMax[face.v[1]];
                 p2 = mProjectionMax[face.v[2]];
                 p3 = mProjectionMax[face.v[3]];
-                b0 = (p0 < (Real)0 ? 0 : (p0 > (Real)0 ? 2 : 1));
-                b1 = (p1 < (Real)0 ? 0 : (p1 > (Real)0 ? 2 : 1));
-                b2 = (p2 < (Real)0 ? 0 : (p2 > (Real)0 ? 2 : 1));
-                b3 = (p3 < (Real)0 ? 0 : (p3 > (Real)0 ? 2 : 1));
+                b0 = (p0 < (T)0 ? 0 : (p0 > (T)0 ? 2 : 1));
+                b1 = (p1 < (T)0 ? 0 : (p1 > (T)0 ? 2 : 1));
+                b2 = (p2 < (T)0 ? 0 : (p2 > (T)0 ? 2 : 1));
+                b3 = (p3 < (T)0 ? 0 : (p3 > (T)0 ? 2 : 1));
                 index = b3 + 3 * (b2 + 3 * (b1 + 3 * b0));
                 (this->*mConfiguration[index])(VERTEX_MAX_BASE, face);
             }
@@ -992,6 +1011,6 @@ namespace gte
     };
 
     // Template alias for convenience.
-    template <typename Real>
-    using TIAlignedBox3Cone3 = TIQuery<Real, AlignedBox<3, Real>, Cone<3, Real>>;
+    template <typename T>
+    using TIAlignedBox3Cone3 = TIQuery<T, AlignedBox3<T>, Cone3<T>>;
 }

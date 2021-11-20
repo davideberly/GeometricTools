@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -31,7 +31,7 @@ namespace gte
             mSampleData(sampleData),
             mDegree(degree),
             mNumControls(numControls),
-            mControlData(dimension * numControls)
+            mControlData(static_cast<size_t>(dimension) * static_cast<size_t>(numControls))
         {
             LogAssert(dimension >= 1, "Invalid dimension.");
             LogAssert(1 <= degree && degree < numControls, "Invalid degree.");
@@ -62,7 +62,7 @@ namespace gte
             // error metric.  The problem is of the form A^T*A*Q = A^T*P,
             // where A^T*A is a banded matrix, P contains the sample data, and
             // Q is the unknown vector of control points.
-            Real tMultiplier = ((Real)1) / (Real)(mNumSamples - 1);
+            Real tMultiplier = (Real)1 / ((Real)mNumSamples - (Real)1);
             Real t;
             int i0, i1, i2, imin, imax, j;
 
@@ -103,7 +103,7 @@ namespace gte
 
             // Construct the matrix A^T.
             Array2<Real> ATMat(mNumSamples, mNumControls);
-            std::memset(ATMat[0], 0, mNumControls * mNumSamples * sizeof(Real));
+            std::memset(ATMat[0], 0, static_cast<size_t>(mNumControls) * static_cast<size_t>(mNumSamples) * sizeof(Real));
             for (i0 = 0; i0 < mNumControls; ++i0)
             {
                 for (i1 = 0; i1 < mNumSamples; ++i1)
@@ -127,10 +127,10 @@ namespace gte
             std::fill(mControlData.begin(), mControlData.end(), (Real)0);
             for (i0 = 0; i0 < mNumControls; ++i0)
             {
-                Real* Q = &mControlData[i0 * mDimension];
+                Real* Q = &mControlData[i0 * static_cast<size_t>(mDimension)];
                 for (i1 = 0; i1 < mNumSamples; ++i1)
                 {
-                    Real const* P = mSampleData + i1 * mDimension;
+                    Real const* P = mSampleData + i1 * static_cast<size_t>(mDimension);
                     Real xValue = ATMat[i0][i1];
                     for (j = 0; j < mDimension; ++j)
                     {
@@ -146,8 +146,8 @@ namespace gte
             // order to support matching two consecutive keyframe sequences.
             Real* cEnd0 = &mControlData[0];
             Real const* sEnd0 = mSampleData;
-            Real* cEnd1 = &mControlData[mDimension * (mNumControls - 1)];
-            Real const* sEnd1 = &mSampleData[mDimension * (mNumSamples - 1)];
+            Real* cEnd1 = &mControlData[static_cast<size_t>(mDimension) * (static_cast<size_t>(mNumControls) - 1)];
+            Real const* sEnd1 = &mSampleData[static_cast<size_t>(mDimension) * (static_cast<size_t>(mNumSamples) - 1)];
             for (j = 0; j < mDimension; ++j)
             {
                 *cEnd0++ = *sEnd0++;
@@ -201,7 +201,7 @@ namespace gte
             int imin, imax;
             mBasis.Evaluate(t, order, imin, imax);
 
-            Real const* source = &mControlData[mDimension * imin];
+            Real const* source = &mControlData[static_cast<size_t>(mDimension) * imin];
             Real basisValue = mBasis.GetValue(order, imin);
             for (int j = 0; j < mDimension; ++j)
             {

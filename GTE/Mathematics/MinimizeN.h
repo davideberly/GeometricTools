@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -35,7 +35,7 @@ namespace gte
             mFunction(F),
             mMaxIterations(maxIterations),
             mEpsilon(0),
-            mDirections(dimensions + 1),
+            mDirections(static_cast<size_t>(dimensions) + 1),
             mDConjIndex(dimensions),
             mDCurrIndex(0),
             mTCurr(dimensions),
@@ -79,7 +79,9 @@ namespace gte
                 mDirections[i].MakeUnit(i);
             }
 
-            Real ell0, ell1, ellMin;
+            Real ell0 = static_cast<Real>(0);
+            Real ell1 = static_cast<Real>(0);
+            Real ellMin = static_cast<Real>(0);
             for (int iter = 0; iter < mMaxIterations; ++iter)
             {
                 // Find minimum in each direction and update current location.
@@ -111,9 +113,9 @@ namespace gte
 
                 // Cycle the directions and add conjugate direction to set.
                 mDConjIndex = 0;
-                for (int i = 0; i < mDimensions; ++i)
+                for (int i = 0, ip1 = 1; i < mDimensions; ++i, ++ip1)
                 {
-                    mDirections[i] = mDirections[i + 1];
+                    mDirections[i] = mDirections[ip1];
                 }
 
                 // Set parameters for next pass.

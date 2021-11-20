@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,40 +15,52 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray2<Real>, Circle2<Real>>
+    template <typename T>
+    class TIQuery<T, Ray2<T>, Circle2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Ray2<Real> const& ray, Circle2<Real> const& circle)
+        Result operator()(Ray2<T> const& ray, Circle2<T> const& circle)
         {
-            Result result;
-            FIQuery<Real, Ray2<Real>, Circle2<Real>> rcQuery;
+            Result result{};
+            FIQuery<T, Ray2<T>, Circle2<T>> rcQuery{};
             result.intersect = rcQuery(ray, circle).intersect;
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray2<Real>, Circle2<Real>>
+    template <typename T>
+    class FIQuery<T, Ray2<T>, Circle2<T>>
         :
-        public FIQuery<Real, Line2<Real>, Circle2<Real>>
+        public FIQuery<T, Line2<T>, Circle2<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line2<Real>, Circle2<Real>>::Result
+            public FIQuery<T, Line2<T>, Circle2<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line2<T>, Circle2<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Ray2<Real> const& ray, Circle2<Real> const& circle)
+        Result operator()(Ray2<T> const& ray, Circle2<T> const& circle)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, circle, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -58,11 +70,11 @@ namespace gte
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& rayOrigin,
-            Vector2<Real> const& rayDirection, Circle2<Real> const& circle,
+        void DoQuery(Vector2<T> const& rayOrigin,
+            Vector2<T> const& rayDirection, Circle2<T> const& circle,
             Result& result)
         {
-            FIQuery<Real, Line2<Real>, Circle2<Real>>::DoQuery(rayOrigin,
+            FIQuery<T, Line2<T>, Circle2<T>>::DoQuery(rayOrigin,
                 rayDirection, circle, result);
 
             if (result.intersect)
@@ -70,8 +82,8 @@ namespace gte
                 // The line containing the ray intersects the disk; the
                 // t-interval is [t0,t1].  The ray intersects the disk as long
                 // as [t0,t1] overlaps the ray t-interval [0,+infinity).
-                std::array<Real, 2> rayInterval = { (Real)0, std::numeric_limits<Real>::max() };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                std::array<T, 2> rayInterval = { (T)0, std::numeric_limits<T>::max() };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, rayInterval);
                 result.intersect = iiResult.intersect;
                 result.numIntersections = iiResult.numIntersections;

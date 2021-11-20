@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.12.25
+// Version: 4.0.2021.11.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -51,31 +51,22 @@ DX11Engine::~DX11Engine()
 
     if (mGOMap.HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Bridge map is nonempty on destruction.");
-        }
-
+        // Bridge map is nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mGOMap.RemoveAll();
     }
 
     if (mDTMap.HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Draw target map nonempty on destruction.");
-        }
-
+        // Draw target map nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mDTMap.RemoveAll();
     }
 
     if (mILMap->HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Input layout map nonempty on destruction.");
-        }
-
+        // Input layout map nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mILMap->UnbindAll();
     }
     mILMap = nullptr;
@@ -191,7 +182,6 @@ D3D11_MAPPED_SUBRESOURCE DX11Engine::MapForWrite(std::shared_ptr<Resource> const
 {
     if (!resource->GetData())
     {
-        LogWarning("Resource does not have system memory, creating it.");
         resource->CreateStorage();
     }
 
@@ -209,7 +199,7 @@ bool DX11Engine::IsFullscreen(DXGIOutput const& output) const
 {
     if (mSwapChain)
     {
-        auto desc = output.GetDescription();
+        auto const& desc = output.GetDescription();
         std::wstring name(desc.DeviceName);
         auto iter = mFullscreenState.find(name);
         if (iter != mFullscreenState.end())
@@ -229,7 +219,7 @@ bool DX11Engine::SetFullscreen(DXGIOutput const& output, bool fullscreen)
 {
     if (mSwapChain)
     {
-        auto desc = output.GetDescription();
+        auto const& desc = output.GetDescription();
         std::wstring name(desc.DeviceName);
         auto iter = mFullscreenState.find(name);
         if (iter == mFullscreenState.end())
@@ -555,7 +545,8 @@ bool DX11Engine::CreateSwapChain(HWND handle, UINT xSize, UINT ySize)
     DX11Log(dxgi.device->GetAdapter(&dxgi.adapter));
     DX11Log(dxgi.adapter->GetParent(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(&dxgi.factory)));
 
-    DXGI_SWAP_CHAIN_DESC desc;
+    DXGI_SWAP_CHAIN_DESC desc{};
+    ZeroMemory(&desc, sizeof(desc));
     desc.BufferDesc.Width = xSize;
     desc.BufferDesc.Height = ySize;
     desc.BufferDesc.RefreshRate.Numerator = 0;
@@ -636,7 +627,8 @@ bool DX11Engine::CreateBackBuffer(UINT xSize, UINT ySize)
     DX11Log(mDevice->CreateTexture2D(&bbdesc, nullptr, &mBackBufferStaging));
 
     // Create the depth-stencil buffer and its view.
-    D3D11_TEXTURE2D_DESC desc;
+    D3D11_TEXTURE2D_DESC desc{};
+    ZeroMemory(&desc, sizeof(desc));
     desc.Width = xSize;
     desc.Height = ySize;
     desc.MipLevels = 1;
@@ -823,7 +815,8 @@ uint64_t DX11Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
 
 ID3D11Query* DX11Engine::BeginOcclusionQuery()
 {
-    D3D11_QUERY_DESC desc;
+    D3D11_QUERY_DESC desc{};
+    ZeroMemory(&desc, sizeof(desc));
     desc.Query = D3D11_QUERY_OCCLUSION;
     desc.MiscFlags = D3D11_QUERY_MISC_NONE;
     ID3D11Query* occlusionQuery = nullptr;
@@ -1482,7 +1475,7 @@ DX11Texture2* DX11Engine::BindTexture(std::shared_ptr<Texture2> const& texture,
         "Attempt to bind a null object.");
 
     GraphicsObject const* gtObject = texture.get();
-    std::shared_ptr<GEObject> geObject;
+    std::shared_ptr<GEObject> geObject{};
     if (!mGOMap.Get(gtObject, geObject))
     {
         geObject = std::make_shared<DX11Texture2>(texture.get(), dxTexture, dxSRView);
@@ -1499,7 +1492,6 @@ bool DX11Engine::Update(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1511,7 +1503,6 @@ bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1523,7 +1514,6 @@ bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture, unsigned 
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1536,7 +1526,6 @@ bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1549,7 +1538,6 @@ bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray, unsig
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1563,7 +1551,6 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1575,7 +1562,6 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1587,7 +1573,6 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uns
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1600,7 +1585,6 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1613,7 +1597,6 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray,
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1627,7 +1610,6 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1639,7 +1621,6 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1651,7 +1632,6 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uns
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1664,7 +1644,6 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1677,7 +1656,6 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray,
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1753,7 +1731,7 @@ bool DX11Engine::BindProgram(std::shared_ptr<ComputeProgram> const& program)
     auto hlslProgram = std::dynamic_pointer_cast<HLSLComputeProgram>(program);
     if (hlslProgram)
     {
-        auto cshader = hlslProgram->GetComputeShader();
+        auto const& cshader = hlslProgram->GetComputeShader();
         if (cshader)
         {
             return GraphicsEngine::Bind(cshader) != nullptr;
@@ -1768,7 +1746,7 @@ void DX11Engine::Execute(std::shared_ptr<ComputeProgram> const& program,
     auto hlslProgram = std::dynamic_pointer_cast<HLSLComputeProgram>(program);
     if (hlslProgram && numXGroups > 0 && numYGroups > 0 && numZGroups > 0)
     {
-        auto cshader = hlslProgram->GetComputeShader();
+        auto const& cshader = hlslProgram->GetComputeShader();
         if (cshader)
         {
             DX11ComputeShader* dxCShader = static_cast<DX11ComputeShader*>(Bind(cshader));
@@ -1787,7 +1765,8 @@ void DX11Engine::WaitForFinish()
 {
     if (!mWaitQuery)
     {
-        D3D11_QUERY_DESC desc;
+        D3D11_QUERY_DESC desc{};
+        ZeroMemory(&desc, sizeof(desc));
         desc.Query = D3D11_QUERY_EVENT;
         desc.MiscFlags = D3D11_QUERY_MISC_NONE;
         DX11Log(mDevice->CreateQuery(&desc, &mWaitQuery));

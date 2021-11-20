@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.02.21
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -219,7 +219,7 @@ namespace gte
 
             // Create the two's-complement number n2.  We know
             // n2.GetNumElements() is the same as numElements0.
-            UInteger n2;
+            UInteger n2{};
             n2.SetNumBits(n0NumBits);
             auto& n2Bits = n2.GetBits();
             int32_t i;
@@ -280,8 +280,8 @@ namespace gte
                 // happened. Trap this problem and analyze the call stack and
                 // inputs that lead to this case if it happens again. The call
                 // stack is started by BSNumber::SubIgnoreSign(...).
-                LogWarning("The difference of the number is zero, which violates the precondition n0 > n1.");
                 self.SetNumBits(0);
+                LogError("The difference of the number is zero, which violates the precondition n0 > n1.");
             }
         }
 
@@ -299,7 +299,7 @@ namespace gte
             auto& bits = self.GetBits();
 
             // Product of a single-block number with a multiple-block number.
-            UInteger product;
+            UInteger product{};
             product.SetNumBits(numBits);
             auto& pBits = product.GetBits();
 
@@ -494,7 +494,7 @@ namespace gte
         int32_t RoundUp()
         {
             UInteger const& self = *(UInteger const*)this;
-            UInteger rounded;
+            UInteger rounded{};
             rounded.Add(self, UInteger(1u));
             return ShiftRightToOdd(rounded);
         }
@@ -522,7 +522,8 @@ namespace gte
             // Shift the leading 1-bit to bit-63 of prefix.  We have consumed
             // numBlockBits, which might not be the entire budget.
             int32_t targetIndex = 63;
-            prefix <<= targetIndex - firstBitIndex;
+            int32_t shift = targetIndex - firstBitIndex;
+            prefix <<= static_cast<uint32_t>(shift);
             numRequested -= numBlockBits;
             targetIndex -= numBlockBits;
 
@@ -533,7 +534,8 @@ namespace gte
                 // will have consumed the entire budget.  For 'double', we
                 // might have to get bits from a third block.
                 uint64_t nextBlock = bits[blockIndex];
-                nextBlock <<= targetIndex - 31;  // Shift amount is positive.
+                shift = targetIndex - 31;  // Shift amount is positive.
+                nextBlock <<= static_cast<uint32_t>(shift);
                 prefix |= nextBlock;
                 numRequested -= 32;
                 targetIndex -= 32;
@@ -546,7 +548,8 @@ namespace gte
                     // and subtracted at least 32 from it.  Thus, the shift
                     // amount is positive.
                     nextBlock = bits[blockIndex];
-                    nextBlock >>= 31 - targetIndex;
+                    shift = 31 - targetIndex;
+                    nextBlock >>= static_cast<uint32_t>(shift);
                     prefix |= nextBlock;
                 }
             }

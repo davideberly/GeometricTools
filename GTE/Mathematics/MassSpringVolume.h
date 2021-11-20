@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -35,12 +35,12 @@ namespace gte
             mNumSlices(numSlices),
             mNumRows(numRows),
             mNumCols(numCols),
-            mConstantS(numSlices* numRows* numCols),
-            mLengthS(numSlices* numRows* numCols),
-            mConstantR(numSlices* numRows* numCols),
-            mLengthR(numSlices* numRows* numCols),
-            mConstantC(numSlices* numRows* numCols),
-            mLengthC(numSlices* numRows* numCols)
+            mConstantS(static_cast<size_t>(numSlices) * static_cast<size_t>(numRows) * static_cast<size_t>(numCols)),
+            mLengthS(static_cast<size_t>(numSlices)* static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mConstantR(static_cast<size_t>(numSlices)* static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mLengthR(static_cast<size_t>(numSlices)* static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mConstantC(static_cast<size_t>(numSlices)* static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mLengthC(static_cast<size_t>(numSlices)* static_cast<size_t>(numRows)* static_cast<size_t>(numCols))
         {
             std::fill(mConstantS.begin(), mConstantS.end(), (Real)0);
             std::fill(mLengthS.begin(), mLengthS.end(), (Real)0);

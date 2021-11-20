@@ -3,25 +3,23 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.8.2021.03.26
+// Version: 5.8.2021.11.11
 
 #include "IncrementalDelaunay2Window2.h"
-#include <Applications/LogReporter.h>
+#include <iostream>
 
 int main()
 {
-#if defined(_DEBUG)
-    LogReporter reporter(
-        "LogReport.txt",
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL);
-#endif
-
-    Window::Parameters parameters(L"IncrementalDelaunay2Window2", 0, 0, 1024, 1024);
-    auto window = TheWindowSystem.Create<IncrementalDelaunay2Window2>(parameters);
-    TheWindowSystem.MessagePump(window, TheWindowSystem.NO_IDLE_LOOP);
-    TheWindowSystem.Destroy(window);
+    try
+    {
+        Window::Parameters parameters(L"IncrementalDelaunay2Window2", 0, 0, 1024, 1024);
+        auto window = TheWindowSystem.Create<IncrementalDelaunay2Window2>(parameters);
+        TheWindowSystem.MessagePump(window, TheWindowSystem.NO_IDLE_LOOP);
+        TheWindowSystem.Destroy(window);
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     return 0;
 }

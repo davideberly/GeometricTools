@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -14,43 +14,58 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Line2<Real>, Arc2<Real>>
+    template <typename T>
+    class TIQuery<T, Line2<T>, Arc2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Line2<Real> const& line, Arc2<Real> const& arc)
+        Result operator()(Line2<T> const& line, Arc2<T> const& arc)
         {
-            Result result;
-            FIQuery<Real, Line2<Real>, Arc2<Real>> laQuery;
+            Result result{};
+            FIQuery<T, Line2<T>, Arc2<T>> laQuery;
             auto laResult = laQuery(line, arc);
             result.intersect = laResult.intersect;
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Line2<Real>, Arc2<Real>>
+    template <typename T>
+    class FIQuery<T, Line2<T>, Arc2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{ (T)0, (T)0 },
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            {
+            }
+
             bool intersect;
             int numIntersections;
-            std::array<Real, 2> parameter;
-            std::array<Vector2<Real>, 2> point;
+            std::array<T, 2> parameter;
+            std::array<Vector2<T>, 2> point;
         };
 
-        Result operator()(Line2<Real> const& line, Arc2<Real> const& arc)
+        Result operator()(Line2<T> const& line, Arc2<T> const& arc)
         {
-            Result result;
+            Result result{};
 
-            FIQuery<Real, Line2<Real>, Circle2<Real>> lcQuery;
-            Circle2<Real> circle(arc.center, arc.radius);
+            FIQuery<T, Line2<T>, Circle2<T>> lcQuery;
+            Circle2<T> circle(arc.center, arc.radius);
             auto lcResult = lcQuery(line, circle);
             if (lcResult.intersect)
             {
@@ -61,10 +76,9 @@ namespace gte
                     if (arc.Contains(lcResult.point[i]))
                     {
                         result.intersect = true;
-                        result.parameter[result.numIntersections]
-                            = lcResult.parameter[i];
-                        result.point[result.numIntersections++]
-                            = lcResult.point[i];
+                        result.parameter[result.numIntersections] = lcResult.parameter[i];
+                        result.point[result.numIntersections] = lcResult.point[i];
+                        ++result.numIntersections;
                     }
                 }
             }

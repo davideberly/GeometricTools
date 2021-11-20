@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.10.2021.10.17
+// Version: 5.10.2021.11.11
 
 #pragma once
 
@@ -208,21 +208,21 @@ namespace gte
             e[4] = -cone.GetMaxHeight();
 
             std::array<T, 10> q;
-            for (int32_t i = 0; i < 5; ++i)
+            for (int32_t i = 0, ip5 = 5; i < 5; ++i, ++ip5)
             {
                 q[i] = b[i];
-                q[i + 5] = -e[i];
+                q[ip5] = -e[i];
             }
 
             std::array<std::array<T, 10>, 10> M;
-            for (int32_t r = 0; r < 5; ++r)
+            for (int32_t r = 0, rp5 = 5; r < 5; ++r, ++rp5)
             {
-                for (int32_t c = 0; c < 5; ++c)
+                for (int32_t c = 0, cp5 = 5; c < 5; ++c, ++cp5)
                 {
                     M[r][c] = A(r, c);
-                    M[r + 5][c] = D(r, c);
-                    M[r][c + 5] = -D(c, r);
-                    M[r + 5][c + 5] = zero;
+                    M[rp5][c] = D(r, c);
+                    M[r][cp5] = -D(c, r);
+                    M[rp5][cp5] = zero;
                 }
             }
 
@@ -236,9 +236,9 @@ namespace gte
                 }
 
                 quadClosestPoint = cone.ray.origin;
-                for (int32_t i = 0; i < 2; ++i)
+                for (int32_t i = 0, ip3 = 3; i < 2; ++i, ++ip3)
                 {
-                    quadClosestPoint += z[i + 3] * G[i];
+                    quadClosestPoint += z[ip3] * G[i];
                 }
 
                 distance = Length(boxClosestPoint - quadClosestPoint);

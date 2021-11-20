@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -191,7 +191,7 @@ namespace gte
         static void ComputeBlendingMatrix(int degree, std::vector<Real>& A)
         {
             int const degreeP1 = degree + 1;
-            A.resize(degreeP1 * degreeP1);
+            A.resize(static_cast<size_t>(degreeP1) * static_cast<size_t>(degreeP1));
 
             if (degree == 0)
             {
@@ -238,7 +238,7 @@ namespace gte
 
                     if (k > 0)
                     {
-                        result += L1 * P[k - 1].GetTranslation((Real)1);
+                        result += L1 * P[static_cast<size_t>(k) - 1].GetTranslation((Real)1);
                     }
 
                     if (k < j)
@@ -263,7 +263,7 @@ namespace gte
             {
                 for (int col = 0; col <= degree; ++col)
                 {
-                    A[col + degreeP1 * row] = Q[k][col];
+                    A[col + static_cast<size_t>(degreeP1) * row] = Q[k][col];
                 }
             }
         }
@@ -288,7 +288,7 @@ namespace gte
                 }
             }
 
-            ellMax.resize(degree + 1);
+            ellMax.resize(static_cast<size_t>(degree) + 1);
             ellMax[0] = degree;
             for (int i0 = 0, i1 = 1; i1 <= degree; i0 = i1++)
             {
@@ -300,13 +300,13 @@ namespace gte
         void ComputePowers(int degree, int numControls, Real tmin, Real tmax,
             std::vector<Real>& powerDSDT)
         {
-            Real dsdt = static_cast<Real>(numControls - degree) / (tmax - tmin);
-            powerDSDT.resize(degree + 1);
+            Real dsdt = (static_cast<Real>(numControls) - static_cast<Real>(degree)) / (tmax - tmin);
+            powerDSDT.resize(static_cast<size_t>(degree) + 1);
             powerDSDT[0] = (Real)1;
             powerDSDT[1] = dsdt;
-            for (int i = 2; i <= degree; ++i)
+            for (int i = 2, im1 = 1; i <= degree; ++i, ++im1)
             {
-                powerDSDT[i] = powerDSDT[i - 1] * dsdt;
+                powerDSDT[i] = powerDSDT[im1] * dsdt;
             }
         }
 
@@ -350,7 +350,7 @@ namespace gte
         // portion of the 1-dimensional index that corresponds to iTuple.
         int GetRowIndex(std::vector<int> const& i) const
         {
-            int rowIndex = i[mNumDimensions - 1];
+            int rowIndex = i[static_cast<size_t>(mNumDimensions) - 1];
             int j1 = 2 * mNumDimensions - 2;
             for (int j0 = mNumDimensions - 2; j0 >= 0; --j0, --j1)
             {
@@ -365,7 +365,7 @@ namespace gte
         // 1-dimensional index.
         int GetIndex(int rowIndex, std::vector<int> const& k) const
         {
-            int index = rowIndex + k[mNumDimensions - 1];
+            int index = rowIndex + k[static_cast<size_t>(mNumDimensions) - 1];
             for (int j = mNumDimensions - 2; j >= 0; --j)
             {
                 index = mTBound[j] * index + k[j];
@@ -377,7 +377,7 @@ namespace gte
         // computed 1-dimensional index for the tensor.
         void ComputeTensor(int const* i, int const* k, int index)
         {
-            auto element = mCTZero;
+            typename Controls::Type element = mCTZero;
             for (int dim = 0; dim < mNumDimensions; ++dim)
             {
                 mComputeJTuple[dim] = 0;
@@ -387,7 +387,7 @@ namespace gte
                 Real blend(1);
                 for (int dim = 0; dim < mNumDimensions; ++dim)
                 {
-                    blend *= mBlender[dim][k[dim] + mDegreeP1[dim] * mComputeJTuple[dim]];
+                    blend *= mBlender[dim][k[dim] + static_cast<size_t>(mDegreeP1[dim]) * mComputeJTuple[dim]];
                     mComputeSumIJTuple[dim] = i[dim] + mComputeJTuple[dim];
                 }
                 element = element + (*mControls)(mComputeSumIJTuple.data()) * blend;
@@ -408,7 +408,7 @@ namespace gte
         // for precaching when that mode is selected.
         void InitializeTensors()
         {
-            mTBound.resize(2 * mNumDimensions);
+            mTBound.resize(2 * static_cast<size_t>(mNumDimensions));
             mComputeJTuple.resize(mNumDimensions);
             mComputeSumIJTuple.resize(mNumDimensions);
             mDegreeMinusOrder.resize(mNumDimensions);
@@ -430,7 +430,7 @@ namespace gte
             mCached.resize(numCached);
             if (mCacheMode == PRE_CACHING)
             {
-                std::vector<int> tuple(2 * mNumDimensions, 0);
+                std::vector<int> tuple(2 * static_cast<size_t>(mNumDimensions), 0);
                 for (int index = 0; index < numCached; ++index)
                 {
                     ComputeTensor(&tuple[mNumDimensions], &tuple[0], index);
@@ -456,7 +456,7 @@ namespace gte
         // value itself, pass in 'order' that has all 0 elements.
         typename Controls::Type EvaluateNoCaching(int const* order, Real const* t)
         {
-            auto result = mCTZero;
+            typename Controls::Type result = mCTZero;
             for (int dim = 0; dim < mNumDimensions; ++dim)
             {
                 if (order[dim] < 0 || order[dim] > mDegree[dim])
@@ -582,7 +582,7 @@ namespace gte
                     }
                 }
             }
-            auto result = mTerm[mNumDimensions - 1];
+            typename Controls::Type result = mTerm[static_cast<size_t>(mNumDimensions) - 1];
 
             Real adjust(1);
             for (int dim = 0; dim < mNumDimensions; ++dim)
@@ -814,11 +814,11 @@ namespace gte
         typename Controls::Type Evaluate(std::array<int, 1> const& order,
             std::array<Real,1> const& t)
         {
-            auto result = mCTZero;
+            typename Controls::Type result = mCTZero;
             if (0 <= order[0] && order[0] <= mDegree)
             {
-                int i;
-                Real u;
+                int i = 0;
+                Real u = static_cast<Real>(0);
                 this->GetKey(t[0], mTMin, mTMax, mPowerDSDT[1], mNumControls, mDegree, i, u);
 
                 if (mCacheMode == this->NO_CACHING)
@@ -866,10 +866,10 @@ namespace gte
     protected:
         void ComputeTensor(int r, int c, int index)
         {
-            auto element = mCTZero;
+            typename Controls::Type element = mCTZero;
             for (int j = 0; j <= mDegree; ++j)
             {
-                element = element + (*mControls)(r + j) * mBlender[c + mDegreeP1 * j];
+                element = element + (*mControls)(r + j) * mBlender[c + static_cast<size_t>(mDegreeP1) * j];
             }
             mTensor[index] = element;
         }
@@ -1017,12 +1017,12 @@ namespace gte
         typename Controls::Type Evaluate(std::array<int, 2> const& order,
             std::array<Real, 2> const& t)
         {
-            auto result = mCTZero;
+            typename Controls::Type result = mCTZero;
             if (0 <= order[0] && order[0] <= mDegree[0]
                 && 0 <= order[1] && order[1] <= mDegree[1])
             {
-                std::array<int, 2> i;
-                std::array<Real, 2> u;
+                std::array<int, 2> i{ 0, 0 };
+                std::array<Real, 2> u{ (Real)0, (Real)0 };
                 for (int dim = 0; dim < 2; ++dim)
                 {
                     this->GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
@@ -1068,7 +1068,7 @@ namespace gte
                     {
                         int k0k1i0i1Index = mDegree[0] + mNumTCols[0] * k1i0i1Index;
                         int ell0 = mLMax[0][order[0]];
-                        auto term = mCTZero;
+                        typename Controls::Type term = mCTZero;
                         for (int k0 = mDegree[0]; k0 >= order[0]; --k0)
                         {
                             if (mCacheMode == this->ON_DEMAND_CACHING && !mCached[k0k1i0i1Index])
@@ -1095,13 +1095,13 @@ namespace gte
 
         void ComputeTensor(int r0, int r1, int c0, int c1, int index)
         {
-            auto element = mCTZero;
+            typename Controls::Type element = mCTZero;
             for (int j1 = 0; j1 <= mDegree[1]; ++j1)
             {
-                Real blend1 = mBlender[1][c1 + mDegreeP1[1] * j1];
+                Real blend1 = mBlender[1][c1 + static_cast<size_t>(mDegreeP1[1]) * j1];
                 for (int j0 = 0; j0 <= mDegree[0]; ++j0)
                 {
-                    Real blend0 = mBlender[0][c0 + mDegreeP1[0] * j0];
+                    Real blend0 = mBlender[0][c0 + static_cast<size_t>(mDegreeP1[0]) * j0];
                     Real blend01 = blend0 * blend1;
                     element = element + (*mControls)(r0 + j0, r1 + j1) * blend01;
                 }
@@ -1259,13 +1259,13 @@ namespace gte
         typename Controls::Type Evaluate(std::array<int, 3> const& order,
             std::array<Real, 3> const& t)
         {
-            auto result = mCTZero;
+            typename Controls::Type result = mCTZero;
             if (0 <= order[0] && order[0] <= mDegree[0]
                 && 0 <= order[1] && order[1] <= mDegree[1]
                 && 0 <= order[2] && order[2] <= mDegree[2])
             {
-                std::array<int, 3> i;
-                std::array<Real, 3> u;
+                std::array<int, 3> i{ 0, 0, 0 };
+                std::array<Real, 3> u{ (Real)0, (Real)0, (Real)0 };
                 for (int dim = 0; dim < 3; ++dim)
                 {
                     this->GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
@@ -1316,12 +1316,12 @@ namespace gte
                     {
                         int k1k2i0i1i2Index = mDegree[1] + mNumTCols[1] * k2i0i1i2Index;
                         int ell1 = mLMax[1][order[1]];
-                        auto term1 = mCTZero;
+                        typename Controls::Type term1 = mCTZero;
                         for (int k1 = mDegree[1]; k1 >= order[1]; --k1)
                         {
                             int k0k1k2i0i1i2Index = mDegree[0] + mNumTCols[0] * k1k2i0i1i2Index;
                             int ell0 = mLMax[0][order[0]];
-                            auto term0 = mCTZero;
+                            typename Controls::Type term0 = mCTZero;
                             for (int k0 = mDegree[0]; k0 >= order[0]; --k0)
                             {
                                 if (mCacheMode == this->ON_DEMAND_CACHING && !mCached[k0k1k2i0i1i2Index])
@@ -1353,17 +1353,17 @@ namespace gte
     protected:
         void ComputeTensor(int r0, int r1, int r2, int c0, int c1, int c2, int index)
         {
-            auto element = mCTZero;
+            typename Controls::Type element = mCTZero;
             for (int j2 = 0; j2 <= mDegree[2]; ++j2)
             {
-                Real blend2 = mBlender[2][c2 + mDegreeP1[2] * j2];
+                Real blend2 = mBlender[2][c2 + static_cast<size_t>(mDegreeP1[2]) * j2];
                 for (int j1 = 0; j1 <= mDegree[1]; ++j1)
                 {
-                    Real blend1 = mBlender[1][c1 + mDegreeP1[1] * j1];
+                    Real blend1 = mBlender[1][c1 + static_cast<size_t>(mDegreeP1[1]) * j1];
                     Real blend12 = blend1 * blend2;
                     for (int j0 = 0; j0 <= mDegree[0]; ++j0)
                     {
-                        Real blend0 = mBlender[0][c0 + mDegreeP1[0] * j0];
+                        Real blend0 = mBlender[0][c0 + static_cast<size_t>(mDegreeP1[0]) * j0];
                         Real blend012 = blend0 * blend12;
                         element = element + (*mControls)(r0 + j0, r1 + j1, r2 + j2) * blend012;
                     }

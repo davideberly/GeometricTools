@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -21,6 +21,14 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                isInterior(false)
+            {
+            }
+
             bool intersect;
 
             // The number is 0 (no intersection), 1 (plane and triangle
@@ -35,7 +43,7 @@ namespace gte
 
         Result operator()(Plane3<Real> const& plane, Triangle3<Real> const& triangle)
         {
-            Result result;
+            Result result{};
 
             // Determine on which side of the plane the vertices lie.  The
             // table of possibilities is listed next with n = numNegative,
@@ -54,7 +62,7 @@ namespace gte
             //   2 0 1  vertex
             //   3 0 0  none
 
-            Real s[3];
+            std::array<Real, 3> s{ (Real)0, (Real)0, (Real)0 };
             int numPositive = 0, numNegative = 0, numZero = 0;
             for (int i = 0; i < 3; ++i)
             {
@@ -132,6 +140,15 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                isInterior(false),
+                point{ Vector3<Real>::Zero(), Vector3<Real>::Zero(), Vector3<Real>::Zero() }
+            {
+            }
+
             bool intersect;
 
             // The number is 0 (no intersection), 1 (plane and triangle
@@ -142,12 +159,12 @@ namespace gte
             // in 'isInterior'.
             int numIntersections;
             bool isInterior;
-            Vector3<Real> point[3];
+            std::array<Vector3<Real>, 3> point;
         };
 
         Result operator()(Plane3<Real> const& plane, Triangle3<Real> const& triangle)
         {
-            Result result;
+            Result result{};
 
             // Determine on which side of the plane the vertices lie.  The
             // table of possibilities is listed next with n = numNegative,

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -60,12 +60,12 @@ namespace gte
         }
 
         // Move operations.
-        DisjointRectangles(DisjointRectangles&& other)
+        DisjointRectangles(DisjointRectangles&& other) noexcept
         {
             *this = std::move(other);
         }
 
-        DisjointRectangles& operator=(DisjointRectangles&& other)
+        DisjointRectangles& operator=(DisjointRectangles&& other) noexcept
         {
             mNumRectangles = other.mNumRectangles;
             mStrips = std::move(other.mStrips);
@@ -111,12 +111,12 @@ namespace gte
             }
 
             // Move operations.
-            Strip(Strip&& other)
+            Strip(Strip&& other) noexcept
             {
                 *this = std::move(other);
             }
 
-            Strip& operator=(Strip&& other)
+            Strip& operator=(Strip&& other) noexcept
             {
                 ymin = other.ymin;
                 ymax = other.ymax;

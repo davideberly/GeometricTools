@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -16,32 +16,38 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Halfspace3<Real>, OrientedBox3<Real>>
+    template <typename T>
+    class TIQuery<T, Halfspace3<T>, OrientedBox3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Halfspace3<Real> const& halfspace, OrientedBox3<Real> const& box)
+        Result operator()(Halfspace3<T> const& halfspace, OrientedBox3<T> const& box)
         {
-            Result result;
+            Result result{};
 
             // Project the box center onto the normal line.  The plane of the
             // halfspace occurs at the origin (zero) of the normal line.
-            Real center = Dot(halfspace.normal, box.center) - halfspace.constant;
+            T center = Dot(halfspace.normal, box.center) - halfspace.constant;
 
             // Compute the radius of the interval of projection.
-            Real radius =
+            T radius =
                 std::fabs(box.extent[0] * Dot(halfspace.normal, box.axis[0])) +
                 std::fabs(box.extent[1] * Dot(halfspace.normal, box.axis[1])) +
                 std::fabs(box.extent[2] * Dot(halfspace.normal, box.axis[2]));
 
             // The box and halfspace intersect when the projection interval
             // maximum is nonnegative.
-            result.intersect = (center + radius >= (Real)0);
+            result.intersect = (center + radius >= (T)0);
             return result;
         }
     };

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.11.12
 
 #include "ProjectTemplate.h"
 #include <cctype>
@@ -334,23 +334,21 @@ void _PROJECT_NAME_Console::Execute()
 
 std::string const Template::msConsoleMainCPP =
 R"raw(#include "_PROJECT_NAME_Console.h"
-#include <Applications/LogReporter.h>
+#include <iostream>
 
 int main()
 {
-#if defined(_DEBUG)
-    LogReporter reporter(
-        "LogReport.txt",
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL);
-#endif
-
-    Console::Parameters parameters(L"_PROJECT_NAME_Console");
-    auto console = TheConsoleSystem.Create<_PROJECT_NAME_Console>(parameters);
-    TheConsoleSystem.Execute(console);
-    TheConsoleSystem.Destroy(console);
+    try
+    {
+        Console::Parameters parameters(L"_PROJECT_NAME_Console");
+        auto console = TheConsoleSystem.Create<_PROJECT_NAME_Console>(parameters);
+        TheConsoleSystem.Execute(console);
+        TheConsoleSystem.Destroy(console);
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     return 0;
 })raw";
 
@@ -391,23 +389,21 @@ void _PROJECT_NAME_Window2::OnDisplay()
 
 std::string const Template::msWindow2MainCPP =
 R"raw(#include "_PROJECT_NAME_Window2.h"
-#include <Applications/LogReporter.h>
+#include <iostream>
 
 int main()
 {
-#if defined(_DEBUG)
-    LogReporter reporter(
-        "LogReport.txt",
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL);
-#endif
-
-    Window::Parameters parameters(L"_PROJECT_NAME_Window2", 0, 0, 512, 512);
-    auto window = TheWindowSystem.Create<_PROJECT_NAME_Window2>(parameters);
-    TheWindowSystem.MessagePump(window, TheWindowSystem.NO_IDLE_LOOP);
-    TheWindowSystem.Destroy(window);
+    try
+    {
+        Window::Parameters parameters(L"_PROJECT_NAME_Window2", 0, 0, 512, 512);
+        auto window = TheWindowSystem.Create<_PROJECT_NAME_Window2>(parameters);
+        TheWindowSystem.MessagePump(window, TheWindowSystem.NO_IDLE_LOOP);
+        TheWindowSystem.Destroy(window);
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     return 0;
 })raw";
 
@@ -449,22 +445,20 @@ void _PROJECT_NAME_Window3::OnIdle()
 
 std::string const Template::msWindow3MainCPP =
 R"raw(#include "_PROJECT_NAME_Window3.h"
-#include <Applications/LogReporter.h>
+#include <iostream>
 
 int main()
 {
-#if defined(_DEBUG)
-    LogReporter reporter(
-        "LogReport.txt",
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL);
-#endif
-
-    Window::Parameters parameters(L"_PROJECT_NAME_Window3", 0, 0, 512, 512);
-    auto window = TheWindowSystem.Create<_PROJECT_NAME_Window3>(parameters);
-    TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
-    TheWindowSystem.Destroy(window);
+    try
+    {
+        Window::Parameters parameters(L"_PROJECT_NAME_Window3", 0, 0, 512, 512);
+        auto window = TheWindowSystem.Create<_PROJECT_NAME_Window3>(parameters);
+        TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
+        TheWindowSystem.Destroy(window);
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     return 0;
 })raw";

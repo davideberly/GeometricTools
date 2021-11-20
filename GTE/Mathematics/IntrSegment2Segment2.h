@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -13,37 +13,43 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment2<Real>, Segment2<Real>>
+    template <typename T>
+    class TIQuery<T, Segment2<T>, Segment2<T>>
     {
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                numIntersections(0)
+            {
+            }
 
             // The number is 0 (no intersection), 1 (segments intersect in a
             // single point), or 2 (segments are collinear and intersect in a
             // segment).
+            bool intersect;
             int numIntersections;
         };
 
-        Result operator()(Segment2<Real> const& segment0, Segment2<Real> const& segment1)
+        Result operator()(Segment2<T> const& segment0, Segment2<T> const& segment1)
         {
-            Result result;
-            Vector2<Real> seg0Origin, seg0Direction, seg1Origin, seg1Direction;
-            Real seg0Extent, seg1Extent;
+            Result result{};
+            Vector2<T> seg0Origin{}, seg0Direction{}, seg1Origin{}, seg1Direction{};
+            T seg0Extent{}, seg1Extent{};
             segment0.GetCenteredForm(seg0Origin, seg0Direction, seg0Extent);
             segment1.GetCenteredForm(seg1Origin, seg1Direction, seg1Extent);
 
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            Line2<Real> line0(seg0Origin, seg0Direction);
-            Line2<Real> line1(seg1Origin, seg1Direction);
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            Line2<T> line0(seg0Origin, seg0Direction);
+            Line2<T> line1(seg1Origin, seg1Direction);
             auto llResult = llQuery(line0, line1);
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the segments.
-                if (std::fabs(llResult.line0Parameter[0]) <= seg0Extent
-                    && std::fabs(llResult.line1Parameter[0]) <= seg1Extent)
+                if (std::fabs(llResult.line0Parameter[0]) <= seg0Extent &&
+                    std::fabs(llResult.line1Parameter[0]) <= seg1Extent)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -58,16 +64,16 @@ namespace gte
             {
                 // Compute the location of segment1 endpoints relative to
                 // segment0.
-                Vector2<Real> diff = seg1Origin - seg0Origin;
-                Real t = Dot(seg0Direction, diff);
+                Vector2<T> diff = seg1Origin - seg0Origin;
+                T t = Dot(seg0Direction, diff);
 
                 // Get the parameter intervals of the segments relative to
                 // segment0.
-                std::array<Real, 2> interval0 = { -seg0Extent, seg0Extent };
-                std::array<Real, 2> interval1 = { t - seg1Extent, t + seg1Extent };
+                std::array<T, 2> interval0 = { -seg0Extent, seg0Extent };
+                std::array<T, 2> interval1 = { t - seg1Extent, t + seg1Extent };
 
                 // Compute the intersection of the intervals.
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
                 auto iiResult = iiQuery(interval0, interval1);
                 result.intersect = iiResult.intersect;
                 result.numIntersections = iiResult.numIntersections;
@@ -82,17 +88,26 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment2<Real>, Segment2<Real>>
+    template <typename T>
+    class FIQuery<T, Segment2<T>, Segment2<T>>
     {
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                segment0Parameter{ (T)0, (T)0 },
+                segment1Parameter{ (T)0, (T)0 },
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            {
+            }
 
             // The number is 0 (no intersection), 1 (segments intersect in a
             // a single point), or 2 (segments are collinear and intersect
             // in a segment).
+            bool intersect;
             int numIntersections;
 
             // If numIntersections is 1, the intersection is
@@ -106,27 +121,27 @@ namespace gte
             //   = segment1.origin + segment1Parameter[i] * segment1.direction
             // with segment0Parameter[0] <= segment0Parameter[1] and
             // segment1Parameter[0] <= segment1Parameter[1].
-            Real segment0Parameter[2], segment1Parameter[2];
-            Vector2<Real> point[2];
+            std::array<T, 2> segment0Parameter, segment1Parameter;
+            std::array<Vector2<T>, 2> point;
         };
 
-        Result operator()(Segment2<Real> const& segment0, Segment2<Real> const& segment1)
+        Result operator()(Segment2<T> const& segment0, Segment2<T> const& segment1)
         {
-            Result result;
-            Vector2<Real> seg0Origin, seg0Direction, seg1Origin, seg1Direction;
-            Real seg0Extent, seg1Extent;
+            Result result{};
+            Vector2<T> seg0Origin{}, seg0Direction{}, seg1Origin{}, seg1Direction{};
+            T seg0Extent{}, seg1Extent{};
             segment0.GetCenteredForm(seg0Origin, seg0Direction, seg0Extent);
             segment1.GetCenteredForm(seg1Origin, seg1Direction, seg1Extent);
 
-            FIQuery<Real, Line2<Real>, Line2<Real>> llQuery;
-            Line2<Real> line0(seg0Origin, seg0Direction);
-            Line2<Real> line1(seg1Origin, seg1Direction);
+            FIQuery<T, Line2<T>, Line2<T>> llQuery{};
+            Line2<T> line0(seg0Origin, seg0Direction);
+            Line2<T> line1(seg1Origin, seg1Direction);
             auto llResult = llQuery(line0, line1);
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the segments.
-                if (std::fabs(llResult.line0Parameter[0]) <= seg0Extent
-                    && std::fabs(llResult.line1Parameter[0]) <= seg1Extent)
+                if (std::fabs(llResult.line0Parameter[0]) <= seg0Extent &&
+                    std::fabs(llResult.line1Parameter[0]) <= seg1Extent)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -144,16 +159,16 @@ namespace gte
             {
                 // Compute the location of segment1 endpoints relative to
                 // segment0.
-                Vector2<Real> diff = seg1Origin - seg0Origin;
-                Real t = Dot(seg0Direction, diff);
+                Vector2<T> diff = seg1Origin - seg0Origin;
+                T t = Dot(seg0Direction, diff);
 
                 // Get the parameter intervals of the segments relative to
                 // segment0.
-                std::array<Real, 2> interval0 = { -seg0Extent, seg0Extent };
-                std::array<Real, 2> interval1 = { t - seg1Extent, t + seg1Extent };
+                std::array<T, 2> interval0 = { -seg0Extent, seg0Extent };
+                std::array<T, 2> interval1 = { t - seg1Extent, t + seg1Extent };
 
                 // Compute the intersection of the intervals.
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery;
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery;
                 auto iiResult = iiQuery(interval0, interval1);
                 if (iiResult.intersect)
                 {
@@ -163,8 +178,7 @@ namespace gte
                     {
                         result.segment0Parameter[i] = iiResult.overlap[i];
                         result.segment1Parameter[i] = iiResult.overlap[i] - t;
-                        result.point[i] = seg0Origin +
-                            result.segment0Parameter[i] * seg0Direction;
+                        result.point[i] = seg0Origin + result.segment0Parameter[i] * seg0Direction;
                     }
                 }
                 else

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.05
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -57,7 +57,7 @@ namespace gte
             mZDegreeP1(zDegree + 1),
             mSize(mXDegreeP1* mYDegreeP1* mZDegreeP1),
             mParameters(mSize, (Real)0),
-            mYZCoefficient(mYDegreeP1 * mZDegreeP1, (Real)0),
+            mYZCoefficient(static_cast<size_t>(mYDegreeP1) * static_cast<size_t>(mZDegreeP1), (Real)0),
             mZCoefficient(mZDegreeP1, (Real)0)
         {
             mXDomain[0] = std::numeric_limits<Real>::max();
@@ -83,9 +83,9 @@ namespace gte
                 int twoXDegree = 2 * mXDegree;
                 int twoYDegree = 2 * mYDegree;
                 int twoZDegree = 2 * mZDegree;
-                Array2<Real> xPower(twoXDegree + 1, numSamples);
-                Array2<Real> yPower(twoYDegree + 1, numSamples);
-                Array2<Real> zPower(twoZDegree + 1, numSamples);
+                Array2<Real> xPower(static_cast<size_t>(twoXDegree) + 1, numSamples);
+                Array2<Real> yPower(static_cast<size_t>(twoYDegree) + 1, numSamples);
+                Array2<Real> zPower(static_cast<size_t>(twoZDegree) + 1, numSamples);
                 for (s = 0; s < numSamples; ++s)
                 {
                     Real x = observations[indices[s]][0];
@@ -235,22 +235,22 @@ namespace gte
                 for (i1 = 0; i1 <= mYDegree; ++i1)
                 {
                     i0 = mXDegree;
-                    w = mParameters[i0 + mXDegreeP1 * (i1 + mYDegreeP1 * i2)];
+                    w = mParameters[i0 + static_cast<size_t>(mXDegreeP1) * (i1 + static_cast<size_t>(mYDegreeP1) * i2)];
                     while (--i0 >= 0)
                     {
-                        w = mParameters[i0 + mXDegreeP1 * (i1 + mYDegreeP1 * i2)] + w * x;
+                        w = mParameters[i0 + static_cast<size_t>(mXDegreeP1) * (i1 + static_cast<size_t>(mYDegreeP1) * i2)] + w * x;
                     }
-                    mYZCoefficient[i1 + mYDegree * i2] = w;
+                    mYZCoefficient[i1 + static_cast<size_t>(mYDegree) * i2] = w;
                 }
             }
 
             for (i2 = 0; i2 <= mZDegree; ++i2)
             {
                 i1 = mYDegree;
-                w = mYZCoefficient[i1 + mYDegreeP1 * i2];
+                w = mYZCoefficient[i1 + static_cast<size_t>(mYDegreeP1) * i2];
                 while (--i1 >= 0)
                 {
-                    w = mParameters[i1 + mYDegreeP1 * i2] + w * y;
+                    w = mParameters[i1 + static_cast<size_t>(mYDegreeP1) * i2] + w * y;
                 }
                 mZCoefficient[i2] = w;
             }

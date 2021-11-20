@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2021.04.22
+// Version: 4.9.2021.11.11
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -139,6 +139,7 @@ namespace gte
                 center(RVCompute3::Zero()),
                 axis{ RVCompute3::Zero(), RVCompute3::Zero(), RVCompute3::Zero() },
                 sqrLengthAxis(RVCompute3::Zero()),
+                scaledExtent(RVCompute3::Zero()),
                 volume(static_cast<RationalType>(0))
             {
             }

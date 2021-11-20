@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -23,12 +23,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(OrientedBox2<Real> const& box, Sector2<Real> const& sector)
         {
-            Result result;
+            Result result{};
 
             // Determine whether the vertex is inside the box.
             Vector2<Real> CmV = box.center - sector.vertex;

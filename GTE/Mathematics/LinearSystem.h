@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -36,7 +36,7 @@ namespace gte
         // dimensions.
         static bool Solve(Matrix2x2<Real> const& A, Vector2<Real> const& B, Vector2<Real>& X)
         {
-            bool invertible;
+            bool invertible = false;
             Matrix2x2<Real> invA = Inverse(A, &invertible);
             if (invertible)
             {
@@ -51,7 +51,7 @@ namespace gte
 
         static bool Solve(Matrix3x3<Real> const& A, Vector3<Real> const& B, Vector3<Real>& X)
         {
-            bool invertible;
+            bool invertible = false;
             Matrix3x3<Real> invA = Inverse(A, &invertible);
             if (invertible)
             {
@@ -66,7 +66,7 @@ namespace gte
 
         static bool Solve(Matrix4x4<Real> const& A, Vector4<Real> const& B, Vector4<Real>& X)
         {
-            bool invertible;
+            bool invertible = false;
             Matrix4x4<Real> invA = Inverse(A, &invertible);
             if (invertible)
             {
@@ -82,7 +82,7 @@ namespace gte
         // Solve A*X = B, where B is Nx1 and the solution X is Nx1.
         static bool Solve(int N, Real const* A, Real const* B, Real* X)
         {
-            Real determinant;
+            Real determinant = static_cast<Real>(0);
             return GaussianElimination<Real>()(N, A, nullptr, determinant, B, X,
                 nullptr, 0, nullptr);
         }
@@ -90,7 +90,7 @@ namespace gte
         // Solve A*X = B, where B is NxM and the solution X is NxM.
         static bool Solve(int N, int M, Real const* A, Real const* B, Real* X)
         {
-            Real determinant;
+            Real determinant = static_cast<Real>(0);
             return GaussianElimination<Real>()(N, A, nullptr, determinant, nullptr,
                 nullptr, B, M, X);
         }
@@ -107,7 +107,7 @@ namespace gte
                 return false;
             }
 
-            std::vector<Real> tmp(N - 1);
+            std::vector<Real> tmp(static_cast<size_t>(N) - 1);
             Real expr = diagonal[0];
             Real invExpr = ((Real)1) / expr;
             X[0] = B[0] * invExpr;
@@ -144,7 +144,7 @@ namespace gte
                 return false;
             }
 
-            std::vector<Real> tmp(N - 1);
+            std::vector<Real> tmp(static_cast<size_t>(N) - 1);
             Real expr = diagonal;
             Real invExpr = ((Real)1) / expr;
             X[0] = B[0] * invExpr;

@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.5.2020.12.18
+// Version: 5.5.2021.11.11
 
 #pragma once
 
+#include <Mathematics/Logger.h>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -45,7 +46,7 @@ namespace gte
         {
             if (numVertices == 0 || !vertices || numTetrahedra == 0 || !tetrahedra)
             {
-                throw std::invalid_argument("Invalid argument.");
+                LogError("Invalid argument.");
             }
 
             ComputeTetrahedraAABBs();
@@ -76,7 +77,7 @@ namespace gte
         {
             if (bound[0] < 2 || bound[1] < 2 || bound[2] < 2)
             {
-                throw std::invalid_argument("Invalid argument.");
+                LogError("Invalid argument.");
             }
 
             // Initialize the grid values to -1. When a grid cell is contained

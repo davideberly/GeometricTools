@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -18,15 +18,21 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Ray3<Real> const& ray, Plane3<Real> const& plane)
         {
-            Result result;
+            Result result{};
 
             // Compute the (signed) distance from the ray origin to the plane.
-            DCPQuery<Real, Vector3<Real>, Plane3<Real>> vpQuery;
+            DCPQuery<Real, Vector3<Real>, Plane3<Real>> vpQuery{};
             auto vpResult = vpQuery(ray.origin, plane);
 
             Real DdN = Dot(ray.direction, plane.normal);
@@ -62,12 +68,18 @@ namespace gte
             :
             public FIQuery<Real, Line3<Real>, Plane3<Real>>::Result
         {
+            Result()
+                :
+                FIQuery<Real, Line3<Real>, Plane3<Real>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
         Result operator()(Ray3<Real> const& ray, Plane3<Real> const& plane)
         {
-            Result result;
+            Result result{};
             DoQuery(ray.origin, ray.direction, plane, result);
             if (result.intersect)
             {
@@ -83,6 +95,7 @@ namespace gte
         {
             FIQuery<Real, Line3<Real>, Plane3<Real>>::DoQuery(rayOrigin,
                 rayDirection, plane, result);
+
             if (result.intersect)
             {
                 // The line intersects the plane in a point that might not be

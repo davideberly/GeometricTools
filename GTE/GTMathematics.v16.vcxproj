@@ -355,9 +355,6 @@
     <ClInclude Include="Mathematics\Log2Estimate.h" />
     <ClInclude Include="Mathematics\LogEstimate.h" />
     <ClInclude Include="Mathematics\Logger.h" />
-    <ClInclude Include="Mathematics\LogToFile.h" />
-    <ClInclude Include="Mathematics\LogToStdout.h" />
-    <ClInclude Include="Mathematics\LogToStringArray.h" />
     <ClInclude Include="Mathematics\Lozenge3.h" />
     <ClInclude Include="Mathematics\MarchingCubes.h" />
     <ClInclude Include="Mathematics\MassSpringArbitrary.h" />

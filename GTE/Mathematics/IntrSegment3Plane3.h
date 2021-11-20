@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -12,32 +12,38 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment3<Real>, Plane3<Real>>
+    template <typename T>
+    class TIQuery<T, Segment3<T>, Plane3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Segment3<Real> const& segment, Plane3<Real> const& plane)
+        Result operator()(Segment3<T> const& segment, Plane3<T> const& plane)
         {
-            Result result;
+            Result result{};
 
             // Compute the (signed) distance from the segment endpoints to the
             // plane.
-            DCPQuery<Real, Vector3<Real>, Plane3<Real>> vpQuery;
-            Real sdistance0 = vpQuery(segment.p[0], plane).signedDistance;
-            if (sdistance0 == (Real)0)
+            DCPQuery<T, Vector3<T>, Plane3<T>> vpQuery{};
+            T sdistance0 = vpQuery(segment.p[0], plane).signedDistance;
+            if (sdistance0 == (T)0)
             {
                 // Endpoint p[0] is on the plane.
                 result.intersect = true;
                 return result;
             }
 
-            Real sdistance1 = vpQuery(segment.p[1], plane).signedDistance;
-            if (sdistance1 == (Real)0)
+            T sdistance1 = vpQuery(segment.p[1], plane).signedDistance;
+            if (sdistance1 == (T)0)
             {
                 // Endpoint p[1] is on the plane.
                 result.intersect = true;
@@ -45,31 +51,37 @@ namespace gte
             }
 
             // Test whether the segment transversely intersects the plane.
-            result.intersect = (sdistance0 * sdistance1 < (Real)0);
+            result.intersect = (sdistance0 * sdistance1 < (T)0);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Plane3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Plane3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Plane3<Real>>
+        public FIQuery<T, Line3<T>, Plane3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Plane3<Real>>::Result
+            public FIQuery<T, Line3<T>, Plane3<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line3<T>, Plane3<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Segment3<Real> const& segment, Plane3<Real> const& plane)
+        Result operator()(Segment3<T> const& segment, Plane3<T> const& plane)
         {
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result;
+            Result result{};
             DoQuery(segOrigin, segDirection, segExtent, plane, result);
             if (result.intersect)
             {
@@ -79,12 +91,13 @@ namespace gte
         }
 
     protected:
-        void DoQuery(Vector3<Real> const& segOrigin,
-            Vector3<Real> const& segDirection, Real segExtent,
-            Plane3<Real> const& plane, Result& result)
+        void DoQuery(Vector3<T> const& segOrigin,
+            Vector3<T> const& segDirection, T segExtent,
+            Plane3<T> const& plane, Result& result)
         {
-            FIQuery<Real, Line3<Real>, Plane3<Real>>::DoQuery(segOrigin,
+            FIQuery<T, Line3<T>, Plane3<T>>::DoQuery(segOrigin,
                 segDirection, plane, result);
+
             if (result.intersect)
             {
                 // The line intersects the plane in a point that might not be

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -27,14 +27,20 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Triangle3<Real> const& triangle, OrientedBox3<Real> const& box)
         {
-            Result result;
+            Result result{};
 
-            Real min0, max0, min1, max1;
+            Real min0 = (Real)0, max0 = (Real)0, min1 = (Real)0, max1 = (Real)0;
             Vector3<Real> D, edge[3];
 
             // Test direction of triangle normal.
@@ -137,13 +143,20 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                insidePolygon{},
+                outsidePolygons{}
+            {
+            }
+
             std::vector<Vector3<Real>> insidePolygon;
             std::vector<std::vector<Vector3<Real>>> outsidePolygons;
         };
 
         Result operator()(Triangle3<Real> const& triangle, OrientedBox3<Real> const& box)
         {
-            Result result;
+            Result result{};
 
             // Start with the triangle and clip it against each face of the
             // box.  The largest number of vertices for the polygon of
@@ -156,9 +169,9 @@ namespace gte
 
             typedef FIQuery<Real, std::vector<Vector<3, Real>>, Hyperplane<3, Real>> PPQuery;
 
-            Plane3<Real> plane;
-            PPQuery ppQuery;
-            typename PPQuery::Result ppResult;
+            Plane3<Real> plane{};
+            PPQuery ppQuery{};
+            typename PPQuery::Result ppResult{};
             for (int dir = -1; dir <= 1; dir += 2)
             {
                 for (int side = 0; side < 3; ++side)

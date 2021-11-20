@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -29,7 +29,7 @@ namespace gte
             int degree1, int numControls1, int numSamples1, Vector3<Real> const* sampleData)
             :
             mSampleData(sampleData),
-            mControlData(numControls0 * numControls1)
+            mControlData(static_cast<size_t>(numControls0) * static_cast<size_t>(numControls1))
         {
             LogAssert(1 <= degree0 && degree0 + 1 < numControls0, "Invalid degree.");
             LogAssert(numControls0 <= numSamples0, "Invalid number of controls.");
@@ -68,7 +68,7 @@ namespace gte
                 input.uniqueKnots[last].multiplicity = mDegree[dim] + 1;
                 mBasis[dim].Create(input);
 
-                tMultiplier[dim] = ((Real)1) / (Real)(mNumSamples[dim] - 1);
+                tMultiplier[dim] = ((Real)1) / ((Real)mNumSamples[dim] - (Real)1);
             }
 
             // Fit the data points with a B-spline surface using a
@@ -126,7 +126,7 @@ namespace gte
             for (dim = 0; dim < 2; dim++)
             {
                 ATMat[dim] = Array2<Real>(mNumSamples[dim], mNumControls[dim]);
-                size_t numBytes = mNumControls[dim] * mNumSamples[dim] * sizeof(Real);
+                size_t numBytes = static_cast<size_t>(mNumControls[dim]) * static_cast<size_t>(mNumSamples[dim]) * sizeof(Real);
                 std::memset(ATMat[dim][0], 0, numBytes);
                 for (i0 = 0; i0 < mNumControls[dim]; ++i0)
                 {
@@ -169,7 +169,7 @@ namespace gte
                             sum += (x0Value * x1Value) * sample;
                         }
                     }
-                    mControlData[i0 + mNumControls[0] * i1] = sum;
+                    mControlData[i0 + static_cast<size_t>(mNumControls[0]) * i1] = sum;
                 }
             }
         }
@@ -222,7 +222,7 @@ namespace gte
                 for (int iu = iumin; iu <= iumax; ++iu)
                 {
                     Real value0 = mBasis[0].GetValue(0, iu);
-                    Vector3<Real> control = mControlData[iu + mNumControls[0] * iv];
+                    Vector3<Real> control = mControlData[iu + static_cast<size_t>(mNumControls[0]) * iv];
                     position += (value0 * value1) * control;
                 }
             }

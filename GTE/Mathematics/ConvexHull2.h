@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.01
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -135,7 +135,8 @@ namespace gte
             mMerged.resize(mNumUniquePoints);
             int i0 = 0, i1 = mNumUniquePoints - 1;
             GetHull(i0, i1);
-            mHull.resize(i1 - i0 + 1);
+            int hullSize = i1 - i0 + 1;
+            mHull.resize(hullSize);
             return true;
         }
 

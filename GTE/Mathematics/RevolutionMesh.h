@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -53,8 +53,8 @@ namespace gte
 
             // The four supported topologies all wrap around in the column
             // direction.
-            mCosAngle.resize(this->mDescription.numCols + 1);
-            mSinAngle.resize(this->mDescription.numCols + 1);
+            mCosAngle.resize(static_cast<size_t>(this->mDescription.numCols) + 1);
+            mSinAngle.resize(static_cast<size_t>(this->mDescription.numCols) + 1);
             Real invRadialSamples = (Real)1 / (Real)this->mDescription.numCols;
             for (unsigned int c = 0; c < this->mDescription.numCols; ++c)
             {
@@ -118,18 +118,18 @@ namespace gte
             if (this->mDescription.topology == MeshTopology::CYLINDER
                 || this->mDescription.topology == MeshTopology::TORUS)
             {
-                mSamples.resize(this->mDescription.rMax + 1);
+                mSamples.resize(static_cast<size_t>(this->mDescription.rMax) + 1);
             }
             else if (this->mDescription.topology == MeshTopology::DISK)
             {
-                mSamples.resize(this->mDescription.rMax + 2);
+                mSamples.resize(static_cast<size_t>(this->mDescription.rMax) + 2);
             }
             else if (this->mDescription.topology == MeshTopology::SPHERE)
             {
-                mSamples.resize(this->mDescription.rMax + 3);
+                mSamples.resize(static_cast<size_t>(this->mDescription.rMax) + 3);
             }
 
-            Real invDenom = ((Real)1) / (Real)(mSamples.size() - 1);
+            Real invDenom = (Real)1 / ((Real)mSamples.size() - (Real)1);
             if (mSampleByArcLength)
             {
                 Real factor = mCurve->GetTotalLength() * invDenom;
@@ -186,7 +186,7 @@ namespace gte
                 unsigned int i = 0;
                 for (unsigned int r = 0; r < this->mDescription.numRows; ++r)
                 {
-                    Real radius = (Real)(r + 1) / (Real)(2 * this->mDescription.numRows);
+                    Real radius = ((Real)r + (Real)1) / ((Real)2 * (Real)this->mDescription.numRows);
                     radius = std::min(radius, (Real)0.5);
                     for (unsigned int c = 0; c <= this->mDescription.numCols; ++c, ++i)
                     {

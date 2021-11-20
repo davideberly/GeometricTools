@@ -3,10 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.12
 
 #include "MovingCircleRectangleWindow2.h"
-#include <Applications/LogReporter.h>
 
 MovingCircleRectangleWindow2::MovingCircleRectangleWindow2(Parameters& parameters)
     :
@@ -218,8 +217,8 @@ void MovingCircleRectangleWindow2::ModifyVelocity(int x, int y)
 {
     int cx = static_cast<int>(mCircle.center[0]);
     int cy = static_cast<int>(mCircle.center[1]);
-    mCircleVelocity[0] = static_cast<double>(x - cx);
-    mCircleVelocity[1] = static_cast<double>(y - cy);
+    mCircleVelocity[0] = static_cast<double>(x) - static_cast<double>(cx);
+    mCircleVelocity[1] = static_cast<double>(y) - static_cast<double>(cy);
     Normalize(mCircleVelocity);
     DoQuery();
 }

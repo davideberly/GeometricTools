@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -102,12 +102,12 @@ namespace gte
                     // the solver.  Write general root-finding/ code that
                     // avoids such copying.
                     uint32_t subMaxIterations = maxIterations - numIterations;
-                    typename CubicRootsQR<Real>::Matrix B;
-                    for (int r = 0; r < 3; ++r)
+                    typename CubicRootsQR<Real>::Matrix B{};
+                    for (int r = 0, rp1 = 1; r < 3; ++r, ++rp1)
                     {
-                        for (int c = 0; c < 3; ++c)
+                        for (int c = 0, cp1 = 1; c < 3; ++c, ++cp1)
                         {
-                            B[r][c] = A[r + 1][c + 1];
+                            B[r][c] = A[rp1][cp1];
                         }
                     }
 
@@ -117,7 +117,8 @@ namespace gte
                         numSubroots, subroots);
                     for (uint32_t i = 0; i < numSubroots; ++i)
                     {
-                        roots[numRoots++] = subroots[i];
+                        roots[numRoots] = subroots[i];
+                        ++numRoots;
                     }
                     return numIterations + numSubiterations;
                 }
@@ -149,7 +150,8 @@ namespace gte
                         numSubroots, subroots);
                     for (uint32_t i = 0; i < numSubroots; ++i)
                     {
-                        roots[numRoots++] = subroots[i];
+                        roots[numRoots] = subroots[i];
+                        ++numRoots;
                     }
                     return numIterations + numSubiterations;
                 }

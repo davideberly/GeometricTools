@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -31,13 +31,13 @@ namespace gte
             mUm(0), mUz(0), mUp(0),
             mSrc(0),
             mDst(1),
-            mMask(xBound + 2),
+            mMask(static_cast<size_t>(xBound) + 2),
             mHasMask(mask != nullptr)
         {
             // The mBuffer[] are ping-pong buffers for filtering.
             for (int i = 0; i < 2; ++i)
             {
-                mBuffer[i].resize(xBound + 2);
+                mBuffer[i].resize(static_cast<size_t>(xBound) + 2);
             }
 
             for (int x = 0, xp = 1, i = 0; x < mXBound; ++x, ++xp, ++i)
@@ -99,24 +99,24 @@ namespace gte
         Real GetU(int x) const
         {
             auto const& F = mBuffer[mSrc];
-            return F[x + 1];
+            return F[static_cast<size_t>(x) + 1];
         }
 
         Real GetUx(int x) const
         {
             auto const& F = mBuffer[mSrc];
-            return mHalfInvDx * (F[x + 2] - F[x]);
+            return mHalfInvDx * (F[static_cast<size_t>(x) + 2] - F[x]);
         }
 
         Real GetUxx(int x) const
         {
             auto const& F = mBuffer[mSrc];
-            return mInvDxDx * (F[x + 2] - (Real)2 * F[x + 1] + F[x]);
+            return mInvDxDx * (F[static_cast<size_t>(x) + 2] - (Real)2 * F[static_cast<size_t>(x) + 1] + F[x]);
         }
 
         int GetMask(int x) const
         {
-            return mMask[x + 1];
+            return mMask[static_cast<size_t>(x) + 1];
         }
 
     protected:
@@ -264,9 +264,9 @@ namespace gte
         void LookUp3(int x)
         {
             auto const& F = mBuffer[mSrc];
-            mUm = F[x - 1];
+            mUm = F[static_cast<size_t>(x) - 1];
             mUz = F[x];
-            mUp = F[x + 1];
+            mUp = F[static_cast<size_t>(x) + 1];
         }
 
         // Image parameters.

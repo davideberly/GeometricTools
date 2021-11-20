@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -76,12 +76,12 @@ namespace gte
                 if (minValue < maxValue)
                 {
                     // The image is not constant.
-                    double numer = static_cast<double>(numBuckets - 1);
-                    double denom = static_cast<double>(maxValue - minValue);
+                    double numer = static_cast<double>(numBuckets) - 1.0;
+                    double denom = static_cast<double>(maxValue) - static_cast<double>(minValue);
                     double mult = numer / denom;
                     for (int i = 0; i < numSamples; ++i)
                     {
-                        int index = static_cast<int>(mult * static_cast<double>(samples[i] - minValue));
+                        int index = static_cast<int>(mult * (static_cast<double>(samples[i]) - static_cast<double>(minValue)));
                         ++mBuckets[index];
                     }
                 }
@@ -122,12 +122,12 @@ namespace gte
             if (minValue < maxValue)
             {
                 // The image is not constant.
-                double numer = static_cast<double>(numBuckets - 1);
-                double denom = static_cast<double>(maxValue - minValue);
+                double numer = static_cast<double>(numBuckets) - 1.0;
+                double denom = static_cast<double>(maxValue) - static_cast<double>(minValue);
                 double mult = numer / denom;
                 for (int i = 0; i < numSamples; ++i)
                 {
-                    int index = static_cast<int>(mult * static_cast<double>(samples[i] - minValue));
+                    int index = static_cast<int>(mult * (static_cast<double>(samples[i]) - static_cast<double>(minValue)));
                     ++mBuckets[index];
                 }
             }
@@ -167,7 +167,7 @@ namespace gte
             if (minValue < maxValue)
             {
                 // The image is not constant.
-                double numer = static_cast<double>(numBuckets - 1);
+                double numer = static_cast<double>(numBuckets) - 1.0;
                 double denom = maxValue - minValue;
                 double mult = numer / denom;
                 for (int i = 0; i < numSamples; ++i)

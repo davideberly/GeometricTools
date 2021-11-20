@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -21,15 +21,21 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Segment3<Real> const& segment, Triangle3<Real> const& triangle)
         {
-            Result result;
+            Result result{};
 
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<Real> segOrigin{}, segDirection{};
+            Real segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             // Compute the offset origin, edges, and normal.
@@ -44,7 +50,7 @@ namespace gte
             //   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
             //   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
             Real DdN = Dot(segDirection, normal);
-            Real sign;
+            Real sign = (Real)0;
             if (DdN > (Real)0)
             {
                 sign = (Real)1;
@@ -104,7 +110,7 @@ namespace gte
                 intersect(false),
                 parameter((Real)0),
                 triangleBary{ (Real)0, (Real)0, (Real)0 },
-                point{ (Real)0, (Real)0, (Real)0 }
+                point(Vector3<Real>::Zero())
             {
             }
 
@@ -116,10 +122,10 @@ namespace gte
 
         Result operator()(Segment3<Real> const& segment, Triangle3<Real> const& triangle)
         {
-            Result result;
+            Result result{};
 
-            Vector3<Real> segOrigin, segDirection;
-            Real segExtent;
+            Vector3<Real> segOrigin{}, segDirection{};
+            Real segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             // Compute the offset origin, edges, and normal.
@@ -134,7 +140,7 @@ namespace gte
             //   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
             //   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
             Real DdN = Dot(segDirection, normal);
-            Real sign;
+            Real sign = (Real)0;
             if (DdN > (Real)0)
             {
                 sign = (Real)1;
@@ -168,10 +174,9 @@ namespace gte
                         {
                             // Segment intersects triangle.
                             result.intersect = true;
-                            Real inv = ((Real)1) / DdN;
-                            result.parameter = QdN * inv;
-                            result.triangleBary[1] = DdQxE2 * inv;
-                            result.triangleBary[2] = DdE1xQ * inv;
+                            result.parameter = QdN / DdN;
+                            result.triangleBary[1] = DdQxE2 / DdN;
+                            result.triangleBary[2] = DdE1xQ / DdN;
                             result.triangleBary[0] =
                                 (Real)1 - result.triangleBary[1] - result.triangleBary[2];
                             result.point = segOrigin + result.parameter * segDirection;

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -19,80 +19,93 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment2<Real>, OrientedBox2<Real>>
+    template <typename T>
+    class TIQuery<T, Segment2<T>, OrientedBox2<T>>
         :
-        public TIQuery<Real, Segment2<Real>, AlignedBox2<Real>>
+        public TIQuery<T, Segment2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Segment2<Real>, AlignedBox2<Real>>::Result
+            public TIQuery<T, Segment2<T>, AlignedBox2<T>>::Result
         {
+            Result()
+                :
+                TIQuery<T, Segment2<T>, AlignedBox2<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Segment2<Real> const& segment, OrientedBox2<Real> const& box)
+        Result operator()(Segment2<T> const& segment, OrientedBox2<T> const& box)
         {
             // Transform the segment to the oriented-box coordinate system.
-            Vector2<Real> tmpOrigin, tmpDirection;
-            Real segExtent;
+            Vector2<T> tmpOrigin{}, tmpDirection{};
+            T segExtent{};
             segment.GetCenteredForm(tmpOrigin, tmpDirection, segExtent);
-            Vector2<Real> diff = tmpOrigin - box.center;
-            Vector2<Real> segOrigin
+            Vector2<T> diff = tmpOrigin - box.center;
+            Vector2<T> segOrigin
             {
                 Dot(diff, box.axis[0]),
                 Dot(diff, box.axis[1])
             };
-            Vector2<Real> segDirection
+            Vector2<T> segDirection
             {
                 Dot(tmpDirection, box.axis[0]),
                 Dot(tmpDirection, box.axis[1])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(segOrigin, segDirection, segExtent, box.extent, result);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment2<Real>, OrientedBox2<Real>>
+    template <typename T>
+    class FIQuery<T, Segment2<T>, OrientedBox2<T>>
         :
-        public FIQuery<Real, Segment2<Real>, AlignedBox2<Real>>
+        public FIQuery<T, Segment2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Segment2<Real>, AlignedBox2<Real>>::Result
+            public FIQuery<T, Segment2<T>, AlignedBox2<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Segment2<T>, AlignedBox2<T>>::Result{},
+                cdeParameter{ (T)0, (T)0 }
+            {
+            }
+
             // The base class parameter[] values are t-values for the
             // segment parameterization (1-t)*p[0] + t*p[1], where t in [0,1].
             // The values in this class are s-values for the centered form
             // C + s * D, where s in [-e,e] and e is the extent of the
             // segment.
-            std::array<Real, 2> cdeParameter;
+            std::array<T, 2> cdeParameter;
         };
 
-        Result operator()(Segment2<Real> const& segment, OrientedBox2<Real> const& box)
+        Result operator()(Segment2<T> const& segment, OrientedBox2<T> const& box)
         {
             // Transform the segment to the oriented-box coordinate system.
-            Vector2<Real> tmpOrigin, tmpDirection;
-            Real segExtent;
+            Vector2<T> tmpOrigin{}, tmpDirection{};
+            T segExtent{};
             segment.GetCenteredForm(tmpOrigin, tmpDirection, segExtent);
-            Vector2<Real> diff = tmpOrigin - box.center;
-            Vector2<Real> segOrigin
+            Vector2<T> diff = tmpOrigin - box.center;
+            Vector2<T> segOrigin
             {
                 Dot(diff, box.axis[0]),
                 Dot(diff, box.axis[1])
             };
-            Vector2<Real> segDirection
+            Vector2<T> segDirection
             {
                 Dot(tmpDirection, box.axis[0]),
                 Dot(tmpDirection, box.axis[1])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(segOrigin, segDirection, segExtent, box.extent, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {
@@ -104,7 +117,7 @@ namespace gte
 
                 // Convert the parameters from the centered form to the
                 // endpoint form.
-                result.parameter[i] = (result.parameter[i] / segExtent + (Real)1) * (Real)0.5;
+                result.parameter[i] = (result.parameter[i] / segExtent + (T)1) * (T)0.5;
             }
             return result;
         }

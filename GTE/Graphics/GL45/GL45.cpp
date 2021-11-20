@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GL45/GL45.h>
 #include <cassert>
@@ -14,25 +14,25 @@
 #include <vector>
 
 // Support for versioning.
-#define OPENGL_VERSION_NONE  0
-#define OPENGL_VERSION_1_0  10
-#define OPENGL_VERSION_1_1  11
-#define OPENGL_VERSION_1_2  12
-#define OPENGL_VERSION_1_3  13
-#define OPENGL_VERSION_1_4  14
-#define OPENGL_VERSION_1_5  15
-#define OPENGL_VERSION_2_0  20
-#define OPENGL_VERSION_2_1  21
-#define OPENGL_VERSION_3_0  30
-#define OPENGL_VERSION_3_1  31
-#define OPENGL_VERSION_3_2  32
-#define OPENGL_VERSION_3_3  33
-#define OPENGL_VERSION_4_0  40
-#define OPENGL_VERSION_4_1  41
-#define OPENGL_VERSION_4_2  42
-#define OPENGL_VERSION_4_3  43
-#define OPENGL_VERSION_4_4  44
-#define OPENGL_VERSION_4_5  45
+int constexpr OPENGL_VERSION_NONE = 0;
+int constexpr OPENGL_VERSION_1_0 = 10;
+int constexpr OPENGL_VERSION_1_1 = 11;
+int constexpr OPENGL_VERSION_1_2 = 12;
+int constexpr OPENGL_VERSION_1_3 = 13;
+int constexpr OPENGL_VERSION_1_4 = 14;
+int constexpr OPENGL_VERSION_1_5 = 15;
+int constexpr OPENGL_VERSION_2_0 = 20;
+int constexpr OPENGL_VERSION_2_1 = 21;
+int constexpr OPENGL_VERSION_3_0 = 30;
+int constexpr OPENGL_VERSION_3_1 = 31;
+int constexpr OPENGL_VERSION_3_2 = 32;
+int constexpr OPENGL_VERSION_3_3 = 33;
+int constexpr OPENGL_VERSION_4_0 = 40;
+int constexpr OPENGL_VERSION_4_1 = 41;
+int constexpr OPENGL_VERSION_4_2 = 42;
+int constexpr OPENGL_VERSION_4_3 = 43;
+int constexpr OPENGL_VERSION_4_4 = 44;
+int constexpr OPENGL_VERSION_4_5 = 45;
 
 // Support for querying the OpenGL function pointers.  Each platform must
 // provide its own GetOpenGLFunctionPointer.
@@ -49,7 +49,7 @@ void OpenGLReportListener(char const* glFunction, GLenum code)
 {
     if (!glFunction)
     {
-        throw std::runtime_error("OpenGL function pointer is null.");
+        throw std::runtime_error(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): OpenGL function pointer is null.\n");
     }
 
     std::string strFunction(glFunction);
@@ -84,7 +84,10 @@ void OpenGLReportListener(char const* glFunction, GLenum code)
             return;
         default:
 #if defined(GTE_GL45_THROW_ON_REPORT_LISTENER_WARNING)
-            throw std::runtime_error("GL error <" + strCode + "> in " + strFunction);
+        {
+            std::string message = "GL error <" + strCode + "> in " + strFunction;
+            throw std::runtime_error(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n");
+        }
 #endif
         }
     }

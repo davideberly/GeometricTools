@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -109,13 +109,15 @@ namespace gte
             for (index = 1; index <= 6; ++index)
             {
                 sub1 = sub2;
-                if (index % 2)
+                if ((index % 2) != 0) // index is odd
                 {
-                    sub2 = V[index / 2];
+                    size_t lookup = static_cast<size_t>(index) / 2;
+                    sub2 = V[lookup];
                 }
-                else
+                else // index is even
                 {
-                    sub2 = tData.intersect[index / 2 - 1];
+                    size_t lookup = (static_cast<size_t>(index) - 1) / 2;
+                    sub2 = tData.intersect[lookup];
                 }
 
                 bool valid = ComputeBarycentrics(P, sub0, sub1, sub2, &bary[0]);
@@ -161,11 +163,11 @@ namespace gte
             Real bez[6] =
             {
                 tData.coeff[0],
-                tData.coeff[12 + index],
-                tData.coeff[13 + (index % 6)],
-                tData.coeff[index],
-                tData.coeff[6 + index],
-                tData.coeff[1 + (index % 6)]
+                tData.coeff[12 + static_cast<size_t>(index)],
+                tData.coeff[13 + (static_cast<size_t>(index) % 6)],
+                tData.coeff[static_cast<size_t>(index)],
+                tData.coeff[6 + static_cast<size_t>(index)],
+                tData.coeff[1 + (static_cast<size_t>(index) % 6)]
             };
 
             // Evaluate Bezier quadratic.

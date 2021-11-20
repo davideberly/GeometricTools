@@ -30,7 +30,6 @@ Command.cpp
 ConsoleApplication.cpp
 Environment.cpp
 GTApplications.cpp
-LogReporter.cpp
 OnIdleTimer.cpp
 Timer.cpp
 TrackBall.cpp

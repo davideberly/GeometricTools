@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -64,6 +64,9 @@ namespace gte
         // the compiler.
         Transform()
             :
+            mHMatrix{},
+            mInvHMatrix{},
+            mMatrix{},
             mTranslate{ (Real)0, (Real)0, (Real)0, (Real)1 },
             mScale{ (Real)1, (Real)1, (Real)1, (Real)1 },
             mIsIdentity(true),

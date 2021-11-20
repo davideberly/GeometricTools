@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -39,7 +39,7 @@ namespace gte
             }
 
             auto const numSegments = numPoints - 1;
-            mCoefficients.resize(4 * numPoints + 1);
+            mCoefficients.resize(4 * static_cast<size_t>(numPoints) + 1);
             mA = &mCoefficients[0];
             mB = mA + numPoints;
             mC = mB + numSegments;
@@ -74,7 +74,7 @@ namespace gte
             }
 
             auto const numSegments = numPoints - 1;
-            mCoefficients.resize(numPoints + 3 * numSegments + 1);
+            mCoefficients.resize(static_cast<size_t>(numPoints) + 3 * static_cast<size_t>(numSegments) + 1);
             mA = &mCoefficients[0];
             mB = mA + numPoints;
             mC = mB + numSegments;
@@ -149,15 +149,15 @@ namespace gte
         {
             int numSegments = GetNumPoints() - 1;
             WorkingData wd(numSegments);
-            for (int i = 0; i < numSegments; ++i)
+            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
-                wd.dt[i] = this->mTime[i + 1] - this->mTime[i];
+                wd.dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             std::vector<Real> d2t(numSegments);
-            for (int i = 1; i < numSegments; ++i)
+            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
-                wd.d2t[i] = this->mTime[i + 1] - this->mTime[i - 1];
+                wd.d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
 
             std::vector<Vector<N, Real>> alpha(numSegments);
@@ -168,9 +168,9 @@ namespace gte
                 wd.alpha[i] = invDenom * numer;
             }
 
-            std::vector<Real> ell(numSegments + 1);
+            std::vector<Real> ell(static_cast<size_t>(numSegments) + 1);
             std::vector<Real> mu(numSegments);
-            std::vector<Vector<N, Real>> z(numSegments + 1);
+            std::vector<Vector<N, Real>> z(static_cast<size_t>(numSegments) + 1);
             Real inv;
 
             wd.ell[0] = (Real)1;
@@ -206,39 +206,37 @@ namespace gte
 
             int numSegments = GetNumPoints() - 1;
             std::vector<Real> dt(numSegments);
-            for (int i = 0; i < numSegments; ++i)
+            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
-                dt[i] = this->mTime[i + 1] - this->mTime[i];
+                dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             // Construct matrix of system.
             GMatrix<Real> mat(numSegments + 1, numSegments + 1);
             mat(0, 0) = (Real)1;
             mat(0, numSegments) = (Real)-1;
-            for (int i = 1; i <= numSegments - 1; ++i)
+            for (int i = 1, im1 = 0, ip1 = 2; i <= numSegments - 1; ++i, ++im1, ++ip1)
             {
-                mat(i, i - 1) = dt[i - 1];
-                mat(i, i) = (Real)2 * (dt[i - 1] + dt[i]);
-                mat(i, i + 1) = dt[i];
+                mat(i, im1) = dt[im1];
+                mat(i, i) = (Real)2 * (dt[im1] + dt[i]);
+                mat(i, ip1) = dt[i];
             }
-            mat(numSegments, numSegments - 1) = dt[numSegments - 1];
-            mat(numSegments, 0) = (Real)2 * (dt[numSegments - 1] + dt[0]);
+            mat(numSegments, numSegments - 1) = dt[static_cast<size_t>(numSegments) - 1];
+            mat(numSegments, 0) = (Real)2 * (dt[static_cast<size_t>(numSegments) - 1] + dt[0]);
             mat(numSegments, 1) = dt[0];
 
             // Construct right-hand side of system.
             mC[0].MakeZero();
             Real inv0, inv1;
-            for (int i = 1; i <= numSegments - 1; ++i)
+            for (int i = 1, im1 = 0, ip1 = 2; ip1 <= numSegments; ++i, ++im1, ++ip1)
             {
                 inv0 = (Real)1 / dt[i];
-                inv1 = (Real)1 / dt[i - 1];
-                mC[i] = (Real)3 * (inv0 * (mA[i + 1] - mA[i]) -
-                    inv1 * (mA[i] - mA[i - 1]));
+                inv1 = (Real)1 / dt[im1];
+                mC[i] = (Real)3 * (inv0 * (mA[ip1] - mA[i]) - inv1 * (mA[i] - mA[im1]));
             }
             inv0 = (Real)1 / dt[0];
-            inv1 = (Real)1 / dt[numSegments - 1];
-            mC[numSegments] = (Real)3 * (inv0 * (mA[1] - mA[0]) -
-                inv1 * (mA[0] - mA[numSegments - 1]));
+            inv1 = (Real)1 / dt[static_cast<size_t>(numSegments) - 1];
+            mC[numSegments] = (Real)3 * (inv0 * (mA[1] - mA[0]) - inv1 * (mA[0] - mA[numSegments - 1]));
 
             // Solve the linear systems.
             GMatrix<Real> invMat = Inverse(mat);
@@ -270,51 +268,49 @@ namespace gte
         {
             int numSegments = GetNumPoints() - 1;
             std::vector<Real> dt(numSegments);
-            for (int i = 0; i < numSegments; ++i)
+            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
-                dt[i] = this->mTime[i + 1] - this->mTime[i];
+                dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             std::vector<Real> d2t(numSegments);
-            for (int i = 1; i < numSegments; ++i)
+            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
-                d2t[i] = this->mTime[i + 1] - this->mTime[i - 1];
+                d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
 
-            std::vector<Vector<N, Real>> alpha(numSegments + 1);
+            std::vector<Vector<N, Real>> alpha(static_cast<size_t>(numSegments) + 1);
             Real inv = (Real)1 / dt[0];
             alpha[0] = (Real)3 * (inv * (mA[1] - mA[0]) - derivative0);
-            inv = (Real)1 / dt[numSegments - 1];
+            inv = (Real)1 / dt[static_cast<size_t>(numSegments) - 1];
             alpha[numSegments] = (Real)3 * (derivative1 -
                 inv * (mA[numSegments] - mA[numSegments - 1]));
-            for (int i = 1; i < numSegments; ++i)
+            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
-                Vector<N, Real> numer = (Real)3 * (dt[i - 1] * mA[i + 1] -
-                    d2t[i] * mA[i] + dt[i] * mA[i - 1]);
-                Real invDenom = (Real)1 / (dt[i - 1] * dt[i]);
+                Vector<N, Real> numer = (Real)3 * (dt[im1] * mA[ip1] - d2t[i] * mA[i] + dt[i] * mA[im1]);
+                Real invDenom = (Real)1 / (dt[im1] * dt[i]);
                 alpha[i] = invDenom * numer;
             }
 
-            std::vector<Real> ell(numSegments + 1);
+            std::vector<Real> ell(static_cast<size_t>(numSegments) + 1);
             std::vector<Real> mu(numSegments);
-            std::vector<Vector<N, Real>> z(numSegments + 1);
+            std::vector<Vector<N, Real>> z(static_cast<size_t>(numSegments) + 1);
 
             ell[0] = (Real)2 * dt[0];
             mu[0] = (Real)0.5;
             inv = (Real)1 / ell[0];
             z[0] = inv * alpha[0];
 
-            for (int i = 1; i < numSegments; ++i)
+            for (int i = 1, im1 = 0; i < numSegments; ++i, ++im1)
             {
-                ell[i] = (Real)2 * d2t[i] - dt[i - 1] * mu[i - 1];
+                ell[i] = (Real)2 * d2t[i] - dt[im1] * mu[im1];
                 inv = (Real)1 / ell[i];
                 mu[i] = inv * dt[i];
-                z[i] = inv * (alpha[i] - dt[i - 1] * z[i - 1]);
+                z[i] = inv * (alpha[i] - dt[im1] * z[im1]);
             }
-            ell[numSegments] = dt[numSegments - 1] * ((Real)2 - mu[numSegments - 1]);
+            ell[numSegments] = dt[static_cast<size_t>(numSegments) - 1] * ((Real)2 - mu[static_cast<size_t>(numSegments) - 1]);
             inv = (Real)1 / ell[numSegments];
-            z[numSegments] = inv * (alpha[numSegments] - dt[numSegments - 1] *
-                z[numSegments - 1]);
+            z[numSegments] = inv * (alpha[numSegments] - dt[static_cast<size_t>(numSegments) - 1] * z[static_cast<size_t>(numSegments) - 1]);
 
             Real const oneThird = (Real)1 / (Real)3;
             mC[numSegments] = z[numSegments];
@@ -340,13 +336,13 @@ namespace gte
             else if (t >= this->mTime[numSegments])
             {
                 key = numSegments - 1;
-                dt = this->mTime[numSegments] - this->mTime[numSegments - 1];
+                dt = this->mTime[numSegments] - this->mTime[static_cast<size_t>(numSegments) - 1];
             }
             else
             {
-                for (int i = 0; i < numSegments; ++i)
+                for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
                 {
-                    if (t < this->mTime[i + 1])
+                    if (t < this->mTime[ip1])
                     {
                         key = i;
                         dt = t - this->mTime[i];
@@ -371,12 +367,12 @@ namespace gte
         {
             WorkingData(int numSegments)
             {
-                data.resize(4 * numSegments + 1 + N * (2 * numSegments + 1));
+                data.resize(4 * static_cast<size_t>(numSegments) + 1 + N * (2 * static_cast<size_t>(numSegments) + 1));
                 dt = &data[0];
                 d2t = dt + numSegments;
                 alpha = reinterpret_cast<Vector<N, Real>*>(d2t + numSegments);
                 ell = reinterpret_cast<Real*>(alpha + numSegments);
-                mu = ell + numSegments + 1;
+                mu = ell + static_cast<size_t>(numSegments) + 1;
                 z = reinterpret_cast<Vector<N, Real>*>(mu + numSegments);
             }
 

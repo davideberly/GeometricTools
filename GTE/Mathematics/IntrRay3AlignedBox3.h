@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.06.16
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -31,8 +31,13 @@ namespace gte
             :
             public TIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
+            Result()
+                :
+                TIQuery<T, Line3<T>, AlignedBox3<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
-            Result() = default;
         };
 
         Result operator()(Ray3<T> const& ray, AlignedBox3<T> const& box)
@@ -83,8 +88,13 @@ namespace gte
             :
             public FIQuery<T, Line3<T>, AlignedBox3<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line3<T>, AlignedBox3<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
-            Result() = default;
         };
 
         Result operator()(Ray3<T> const& ray, AlignedBox3<T> const& box)

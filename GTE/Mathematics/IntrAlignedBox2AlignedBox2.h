@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -19,18 +19,24 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, AlignedBox2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class TIQuery<T, AlignedBox2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(AlignedBox2<Real> const& box0, AlignedBox2<Real> const& box1)
+        Result operator()(AlignedBox2<T> const& box0, AlignedBox2<T> const& box1)
         {
-            Result result;
+            Result result{};
             for (int i = 0; i < 2; i++)
             {
                 if (box0.max[i] < box1.min[i] || box0.min[i] > box1.max[i])
@@ -44,19 +50,26 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, AlignedBox2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class FIQuery<T, AlignedBox2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                box{}
+            {
+            }
+
             bool intersect;
-            AlignedBox2<Real> box;
+            AlignedBox2<T> box;
         };
 
-        Result operator()(AlignedBox2<Real> const& box0, AlignedBox2<Real> const& box1)
+        Result operator()(AlignedBox2<T> const& box0, AlignedBox2<T> const& box1)
         {
-            Result result;
+            Result result{};
             for (int i = 0; i < 2; i++)
             {
                 if (box0.max[i] < box1.min[i] || box0.min[i] > box1.max[i])

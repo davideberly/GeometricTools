@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -13,21 +13,27 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Capsule3<Real>, Capsule3<Real>>
+    template <typename T>
+    class TIQuery<T, Capsule3<T>, Capsule3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Capsule3<Real> const& capsule0, Capsule3<Real> const& capsule1)
+        Result operator()(Capsule3<T> const& capsule0, Capsule3<T> const& capsule1)
         {
-            Result result;
-            DCPQuery<Real, Segment3<Real>, Segment3<Real>> ssQuery;
+            Result result{};
+            DCPQuery<T, Segment3<T>, Segment3<T>> ssQuery;
             auto ssResult = ssQuery(capsule0.segment, capsule1.segment);
-            Real rSum = capsule0.radius + capsule1.radius;
+            T rSum = capsule0.radius + capsule1.radius;
             result.intersect = (ssResult.distance <= rSum);
             return result;
         }

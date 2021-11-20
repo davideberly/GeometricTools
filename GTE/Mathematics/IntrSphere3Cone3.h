@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -21,19 +21,25 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Sphere3<Real>, Cone3<Real>>
+    template <typename T>
+    class TIQuery<T, Sphere3<T>, Cone3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        Result operator()(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Result result;
-            if (cone.GetMinHeight() > (Real)0)
+            Result result{};
+            if (cone.GetMinHeight() > (T)0)
             {
                 if (cone.IsFinite())
                 {
@@ -59,30 +65,30 @@ namespace gte
         }
 
     private:
-        bool DoQueryInfiniteCone(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        bool DoQueryInfiniteCone(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Vector3<Real> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
-            Vector3<Real> CmU = sphere.center - U;
-            Real AdCmU = Dot(cone.ray.direction, CmU);
-            if (AdCmU > (Real)0)
+            Vector3<T> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
+            Vector3<T> CmU = sphere.center - U;
+            T AdCmU = Dot(cone.ray.direction, CmU);
+            if (AdCmU > (T)0)
             {
-                Real sqrLengthCmU = Dot(CmU, CmU);
+                T sqrLengthCmU = Dot(CmU, CmU);
                 if (AdCmU * AdCmU >= sqrLengthCmU * cone.cosAngleSqr)
                 {
-                    Vector3<Real> CmV = sphere.center - cone.ray.origin;
-                    Real AdCmV = Dot(cone.ray.direction, CmV);
+                    Vector3<T> CmV = sphere.center - cone.ray.origin;
+                    T AdCmV = Dot(cone.ray.direction, CmV);
                     if (AdCmV < -sphere.radius)
                     {
                         return false;
                     }
 
-                    Real rSinAngle = sphere.radius * cone.sinAngle;
+                    T rSinAngle = sphere.radius * cone.sinAngle;
                     if (AdCmV >= -rSinAngle)
                     {
                         return true;
                     }
 
-                    Real sqrLengthCmV = Dot(CmV, CmV);
+                    T sqrLengthCmV = Dot(CmV, CmV);
                     return sqrLengthCmV <= sphere.radius * sphere.radius;
                 }
             }
@@ -90,41 +96,41 @@ namespace gte
             return false;
         }
 
-        bool DoQueryInfiniteTruncatedCone(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        bool DoQueryInfiniteTruncatedCone(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Vector3<Real> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
-            Vector3<Real> CmU = sphere.center - U;
-            Real AdCmU = Dot(cone.ray.direction, CmU);
-            if (AdCmU > (Real)0)
+            Vector3<T> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
+            Vector3<T> CmU = sphere.center - U;
+            T AdCmU = Dot(cone.ray.direction, CmU);
+            if (AdCmU > (T)0)
             {
-                Real sqrLengthCmU = Dot(CmU, CmU);
+                T sqrLengthCmU = Dot(CmU, CmU);
                 if (AdCmU * AdCmU >= sqrLengthCmU * cone.cosAngleSqr)
                 {
-                    Vector3<Real> CmV = sphere.center - cone.ray.origin;
-                    Real AdCmV = Dot(cone.ray.direction, CmV);
-                    Real minHeight = cone.GetMinHeight();
+                    Vector3<T> CmV = sphere.center - cone.ray.origin;
+                    T AdCmV = Dot(cone.ray.direction, CmV);
+                    T minHeight = cone.GetMinHeight();
                     if (AdCmV < minHeight - sphere.radius)
                     {
                         return false;
                     }
 
-                    Real rSinAngle = sphere.radius * cone.sinAngle;
+                    T rSinAngle = sphere.radius * cone.sinAngle;
                     if (AdCmV >= -rSinAngle)
                     {
                         return true;
                     }
 
-                    Vector3<Real> D = CmV - minHeight * cone.ray.direction;
-                    Real lengthAxD = Length(Cross(cone.ray.direction, D));
-                    Real hminTanAngle = minHeight * cone.tanAngle;
+                    Vector3<T> D = CmV - minHeight * cone.ray.direction;
+                    T lengthAxD = Length(Cross(cone.ray.direction, D));
+                    T hminTanAngle = minHeight * cone.tanAngle;
                     if (lengthAxD <= hminTanAngle)
                     {
                         return true;
                     }
 
-                    Real AdD = AdCmV - minHeight;
-                    Real diff = lengthAxD - hminTanAngle;
-                    Real sqrLengthCmK = AdD * AdD + diff * diff;
+                    T AdD = AdCmV - minHeight;
+                    T diff = lengthAxD - hminTanAngle;
+                    T sqrLengthCmK = AdD * AdD + diff * diff;
                     return sqrLengthCmK <= sphere.radius * sphere.radius;
                 }
             }
@@ -132,30 +138,30 @@ namespace gte
             return false;
         }
 
-        bool DoQueryFiniteCone(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        bool DoQueryFiniteCone(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Vector3<Real> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
-            Vector3<Real> CmU = sphere.center - U;
-            Real AdCmU = Dot(cone.ray.direction, CmU);
-            if (AdCmU > (Real)0)
+            Vector3<T> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
+            Vector3<T> CmU = sphere.center - U;
+            T AdCmU = Dot(cone.ray.direction, CmU);
+            if (AdCmU > (T)0)
             {
-                Real sqrLengthCmU = Dot(CmU, CmU);
+                T sqrLengthCmU = Dot(CmU, CmU);
                 if (AdCmU * AdCmU >= sqrLengthCmU * cone.cosAngleSqr)
                 {
-                    Vector3<Real> CmV = sphere.center - cone.ray.origin;
-                    Real AdCmV = Dot(cone.ray.direction, CmV);
+                    Vector3<T> CmV = sphere.center - cone.ray.origin;
+                    T AdCmV = Dot(cone.ray.direction, CmV);
                     if (AdCmV < -sphere.radius)
                     {
                         return false;
                     }
 
-                    Real maxHeight = cone.GetMaxHeight();
+                    T maxHeight = cone.GetMaxHeight();
                     if (AdCmV > cone.GetMaxHeight() + sphere.radius)
                     {
                         return false;
                     }
 
-                    Real rSinAngle = sphere.radius * cone.sinAngle;
+                    T rSinAngle = sphere.radius * cone.sinAngle;
                     if (AdCmV >= -rSinAngle)
                     {
                         if (AdCmV <= maxHeight - rSinAngle)
@@ -164,23 +170,23 @@ namespace gte
                         }
                         else
                         {
-                            Vector3<Real> barD = CmV - maxHeight * cone.ray.direction;
-                            Real lengthAxBarD = Length(Cross(cone.ray.direction, barD));
-                            Real hmaxTanAngle = maxHeight * cone.tanAngle;
+                            Vector3<T> barD = CmV - maxHeight * cone.ray.direction;
+                            T lengthAxBarD = Length(Cross(cone.ray.direction, barD));
+                            T hmaxTanAngle = maxHeight * cone.tanAngle;
                             if (lengthAxBarD <= hmaxTanAngle)
                             {
                                 return true;
                             }
 
-                            Real AdBarD = AdCmV - maxHeight;
-                            Real diff = lengthAxBarD - hmaxTanAngle;
-                            Real sqrLengthCmBarK = AdBarD * AdBarD + diff * diff;
+                            T AdBarD = AdCmV - maxHeight;
+                            T diff = lengthAxBarD - hmaxTanAngle;
+                            T sqrLengthCmBarK = AdBarD * AdBarD + diff * diff;
                             return sqrLengthCmBarK <= sphere.radius * sphere.radius;
                         }
                     }
                     else
                     {
-                        Real sqrLengthCmV = Dot(CmV, CmV);
+                        T sqrLengthCmV = Dot(CmV, CmV);
                         return sqrLengthCmV <= sphere.radius * sphere.radius;
                     }
                 }
@@ -189,31 +195,31 @@ namespace gte
             return false;
         }
 
-        bool DoQueryConeFrustum(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        bool DoQueryConeFrustum(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Vector3<Real> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
-            Vector3<Real> CmU = sphere.center - U;
-            Real AdCmU = Dot(cone.ray.direction, CmU);
-            if (AdCmU > (Real)0)
+            Vector3<T> U = cone.ray.origin - (sphere.radius * cone.invSinAngle) * cone.ray.direction;
+            Vector3<T> CmU = sphere.center - U;
+            T AdCmU = Dot(cone.ray.direction, CmU);
+            if (AdCmU > (T)0)
             {
-                Real sqrLengthCmU = Dot(CmU, CmU);
+                T sqrLengthCmU = Dot(CmU, CmU);
                 if (AdCmU * AdCmU >= sqrLengthCmU * cone.cosAngleSqr)
                 {
-                    Vector3<Real> CmV = sphere.center - cone.ray.origin;
-                    Real AdCmV = Dot(cone.ray.direction, CmV);
-                    Real minHeight = cone.GetMinHeight();
+                    Vector3<T> CmV = sphere.center - cone.ray.origin;
+                    T AdCmV = Dot(cone.ray.direction, CmV);
+                    T minHeight = cone.GetMinHeight();
                     if (AdCmV < minHeight - sphere.radius)
                     {
                         return false;
                     }
 
-                    Real maxHeight = cone.GetMaxHeight();
+                    T maxHeight = cone.GetMaxHeight();
                     if (AdCmV > maxHeight + sphere.radius)
                     {
                         return false;
                     }
 
-                    Real rSinAngle = sphere.radius * cone.sinAngle;
+                    T rSinAngle = sphere.radius * cone.sinAngle;
                     if (AdCmV >= minHeight - rSinAngle)
                     {
                         if (AdCmV <= maxHeight - rSinAngle)
@@ -222,33 +228,33 @@ namespace gte
                         }
                         else
                         {
-                            Vector3<Real> barD = CmV - maxHeight * cone.ray.direction;
-                            Real lengthAxBarD = Length(Cross(cone.ray.direction, barD));
-                            Real hmaxTanAngle = maxHeight * cone.tanAngle;
+                            Vector3<T> barD = CmV - maxHeight * cone.ray.direction;
+                            T lengthAxBarD = Length(Cross(cone.ray.direction, barD));
+                            T hmaxTanAngle = maxHeight * cone.tanAngle;
                             if (lengthAxBarD <= hmaxTanAngle)
                             {
                                 return true;
                             }
 
-                            Real AdBarD = AdCmV - maxHeight;
-                            Real diff = lengthAxBarD - hmaxTanAngle;
-                            Real sqrLengthCmBarK = AdBarD * AdBarD + diff * diff;
+                            T AdBarD = AdCmV - maxHeight;
+                            T diff = lengthAxBarD - hmaxTanAngle;
+                            T sqrLengthCmBarK = AdBarD * AdBarD + diff * diff;
                             return sqrLengthCmBarK <= sphere.radius * sphere.radius;
                         }
                     }
                     else
                     {
-                        Vector3<Real> D = CmV - minHeight * cone.ray.direction;
-                        Real lengthAxD = Length(Cross(cone.ray.direction, D));
-                        Real hminTanAngle = minHeight * cone.tanAngle;
+                        Vector3<T> D = CmV - minHeight * cone.ray.direction;
+                        T lengthAxD = Length(Cross(cone.ray.direction, D));
+                        T hminTanAngle = minHeight * cone.tanAngle;
                         if (lengthAxD <= hminTanAngle)
                         {
                             return true;
                         }
 
-                        Real AdD = AdCmV - minHeight;
-                        Real diff = lengthAxD - hminTanAngle;
-                        Real sqrLengthCmK = AdD * AdD + diff * diff;
+                        T AdD = AdCmV - minHeight;
+                        T diff = lengthAxD - hminTanAngle;
+                        T sqrLengthCmK = AdD * AdD + diff * diff;
                         return sqrLengthCmK <= sphere.radius * sphere.radius;
                     }
                 }
@@ -258,12 +264,19 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Sphere3<Real>, Cone3<Real>>
+    template <typename T>
+    class FIQuery<T, Sphere3<T>, Cone3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                point(Vector3<T>::Zero())
+            {
+            }
+
             // If an intersection occurs, it is potentially an infinite set.
             // If the cone vertex is inside the sphere, 'point' is set to the
             // cone vertex.  If the sphere center is inside the cone, 'point'
@@ -271,17 +284,17 @@ namespace gte
             // cone point that is closest to the cone vertex and inside the
             // sphere.
             bool intersect;
-            Vector3<Real> point;
+            Vector3<T> point;
         };
 
-        Result operator()(Sphere3<Real> const& sphere, Cone3<Real> const& cone)
+        Result operator()(Sphere3<T> const& sphere, Cone3<T> const& cone)
         {
-            Result result;
+            Result result{};
 
             // Test whether the cone vertex is inside the sphere.
-            Vector3<Real> diff = sphere.center - cone.ray.origin;
-            Real rSqr = sphere.radius * sphere.radius;
-            Real lenSqr = Dot(diff, diff);
+            Vector3<T> diff = sphere.center - cone.ray.origin;
+            T rSqr = sphere.radius * sphere.radius;
+            T lenSqr = Dot(diff, diff);
             if (lenSqr <= rSqr)
             {
                 // The cone vertex is inside the sphere, so the sphere and
@@ -292,9 +305,9 @@ namespace gte
             }
 
             // Test whether the sphere center is inside the cone.
-            Real dot = Dot(diff, cone.ray.direction);
-            Real dotSqr = dot * dot;
-            if (dotSqr >= lenSqr * cone.cosAngleSqr && dot > (Real)0)
+            T dot = Dot(diff, cone.ray.direction);
+            T dotSqr = dot * dot;
+            if (dotSqr >= lenSqr * cone.cosAngleSqr && dot > (T)0)
             {
                 // The sphere center is inside cone, so the sphere and cone
                 // intersect.
@@ -320,18 +333,18 @@ namespace gte
             // inequality is true (the sphere contains V).  This is already
             // ruled out in the first block of code in this function.
 
-            Real uLen = std::sqrt(std::max(lenSqr - dotSqr, (Real)0));
-            Real test = cone.cosAngle * dot + cone.sinAngle * uLen;
-            Real discr = test * test - lenSqr + rSqr;
+            T uLen = std::sqrt(std::max(lenSqr - dotSqr, (T)0));
+            T test = cone.cosAngle * dot + cone.sinAngle * uLen;
+            T discr = test * test - lenSqr + rSqr;
 
-            if (discr >= (Real)0 && test >= (Real)0)
+            if (discr >= (T)0 && test >= (T)0)
             {
                 // Compute the point of intersection closest to the cone
                 // vertex.
                 result.intersect = true;
-                Real t = test - std::sqrt(std::max(discr, (Real)0));
-                Vector3<Real> B = diff - dot * cone.ray.direction;
-                Real tmp = cone.sinAngle / uLen;
+                T t = test - std::sqrt(std::max(discr, (T)0));
+                Vector3<T> B = diff - dot * cone.ray.direction;
+                T tmp = cone.sinAngle / uLen;
                 result.point = t * (cone.cosAngle * cone.ray.direction + tmp * B);
             }
             else

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.03.08
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -36,7 +36,7 @@ namespace gte
 
         ParametricCurve(int numSegments, Real const* times)
             :
-            mTime(numSegments + 1),
+            mTime(static_cast<size_t>(numSegments) + 1),
             mSegmentLength(numSegments, (Real)0),
             mAccumulatedLength(numSegments, (Real)0),
             mRombergOrder(DEFAULT_ROMBERG_ORDER),
@@ -156,10 +156,10 @@ namespace gte
                 // Lazy initialization of lengths of segments.
                 int const numSegments = static_cast<int>(mSegmentLength.size());
                 Real accumulated = (Real)0;
-                for (int i = 0; i < numSegments; ++i)
+                for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
                 {
                     mSegmentLength[i] = Integration<Real>::Romberg(mRombergOrder,
-                        mTime[i], mTime[i + 1], speed);
+                        mTime[i], mTime[ip1], speed);
                     accumulated += mSegmentLength[i];
                     mAccumulatedLength[i] = accumulated;
                 }
@@ -186,7 +186,7 @@ namespace gte
                 if (t1 < *iter1)
                 {
                     length += Integration<Real>::Romberg(mRombergOrder,
-                        mTime[index1 - 1], t1, speed);
+                        mTime[static_cast<size_t>(index1) - 1], t1, speed);
                     isup = index1 - 1;
                 }
                 else

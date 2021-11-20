@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -94,7 +94,7 @@ namespace gte
                 && 0 <= i1 && i1 < GetNumControls(1)
                 && 0 <= i2 && i2 < GetNumControls(2))
             {
-                mControls[i0 + mNumControls[0] * (i1 + mNumControls[1] * i2)] = control;
+                mControls[i0 + static_cast<size_t>(mNumControls[0]) * (i1 + static_cast<size_t>(mNumControls[1]) * i2)] = control;
             }
         }
 
@@ -104,7 +104,7 @@ namespace gte
                 && 0 <= i1 && i1 < GetNumControls(1)
                 && 0 <= i2 && i2 < GetNumControls(2))
             {
-                return mControls[i0 + mNumControls[0] * (i1 + mNumControls[1] * i2)];
+                return mControls[i0 + static_cast<size_t>(mNumControls[0]) * (i1 + static_cast<size_t>(mNumControls[1]) * i2)];
             }
             else
             {
@@ -189,7 +189,7 @@ namespace gte
                         Real tmpu = mBasisFunction[0].GetValue(uOrder, iu);
                         int ju = (iu >= numControls0 ? iu - numControls0 : iu);
                         result += (tmpu * tmpvw) *
-                            mControls[ju + numControls0 * (jv + numControls1 * jw)];
+                            mControls[ju + static_cast<size_t>(numControls0) * (jv + static_cast<size_t>(numControls1) * jw)];
                     }
                 }
             }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.05
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -1008,11 +1008,11 @@ namespace gte
             // scaling we instead get x.  This leads to better numerical
             // behavior of the root finder.
             int derivDegree = degree - 1;
-            std::vector<Real> derivCoeff(derivDegree + 1);
+            std::vector<Real> derivCoeff(static_cast<size_t>(derivDegree) + 1);
             std::vector<Real> derivRoots(derivDegree);
-            for (int i = 0; i <= derivDegree; ++i)
+            for (int i = 0, ip1 = 1; i <= derivDegree; ++i, ++ip1)
             {
-                derivCoeff[i] = c[i + 1] * (Real)(i + 1) / (Real)degree;
+                derivCoeff[i] = c[ip1] * (Real)(ip1) / (Real)degree;
             }
             int numDerivRoots = FindRecursive(degree - 1, &derivCoeff[0], tmin, tmax,
                 maxIterations, &derivRoots[0]);
@@ -1027,9 +1027,9 @@ namespace gte
                 }
 
                 // Find root on [derivRoots[i],derivRoots[i+1]].
-                for (int i = 0; i <= numDerivRoots - 2; ++i)
+                for (int i = 0, ip1 = 1; i <= numDerivRoots - 2; ++i, ++ip1)
                 {
-                    if (Find(degree, c, derivRoots[i], derivRoots[i + 1],
+                    if (Find(degree, c, derivRoots[i], derivRoots[ip1],
                         maxIterations, root))
                     {
                         roots[numRoots++] = root;
@@ -1037,7 +1037,7 @@ namespace gte
                 }
 
                 // Find root on [derivRoots[numDerivRoots-1],tmax].
-                if (Find(degree, c, derivRoots[numDerivRoots - 1], tmax,
+                if (Find(degree, c, derivRoots[static_cast<size_t>(numDerivRoots) - 1], tmax,
                     maxIterations, root))
                 {
                     roots[numRoots++] = root;

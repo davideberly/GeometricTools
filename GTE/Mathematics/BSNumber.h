@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.03.08
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -903,7 +903,7 @@ namespace gte
                 }
                 else if (exponent <= IEEE::EXPONENT_BIAS)
                 {
-                    e = static_cast<uint32_t>(exponent + IEEE::EXPONENT_BIAS);
+                    e = static_cast<uint32_t>(static_cast<typename IEEE::UIntType>(exponent) + IEEE::EXPONENT_BIAS);
                     t = GetTrailing<IEEE>(1, 0);
                     if (t & (IEEE::SUP_TRAILING << 1))
                     {

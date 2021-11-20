@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -65,13 +65,14 @@ namespace gte
         void ClassifyEdges(std::vector<Vector3<Real>>& clipVertices,
             std::vector<int> const& indices)
         {
-            int const numTriangles = static_cast<int>(indices.size() / 3);
+            size_t const numTriangles = indices.size() / 3;
             int nextIndex = static_cast<int>(clipVertices.size());
-            for (int i = 0; i < numTriangles; ++i)
+            for (size_t i = 0; i < numTriangles; ++i)
             {
-                int v0 = indices[3 * i + 0];
-                int v1 = indices[3 * i + 1];
-                int v2 = indices[3 * i + 2];
+                size_t threeI = 3 * static_cast<size_t>(i);
+                int v0 = indices[threeI + 0];
+                int v1 = indices[threeI + 1];
+                int v2 = indices[threeI + 2];
                 Real sDist0 = mSignedDistances[v0];
                 Real sDist1 = mSignedDistances[v1];
                 Real sDist2 = mSignedDistances[v2];
@@ -138,12 +139,13 @@ namespace gte
         void ClassifyTriangles(std::vector<int> const& indices,
             std::vector<int>& negIndices, std::vector<int>& posIndices)
         {
-            int const numTriangles = static_cast<int>(indices.size() / 3);
-            for (int i = 0; i < numTriangles; ++i)
+            size_t const numTriangles = static_cast<int>(indices.size() / 3);
+            for (size_t i = 0; i < numTriangles; ++i)
             {
-                int v0 = indices[3 * i + 0];
-                int v1 = indices[3 * i + 1];
-                int v2 = indices[3 * i + 2];
+                size_t threeI = 3 * static_cast<size_t>(i);
+                int v0 = indices[threeI + 0];
+                int v1 = indices[threeI + 1];
+                int v2 = indices[threeI + 2];
                 Real sDist0 = mSignedDistances[v0];
                 Real sDist1 = mSignedDistances[v1];
                 Real sDist2 = mSignedDistances[v2];

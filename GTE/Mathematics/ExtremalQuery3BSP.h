@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -22,21 +22,24 @@ namespace gte
         // Construction.
         ExtremalQuery3BSP(Polyhedron3<Real> const& polytope)
             :
-            ExtremalQuery3<Real>(polytope)
+            ExtremalQuery3<Real>(polytope),
+            mTriToNormal{},
+            mNodes{},
+            mTreeDepth(0)
         {
             // Create the adjacency information for the polytope.
             VETManifoldMesh mesh;
             auto const& indices = this->mPolytope.GetIndices();
-            int const numTriangles = static_cast<int>(indices.size() / 3);
-            for (int t = 0; t < numTriangles; ++t)
+            size_t const numTriangles = indices.size() / 3;
+            for (size_t t = 0; t < numTriangles; ++t)
             {
                 std::array<int, 3> V = { 0, 0, 0 };
-                for (int j = 0; j < 3; ++j)
+                for (size_t j = 0; j < 3; ++j)
                 {
                     V[j] = indices[3 * t + j];
                 }
                 auto triangle = mesh.Insert(V[0], V[1], V[2]);
-                mTriToNormal.insert(std::make_pair(triangle, t));
+                mTriToNormal.insert(std::make_pair(triangle, static_cast<int>(t)));
             }
 
             // Create the set of unique arcs which are used to create the BSP

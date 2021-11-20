@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.17
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -122,24 +122,30 @@ namespace gte
                 q[r] = -Dot(polyhedron.planes[t], hmin);
             }
 
-            std::vector<T> M(n * n);
-            M[0] = (T)1;  M[1] = (T)0;  M[2] = (T)0;
-            M[n] = (T)0;  M[n + 1] = (T)1;  M[n + 2] = (T)0;
-            M[2 * n] = (T)0;  M[2 * n + 1] = (T)0;  M[2 * n + 2] = (T)1;
+            std::vector<T> M(static_cast<size_t>(n) * static_cast<size_t>(n));
+            M[0] = (T)1;
+            M[1] = (T)0;
+            M[2] = (T)0;
+            M[n] = (T)0;
+            M[static_cast<size_t>(n) + 1] = (T)1;
+            M[static_cast<size_t>(n) + 2] = (T)0;
+            M[2 * static_cast<size_t>(n)] = (T)0;
+            M[2 * static_cast<size_t>(n) + 1] = (T)0;
+            M[2 * static_cast<size_t>(n) + 2] = (T)1;
             for (int t = 0, c = 3; t < numTriangles; ++t, ++c)
             {
                 Vector3<T> normal = HProject(polyhedron.planes[t]);
                 for (int r = 0; r < 3; ++r)
                 {
-                    M[c + n * r] = normal[r];
-                    M[r + n * c] = -normal[r];
+                    M[c + static_cast<size_t>(n) * r] = normal[r];
+                    M[r + static_cast<size_t>(n) * c] = -normal[r];
                 }
             }
             for (int r = 3; r < n; ++r)
             {
                 for (int c = 3; c < n; ++c)
                 {
-                    M[c + n * r] = (T)0;
+                    M[c + static_cast<size_t>(n) * r] = (T)0;
                 }
             }
 

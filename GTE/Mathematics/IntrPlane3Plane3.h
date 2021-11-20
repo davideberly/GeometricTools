@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,16 +15,22 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Plane3<Real>, Plane3<Real>>
+    template <typename T>
+    class TIQuery<T, Plane3<T>, Plane3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Plane3<Real> const& plane0, Plane3<Real> const& plane1)
+        Result operator()(Plane3<T> const& plane0, Plane3<T> const& plane1)
         {
             // If Cross(N0,N1) is zero, then either planes are parallel and
             // separated or the same plane.  In both cases, 'false' is
@@ -37,17 +43,17 @@ namespace gte
             // unit-length normal vectors.  The test |Cross(N0,N1)| = 0 is the
             // same as |Dot(N0,N1)| = 1.
 
-            Result result;
-            Real dot = Dot(plane0.normal, plane1.normal);
-            if (std::fabs(dot) < (Real)1)
+            Result result{};
+            T dot = Dot(plane0.normal, plane1.normal);
+            if (std::fabs(dot) < (T)1)
             {
                 result.intersect = true;
                 return result;
             }
 
             // The planes are parallel.  Check whether they are coplanar.
-            Real cDiff;
-            if (dot >= (Real)0)
+            T cDiff;
+            if (dot >= (T)0)
             {
                 // Normals are in same direction, need to look at c0-c1.
                 cDiff = plane0.constant - plane1.constant;
@@ -58,28 +64,37 @@ namespace gte
                 cDiff = plane0.constant + plane1.constant;
             }
 
-            result.intersect = (std::fabs(cDiff) == (Real)0);
+            result.intersect = (std::fabs(cDiff) == (T)0);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Plane3<Real>, Plane3<Real>>
+    template <typename T>
+    class FIQuery<T, Plane3<T>, Plane3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                isLine(false),
+                line(Vector3<T>::Zero(), Vector3<T>::Zero()),
+                plane(Vector3<T>::Zero(), (T)0)
+            {
+            }
+
             bool intersect;
 
             // If 'intersect' is true, the intersection is either a line or
             // the planes are the same.  When a line, 'line' is valid.  When
             // the same plane, 'plane' is set to one of the planes.
             bool isLine;
-            Line3<Real> line;
-            Plane3<Real> plane;
+            Line3<T> line;
+            Plane3<T> plane;
         };
 
-        Result operator()(Plane3<Real> const& plane0, Plane3<Real> const& plane1)
+        Result operator()(Plane3<T> const& plane0, Plane3<T> const& plane1)
         {
             // If N0 and N1 are parallel, either the planes are parallel and
             // separated or the same plane.  In both cases, 'false' is
@@ -95,14 +110,14 @@ namespace gte
             //   c1 = (d1 - d*d0)/det
             // where det = 1 - d^2.
 
-            Result result;
+            Result result{};
 
-            Real dot = Dot(plane0.normal, plane1.normal);
-            if (std::fabs(dot) >= (Real)1)
+            T dot = Dot(plane0.normal, plane1.normal);
+            if (std::fabs(dot) >= (T)1)
             {
                 // The planes are parallel.  Check if they are coplanar.
-                Real cDiff;
-                if (dot >= (Real)0)
+                T cDiff;
+                if (dot >= (T)0)
                 {
                     // Normals are in same direction, need to look at c0-c1.
                     cDiff = plane0.constant - plane1.constant;
@@ -114,7 +129,7 @@ namespace gte
                     cDiff = plane0.constant + plane1.constant;
                 }
 
-                if (std::fabs(cDiff) == (Real)0)
+                if (std::fabs(cDiff) == (T)0)
                 {
                     // The planes are coplanar.
                     result.intersect = true;
@@ -128,9 +143,9 @@ namespace gte
                 return result;
             }
 
-            Real invDet = (Real)1 / ((Real)1 - dot * dot);
-            Real c0 = (plane0.constant - dot * plane1.constant) * invDet;
-            Real c1 = (plane1.constant - dot * plane0.constant) * invDet;
+            T invDet = (T)1 / ((T)1 - dot * dot);
+            T c0 = (plane0.constant - dot * plane1.constant) * invDet;
+            T c1 = (plane1.constant - dot * plane0.constant) * invDet;
             result.intersect = true;
             result.isLine = true;
             result.line.origin = c0 * plane0.normal + c1 * plane1.normal;

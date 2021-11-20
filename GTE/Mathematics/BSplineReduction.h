@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -74,10 +74,11 @@ namespace gte
                     mKnot[j][i] = (Real)0;
                 }
 
-                Real factor = (Real)1 / static_cast<Real>(mQuantity[j] - mDegree);
+                Real denom = static_cast<Real>(mQuantity[j]) - static_cast<Real>(mDegree);
+                Real factor = (Real)1 / denom;
                 for (/**/; i < mQuantity[j]; ++i)
                 {
-                    mKnot[j][i] = (i - mDegree) * factor;
+                    mKnot[j][i] = (static_cast<size_t>(i) - mDegree) * factor;
                 }
 
                 for (/**/; i < mNumKnots[j]; ++i)
@@ -179,7 +180,7 @@ namespace gte
 
         inline Real MaxSupport(int basis, int i) const
         {
-            return mKnot[basis][i + 1 + mDegree];
+            return mKnot[basis][static_cast<size_t>(i) + 1 + static_cast<size_t>(mDegree)];
         }
 
         Real F(int basis, int i, int j, Real t)
@@ -188,24 +189,24 @@ namespace gte
             {
                 Real result = (Real)0;
 
-                Real denom = mKnot[basis][i + j] - mKnot[basis][i];
+                Real denom = mKnot[basis][static_cast<size_t>(i) + static_cast<size_t>(j)] - mKnot[basis][i];
                 if (denom > (Real)0)
                 {
                     result += (t - mKnot[basis][i]) *
                         F(basis, i, j - 1, t) / denom;
                 }
 
-                denom = mKnot[basis][i + j + 1] - mKnot[basis][i + 1];
+                denom = mKnot[basis][static_cast<size_t>(i) + static_cast<size_t>(j) + 1] - mKnot[basis][static_cast<size_t>(i) + 1];
                 if (denom > (Real)0)
                 {
-                    result += (mKnot[basis][i + j + 1] - t) *
+                    result += (mKnot[basis][static_cast<size_t>(i) + static_cast<size_t>(j) + 1] - t) *
                         F(basis, i + 1, j - 1, t) / denom;
                 }
 
                 return result;
             }
 
-            if (mKnot[basis][i] <= t && t < mKnot[basis][i + 1])
+            if (mKnot[basis][i] <= t && t < mKnot[basis][static_cast<size_t>(i) + 1])
             {
                 return (Real)1;
             }

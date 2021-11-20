@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,39 +15,45 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ray3<Real>, Triangle3<Real>>
+    template <typename T>
+    class TIQuery<T, Ray3<T>, Triangle3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Ray3<Real> const& ray, Triangle3<Real> const& triangle)
+        Result operator()(Ray3<T> const& ray, Triangle3<T> const& triangle)
         {
-            Result result;
+            Result result{};
 
             // Compute the offset origin, edges, and normal.
-            Vector3<Real> diff = ray.origin - triangle.v[0];
-            Vector3<Real> edge1 = triangle.v[1] - triangle.v[0];
-            Vector3<Real> edge2 = triangle.v[2] - triangle.v[0];
-            Vector3<Real> normal = Cross(edge1, edge2);
+            Vector3<T> diff = ray.origin - triangle.v[0];
+            Vector3<T> edge1 = triangle.v[1] - triangle.v[0];
+            Vector3<T> edge2 = triangle.v[2] - triangle.v[0];
+            Vector3<T> normal = Cross(edge1, edge2);
 
             // Solve Q + t*D = b1*E1 + b2*E2 (Q = kDiff, D = ray direction,
             // E1 = edge1, E2 = edge2, N = Cross(E1,E2)) by
             //   |Dot(D,N)|*b1 = sign(Dot(D,N))*Dot(D,Cross(Q,E2))
             //   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
             //   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
-            Real DdN = Dot(ray.direction, normal);
-            Real sign;
-            if (DdN > (Real)0)
+            T DdN = Dot(ray.direction, normal);
+            T sign = (T)0;
+            if (DdN > (T)0)
             {
-                sign = (Real)1;
+                sign = (T)1;
             }
-            else if (DdN < (Real)0)
+            else if (DdN < (T)0)
             {
-                sign = (Real)-1;
+                sign = (T)-1;
                 DdN = -DdN;
             }
             else
@@ -58,17 +64,17 @@ namespace gte
                 return result;
             }
 
-            Real DdQxE2 = sign * DotCross(ray.direction, diff, edge2);
-            if (DdQxE2 >= (Real)0)
+            T DdQxE2 = sign * DotCross(ray.direction, diff, edge2);
+            if (DdQxE2 >= (T)0)
             {
-                Real DdE1xQ = sign * DotCross(ray.direction, edge1, diff);
-                if (DdE1xQ >= (Real)0)
+                T DdE1xQ = sign * DotCross(ray.direction, edge1, diff);
+                if (DdE1xQ >= (T)0)
                 {
                     if (DdQxE2 + DdE1xQ <= DdN)
                     {
                         // Line intersects triangle, check whether ray does.
-                        Real QdN = -sign * Dot(diff, normal);
-                        if (QdN >= (Real)0)
+                        T QdN = -sign * Dot(diff, normal);
+                        if (QdN >= (T)0)
                         {
                             // Ray intersects triangle.
                             result.intersect = true;
@@ -87,8 +93,8 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ray3<Real>, Triangle3<Real>>
+    template <typename T>
+    class FIQuery<T, Ray3<T>, Triangle3<T>>
     {
     public:
         struct Result
@@ -96,42 +102,42 @@ namespace gte
             Result()
                 :
                 intersect(false),
-                parameter((Real)0),
-                triangleBary{ (Real)0, (Real)0, (Real)0 },
-                point{ (Real)0, (Real)0, (Real)0 }
+                parameter((T)0),
+                triangleBary{ (T)0, (T)0, (T)0 },
+                point(Vector3<T>::Zero())
             {
             }
 
             bool intersect;
-            Real parameter;
-            std::array<Real, 3> triangleBary;
-            Vector3<Real> point;
+            T parameter;
+            std::array<T, 3> triangleBary;
+            Vector3<T> point;
         };
 
-        Result operator()(Ray3<Real> const& ray, Triangle3<Real> const& triangle)
+        Result operator()(Ray3<T> const& ray, Triangle3<T> const& triangle)
         {
-            Result result;
+            Result result{};
 
             // Compute the offset origin, edges, and normal.
-            Vector3<Real> diff = ray.origin - triangle.v[0];
-            Vector3<Real> edge1 = triangle.v[1] - triangle.v[0];
-            Vector3<Real> edge2 = triangle.v[2] - triangle.v[0];
-            Vector3<Real> normal = Cross(edge1, edge2);
+            Vector3<T> diff = ray.origin - triangle.v[0];
+            Vector3<T> edge1 = triangle.v[1] - triangle.v[0];
+            Vector3<T> edge2 = triangle.v[2] - triangle.v[0];
+            Vector3<T> normal = Cross(edge1, edge2);
 
             // Solve Q + t*D = b1*E1 + b2*E2 (Q = kDiff, D = ray direction,
             // E1 = edge1, E2 = edge2, N = Cross(E1,E2)) by
             //   |Dot(D,N)|*b1 = sign(Dot(D,N))*Dot(D,Cross(Q,E2))
             //   |Dot(D,N)|*b2 = sign(Dot(D,N))*Dot(D,Cross(E1,Q))
             //   |Dot(D,N)|*t = -sign(Dot(D,N))*Dot(Q,N)
-            Real DdN = Dot(ray.direction, normal);
-            Real sign;
-            if (DdN > (Real)0)
+            T DdN = Dot(ray.direction, normal);
+            T sign = (T)0;
+            if (DdN > (T)0)
             {
-                sign = (Real)1;
+                sign = (T)1;
             }
-            else if (DdN < (Real)0)
+            else if (DdN < (T)0)
             {
-                sign = (Real)-1;
+                sign = (T)-1;
                 DdN = -DdN;
             }
             else
@@ -142,26 +148,25 @@ namespace gte
                 return result;
             }
 
-            Real DdQxE2 = sign * DotCross(ray.direction, diff, edge2);
-            if (DdQxE2 >= (Real)0)
+            T DdQxE2 = sign * DotCross(ray.direction, diff, edge2);
+            if (DdQxE2 >= (T)0)
             {
-                Real DdE1xQ = sign * DotCross(ray.direction, edge1, diff);
-                if (DdE1xQ >= (Real)0)
+                T DdE1xQ = sign * DotCross(ray.direction, edge1, diff);
+                if (DdE1xQ >= (T)0)
                 {
                     if (DdQxE2 + DdE1xQ <= DdN)
                     {
                         // Line intersects triangle, check whether ray does.
-                        Real QdN = -sign * Dot(diff, normal);
-                        if (QdN >= (Real)0)
+                        T QdN = -sign * Dot(diff, normal);
+                        if (QdN >= (T)0)
                         {
                             // Ray intersects triangle.
                             result.intersect = true;
-                            Real inv = (Real)1 / DdN;
-                            result.parameter = QdN * inv;
-                            result.triangleBary[1] = DdQxE2 * inv;
-                            result.triangleBary[2] = DdE1xQ * inv;
+                            result.parameter = QdN / DdN;
+                            result.triangleBary[1] = DdQxE2 / DdN;
+                            result.triangleBary[2] = DdE1xQ / DdN;
                             result.triangleBary[0] =
-                                (Real)1 - result.triangleBary[1] - result.triangleBary[2];
+                                (T)1 - result.triangleBary[1] - result.triangleBary[2];
                             result.point = ray.origin + result.parameter * ray.direction;
                             return result;
                         }

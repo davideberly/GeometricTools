@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -20,12 +20,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Circle2<Real> const& circle0, Circle2<Real> const& circle1)
         {
-            Result result;
+            Result result{};
             Vector2<Real> diff = circle0.center - circle1.center;
             result.intersect = (Length(diff) <= circle0.radius + circle1.radius);
             return result;
@@ -38,6 +44,15 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                point{ Vector2<Real>::Zero(), Vector2<Real>::Zero() },
+                circle(Vector2<Real>::Zero(), (Real)0)
+            {
+            }
+
             bool intersect;
 
             // The number of intersections is 0, 1, 2 or maxInt =
@@ -48,7 +63,7 @@ namespace gte
             int numIntersections;
 
             // Valid only when numIntersections = 1 or 2.
-            Vector2<Real> point[2];
+            std::array<Vector2<Real>, 2> point;
 
             // Valid only when numIntersections = maxInt.
             Circle2<Real> circle;
@@ -79,7 +94,7 @@ namespace gte
             // just tangent.  If |R0-R1| < |U| < |R0+R1|, then the two circles
             // to intersect in two points.
 
-            Result result;
+            Result result{};
 
             Vector2<Real> U = circle1.center - circle0.center;
             Real USqrLen = Dot(U, U);

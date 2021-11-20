@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/FontArialW400H18.h>
@@ -145,31 +145,22 @@ void GL45Engine::Terminate()
 
     if (mGOMap.HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Bridge map is nonempty on destruction.");
-        }
-
+        // Bridge map is nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mGOMap.RemoveAll();
     }
 
     if (mDTMap.HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Draw target map nonempty on destruction.");
-        }
-
+        // Draw target map nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mDTMap.RemoveAll();
     }
 
     if (mILMap->HasElements())
     {
-        if (mWarnOnNonemptyBridges)
-        {
-            LogWarning("Input layout map nonempty on destruction.");
-        }
-
+        // Input layout map nonempty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         mILMap->UnbindAll();
     }
     mILMap = nullptr;
@@ -222,7 +213,7 @@ uint64_t GL45Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
     unsigned int offset = ibuffer->GetOffset();
     if (ibuffer->IsIndexed())
     {
-        void const* data = (char*)0 + indexSize * offset;
+        void const* data = (char*)0 + static_cast<size_t>(indexSize) * static_cast<size_t>(offset);
         glDrawRangeElements(topology, 0, numActiveVertices - 1,
             static_cast<GLsizei>(numActiveIndices), indexType, data);
     }
@@ -998,7 +989,6 @@ bool GL45Engine::Update(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1010,7 +1000,6 @@ bool GL45Engine::Update(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1022,7 +1011,6 @@ bool GL45Engine::Update(std::shared_ptr<TextureSingle> const& texture, unsigned 
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1034,7 +1022,6 @@ bool GL45Engine::Update(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1046,7 +1033,6 @@ bool GL45Engine::Update(std::shared_ptr<TextureArray> const& textureArray, unsig
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1058,7 +1044,6 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1070,7 +1055,6 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1082,7 +1066,6 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uns
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1094,7 +1077,6 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1106,7 +1088,6 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray,
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1118,7 +1099,6 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<Buffer> const& buffer)
 {
     if (!buffer->GetData())
     {
-        LogWarning("Buffer does not have system memory, creating it.");
         buffer->CreateStorage();
     }
 
@@ -1130,7 +1110,6 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture)
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1142,7 +1121,6 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uns
 {
     if (!texture->GetData())
     {
-        LogWarning("Texture does not have system memory, creating it.");
         texture->CreateStorage();
     }
 
@@ -1154,7 +1132,6 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray)
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1166,7 +1143,6 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray,
 {
     if (!textureArray->GetData())
     {
-        LogWarning("Texture array does not have system memory, creating it.");
         textureArray->CreateStorage();
     }
 
@@ -1266,10 +1242,10 @@ void GL45Engine::Execute(std::shared_ptr<ComputeProgram> const& program,
 
 void GL45Engine::WaitForFinish()
 {
-    // TODO.  Determine whether OpenGL can wait for a compute program to
-    // finish.  Is this simply a call to glFinish()?  If so, how does that
+    // TODO. Determine whether OpenGL can wait for a compute program to
+    // finish. Is this simply a call to glFinish()?  If so, how does that
     // affect graphics-related work that is queued up on the GPU?
-    LogWarning("This function is not yet implemented.");
+    LogError("This function is not yet implemented.");
 }
 
 void GL45Engine::Flush()

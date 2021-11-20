@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -106,6 +106,10 @@ namespace gte
             int quadIndex = numCoefficients - 1;
             int maxIndex = quadIndex;
             Real maxValue = std::fabs(coeff[quadIndex]);
+            // NOTE: When N = 2, MSVS 2019 16+ generates:
+            //   warning C6294: Ill-defined for-loop: initial condition does
+            //   not satisfy test. Loop body not executed.
+            // This is the correct behavior for N = 2.
             for (int d = 2; d < N; ++d)
             {
                 quadIndex -= d;
@@ -228,6 +232,19 @@ namespace gte
                     A(r, c) = A(c, r);
                 }
 
+                // NOTE: MSVS 2019 16+ generates for N = 2:
+                //   warning C28020: The expression
+                //   '0 <= _Param_(1)&&_Param(1)<=6-1' is not true at this
+                //   call.
+                // A similar warning occurs for N = 3 (upper bound is 10-1).
+                // The warning is incorrect.
+                //
+                // When r = N-1, i = (N+1)*(N+2)/2 - 1 which corresponds to
+                // the last element of coeff[]. The assignment is valid. After
+                // the assignment, i is incremented and now out of range for
+                // coeff[]. However, the loop after the assignment starts at
+                // c = N and the loop body is not executed, after which the
+                // r-loop terminates.
                 A(r, r) = coeff[i++];
 
                 for (int c = r + 1; c < N; ++c)
@@ -250,6 +267,19 @@ namespace gte
 
             for (int r = 0; r < N; ++r)
             {
+                // NOTE: MSVS 2019 16+ generates for N = 2:
+                //   warning C28020: The expression
+                //   '0 <= _Param_(1)&&_Param(1)<=6-1' is not true at this
+                //   call.
+                // A similar warning occurs for N = 3 (upper bound is 10-1).
+                // The warning is incorrect.
+                //
+                // When r = N-1, i = (N+1)*(N+2)/2 - 1 which corresponds to
+                // the last element of coeff[]. The assignment is valid. After
+                // the assignment, i is incremented and now out of range for
+                // coeff[]. However, the loop after the assignment starts at
+                // c = N and the loop body is not executed, after which the
+                // r-loop terminates.
                 coeff[i++] = A(r, r);
                 for (int c = r + 1; c < N; ++c)
                 {

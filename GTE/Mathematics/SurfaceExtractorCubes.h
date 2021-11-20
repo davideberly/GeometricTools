@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -134,7 +134,11 @@ namespace gte
         class VETable
         {
         public:
-            VETable() = default;
+            VETable()
+                :
+                mVertex{}
+            {
+            }
 
             inline bool IsValidVertex(int i) const
             {
@@ -274,7 +278,9 @@ namespace gte
             public:
                 TVertex()
                     :
+                    pos{},
                     numAdjacents(0),
+                    adj{ 0, 0, 0, 0 },
                     valid(false)
                 {
                 }
@@ -375,8 +381,13 @@ namespace gte
             int64_t f011 = this->mVoxels[i011];
             int64_t f111 = this->mVoxels[i111];
 
-            int64_t x0 = x, x1 = x + 1, y0 = y, y1 = y + 1, z0 = z, z1 = z + 1;
-            int64_t d;
+            int64_t x0 = x;
+            int64_t x1 = x0 + 1;
+            int64_t y0 = y;
+            int64_t y1 = y0 + 1;
+            int64_t z0 = z;
+            int64_t z1 = z0 + 1;
+            int64_t d = 0;
 
             // xmin-ymin edge
             if (f000 * f001 < 0)

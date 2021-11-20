@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -14,49 +14,64 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment2<Real>, Arc2<Real>>
+    template <typename T>
+    class TIQuery<T, Segment2<T>, Arc2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Segment2<Real> const& segment, Arc2<Real> const& arc)
+        Result operator()(Segment2<T> const& segment, Arc2<T> const& arc)
         {
-            Result result;
-            FIQuery<Real, Segment2<Real>, Arc2<Real>> saQuery;
+            Result result{};
+            FIQuery<T, Segment2<T>, Arc2<T>> saQuery{};
             auto saResult = saQuery(segment, arc);
             result.intersect = saResult.intersect;
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment2<Real>, Arc2<Real>>
+    template <typename T>
+    class FIQuery<T, Segment2<T>, Arc2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numIntersections(0),
+                parameter{ (T)0, (T)0 },
+                point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            {
+            }
+
             bool intersect;
             int numIntersections;
-            std::array<Real, 2> parameter;
-            std::array<Vector2<Real>, 2> point;
+            std::array<T, 2> parameter;
+            std::array<Vector2<T>, 2> point;
         };
 
-        Result operator()(Segment2<Real> const& segment, Arc2<Real> const& arc)
+        Result operator()(Segment2<T> const& segment, Arc2<T> const& arc)
         {
-            Result result;
+            Result result{};
             result.intersect = false;
             result.numIntersections = 0;
-            result.parameter[0] = (Real)0;
-            result.parameter[0] = (Real)0;
-            result.point[0] = { (Real)0, (Real)0 };
-            result.point[1] = { (Real)0, (Real)0 };
+            result.parameter[0] = (T)0;
+            result.parameter[0] = (T)0;
+            result.point[0] = { (T)0, (T)0 };
+            result.point[1] = { (T)0, (T)0 };
 
-            FIQuery<Real, Segment2<Real>, Circle2<Real>> scQuery;
-            Circle2<Real> circle(arc.center, arc.radius);
+            FIQuery<T, Segment2<T>, Circle2<T>> scQuery{};
+            Circle2<T> circle(arc.center, arc.radius);
             auto scResult = scQuery(segment, circle);
             if (scResult.intersect)
             {
@@ -67,7 +82,8 @@ namespace gte
                     {
                         result.intersect = true;
                         result.parameter[result.numIntersections] = scResult.parameter[i];
-                        result.point[result.numIntersections++] = scResult.point[i];
+                        result.point[result.numIntersections] = scResult.point[i];
+                        ++result.numIntersections;
                     }
                 }
             }

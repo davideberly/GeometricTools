@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.01
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -244,7 +244,16 @@ namespace gte
         // to be normalized for conversion back to InputType.
         struct Box
         {
-            Vector2<ComputeType> U[2];
+            Box()
+                :
+                U{ Vector2<ComputeType>::Zero(), Vector2<ComputeType>::Zero() },
+                index{ 0, 0, 0, 0 },
+                sqrLenU0((ComputeType)0),
+                area((ComputeType)0)
+            {
+            }
+
+            std::array<Vector2<ComputeType>, 2> U;
             std::array<int, 4> index;  // order: bottom, right, top, left
             ComputeType sqrLenU0, area;
         };

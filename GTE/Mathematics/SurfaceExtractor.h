@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -443,14 +443,15 @@ namespace gte
             mYBound(yBound),
             mZBound(zBound),
             mXYBound(xBound * yBound),
-            mInputVoxels(inputVoxels)
+            mInputVoxels(inputVoxels),
+            mVoxels{}
         {
             static_assert(std::is_integral<T>::value && sizeof(T) <= 4,
                 "Type T must be int{8,16,32}_t or uint{8,16,32}_t.");
             LogAssert(xBound > 1 && yBound > 1 && zBound > 1 && mInputVoxels != nullptr,
                 "Invalid input.");
 
-            mVoxels.resize(static_cast<size_t>(mXBound * mYBound * mZBound));
+            mVoxels.resize(static_cast<size_t>(mXBound) * static_cast<size_t>(mYBound) * static_cast<size_t>(mZBound));
         }
 
         virtual std::array<Real, 3> GetGradient(std::array<Real, 3> const& pos) = 0;

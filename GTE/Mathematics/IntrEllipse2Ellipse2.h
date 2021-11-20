@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -19,7 +19,7 @@
 // The test-intersection and find-intersection queries implemented here are
 // discussed in the document
 //   https://www.geometrictools.com/Documentation/IntersectionOfEllipses.pdf
-// The Real type should support exact rational arithmetic in order for the
+// The T type should support exact rational arithmetic in order for the
 // polynomial root construction to be robust.  The classification of the
 // intersections depends on various sign tests of computed values.  If these
 // values are computed with floating-point arithmetic, the sign tests can
@@ -30,13 +30,13 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Ellipse2<Real>, Ellipse2<Real>>
+    template <typename T>
+    class TIQuery<T, Ellipse2<T>, Ellipse2<T>>
     {
     public:
         // The query tests the relationship between the ellipses as solid
         // objects.
-        enum
+        enum class Classification
         {
             ELLIPSES_SEPARATED,
             ELLIPSES_OVERLAP,
@@ -50,25 +50,25 @@ namespace gte
 
         // The ellipse axes are already normalized, which most likely
         // introduced rounding errors.
-        int operator()(Ellipse2<Real> const& ellipse0, Ellipse2<Real> const& ellipse1)
+        Classification operator()(Ellipse2<T> const& ellipse0, Ellipse2<T> const& ellipse1)
         {
-            Real const zero = 0, one = 1;
+            T const zero = 0, one = 1;
 
             // Get the parameters of ellipe0.
-            Vector2<Real> K0 = ellipse0.center;
-            Matrix2x2<Real> R0;
+            Vector2<T> K0 = ellipse0.center;
+            Matrix2x2<T> R0;
             R0.SetCol(0, ellipse0.axis[0]);
             R0.SetCol(1, ellipse0.axis[1]);
-            Matrix2x2<Real> D0{
+            Matrix2x2<T> D0{
                 one / (ellipse0.extent[0] * ellipse0.extent[0]), zero,
                 zero, one / (ellipse0.extent[1] * ellipse0.extent[1]) };
 
             // Get the parameters of ellipse1.
-            Vector2<Real> K1 = ellipse1.center;
-            Matrix2x2<Real> R1;
+            Vector2<T> K1 = ellipse1.center;
+            Matrix2x2<T> R1;
             R1.SetCol(0, ellipse1.axis[0]);
             R1.SetCol(1, ellipse1.axis[1]);
-            Matrix2x2<Real> D1{
+            Matrix2x2<T> D1{
                 one / (ellipse1.extent[0] * ellipse1.extent[0]), zero,
                 zero, one / (ellipse1.extent[1] * ellipse1.extent[1]) };
 
@@ -83,29 +83,29 @@ namespace gte
             // as a 2x1 vector. See Matrix.h, the operator function
             // Vector<?> operator*(Vector<?> const&, Matrix<?> const&) which
             // computes V^T*M for a Vector<?> V and a Matrix<?> M.
-            Matrix2x2<Real> D0NegHalf{
+            Matrix2x2<T> D0NegHalf{
                 ellipse0.extent[0], zero,
                 zero, ellipse0.extent[1] };
-            Matrix2x2<Real> D0Half{
+            Matrix2x2<T> D0Half{
                 one / ellipse0.extent[0], zero,
                 zero, one / ellipse0.extent[1] };
-            Vector2<Real> K2 = D0Half * ((K1 - K0) * R0);
+            Vector2<T> K2 = D0Half * ((K1 - K0) * R0);
 
             // Compute M2.
-            Matrix2x2<Real> R1TR0D0NegHalf = MultiplyATB(R1, R0 * D0NegHalf);
-            Matrix2x2<Real> M2 = MultiplyATB(R1TR0D0NegHalf, D1) * R1TR0D0NegHalf;
+            Matrix2x2<T> R1TR0D0NegHalf = MultiplyATB(R1, R0 * D0NegHalf);
+            Matrix2x2<T> M2 = MultiplyATB(R1TR0D0NegHalf, D1) * R1TR0D0NegHalf;
 
             // Factor M2 = R*D*R^T.
-            SymmetricEigensolver2x2<Real> es;
-            std::array<Real, 2> D;
-            std::array<std::array<Real, 2>, 2> evec;
+            SymmetricEigensolver2x2<T> es;
+            std::array<T, 2> D;
+            std::array<std::array<T, 2>, 2> evec;
             es(M2(0, 0), M2(0, 1), M2(1, 1), +1, D, evec);
-            Matrix2x2<Real> R;
+            Matrix2x2<T> R;
             R.SetCol(0, evec[0]);
             R.SetCol(1, evec[1]);
 
             // Compute K = R^T*K2.
-            Vector2<Real> K = K2 * R;
+            Vector2<T> K = K2 * R;
 
             // Transformed ellipse0 is Z^T*Z = 1 and transformed ellipse1 is
             // (Z-K)^T*D*(Z-K) = 0.
@@ -114,17 +114,17 @@ namespace gte
             // points on transformed ellipse1 are used to determine whether
             // the ellipses intersect, are separated or one contains the
             // other.
-            Real minSqrDistance = std::numeric_limits<Real>::max();
-            Real maxSqrDistance = zero;
+            T minSqrDistance = std::numeric_limits<T>::max();
+            T maxSqrDistance = zero;
 
-            if (K == Vector2<Real>::Zero())
+            if (K == Vector2<T>::Zero())
             {
                 // The special case of common centers must be handled
                 // separately.  It is not possible for the ellipses to be
                 // separated.
                 for (int i = 0; i < 2; ++i)
                 {
-                    Real invD = one / D[i];
+                    T invD = one / D[i];
                     if (invD < minSqrDistance)
                     {
                         minSqrDistance = invD;
@@ -142,12 +142,12 @@ namespace gte
             // and s1 that are roots to the function
             //   f(s) = d0*k0^2/(d0*s-1)^2 + d1*k1^2/(d1*s-1)^2 - 1
             // where D = diagonal(d0,d1) and K = (k0,k1).
-            Real d0 = D[0], d1 = D[1];
-            Real c0 = K[0] * K[0], c1 = K[1] * K[1];
+            T d0 = D[0], d1 = D[1];
+            T c0 = K[0] * K[0], c1 = K[1] * K[1];
 
             // Sort the values so that d0 >= d1.  This allows us to bound the
             // roots of f(s), of which there are at most 4.
-            std::vector<std::pair<Real, Real>> param(2);
+            std::vector<std::pair<T, T>> param(2);
             if (d0 >= d1)
             {
                 param[0] = std::make_pair(d0, c0);
@@ -159,7 +159,7 @@ namespace gte
                 param[1] = std::make_pair(d0, c0);
             }
 
-            std::vector<std::pair<Real, Real>> valid;
+            std::vector<std::pair<T, T>> valid{};
             valid.reserve(2);
             if (param[0].first > param[1].first)
             {
@@ -184,25 +184,25 @@ namespace gte
 
             size_t numValid = valid.size();
             int numRoots = 0;
-            Real roots[4];
+            std::array<T, 4> roots{};
             if (numValid == 2)
             {
                 GetRoots(valid[0].first, valid[1].first, valid[0].second,
-                    valid[1].second, numRoots, roots);
+                    valid[1].second, numRoots, roots.data());
             }
             else if (numValid == 1)
             {
-                GetRoots(valid[0].first, valid[0].second, numRoots, roots);
+                GetRoots(valid[0].first, valid[0].second, numRoots, roots.data());
             }
             // else: numValid cannot be zero because we already handled case
             // K = 0
 
             for (int i = 0; i < numRoots; ++i)
             {
-                Real s = roots[i];
-                Real p0 = d0 * K[0] * s / (d0 * s - (Real)1);
-                Real p1 = d1 * K[1] * s / (d1 * s - (Real)1);
-                Real sqrDistance = p0 * p0 + p1 * p1;
+                T s = roots[i];
+                T p0 = d0 * K[0] * s / (d0 * s - (T)1);
+                T p1 = d1 * K[1] * s / (d1 * s - (T)1);
+                T sqrDistance = p0 * p0 + p1 * p1;
                 if (sqrDistance < minSqrDistance)
                 {
                     minSqrDistance = sqrDistance;
@@ -217,60 +217,60 @@ namespace gte
         }
 
     private:
-        void GetRoots(Real d0, Real c0, int& numRoots, Real* roots)
+        void GetRoots(T d0, T c0, int& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 - 1
-            Real const one = (Real)1;
-            Real temp = std::sqrt(d0 * c0);
-            Real inv = one / d0;
+            T const one = (T)1;
+            T temp = std::sqrt(d0 * c0);
+            T inv = one / d0;
             numRoots = 2;
             roots[0] = (one - temp) * inv;
             roots[1] = (one + temp) * inv;
         }
 
-        void GetRoots(Real d0, Real d1, Real c0, Real c1, int& numRoots, Real* roots)
+        void GetRoots(T d0, T d1, T c0, T c1, int& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 + d1*c1/(d1*s-1)^2 - 1 with d0 > d1
 
-            Real const zero = 0, one = (Real)1;
-            Real d0c0 = d0 * c0;
-            Real d1c1 = d1 * c1;
-            Real sum = d0c0 + d1c1;
-            Real sqrtsum = std::sqrt(sum);
+            T const zero = 0, one = (T)1;
+            T d0c0 = d0 * c0;
+            T d1c1 = d1 * c1;
+            T sum = d0c0 + d1c1;
+            T sqrtsum = std::sqrt(sum);
 
-            std::function<Real(Real)> F = [&one, d0, d1, d0c0, d1c1](Real s)
+            std::function<T(T)> F = [&one, d0, d1, d0c0, d1c1](T s)
             {
-                Real invN0 = one / (d0 * s - one);
-                Real invN1 = one / (d1 * s - one);
-                Real term0 = d0c0 * invN0 * invN0;
-                Real term1 = d1c1 * invN1 * invN1;
-                Real f = term0 + term1 - one;
+                T invN0 = one / (d0 * s - one);
+                T invN1 = one / (d1 * s - one);
+                T term0 = d0c0 * invN0 * invN0;
+                T term1 = d1c1 * invN1 * invN1;
+                T f = term0 + term1 - one;
                 return f;
             };
 
-            std::function<Real(Real)> DF = [&one, d0, d1, d0c0, d1c1](Real s)
+            std::function<T(T)> DF = [&one, d0, d1, d0c0, d1c1](T s)
             {
-                Real const two = 2;
-                Real invN0 = one / (d0 * s - one);
-                Real invN1 = one / (d1 * s - one);
-                Real term0 = d0 * d0c0 * invN0 * invN0 * invN0;
-                Real term1 = d1 * d1c1 * invN1 * invN1 * invN1;
-                Real df = -two * (term0 + term1);
+                T const two = 2;
+                T invN0 = one / (d0 * s - one);
+                T invN1 = one / (d1 * s - one);
+                T term0 = d0 * d0c0 * invN0 * invN0 * invN0;
+                T term1 = d1 * d1c1 * invN1 * invN1 * invN1;
+                T df = -two * (term0 + term1);
                 return df;
             };
 
             unsigned int const maxIterations = static_cast<unsigned int>(
-                3 + std::numeric_limits<Real>::digits -
-                std::numeric_limits<Real>::min_exponent);
+                3 + std::numeric_limits<T>::digits -
+                std::numeric_limits<T>::min_exponent);
             unsigned int iterations;
             numRoots = 0;
 
-            Real invD0 = one / d0;
-            Real invD1 = one / d1;
-            Real smin, smax, s, fval;
+            T invD0 = one / d0;
+            T invD1 = one / d1;
+            T smin, smax, fval, s = (T)0;
 
             // Compute root in (-infinity,1/d0).  Obtain a lower bound for the
-            // root better than -std::numeric_limits<Real>::max().
+            // root better than -std::numeric_limits<T>::max().
             smax = invD0;
             fval = sum - one;
             if (fval > zero)
@@ -283,7 +283,7 @@ namespace gte
             {
                 smin = zero;
             }
-            iterations = RootsBisection<Real>::Find(F, smin, smax, -one, one,
+            iterations = RootsBisection<T>::Find(F, smin, smax, -one, one,
                 maxIterations, s);
             fval = F(s);
             LogAssert(iterations > 0, "Unexpected condition.");
@@ -298,20 +298,20 @@ namespace gte
             // and +1 instead of the infinite values.  If F(r) < 0, F(s) has
             // two roots in the interval.  If F(r) = 0, F(s) has only one root
             // in the interval.
-            Real const oneThird = (Real)1 / (Real)3;
-            Real rho = std::pow(d0 * d0c0 / (d1 * d1c1), oneThird);
-            Real smid = (one + rho) / (d0 + rho * d1);
-            Real fmid = F(smid);
+            T const oneThird = (T)1 / (T)3;
+            T rho = std::pow(d0 * d0c0 / (d1 * d1c1), oneThird);
+            T smid = (one + rho) / (d0 + rho * d1);
+            T fmid = F(smid);
             if (fmid < zero)
             {
                 // Pass in signs rather than infinities, because the bisector cares
                 // only about the signs.
-                iterations = RootsBisection<Real>::Find(F, invD0, smid, one, -one,
+                iterations = RootsBisection<T>::Find(F, invD0, smid, one, -one,
                     maxIterations, s);
                 fval = F(s);
                 LogAssert(iterations > 0, "Unexpected condition.");
                 roots[numRoots++] = s;
-                iterations = RootsBisection<Real>::Find(F, smid, invD1, -one, one,
+                iterations = RootsBisection<T>::Find(F, smid, invD1, -one, one,
                     maxIterations, s);
                 fval = F(s);
                 LogAssert(iterations > 0, "Unexpected condition.");
@@ -323,52 +323,52 @@ namespace gte
             }
 
             // Compute root in (1/d1,+infinity).  Obtain an upper bound for
-            // the root better than std::numeric_limits<Real>::max().
+            // the root better than std::numeric_limits<T>::max().
             smin = invD1;
             smax = (one + sqrtsum) * invD1;  // > 1/d1
             fval = F(smax);
             LogAssert(fval <= zero, "Unexpected condition.");
-            iterations = RootsBisection<Real>::Find(F, smin, smax, one, -one,
+            iterations = RootsBisection<T>::Find(F, smin, smax, one, -one,
                 maxIterations, s);
             fval = F(s);
             LogAssert(iterations > 0, "Unexpected condition.");
             roots[numRoots++] = s;
         }
 
-        int Classify(Real minSqrDistance, Real maxSqrDistance, Real d0c0pd1c1)
+        Classification Classify(T minSqrDistance, T maxSqrDistance, T d0c0pd1c1)
         {
-            Real const one = (Real)1;
+            T const one = (T)1;
 
             if (maxSqrDistance < one)
             {
-                return ELLIPSE0_STRICTLY_CONTAINS_ELLIPSE1;
+                return Classification::ELLIPSE0_STRICTLY_CONTAINS_ELLIPSE1;
             }
             else if (maxSqrDistance > one)
             {
                 if (minSqrDistance < one)
                 {
-                    return ELLIPSES_OVERLAP;
+                    return Classification::ELLIPSES_OVERLAP;
                 }
                 else if (minSqrDistance > one)
                 {
                     if (d0c0pd1c1 > one)
                     {
-                        return ELLIPSES_SEPARATED;
+                        return Classification::ELLIPSES_SEPARATED;
                     }
                     else
                     {
-                        return ELLIPSE1_STRICTLY_CONTAINS_ELLIPSE0;
+                        return Classification::ELLIPSE1_STRICTLY_CONTAINS_ELLIPSE0;
                     }
                 }
                 else  // minSqrDistance = 1
                 {
                     if (d0c0pd1c1 > one)
                     {
-                        return ELLIPSE0_OUTSIDE_ELLIPSE1_BUT_TANGENT;
+                        return Classification::ELLIPSE0_OUTSIDE_ELLIPSE1_BUT_TANGENT;
                     }
                     else
                     {
-                        return ELLIPSE1_CONTAINS_ELLIPSE0_BUT_TANGENT;
+                        return Classification::ELLIPSE1_CONTAINS_ELLIPSE0_BUT_TANGENT;
                     }
                 }
             }
@@ -376,29 +376,37 @@ namespace gte
             {
                 if (minSqrDistance < one)
                 {
-                    return ELLIPSE0_CONTAINS_ELLIPSE1_BUT_TANGENT;
+                    return Classification::ELLIPSE0_CONTAINS_ELLIPSE1_BUT_TANGENT;
                 }
                 else // minSqrDistance = 1
                 {
-                    return ELLIPSES_EQUAL;
+                    return Classification::ELLIPSES_EQUAL;
                 }
             }
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Ellipse2<Real>, Ellipse2<Real>>
+    template <typename T>
+    class FIQuery<T, Ellipse2<T>, Ellipse2<T>>
     {
     public:
         // The queries find the intersections (if any) of the ellipses treated
         // as hollow objects.  The implementations use the same concepts.
         FIQuery()
             :
-            mZero((Real)0),
-            mOne((Real)1),
-            mTwo((Real)2),
-            mPi((Real)GTE_C_PI),
-            mTwoPi((Real)GTE_C_TWO_PI)
+            mZero((T)0),
+            mOne((T)1),
+            mTwo((T)2),
+            mPi((T)GTE_C_PI),
+            mTwoPi((T)GTE_C_TWO_PI),
+            mA{ (T)0, (T)0, (T)0, (T)0, (T)0 },
+            mB{ (T)0, (T)0, (T)0, (T)0, (T)0 },
+            mD{ (T)0, (T)0, (T)0, (T)0, (T)0 },
+            mF{ (T)0, (T)0, (T)0, (T)0, (T)0 },
+            mC{ (T)0, (T)0, (T)0 },
+            mE{ (T)0, (T)0, (T)0 },
+            mA2Div2((T)0),
+            mA4Div2((T)0)
         {
         }
 
@@ -413,15 +421,15 @@ namespace gte
             // are the same, numPoints is set to maxInt and 'points' is
             // invalid.
             int numPoints;
-            std::array<Vector2<Real>, 4> points;
+            std::array<Vector2<T>, 4> points;
             std::array<bool, 4> isTransverse;
         };
 
         // The ellipse axes are already normalized, which most likely
         // introducedrounding errors.
-        Result operator()(Ellipse2<Real> const& ellipse0, Ellipse2<Real> const& ellipse1)
+        Result operator()(Ellipse2<T> const& ellipse0, Ellipse2<T> const& ellipse1)
         {
-            Vector2<Real> rCenter, rAxis[2], rSqrExtent;
+            Vector2<T> rCenter, rAxis[2], rSqrExtent;
 
             rCenter = { ellipse0.center[0], ellipse0.center[1] };
             rAxis[0] = { ellipse0.axis[0][0], ellipse0.axis[0][1] };
@@ -451,12 +459,12 @@ namespace gte
         // The axis directions do not have to be unit length.  The quadratic
         // equations are constructed according to the details of the PDF
         // document about the intersection of ellipses.
-        Result operator()(Vector2<Real> const& center0,
-            Vector2<Real> const axis0[2], Vector2<Real> const& sqrExtent0,
-            Vector2<Real> const& center1, Vector2<Real> const axis1[2],
-            Vector2<Real> const& sqrExtent1)
+        Result operator()(Vector2<T> const& center0,
+            Vector2<T> const axis0[2], Vector2<T> const& sqrExtent0,
+            Vector2<T> const& center1, Vector2<T> const axis1[2],
+            Vector2<T> const& sqrExtent1)
         {
-            Vector2<Real> rCenter, rAxis[2], rSqrExtent;
+            Vector2<T> rCenter, rAxis[2], rSqrExtent;
 
             rCenter = { center0[0], center0[1] };
             rAxis[0] = { axis0[0][0], axis0[0][1] };
@@ -480,47 +488,56 @@ namespace gte
         struct AreaResult
         {
             // The configuration of the two ellipses.
-            enum
+            enum class Configuration
             {
                 ELLIPSES_ARE_EQUAL,
                 ELLIPSES_ARE_SEPARATED,
                 E0_CONTAINS_E1,
                 E1_CONTAINS_E0,
                 ONE_CHORD_REGION,
-                FOUR_CHORD_REGION
+                FOUR_CHORD_REGION,
+                INVALID
             };
 
+            AreaResult()
+                :
+                configuration(Configuration::INVALID),
+                findResult{},
+                area((T)0)
+            {
+            }
+
             // One of the enumerates, determined in the call to AreaDispatch.
-            int configuration;
+            Configuration configuration;
 
             // Information about the ellipse-ellipse intersection points.
             Result findResult;
 
             // The area of intersection of the ellipses.
-            Real area;
+            T area;
         };
 
         // The ellipse axes are already normalized, which most likely
         // introduced rounding errors.
-        AreaResult AreaOfIntersection(Ellipse2<Real> const& ellipse0,
-            Ellipse2<Real> const& ellipse1)
+        AreaResult AreaOfIntersection(Ellipse2<T> const& ellipse0,
+            Ellipse2<T> const& ellipse1)
         {
-            EllipseInfo E0;
+            EllipseInfo E0{};
             E0.center = ellipse0.center;
             E0.axis = ellipse0.axis;
             E0.extent = ellipse0.extent;
             E0.sqrExtent = ellipse0.extent * ellipse0.extent;
             FinishEllipseInfo(E0);
 
-            EllipseInfo E1;
+            EllipseInfo E1{};
             E1.center = ellipse1.center;
             E1.axis = ellipse1.axis;
             E1.extent = ellipse1.extent;
             E1.sqrExtent = ellipse1.extent * ellipse1.extent;
             FinishEllipseInfo(E1);
 
-            AreaResult ar;
-            ar.configuration = 0;
+            AreaResult ar{};
+            ar.configuration = AreaResult::Configuration::INVALID;
             ar.findResult = operator()(ellipse0, ellipse1);
             ar.area = mZero;
             AreaDispatch(E0, E1, ar);
@@ -530,12 +547,12 @@ namespace gte
         // The axis directions do not have to be unit length.  The positive
         // definite matrices are constructed according to the details of the
         // PDF documentabout the intersection of ellipses.
-        AreaResult AreaOfIntersection(Vector2<Real> const& center0,
-            Vector2<Real> const axis0[2], Vector2<Real> const& sqrExtent0,
-            Vector2<Real> const& center1, Vector2<Real> const axis1[2],
-            Vector2<Real> const& sqrExtent1)
+        AreaResult AreaOfIntersection(Vector2<T> const& center0,
+            Vector2<T> const axis0[2], Vector2<T> const& sqrExtent0,
+            Vector2<T> const& center1, Vector2<T> const axis1[2],
+            Vector2<T> const& sqrExtent1)
         {
-            EllipseInfo E0;
+            EllipseInfo E0{};
             E0.center = center0;
             E0.axis = { axis0[0], axis0[1] };
             E0.extent =
@@ -546,7 +563,7 @@ namespace gte
             E0.sqrExtent = sqrExtent0;
             FinishEllipseInfo(E0);
 
-            EllipseInfo E1;
+            EllipseInfo E1{};
             E1.center = center1;
             E1.axis = { axis1[0], axis1[1] };
             E1.extent =
@@ -557,8 +574,8 @@ namespace gte
             E1.sqrExtent = sqrExtent1;
             FinishEllipseInfo(E1);
 
-            AreaResult ar;
-            ar.configuration = 0;
+            AreaResult ar{};
+            ar.configuration = AreaResult::Configuration::INVALID;
             ar.findResult = operator()(center0, axis0, sqrExtent0, center1, axis1, sqrExtent1);
             ar.area = mZero;
             AreaDispatch(E0, E1, ar);
@@ -568,17 +585,17 @@ namespace gte
     private:
         // Compute the coefficients of the quadratic equation but with the
         // y^2-coefficient of 1.
-        void ToCoefficients(Vector2<Real> const& center, Vector2<Real> const axis[2],
-            Vector2<Real> const& sqrExtent, std::array<Real, 5>& coeff)
+        void ToCoefficients(Vector2<T> const& center, Vector2<T> const axis[2],
+            Vector2<T> const& sqrExtent, std::array<T, 5>& coeff)
         {
-            Real denom0 = Dot(axis[0], axis[0]) * sqrExtent[0];
-            Real denom1 = Dot(axis[1], axis[1]) * sqrExtent[1];
-            Matrix2x2<Real> outer0 = OuterProduct(axis[0], axis[0]);
-            Matrix2x2<Real> outer1 = OuterProduct(axis[1], axis[1]);
-            Matrix2x2<Real> A = outer0 / denom0 + outer1 / denom1;
-            Vector2<Real> product = A * center;
-            Vector2<Real> B = -mTwo * product;
-            Real const& denom = A(1, 1);
+            T denom0 = Dot(axis[0], axis[0]) * sqrExtent[0];
+            T denom1 = Dot(axis[1], axis[1]) * sqrExtent[1];
+            Matrix2x2<T> outer0 = OuterProduct(axis[0], axis[0]);
+            Matrix2x2<T> outer1 = OuterProduct(axis[1], axis[1]);
+            Matrix2x2<T> A = outer0 / denom0 + outer1 / denom1;
+            Vector2<T> product = A * center;
+            Vector2<T> B = -mTwo * product;
+            T const& denom = A(1, 1);
             coeff[0] = (Dot(center, product) - mOne) / denom;
             coeff[1] = B[0] / denom;
             coeff[2] = B[1] / denom;
@@ -618,8 +635,8 @@ namespace gte
 
             if (mD[4] != mZero)
             {
-                Real xbar = -mD[2] / mD[4];
-                Real ebar = mE[0] + xbar * (mE[1] + xbar * mE[2]);
+                T xbar = -mD[2] / mD[4];
+                T ebar = mE[0] + xbar * (mE[1] + xbar * mE[2]);
                 if (ebar != mZero)
                 {
                     D4NotZeroEBarNotZero(result);
@@ -651,10 +668,10 @@ namespace gte
         void D4NotZeroEBarNotZero(Result& result)
         {
             // The graph of w = -e(x)/d(x) is a hyperbola.
-            Real d2d2 = mD[2] * mD[2], d2d4 = mD[2] * mD[4], d4d4 = mD[4] * mD[4];
-            Real e0e0 = mE[0] * mE[0], e0e1 = mE[0] * mE[1], e0e2 = mE[0] * mE[2];
-            Real e1e1 = mE[1] * mE[1], e1e2 = mE[1] * mE[2], e2e2 = mE[2] * mE[2];
-            std::array<Real, 5> f =
+            T d2d2 = mD[2] * mD[2], d2d4 = mD[2] * mD[4], d4d4 = mD[4] * mD[4];
+            T e0e0 = mE[0] * mE[0], e0e1 = mE[0] * mE[1], e0e2 = mE[0] * mE[2];
+            T e1e1 = mE[1] * mE[1], e1e2 = mE[1] * mE[2], e2e2 = mE[2] * mE[2];
+            std::array<T, 5> f =
             {
                 mC[0] * d2d2 + e0e0,
                 mC[1] * d2d2 + mTwo * (mC[0] * d2d4 + e0e1),
@@ -663,30 +680,30 @@ namespace gte
                 mC[2] * d4d4 + e2e2  // > 0
             };
 
-            std::map<Real, int> rmMap;
-            RootsPolynomial<Real>::template SolveQuartic<Real>(f[0], f[1], f[2],
+            std::map<T, int> rmMap;
+            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2],
                 f[3], f[4], rmMap);
 
             // xbar cannot be a root of f(x), so d(x) != 0 and we can solve
             // directly for w = -e(x)/d(x).
             for (auto const& rm : rmMap)
             {
-                Real const& x = rm.first;
-                Real w = -(mE[0] + x * (mE[1] + x * mE[2])) / (mD[2] + mD[4] * x);
-                Real y = w - (mA2Div2 + x * mA4Div2);
+                T const& x = rm.first;
+                T w = -(mE[0] + x * (mE[1] + x * mE[2])) / (mD[2] + mD[4] * x);
+                T y = w - (mA2Div2 + x * mA4Div2);
                 result.points[result.numPoints] = { x, y };
                 result.isTransverse[result.numPoints++] = (rm.second == 1);
             }
         }
 
-        void D4NotZeroEBarZero(Real const& xbar, Result& result)
+        void D4NotZeroEBarZero(T const& xbar, Result& result)
         {
             // Factor e(x) = (d2 + d4*x)*(h0 + h1*x).  The w-equation has
             // two solution components, x = xbar and w = -(h0 + h1*x).
-            Real translate, w, y;
+            T translate, w, y;
 
             // Compute intersection of x = xbar with ellipse.
-            Real ncbar = -(mC[0] + xbar * (mC[1] + xbar * mC[2]));
+            T ncbar = -(mC[0] + xbar * (mC[1] + xbar * mC[2]));
             if (ncbar >= mZero)
             {
                 translate = mA2Div2 + xbar * mA4Div2;
@@ -708,21 +725,21 @@ namespace gte
             }
 
             // Compute intersections of w = -(h0 + h1*x) with ellipse.
-            std::array<Real, 2> h;
+            std::array<T, 2> h;
             h[1] = mE[2] / mD[4];
             h[0] = (mE[1] - mD[2] * h[1]) / mD[4];
-            std::array<Real, 3> f =
+            std::array<T, 3> f =
             {
                 mC[0] + h[0] * h[0],
                 mC[1] + mTwo * h[0] * h[1],
                 mC[2] + h[1] * h[1]  // > 0
             };
 
-            std::map<Real, int> rmMap;
-            RootsPolynomial<Real>::template SolveQuadratic<Real>(f[0], f[1], f[2], rmMap);
+            std::map<T, int> rmMap;
+            RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
             for (auto const& rm : rmMap)
             {
-                Real const& x = rm.first;
+                T const& x = rm.first;
                 translate = mA2Div2 + x * mA4Div2;
                 w = -(h[0] + x * h[1]);
                 y = w - translate;
@@ -733,8 +750,8 @@ namespace gte
 
         void D4ZeroD2NotZeroE2NotZero(Result& result)
         {
-            Real d2d2 = mD[2] * mD[2];
-            std::array<Real, 5> f =
+            T d2d2 = mD[2] * mD[2];
+            std::array<T, 5> f =
             {
                 mC[0] * d2d2 + mE[0] * mE[0],
                 mC[1] * d2d2 + mTwo * mE[0] * mE[1],
@@ -743,15 +760,15 @@ namespace gte
                 mE[2] * mE[2]  // > 0
             };
 
-            std::map<Real, int> rmMap;
-            RootsPolynomial<Real>::template SolveQuartic<Real>(f[0], f[1], f[2], f[3],
+            std::map<T, int> rmMap;
+            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3],
                 f[4], rmMap);
             for (auto const& rm : rmMap)
             {
-                Real const& x = rm.first;
-                Real translate = mA2Div2 + x * mA4Div2;
-                Real w = -(mE[0] + x * (mE[1] + x * mE[2])) / mD[2];
-                Real y = w - translate;
+                T const& x = rm.first;
+                T translate = mA2Div2 + x * mA4Div2;
+                T w = -(mE[0] + x * (mE[1] + x * mE[2])) / mD[2];
+                T y = w - translate;
                 result.points[result.numPoints] = { x, y };
                 result.isTransverse[result.numPoints++] = (rm.second == 1);
             }
@@ -759,22 +776,22 @@ namespace gte
 
         void D4ZeroD2NotZeroE2Zero(Result& result)
         {
-            Real d2d2 = mD[2] * mD[2];
-            std::array<Real, 3> f =
+            T d2d2 = mD[2] * mD[2];
+            std::array<T, 3> f =
             {
                 mC[0] * d2d2 + mE[0] * mE[0],
                 mC[1] * d2d2 + mTwo * mE[0] * mE[1],
                 mC[2] * d2d2 + mE[1] * mE[1]
             };
 
-            std::map<Real, int> rmMap;
-            RootsPolynomial<Real>::template SolveQuadratic<Real>(f[0], f[1], f[2], rmMap);
+            std::map<T, int> rmMap;
+            RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
             for (auto const& rm : rmMap)
             {
-                Real const& x = rm.first;
-                Real translate = mA2Div2 + x * mA4Div2;
-                Real w = -(mE[0] + x * mE[1]) / mD[2];
-                Real y = w - translate;
+                T const& x = rm.first;
+                T translate = mA2Div2 + x * mA4Div2;
+                T w = -(mE[0] + x * mE[1]) / mD[2];
+                T y = w - translate;
                 result.points[result.numPoints] = { x, y };
                 result.isTransverse[result.numPoints++] = (rm.second == 1);
             }
@@ -789,10 +806,10 @@ namespace gte
             {
                 // Make e(x) monic, f(x) = e(x)/e2 = x^2 + (e1/e2)*x + (e0/e2)
                 // = x^2 + f1*x + f0.
-                std::array<Real, 2> f = { mE[0] / mE[2], mE[1] / mE[2] };
+                std::array<T, 2> f = { mE[0] / mE[2], mE[1] / mE[2] };
 
-                Real mid = -f[1] / mTwo;
-                Real discr = mid * mid - f[0];
+                T mid = -f[1] / mTwo;
+                T discr = mid * mid - f[0];
                 if (discr > mZero)
                 {
                     // The theoretical roots of e(x) are
@@ -804,8 +821,8 @@ namespace gte
                     //       = (c0 - c2*f0) + (c1 - c2*f1)*x
                     //       = g0 + g1*x
                     // We need g0 + g1*x <= 0.
-                    Real sqrtDiscr = std::sqrt(discr);
-                    std::array<Real, 2> g =
+                    T sqrtDiscr = std::sqrt(discr);
+                    std::array<T, 2> g =
                     {
                         mC[0] - mC[2] * f[0],
                         mC[1] - mC[2] * f[1]
@@ -814,12 +831,12 @@ namespace gte
                     if (g[1] > mZero)
                     {
                         // We need s*sqrt(discr) <= -g[0]/g[1] + f1/2.
-                        Real r = -g[0] / g[1] - mid;
+                        T r = -g[0] / g[1] - mid;
 
                         // s = +1:
                         if (r >= mZero)
                         {
-                            Real rsqr = r * r;
+                            T rsqr = r * r;
                             if (discr < rsqr)
                             {
                                 SpecialIntersection(mid + sqrtDiscr, true, result);
@@ -837,7 +854,7 @@ namespace gte
                         }
                         else
                         {
-                            Real rsqr = r * r;
+                            T rsqr = r * r;
                             if (discr > rsqr)
                             {
                                 SpecialIntersection(mid - sqrtDiscr, true, result);
@@ -851,12 +868,12 @@ namespace gte
                     else if (g[1] < mZero)
                     {
                         // We need s*sqrt(discr) >= -g[0]/g[1] + f1/2.
-                        Real r = -g[0] / g[1] - mid;
+                        T r = -g[0] / g[1] - mid;
 
                         // s = -1:
                         if (r <= mZero)
                         {
-                            Real rsqr = r * r;
+                            T rsqr = r * r;
                             if (discr < rsqr)
                             {
                                 SpecialIntersection(mid - sqrtDiscr, true, result);
@@ -874,7 +891,7 @@ namespace gte
                         }
                         else
                         {
-                            Real rsqr = r * r;
+                            T rsqr = r * r;
                             if (discr > rsqr)
                             {
                                 SpecialIntersection(mid + sqrtDiscr, true, result);
@@ -907,7 +924,7 @@ namespace gte
                 else if (discr == mZero)
                 {
                     // The theoretical root of f(x) is x = -f1/2.
-                    Real nchat = -(mC[0] + mid * (mC[1] + mid * mC[2]));
+                    T nchat = -(mC[0] + mid * (mC[1] + mid * mC[2]));
                     if (nchat > mZero)
                     {
                         SpecialIntersection(mid, true, result);
@@ -920,8 +937,8 @@ namespace gte
             }
             else if (mE[1] != mZero)
             {
-                Real xhat = -mE[0] / mE[1];
-                Real nchat = -(mC[0] + xhat * (mC[1] + xhat * mC[2]));
+                T xhat = -mE[0] / mE[1];
+                T nchat = -(mC[0] + xhat * (mC[1] + xhat * mC[2]));
                 if (nchat > mZero)
                 {
                     SpecialIntersection(xhat, true, result);
@@ -934,12 +951,12 @@ namespace gte
         }
 
         // Helper function for D4ZeroD2Zero.
-        void SpecialIntersection(Real const& x, bool transverse, Result& result)
+        void SpecialIntersection(T const& x, bool transverse, Result& result)
         {
             if (transverse)
             {
-                Real translate = mA2Div2 + x * mA4Div2;
-                Real nc = -(mC[0] + x * (mC[1] + x * mC[2]));
+                T translate = mA2Div2 + x * mA4Div2;
+                T nc = -(mC[0] + x * (mC[1] + x * mC[2]));
                 if (nc < mZero)
                 {
                     // Clamp to eliminate the rounding error, but duplicate
@@ -948,8 +965,8 @@ namespace gte
                     nc = mZero;
                 }
 
-                Real w = std::sqrt(nc);
-                Real y = w - translate;
+                T w = std::sqrt(nc);
+                T y = w - translate;
                 result.points[result.numPoints] = { x, y };
                 result.isTransverse[result.numPoints++] = true;
                 w = -w;
@@ -960,7 +977,7 @@ namespace gte
             else
             {
                 // The vertical line at the root is tangent to the ellipse.
-                Real y = -(mA2Div2 + x * mA4Div2);  // w = 0
+                T y = -(mA2Div2 + x * mA4Div2);  // w = 0
                 result.points[result.numPoints] = { x, y };
                 result.isTransverse[result.numPoints++] = false;
             }
@@ -970,14 +987,28 @@ namespace gte
         // Helper functions for AreaOfIntersection.
         struct EllipseInfo
         {
-            Vector2<Real> center;
-            std::array<Vector2<Real>, 2> axis;
-            Vector2<Real> extent, sqrExtent;
-            Matrix2x2<Real> M;
-            Real AB;        // extent[0] * extent[1]
-            Real halfAB;    // extent[0] * extent[1] / 2
-            Real BpA;       // extent[1] + extent[0]
-            Real BmA;       // extent[1] - extent[0]
+            EllipseInfo()
+                :
+                center(Vector2<T>::Zero()),
+                axis{ Vector2<T>::Zero() , Vector2<T>::Zero() },
+                extent(Vector2<T>::Zero()),
+                sqrExtent(Vector2<T>::Zero()),
+                M{},
+                AB((T)0),
+                halfAB((T)0),
+                BpA((T)0),
+                BmA((T)0)
+            {
+            }
+
+            Vector2<T> center;
+            std::array<Vector2<T>, 2> axis;
+            Vector2<T> extent, sqrExtent;
+            Matrix2x2<T> M;
+            T AB;        // extent[0] * extent[1]
+            T halfAB;    // extent[0] * extent[1] / 2
+            T BpA;       // extent[1] + extent[0]
+            T BmA;       // extent[1] - extent[0]
         };
 
         // The axis, extent and sqrExtent members of E must be set before
@@ -1050,15 +1081,15 @@ namespace gte
         {
             if (ar.findResult.numPoints <= 1)
             {
-                Vector2<Real> diff = E0.center - E1.center;
-                Real qform0 = Dot(diff, E0.M * diff);
-                Real qform1 = Dot(diff, E1.M * diff);
+                Vector2<T> diff = E0.center - E1.center;
+                T qform0 = Dot(diff, E0.M * diff);
+                T qform1 = Dot(diff, E1.M * diff);
                 if (qform0 > mOne && qform1 > mOne)
                 {
                     // Each ellipse center is outside the other ellipse, so
                     // the ellipses are separated (numPoints == 0) or outside
                     // each other and just touching (numPoints == 1).
-                    ar.configuration = AreaResult::ELLIPSES_ARE_SEPARATED;
+                    ar.configuration = AreaResult::Configuration::ELLIPSES_ARE_SEPARATED;
                     ar.area = mZero;
                 }
                 else
@@ -1067,39 +1098,39 @@ namespace gte
                     // indirectly by comparing areas.
                     if (E0.AB < E1.AB)
                     {
-                        ar.configuration = AreaResult::E1_CONTAINS_E0;
+                        ar.configuration = AreaResult::Configuration::E1_CONTAINS_E0;
                         ar.area = mPi * E0.AB;
                     }
                     else
                     {
-                        ar.configuration = AreaResult::E0_CONTAINS_E1;
+                        ar.configuration = AreaResult::Configuration::E0_CONTAINS_E1;
                         ar.area = mPi * E1.AB;
                     }
                 }
             }
             else
             {
-                ar.configuration = AreaResult::ELLIPSES_ARE_EQUAL;
+                ar.configuration = AreaResult::Configuration::ELLIPSES_ARE_EQUAL;
                 ar.area = mPi * E0.AB;
             }
         }
 
         void Area2(EllipseInfo const& E0, EllipseInfo const& E1, int i0, int i1, AreaResult& ar)
         {
-            ar.configuration = AreaResult::ONE_CHORD_REGION;
+            ar.configuration = AreaResult::Configuration::ONE_CHORD_REGION;
 
             // The endpoints of the chord.
-            Vector2<Real> const& P0 = ar.findResult.points[i0];
-            Vector2<Real> const& P1 = ar.findResult.points[i1];
+            Vector2<T> const& P0 = ar.findResult.points[i0];
+            Vector2<T> const& P1 = ar.findResult.points[i1];
 
             // Compute locations relative to the ellipses.
-            Vector2<Real> P0mC0 = P0 - E0.center, P0mC1 = P0 - E1.center;
-            Vector2<Real> P1mC0 = P1 - E0.center, P1mC1 = P1 - E1.center;
+            Vector2<T> P0mC0 = P0 - E0.center, P0mC1 = P0 - E1.center;
+            Vector2<T> P1mC0 = P1 - E0.center, P1mC1 = P1 - E1.center;
 
             // Compute the ellipse normal vectors at endpoint P0.  This is
             // sufficient information to determine chord endpoint order.
-            Vector2<Real> N0 = E0.M * P0mC0, N1 = E1.M * P0mC1;
-            Real dotperp = DotPerp(N1, N0);
+            Vector2<T> N0 = E0.M * P0mC0, N1 = E1.M * P0mC1;
+            T dotperp = DotPerp(N1, N0);
 
             // Choose the endpoint order for the chord region associated
             // with E0.
@@ -1121,7 +1152,7 @@ namespace gte
 
         void Area4(EllipseInfo const& E0, EllipseInfo const& E1, AreaResult& ar)
         {
-            ar.configuration = AreaResult::FOUR_CHORD_REGION;
+            ar.configuration = AreaResult::Configuration::FOUR_CHORD_REGION;
 
             // Select a counterclockwise ordering of the points of
             // intersection.  Use the polar coordinates for E0 to do this.
@@ -1130,18 +1161,18 @@ namespace gte
             // a duplicate intersection, even though the intersections are all
             // labeled as transverse.  [See the comment in the function
             // SpecialIntersection.]
-            std::multimap<Real, int> ordering;
+            std::multimap<T, int> ordering;
             int i;
             for (i = 0; i < 4; ++i)
             {
-                Vector2<Real> PmC = ar.findResult.points[i] - E0.center;
-                Real x = Dot(E0.axis[0], PmC);
-                Real y = Dot(E0.axis[1], PmC);
-                Real theta = std::atan2(y, x);
+                Vector2<T> PmC = ar.findResult.points[i] - E0.center;
+                T x = Dot(E0.axis[0], PmC);
+                T y = Dot(E0.axis[1], PmC);
+                T theta = std::atan2(y, x);
                 ordering.insert(std::make_pair(theta, i));
             }
 
-            std::array<int, 4> permute;
+            std::array<int, 4> permute{ 0, 0, 0, 0 };
             i = 0;
             for (auto const& element : ordering)
             {
@@ -1149,9 +1180,9 @@ namespace gte
             }
 
             // Start with the area of the convex quadrilateral.
-            Vector2<Real> diag20 =
+            Vector2<T> diag20 =
                 ar.findResult.points[permute[2]] - ar.findResult.points[permute[0]];
-            Vector2<Real> diag31 =
+            Vector2<T> diag31 =
                 ar.findResult.points[permute[3]] - ar.findResult.points[permute[1]];
             ar.area = std::fabs(DotPerp(diag20, diag31)) / mTwo;
 
@@ -1161,16 +1192,16 @@ namespace gte
             for (int i0 = 3, i1 = 0; i1 < 4; i0 = i1++)
             {
                 // Get a pair of consecutive points.
-                Vector2<Real> const& P0 = ar.findResult.points[permute[i0]];
-                Vector2<Real> const& P1 = ar.findResult.points[permute[i1]];
+                Vector2<T> const& P0 = ar.findResult.points[permute[i0]];
+                Vector2<T> const& P1 = ar.findResult.points[permute[i1]];
 
                 // Compute locations relative to the ellipses.
-                Vector2<Real> P0mC0 = P0 - E0.center, P0mC1 = P0 - E1.center;
-                Vector2<Real> P1mC0 = P1 - E0.center, P1mC1 = P1 - E1.center;
+                Vector2<T> P0mC0 = P0 - E0.center, P0mC1 = P0 - E1.center;
+                Vector2<T> P1mC0 = P1 - E0.center, P1mC1 = P1 - E1.center;
 
                 // Compute the ellipse normal vectors at endpoint P0.
-                Vector2<Real> N0 = E0.M * P0mC0, N1 = E1.M * P0mC1;
-                Real dotperp = DotPerp(N1, N0);
+                Vector2<T> N0 = E0.M * P0mC0, N1 = E1.M * P0mC1;
+                T dotperp = DotPerp(N1, N0);
                 if (dotperp > mZero)
                 {
                     // The chord goes with ellipse E0.
@@ -1184,15 +1215,15 @@ namespace gte
             }
         }
 
-        Real ComputeAreaChordRegion(EllipseInfo const& E, Vector2<Real> const& P0mC, Vector2<Real> const& P1mC)
+        T ComputeAreaChordRegion(EllipseInfo const& E, Vector2<T> const& P0mC, Vector2<T> const& P1mC)
         {
             // Compute polar coordinates for P0 and P1 on the ellipse.
-            Real x0 = Dot(E.axis[0], P0mC);
-            Real y0 = Dot(E.axis[1], P0mC);
-            Real theta0 = std::atan2(y0, x0);
-            Real x1 = Dot(E.axis[0], P1mC);
-            Real y1 = Dot(E.axis[1], P1mC);
-            Real theta1 = std::atan2(y1, x1);
+            T x0 = Dot(E.axis[0], P0mC);
+            T y0 = Dot(E.axis[1], P0mC);
+            T theta0 = std::atan2(y0, x0);
+            T x1 = Dot(E.axis[0], P1mC);
+            T y1 = Dot(E.axis[1], P1mC);
+            T theta1 = std::atan2(y1, x1);
 
             // The arc straddles the atan2 discontinuity on the negative
             // x-axis.  Wrap the second angle to be larger than the first
@@ -1203,11 +1234,11 @@ namespace gte
             }
 
             // Compute the area portion of the sector due to the triangle.
-            Real triArea = std::fabs(DotPerp(P0mC, P1mC)) / mTwo;
+            T triArea = std::fabs(DotPerp(P0mC, P1mC)) / mTwo;
 
             // Compute the chord region area.
-            Real dtheta = theta1 - theta0;
-            Real F0, F1, sectorArea;
+            T dtheta = theta1 - theta0;
+            T F0, F1, sectorArea;
             if (dtheta <= mPi)
             {
                 // Use the area formula directly.
@@ -1230,30 +1261,30 @@ namespace gte
             }
         }
 
-        Real ComputeIntegral(EllipseInfo const& E, Real const& theta)
+        T ComputeIntegral(EllipseInfo const& E, T const& theta)
         {
-            Real twoTheta = mTwo * theta;
-            Real sn = std::sin(twoTheta);
-            Real cs = std::cos(twoTheta);
-            Real arg = E.BmA * sn / (E.BpA + E.BmA * cs);
+            T twoTheta = mTwo * theta;
+            T sn = std::sin(twoTheta);
+            T cs = std::cos(twoTheta);
+            T arg = E.BmA * sn / (E.BpA + E.BmA * cs);
             return E.halfAB * (theta - std::atan(arg));
         }
 
         // Constants that are set up once (optimization for rational
         // arithmetic).
-        Real mZero, mOne, mTwo, mPi, mTwoPi;
+        T mZero, mOne, mTwo, mPi, mTwoPi;
 
         // Various polynomial coefficients.  The short names are meant to
         // match the variable names used in the PDF documentation.
-        std::array<Real, 5> mA, mB, mD, mF;
-        std::array<Real, 3> mC, mE;
-        Real mA2Div2, mA4Div2;
+        std::array<T, 5> mA, mB, mD, mF;
+        std::array<T, 3> mC, mE;
+        T mA2Div2, mA4Div2;
     };
 
     // Template aliases for convenience.
-    template <typename Real>
-    using TIEllipses2 = TIQuery<Real, Ellipse2<Real>, Ellipse2<Real>>;
+    template <typename T>
+    using TIEllipses2 = TIQuery<T, Ellipse2<T>, Ellipse2<T>>;
 
-    template <typename Real>
-    using FIEllipses2 = FIQuery<Real, Ellipse2<Real>, Ellipse2<Real>>;
+    template <typename T>
+    using FIEllipses2 = FIQuery<T, Ellipse2<T>, Ellipse2<T>>;
 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -244,7 +244,7 @@ namespace gte
             LinearMergeTree(int N)
                 :
                 mTwoPowerN(1 << N),
-                mNodes(2 * mTwoPowerN - 1)
+                mNodes(2 * static_cast<size_t>(mTwoPowerN) - 1)
             {
             }
 
@@ -329,7 +329,7 @@ namespace gte
                 {
                     int twoIp1 = 2 * i + 1;
                     int child0 = mNodes[twoIp1];
-                    int child1 = mNodes[twoIp1 + 1];
+                    int child1 = mNodes[static_cast<size_t>(twoIp1) + 1];
                     mNodes[i] = (child0 | child1);
                 }
             }
@@ -381,7 +381,7 @@ namespace gte
                 :
                 mXMerge(xMerge),
                 mYMerge(yMerge),
-                mNodes(((1 << 2 * (N + 1)) - 1) / 3)
+                mNodes(((static_cast<size_t>(1) << 2 * (N + 1)) - 1) / 3)
             {
             }
 
@@ -573,7 +573,7 @@ namespace gte
                     int incr = 0, decr = 0;
                     for (int y = 0; y <= r0.yStride; ++y)
                     {
-                        switch (mXMerge[yOrigin + y]->GetNode(LX))
+                        switch (mXMerge[static_cast<size_t>(yOrigin) + static_cast<size_t>(y)]->GetNode(LX))
                         {
                         case LinearMergeTree::CFG_MULT:
                             return;
@@ -603,7 +603,7 @@ namespace gte
                     int incr = 0, decr = 0;
                     for (int x = 0; x <= r0.xStride; ++x)
                     {
-                        switch (mYMerge[xOrigin + x]->GetNode(LY))
+                        switch (mYMerge[static_cast<size_t>(xOrigin) + static_cast<size_t>(x)]->GetNode(LY))
                         {
                         case LinearMergeTree::CFG_MULT:
                             return;
@@ -641,7 +641,7 @@ namespace gte
                 }
 
                 // xmax edge
-                merge = mYMerge[qrect.xOrigin + qrect.xStride];
+                merge = mYMerge[static_cast<size_t>(qrect.xOrigin) + static_cast<size_t>(qrect.xStride)];
                 if (merge->GetNode(LY) != LinearMergeTree::CFG_NONE)
                 {
                     rect.yOfXMax = merge->GetEdge(LY);
@@ -663,7 +663,7 @@ namespace gte
                 }
 
                 // ymax edge
-                merge = mXMerge[qrect.yOrigin + qrect.yStride];
+                merge = mXMerge[static_cast<size_t>(qrect.yOrigin) + static_cast<size_t>(qrect.yStride)];
                 if (merge->GetNode(LX) != LinearMergeTree::CFG_NONE)
                 {
                     rect.xOfYMax = merge->GetEdge(LX);

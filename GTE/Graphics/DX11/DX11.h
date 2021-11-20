@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,14 +15,14 @@
 #include <D3D11.h>
 #include <D3Dcompiler.h>
 #include <DXGI.h>
+#include <stdexcept>
+#include <string>
 
 // Required libraries for linking DX11.0 with GTEngine:
 //   d3d11.lib          (for DX11.0 core)
 //   d3dcompiler.lib    (for D3DCompile and D3DReflect)
 //   dxgi.lib           (for IDXGIAdapter1 and IDXGIOutput)
 //   dxguid.lib         (for IID_ID3D11ShaderReflection)
-
-#include <Mathematics/Logger.h>
 
 namespace gte
 {
@@ -61,7 +61,7 @@ namespace gte
                 object = nullptr;
                 if (refs > 0)
                 {
-                    LogError("Reference count is not zero after release.");
+                    throw std::runtime_error(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): Reference count is not zero after release.\n");
                 }
             }
             return 0;
@@ -97,17 +97,17 @@ gte::DX11::Log(hresult_, __FILE__, __func__, __LINE__); \
 // Fake enumerations to have human-readable names that D3D11 did not provide.
 
 // D3D11_BIND_FLAG
-#define D3D11_BIND_NONE 0
+UINT constexpr D3D11_BIND_NONE = 0;
 
 // D3D11_RESOURCE_MISC_FLAG
-#define D3D11_RESOURCE_MISC_NONE 0
+UINT constexpr D3D11_RESOURCE_MISC_NONE = 0;
 
 // D3D11_BUFFER_UAV_FLAG
-#define D3D11_BUFFER_UAV_FLAG_BASIC 0
+UINT constexpr D3D11_BUFFER_UAV_FLAG_BASIC = 0;
 
 // D3D11_CPU_ACCESS_FLAG
-#define D3D11_CPU_ACCESS_NONE 0
-#define D3D11_CPU_ACCESS_READ_WRITE (D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE)
+UINT constexpr D3D11_CPU_ACCESS_NONE = 0;
+UINT constexpr D3D11_CPU_ACCESS_READ_WRITE = (D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE);
 
 // D3D11_QUERY_MISC_FLAG
-#define D3D11_QUERY_MISC_NONE 0
+UINT constexpr D3D11_QUERY_MISC_NONE = 0;

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.06.17
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -52,15 +52,19 @@ namespace gte
             :
             public FIQuery<T, Line3<T>, Capsule3<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line3<T>, Capsule3<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
-            Result() = default;
         };
 
         Result operator()(Segment3<T> const& segment, Capsule3<T> const& capsule)
         {
-            Vector3<T> segOrigin{};     // P
-            Vector3<T> segDirection{};  // D
-            T segExtent{};              // e
+            Vector3<T> segOrigin{}, segDirection{};
+            T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             Result result{};

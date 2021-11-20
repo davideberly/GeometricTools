@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -20,25 +20,31 @@
 
 namespace gte
 {
-    template <typename Real>
-    class FIQuery<Real, Segment3<Real>, Cone3<Real>>
+    template <typename T>
+    class FIQuery<T, Segment3<T>, Cone3<T>>
         :
-        public FIQuery<Real, Line3<Real>, Cone3<Real>>
+        public FIQuery<T, Line3<T>, Cone3<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line3<Real>, Cone3<Real>>::Result
+            public FIQuery<T, Line3<T>, Cone3<T>>::Result
         {
+            Result()
+                :
+                FIQuery<T, Line3<T>, Cone3<T>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
-        Result operator()(Segment3<Real> const& segment, Cone3<Real> const& cone)
+        Result operator()(Segment3<T> const& segment, Cone3<T> const& cone)
         {
             // Execute the line-cone query.
-            Result result;
-            Vector3<Real> segOrigin = segment.p[0];
-            Vector3<Real> segDirection = segment.p[1] - segment.p[0];
+            Result result{};
+            Vector3<T> segOrigin = segment.p[0];
+            Vector3<T> segDirection = segment.p[1] - segment.p[0];
             this->DoQuery(segOrigin, segDirection, cone, result);
 
             // Adjust the t-interval depending on whether the line-cone
@@ -47,7 +53,7 @@ namespace gte
             // themselves are a continuation of those in IntrLine3Cone3.h.
             if (result.type != Result::isEmpty)
             {
-                using QFN1 = typename FIQuery<Real, Line3<Real>, Cone3<Real>>::QFN1;
+                using QFN1 = typename FIQuery<T, Line3<T>, Cone3<T>>::QFN1;
                 QFN1 zero(0, 0, result.t[0].d), one(1, 0, result.t[0].d);
 
                 if (result.type == Result::isPoint)
@@ -68,8 +74,8 @@ namespace gte
                     }
                     else
                     {
-                        auto t0 = std::max(zero, result.t[0]);
-                        auto t1 = std::min(one, result.t[1]);
+                        QFN1 t0 = std::max(zero, result.t[0]);
+                        QFN1 t1 = std::min(one, result.t[1]);
                         if (t0 < t1)
                         {
                             // Block 24.

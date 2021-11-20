@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Resource.h>
@@ -93,10 +93,10 @@ void Resource::SetOffset(unsigned int offset)
     }
     else
     {
+        mOffset = 0;
         std::string message = "Invalid offset (" + std::to_string(offset) + ") for " +
             mName + "; total elements = " + std::to_string(mNumElements) + ".";
-        LogWarning(message);
-        mOffset = 0;
+        LogError(message);
     }
 }
 
@@ -108,13 +108,11 @@ void Resource::SetNumActiveElements(unsigned int numActiveElements)
     }
     else
     {
+        mNumActiveElements = static_cast<unsigned int>(mNumElements - mOffset);
         std::string message = "Invalid number of active elements (" +
             std::to_string(numActiveElements) + ") for " + mName +
             "; offset = " + std::to_string(mOffset) + ", total elements = " +
             std::to_string(mNumElements) + ".";
-        LogWarning(message);
-
-        LogWarning("Invalid number of active elements.");
-        mNumActiveElements = static_cast<unsigned int>(mNumElements - mOffset);
+        LogError(message);
     }
 }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -27,7 +27,7 @@ namespace gte
         // is not zero (unless all initializer values are zero).
         Polynomial1(unsigned int degree = 0)
             :
-            mCoefficient(degree + 1, (Real)0)
+            mCoefficient(static_cast<size_t>(degree) + 1, (Real)0)
         {
         }
 
@@ -46,7 +46,7 @@ namespace gte
         // uninitialized.
         void SetDegree(unsigned int degree)
         {
-            mCoefficient.resize(degree + 1);
+            mCoefficient.resize(static_cast<size_t>(degree) + 1);
         }
 
         // Set all coefficients to the specified value.

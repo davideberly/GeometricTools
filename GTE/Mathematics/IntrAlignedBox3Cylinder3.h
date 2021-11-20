@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.10.23
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -23,8 +23,18 @@ namespace gte
     public:
         struct Result
         {
+            using Outcome = typename LCPSolverShared<Real>::Result;
+
+            Result()
+                :
+                outcome(Outcome::INVALID_INPUT),
+                intersect(false),
+                numLCPIterations(0)
+            {
+            }
+
             // The outcome of the mLCP.Solve(...) call.
-            typename LCPSolverShared<Real>::Result outcome;
+            Outcome outcome;
 
             bool intersect;
 
@@ -43,7 +53,7 @@ namespace gte
 
         Result operator()(AlignedBox3<Real> const& box, Cylinder3<Real> const& cylinder)
         {
-            Result result;
+            Result result{};
 
             // Translate the box and cylinder so that the box is in the first
             // octant where all points in the box have nonnegative components.

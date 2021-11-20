@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.25
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -53,12 +53,12 @@ namespace gte
             mUmpp(0), mUzpp(0), mUppp(0),
             mSrc(0),
             mDst(1),
-            mMask(xBound + 2, yBound + 2, zBound + 2),
+            mMask(static_cast<size_t>(xBound) + 2, static_cast<size_t>(yBound) + 2, static_cast<size_t>(zBound) + 2),
             mHasMask(mask != nullptr)
         {
             for (int i = 0; i < 2; ++i)
             {
-                mBuffer[i] = Array3<Real>(xBound + 2, yBound + 2, zBound + 2);
+                mBuffer[i] = Array3<Real>(static_cast<size_t>(xBound) + 2, static_cast<size_t>(yBound) + 2, static_cast<size_t>(zBound) + 2);
             }
 
             // The mBuffer[] are ping-pong buffers for filtering.

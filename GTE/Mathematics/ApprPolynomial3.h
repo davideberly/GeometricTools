@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -74,8 +74,8 @@ namespace gte
                 int numSamples = static_cast<int>(numIndices);
                 int twoXDegree = 2 * mXDegree;
                 int twoYDegree = 2 * mYDegree;
-                Array2<Real> xPower(twoXDegree + 1, numSamples);
-                Array2<Real> yPower(twoYDegree + 1, numSamples);
+                Array2<Real> xPower(static_cast<size_t>(twoXDegree) + 1, numSamples);
+                Array2<Real> yPower(static_cast<size_t>(twoYDegree) + 1, numSamples);
                 for (s = 0; s < numSamples; ++s)
                 {
                     Real x = observations[indices[s]][0];
@@ -203,10 +203,10 @@ namespace gte
             for (i1 = 0; i1 <= mYDegree; ++i1)
             {
                 i0 = mXDegree;
-                w = mParameters[i0 + mXDegreeP1 * i1];
+                w = mParameters[i0 + static_cast<size_t>(mXDegreeP1) * i1];
                 while (--i0 >= 0)
                 {
-                    w = mParameters[i0 + mXDegreeP1 * i1] + w * x;
+                    w = mParameters[i0 + static_cast<size_t>(mXDegreeP1) * i1] + w * x;
                 }
                 mYCoefficient[i1] = w;
             }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -31,12 +31,18 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, OrientedBox<2, Real>, Cone<2, Real>>
+    template <typename T>
+    class TIQuery<T, OrientedBox<2, T>, Cone<2, T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             // The value of 'intersect' is true when there is a box point that
             // is strictly inside the cone.  If the box just touches the cone
             // from the outside, an intersection is not reported, which
@@ -45,11 +51,11 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(OrientedBox<2, Real> const& box, Cone<2, Real>& cone)
+        Result operator()(OrientedBox<2, T> const& box, Cone<2, T>& cone)
         {
-            Result result;
+            Result result{};
 
-            TIQuery<Real, Ray<2, Real>, OrientedBox<2, Real>> rbQuery;
+            TIQuery<T, Ray<2, T>, OrientedBox<2, T>> rbQuery;
             auto rbResult = rbQuery(cone.ray, box);
             if (rbResult.intersect)
             {
@@ -67,28 +73,28 @@ namespace gte
             //   = Dot(D, (x*U0 + y*U1 + (C-V))/|x*U0 + y*U1 + (C-V)|
             //   = (a0*x + a1*y + a2)/(x^2 + y^2 + 2*b0*x + 2*b1*y + b2)^{1/2}
             // The function has an essential singularity when P = V.
-            Vector<2, Real> diff = box.center - cone.ray.origin;
-            Real a0 = Dot(cone.ray.direction, box.axis[0]);
-            Real a1 = Dot(cone.ray.direction, box.axis[1]);
-            Real a2 = Dot(cone.ray.direction, diff);
-            Real b0 = Dot(box.axis[0], diff);
-            Real b1 = Dot(box.axis[1], diff);
-            Real b2 = Dot(diff, diff);
-            Real csSqr = cone.cosAngle * cone.cosAngle;
+            Vector<2, T> diff = box.center - cone.ray.origin;
+            T a0 = Dot(cone.ray.direction, box.axis[0]);
+            T a1 = Dot(cone.ray.direction, box.axis[1]);
+            T a2 = Dot(cone.ray.direction, diff);
+            T b0 = Dot(box.axis[0], diff);
+            T b1 = Dot(box.axis[1], diff);
+            T b2 = Dot(diff, diff);
+            T csSqr = cone.cosAngle * cone.cosAngle;
 
             for (int i1 = 0; i1 < 2; ++i1)
             {
-                Real sign1 = i1 * (Real)2 - (Real)1;
-                Real y = sign1 * box.extent[1];
+                T sign1 = i1 * (T)2 - (T)1;
+                T y = sign1 * box.extent[1];
                 for (int i0 = 0; i0 < 2; ++i0)
                 {
-                    Real sign0 = i0 * (Real)2 - (Real)1;
-                    Real x = sign0 * box.extent[0];
-                    Real fNumerator = a0 * x + a1 * y + a2;
-                    if (fNumerator > (Real)0)
+                    T sign0 = i0 * (T)2 - (T)1;
+                    T x = sign0 * box.extent[0];
+                    T fNumerator = a0 * x + a1 * y + a2;
+                    if (fNumerator > (T)0)
                     {
-                        Real dSqr = x * x + y * y + (b0 * x + b1 * y) * (Real)2 + b2;
-                        Real nSqr = fNumerator * fNumerator;
+                        T dSqr = x * x + y * y + (b0 * x + b1 * y) * (T)2 + b2;
+                        T nSqr = fNumerator * fNumerator;
                         if (nSqr > dSqr * csSqr)
                         {
                             result.intersect = true;

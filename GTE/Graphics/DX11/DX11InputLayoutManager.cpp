@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11InputLayoutManager.h>
@@ -13,7 +13,8 @@ DX11InputLayoutManager::~DX11InputLayoutManager()
 {
     if (mMap.HasElements())
     {
-        LogWarning("Input layout map is not empty on destruction.");
+        // Input layout map is not empty on destruction.
+        // TODO: In GTL, handle differently. The condition should not occur.
         UnbindAll();
     }
 }

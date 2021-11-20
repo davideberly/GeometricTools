@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -32,10 +32,10 @@ namespace gte
             ParticleSystem<N, Real>(numRows* numCols, step),
             mNumRows(numRows),
             mNumCols(numCols),
-            mConstantR(numRows* numCols),
-            mLengthR(numRows* numCols),
-            mConstantC(numRows* numCols),
-            mLengthC(numRows* numCols)
+            mConstantR(static_cast<size_t>(numRows) * static_cast<size_t>(numCols)),
+            mLengthR(static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mConstantC(static_cast<size_t>(numRows)* static_cast<size_t>(numCols)),
+            mLengthC(static_cast<size_t>(numRows)* static_cast<size_t>(numCols))
         {
             std::fill(mConstantR.begin(), mConstantR.end(), (Real)0);
             std::fill(mLengthR.begin(), mLengthR.end(), (Real)0);

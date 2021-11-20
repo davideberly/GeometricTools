@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -27,6 +27,13 @@ namespace gte
     {
         // The members are uninitialized.
         BasisFunctionInput()
+            :
+            numControls(0),
+            degree(0),
+            uniform(false),
+            periodic(false),
+            numUniqueKnots(0),
+            uniqueKnots{}
         {
         }
 
@@ -198,7 +205,7 @@ namespace gte
 
             mOpen = (mult0 == mult1 && mult0 == mDegree + 1);
 
-            mKnots.resize(mNumControls + mDegree + 1);
+            mKnots.resize(static_cast<size_t>(mNumControls) + static_cast<size_t>(mDegree) + 1);
             mKeys.resize(input.numUniqueKnots);
             int sum = 0;
             for (int i = 0, j = 0; i < input.numUniqueKnots; ++i)
@@ -219,8 +226,8 @@ namespace gte
             mTMax = mKnots[mNumControls];
             mTLength = mTMax - mTMin;
 
-            size_t numRows = mDegree + 1;
-            size_t numCols = mNumControls + mDegree;
+            size_t numRows = static_cast<size_t>(mDegree) + 1;
+            size_t numCols = static_cast<size_t>(mNumControls) + static_cast<size_t>(mDegree);
             size_t numBytes = numRows * numCols * sizeof(Real);
             for (int i = 0; i < 4; ++i)
             {
@@ -308,13 +315,13 @@ namespace gte
                 }
             }
 
-            Real n0 = t - mKnots[i], n1 = mKnots[i + 1] - t;
+            Real n0 = t - mKnots[i], n1 = mKnots[static_cast<size_t>(i) + 1] - t;
             Real e0, e1, d0, d1, invD0, invD1;
             int j;
             for (j = 1; j <= mDegree; j++)
             {
-                d0 = mKnots[i + j] - mKnots[i];
-                d1 = mKnots[i + 1] - mKnots[i - j + 1];
+                d0 = mKnots[static_cast<size_t>(i) + static_cast<size_t>(j)] - mKnots[i];
+                d1 = mKnots[static_cast<size_t>(i) + 1] - mKnots[static_cast<size_t>(i) - static_cast<size_t>(j) + 1];
                 invD0 = (d0 > (Real)0 ? (Real)1 / d0 : (Real)0);
                 invD1 = (d1 > (Real)0 ? (Real)1 / d1 : (Real)0);
 
@@ -353,9 +360,9 @@ namespace gte
                 for (int k = i - j + 1; k < i; ++k)
                 {
                     n0 = t - mKnots[k];
-                    n1 = mKnots[k + j + 1] - t;
-                    d0 = mKnots[k + j] - mKnots[k];
-                    d1 = mKnots[k + j + 1] - mKnots[k + 1];
+                    n1 = mKnots[static_cast<size_t>(k) + static_cast<size_t>(j) + 1] - t;
+                    d0 = mKnots[static_cast<size_t>(k) + static_cast<size_t>(j)] - mKnots[k];
+                    d1 = mKnots[static_cast<size_t>(k) + static_cast<size_t>(j) + 1] - mKnots[static_cast<size_t>(k) + 1];
                     invD0 = (d0 > (Real)0 ? (Real)1 / d0 : (Real)0);
                     invD1 = (d1 > (Real)0 ? (Real)1 / d1 : (Real)0);
 

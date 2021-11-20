@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -29,7 +29,7 @@ namespace gte
             // estimates of the boundary derivatives.
             LogAssert(mQuantity >= 3, "Invalid input to IntpAkima1 constructor.");
 
-            mPoly.resize(mQuantity - 1);
+            mPoly.resize(static_cast<size_t>(mQuantity) - 1);
         }
 
     public:

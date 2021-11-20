@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -15,45 +15,60 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Plane3<Real>, Sphere3<Real>>
+    template <typename T>
+    class TIQuery<T, Plane3<T>, Sphere3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Plane3<Real> const& plane, Sphere3<Real> const& sphere)
+        Result operator()(Plane3<T> const& plane, Sphere3<T> const& sphere)
         {
-            Result result;
-            DCPQuery<Real, Vector3<Real>, Plane3<Real>> ppQuery;
+            Result result{};
+            DCPQuery<T, Vector3<T>, Plane3<T>> ppQuery;
             auto ppResult = ppQuery(sphere.center, plane);
             result.intersect = (ppResult.distance <= sphere.radius);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Plane3<Real>, Sphere3<Real>>
+    template <typename T>
+    class FIQuery<T, Plane3<T>, Sphere3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                isCircle(false),
+                circle(Vector3<T>::Zero(), Vector3<T>::Zero(), (T)0),
+                point(Vector3<T>::Zero())
+            {
+            }
+
             bool intersect;
 
             // If 'intersect' is true, the intersection is either a point or a
             // circle.  When 'isCircle' is true, 'circle' is valid.  When
             // 'isCircle' is false, 'point' is valid.
             bool isCircle;
-            Circle3<Real> circle;
-            Vector3<Real> point;
+            Circle3<T> circle;
+            Vector3<T> point;
         };
 
-        Result operator()(Plane3<Real> const& plane, Sphere3<Real> const& sphere)
+        Result operator()(Plane3<T> const& plane, Sphere3<T> const& sphere)
         {
-            Result result;
-            DCPQuery<Real, Vector3<Real>, Plane3<Real>> ppQuery;
+            Result result{};
+            DCPQuery<T, Vector3<T>, Plane3<T>> ppQuery;
             auto ppResult = ppQuery(sphere.center, plane);
             if (ppResult.distance < sphere.radius)
             {
@@ -63,11 +78,11 @@ namespace gte
                 result.circle.normal = plane.normal;
 
                 // The sum and diff are both positive numbers.
-                Real sum = sphere.radius + ppResult.distance;
-                Real dif = sphere.radius - ppResult.distance;
+                T sum = sphere.radius + ppResult.distance;
+                T dif = sphere.radius - ppResult.distance;
 
                 // arg = sqr(sphere.radius) - sqr(ppResult.distance)
-                Real arg = sum * dif;
+                T arg = sum * dif;
 
                 result.circle.radius = std::sqrt(arg);
                 return result;

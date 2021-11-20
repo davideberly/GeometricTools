@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -102,7 +102,7 @@ namespace gte
             while (mNumVertices > numVertices)
             {
                 --mNumVertices;
-                mEdges[mIndices[mNumVertices]] = mEdges[2 * mNumEdges - 1];
+                mEdges[mIndices[mNumVertices]] = mEdges[2 * static_cast<size_t>(mNumEdges) - 1];
                 --mNumEdges;
             }
 
@@ -130,7 +130,7 @@ namespace gte
                 if (closed)
                 {
                     numEdges = numVertices;
-                    edges.resize(2 * numEdges);
+                    edges.resize(2 * static_cast<size_t>(numEdges));
 
                     if (numVertices == 3)
                     {
@@ -146,7 +146,7 @@ namespace gte
                 else
                 {
                     numEdges = numVertices - 1;
-                    edges.resize(2 * numEdges);
+                    edges.resize(2 * static_cast<size_t>(numEdges));
 
                     if (numVertices == 2)
                     {

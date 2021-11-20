@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45SamplerState.h>
@@ -32,12 +32,7 @@ GL45SamplerState::GL45SamplerState(SamplerState const* samplerState)
     glSamplerParameterf(mGLHandle, GL_TEXTURE_MAX_LOD, samplerState->maxLOD);
     glSamplerParameterf(mGLHandle, GL_TEXTURE_LOD_BIAS, samplerState->mipLODBias);
 
-    float borderColor[4];
-    borderColor[0] = samplerState->borderColor[0];
-    borderColor[1] = samplerState->borderColor[1];
-    borderColor[2] = samplerState->borderColor[2];
-    borderColor[3] = samplerState->borderColor[3];
-    glSamplerParameterfv(mGLHandle, GL_TEXTURE_BORDER_COLOR, borderColor);
+    glSamplerParameterfv(mGLHandle, GL_TEXTURE_BORDER_COLOR, &samplerState->borderColor[0]);
 
     switch(samplerState->filter)
     {
@@ -74,10 +69,7 @@ GL45SamplerState::GL45SamplerState(SamplerState const* samplerState)
             glSamplerParameteri(mGLHandle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             break;
         default:
-            LogWarning("GL4 does not support samplerState filter = " + samplerState->filter);
-            glSamplerParameteri(mGLHandle, GL_TEXTURE_MAG_FILTER, 0);
-            glSamplerParameteri(mGLHandle, GL_TEXTURE_MIN_FILTER, 0);
-            break;
+            LogError("Unknown sampler state filter.");
     }
 }
 

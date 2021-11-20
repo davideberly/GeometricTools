@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -30,13 +30,19 @@ namespace gte
             :
             public FIQuery<Real, Line3<Real>, Cone3<Real>>::Result
         {
+            Result()
+                :
+                FIQuery<Real, Line3<Real>, Cone3<Real>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
         Result operator()(Ray3<Real> const& ray, Cone3<Real> const& cone)
         {
             // Execute the line-cone query.
-            Result result;
+            Result result{};
             this->DoQuery(ray.origin, ray.direction, cone, result);
 
             // Adjust the t-interval depending on whether the line-cone

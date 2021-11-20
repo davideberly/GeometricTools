@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -18,23 +18,29 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Halfspace3<Real>, Segment3<Real>>
+    template <typename T>
+    class TIQuery<T, Halfspace3<T>, Segment3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Halfspace3<Real> const& halfspace, Segment3<Real> const& segment)
+        Result operator()(Halfspace3<T> const& halfspace, Segment3<T> const& segment)
         {
-            Result result;
+            Result result{};
 
             // Project the segment endpoints onto the normal line.  The plane
             // of the halfspace occurs at the origin (zero) of the normal
             // line.
-            Real s[2];
+            std::array<T, 2> s{};
             for (int i = 0; i < 2; ++i)
             {
                 s[i] = Dot(halfspace.normal, segment.p[i]) - halfspace.constant;
@@ -42,27 +48,35 @@ namespace gte
 
             // The segment and halfspace intersect when the projection
             // interval maximum is nonnegative.
-            result.intersect = (std::max(s[0], s[1]) >= (Real)0);
+            result.intersect = (std::max(s[0], s[1]) >= (T)0);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Halfspace3<Real>, Segment3<Real>>
+    template <typename T>
+    class FIQuery<T, Halfspace3<T>, Segment3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                numPoints(0),
+                point{ Vector3<T>::Zero(), Vector3<T>::Zero() }
+            {
+            }
+
             bool intersect;
 
             // The segment is clipped against the plane defining the 
             // halfspace.  The 'numPoints' is either 0 (no intersection),
             // 1 (point), or 2 (segment).
             int numPoints;
-            Vector3<Real> point[2];
+            std::array<Vector3<T>, 2> point;
         };
 
-        Result operator()(Halfspace3<Real> const& halfspace, Segment3<Real> const& segment)
+        Result operator()(Halfspace3<T> const& halfspace, Segment3<T> const& segment)
         {
             // Determine on which side of the plane the endpoints lie.  The
             // table of possibilities is listed next with n = numNegative,
@@ -77,16 +91,16 @@ namespace gte
             //   1 0 1  point (endpoint)
             //   2 0 0  none
 
-            Real s[2];
+            std::array<T, 2> s{};
             int numPositive = 0, numNegative = 0, numZero = 0;
             for (int i = 0; i < 2; ++i)
             {
                 s[i] = Dot(halfspace.normal, segment.p[i]) - halfspace.constant;
-                if (s[i] > (Real)0)
+                if (s[i] > (T)0)
                 {
                     ++numPositive;
                 }
-                else if (s[i] < (Real)0)
+                else if (s[i] < (T)0)
                 {
                     ++numNegative;
                 }
@@ -96,7 +110,7 @@ namespace gte
                 }
             }
 
-            Result result;
+            Result result{};
 
             if (numNegative == 0)
             {
@@ -119,7 +133,7 @@ namespace gte
                 else  // numZero = 1
                 {
                     // One segment endpoint is on the plane.
-                    if (s[0] == (Real)0)
+                    if (s[0] == (T)0)
                     {
                         result.point[0] = segment.p[0];
                     }

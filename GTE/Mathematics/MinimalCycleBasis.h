@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -373,8 +373,8 @@ namespace gte
                 for (auto i : detachments)
                 {
                     Vertex* original = closedWalk[i];
-                    Vertex* maxVertex = closedWalk[i + 1];
-                    Vertex* minVertex = (i > 0 ? closedWalk[i - 1] : closedWalk[numClosedWalk - 2]);
+                    Vertex* maxVertex = closedWalk[static_cast<size_t>(i) + 1];
+                    Vertex* minVertex = (i > 0 ? closedWalk[static_cast<size_t>(i) - 1] : closedWalk[static_cast<size_t>(numClosedWalk) - 2]);
 
                     std::array<Real, 2> dMin, dMax;
                     for (int j = 0; j < 2; ++j)

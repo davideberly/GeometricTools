@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.15
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -574,12 +574,13 @@ namespace gte
         {
             if (n > 0)
             {
-                mVectorVarBasic.resize(n + 1);
-                mVectorVarNonbasic.resize(n + 1);
-                mVectorAugmented.resize(2 * (n + 1) * n);
-                mVectorQMin.resize(n + 1);
-                mVectorMinRatio.resize(n + 1);
-                mVectorRatio.resize(n + 1);
+                size_t np1 = static_cast<size_t>(n) + 1;
+                mVectorVarBasic.resize(np1);
+                mVectorVarNonbasic.resize(np1);
+                mVectorAugmented.resize(2 * np1 * n);
+                mVectorQMin.resize(np1);
+                mVectorMinRatio.resize(np1);
+                mVectorRatio.resize(np1);
                 mVectorPoly.resize(n);
 
                 this->mVarBasic = mVectorVarBasic.data();
@@ -607,7 +608,7 @@ namespace gte
             {
                 if (result)
                 {
-                    *result = this->Result::INVALID_INPUT;
+                    *result = LCPSolverShared<T>::Result::INVALID_INPUT;
                 }
                 return false;
             }

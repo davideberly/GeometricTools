@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -164,7 +164,7 @@ namespace gte
                     mComputePoints.resize(numPointsPlusExtras);
                     mIsConverted.resize(numPointsPlusExtras);
                     mIsConverted[mNumPoints] = false;
-                    mIsConverted[mNumPoints + 1] = false;
+                    mIsConverted[static_cast<size_t>(mNumPoints) + 1] = false;
                     mQuery.Set(numPointsPlusExtras, &mComputePoints[0]);
                 }
 
@@ -812,7 +812,7 @@ namespace gte
             // values must be duplicated, because the original might be
             // convex (or reflex) and the duplicate is reflex (or convex).
             // The ear-clipping algorithm needs to distinguish between them.
-            combined.resize(numOuterIndices + numInnerIndices + 2);
+            combined.resize(static_cast<size_t>(numOuterIndices) + static_cast<size_t>(numInnerIndices) + 2);
             int cIndex = 0;
             for (int i = 0; i <= maxCosIndex; ++i, ++cIndex)
             {

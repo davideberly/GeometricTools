@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.14
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 
 // Extract level surfaces using an adaptive approach to reduce the triangle
 // count.  The implementation is for the algorithm described in the paper
@@ -327,8 +328,8 @@ namespace gte
             LinearMergeTree(int N)
                 :
                 mTwoPowerN(1 << N),
-                mNodes(2 * mTwoPowerN - 1),
-                mZeroBases(2 * mTwoPowerN - 1)
+                mNodes(2 * static_cast<size_t>(mTwoPowerN) - 1),
+                mZeroBases(2 * static_cast<size_t>(mTwoPowerN) - 1)
             {
             }
 
@@ -679,7 +680,9 @@ namespace gte
             public:
                 TVertex()
                     :
+                    position{ (Real)0, (Real)0, (Real)0 },
                     adjQuantity(0),
+                    adjacent{ 0, 0, 0, 0 },
                     valid(false)
                 {
                 }
@@ -688,6 +691,7 @@ namespace gte
                     :
                     position(inPosition),
                     adjQuantity(0),
+                    adjacent{ 0, 0, 0, 0 },
                     valid(true)
                 {
 

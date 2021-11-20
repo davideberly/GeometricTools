@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -35,6 +35,7 @@ namespace gte
             mY(numPoints),
             mSmooth(smooth),
             mA(numPoints),
+            mB{ (Real)0, (Real)0, (Real)0 },
             mInitialized(false)
         {
             LogAssert(numPoints >= 3 && X != nullptr && Y != nullptr &&
@@ -110,7 +111,7 @@ namespace gte
             }
 
             // Compute A^{-1}.
-            bool invertible;
+            bool invertible = false;
             GMatrix<Real> invAMat = Inverse(AMat, &invertible);
             if (!invertible)
             {

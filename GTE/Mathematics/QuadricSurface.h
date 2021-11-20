@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -148,22 +148,22 @@ namespace gte
         // Classification of the quadric.  The implementation uses exact
         // rational arithmetic to avoid misclassification due to
         // floating-point rounding errors.
-        enum Classification
+        enum class Classification
         {
-            QT_NONE,
-            QT_POINT,
-            QT_LINE,
-            QT_PLANE,
-            QT_TWO_PLANES,
-            QT_PARABOLIC_CYLINDER,
-            QT_ELLIPTIC_CYLINDER,
-            QT_HYPERBOLIC_CYLINDER,
-            QT_ELLIPTIC_PARABOLOID,
-            QT_HYPERBOLIC_PARABOLOID,
-            QT_ELLIPTIC_CONE,
-            QT_HYPERBOLOID_ONE_SHEET,
-            QT_HYPERBOLOID_TWO_SHEETS,
-            QT_ELLIPSOID
+            NONE,
+            POINT,
+            LINE,
+            PLANE,
+            TWO_PLANES,
+            PARABOLIC_CYLINDER,
+            ELLIPTIC_CYLINDER,
+            HYPERBOLIC_CYLINDER,
+            ELLIPTIC_PARABOLOID,
+            HYPERBOLIC_PARABOLOID,
+            ELLIPTIC_CONE,
+            HYPERBOLOID_ONE_SHEET,
+            HYPERBOLOID_TWO_SHEETS,
+            ELLIPSOID
         };
 
         Classification GetClassification() const
@@ -177,7 +177,7 @@ namespace gte
             GetRootSigns(reps, positiveRoots, negativeRoots, zeroRoots);
 
             // Classify the solution set to the equation.
-            Classification type = QT_NONE;
+            Classification type = Classification::NONE;
             switch (zeroRoots)
             {
             case 0:
@@ -441,48 +441,48 @@ namespace gte
             {
                 if (positiveRoots == 3)
                 {
-                    return QT_ELLIPSOID;
+                    return Classification::ELLIPSOID;
                 }
                 else if (positiveRoots == 2)
                 {
-                    return QT_HYPERBOLOID_ONE_SHEET;
+                    return Classification::HYPERBOLOID_ONE_SHEET;
                 }
                 else if (positiveRoots == 1)
                 {
-                    return QT_HYPERBOLOID_TWO_SHEETS;
+                    return Classification::HYPERBOLOID_TWO_SHEETS;
                 }
                 else
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
             }
             else if (r < zero)
             {
                 if (positiveRoots == 3)
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
                 else if (positiveRoots == 2)
                 {
-                    return QT_HYPERBOLOID_TWO_SHEETS;
+                    return Classification::HYPERBOLOID_TWO_SHEETS;
                 }
                 else if (positiveRoots == 1)
                 {
-                    return QT_HYPERBOLOID_ONE_SHEET;
+                    return Classification::HYPERBOLOID_ONE_SHEET;
                 }
                 else
                 {
-                    return QT_ELLIPSOID;
+                    return Classification::ELLIPSOID;
                 }
             }
 
             // else r == 0
             if (positiveRoots == 3 || positiveRoots == 0)
             {
-                return QT_POINT;
+                return Classification::POINT;
             }
 
-            return QT_ELLIPTIC_CONE;
+            return Classification::ELLIPTIC_CONE;
         }
 
         static Classification ClassifyZeroRoots1(RReps const& reps, int positiveRoots)
@@ -527,11 +527,11 @@ namespace gte
             {
                 if (positiveRoots == 1)
                 {
-                    return QT_HYPERBOLIC_PARABOLOID;
+                    return Classification::HYPERBOLIC_PARABOLOID;
                 }
                 else
                 {
-                    return QT_ELLIPTIC_PARABOLOID;
+                    return Classification::ELLIPTIC_PARABOLOID;
                 }
             }
 
@@ -563,35 +563,35 @@ namespace gte
             {
                 if (positiveRoots == 2)
                 {
-                    return QT_ELLIPTIC_CYLINDER;
+                    return Classification::ELLIPTIC_CYLINDER;
                 }
                 else if (positiveRoots == 1)
                 {
-                    return QT_HYPERBOLIC_CYLINDER;
+                    return Classification::HYPERBOLIC_CYLINDER;
                 }
                 else
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
             }
             else if (r < zero)
             {
                 if (positiveRoots == 2)
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
                 else if (positiveRoots == 1)
                 {
-                    return QT_HYPERBOLIC_CYLINDER;
+                    return Classification::HYPERBOLIC_CYLINDER;
                 }
                 else
                 {
-                    return QT_ELLIPTIC_CYLINDER;
+                    return Classification::ELLIPTIC_CYLINDER;
                 }
             }
 
             // else r == 0
-            return (positiveRoots == 1 ? QT_TWO_PLANES : QT_LINE);
+            return (positiveRoots == 1 ? Classification::TWO_PLANES : Classification::LINE);
         }
 
         static Classification ClassifyZeroRoots2(const RReps& reps, int positiveRoots)
@@ -642,13 +642,13 @@ namespace gte
             Rational e0 = P0[0] * reps.b0 + P0[1] * reps.b1 + P0[2] * reps.b1;
             if (e0 != zero)
             {
-                return QT_PARABOLIC_CYLINDER;
+                return Classification::PARABOLIC_CYLINDER;
             }
 
             Rational e1 = P1[0] * reps.b0 + P1[1] * reps.b1 + P1[2] * reps.b1;
             if (e1 != zero)
             {
-                return QT_PARABOLIC_CYLINDER;
+                return Classification::PARABOLIC_CYLINDER;
             }
 
             Rational f1 = reps.k2 * Dot(P2, P2);
@@ -658,27 +658,27 @@ namespace gte
             {
                 if (positiveRoots == 1)
                 {
-                    return QT_TWO_PLANES;
+                    return Classification::TWO_PLANES;
                 }
                 else
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
             }
             else if (r < zero)
             {
                 if (positiveRoots == 1)
                 {
-                    return QT_NONE;
+                    return Classification::NONE;
                 }
                 else
                 {
-                    return QT_TWO_PLANES;
+                    return Classification::TWO_PLANES;
                 }
             }
 
             // else r == 0
-            return QT_PLANE;
+            return Classification::PLANE;
         }
 
         static Classification ClassifyZeroRoots3(RReps const& reps)
@@ -686,10 +686,10 @@ namespace gte
             Rational const zero(0);
             if (reps.b0 != zero || reps.b1 != zero || reps.b2 != zero)
             {
-                return QT_PLANE;
+                return Classification::PLANE;
             }
 
-            return QT_NONE;
+            return Classification::NONE;
         }
 
         std::array<Real, 10> mCoefficient;

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -21,13 +21,18 @@ namespace gte
         GMatrix()
             :
             mNumRows(0),
-            mNumCols(0)
+            mNumCols(0),
+            mElements{}
         {
         }
 
         // The table is length numRows*numCols and the elements are
         // initialized to zero.
         GMatrix(int numRows, int numCols)
+            :
+            mNumRows(0),
+            mNumCols(0),
+            mElements{}
         {
             SetSize(numRows, numCols);
             std::fill(mElements.begin(), mElements.end(), (Real)0);
@@ -39,6 +44,10 @@ namespace gte
         // Euclidean basis matrices; see also MakeUnit(int,int) and
         // Unit(int,int).
         GMatrix(int numRows, int numCols, int r, int c)
+            :
+            mNumRows(0),
+            mNumCols(0),
+            mElements{}
         {
             SetSize(numRows, numCols);
             MakeUnit(r, c);
@@ -58,7 +67,7 @@ namespace gte
             {
                 mNumRows = numRows;
                 mNumCols = numCols;
-                mElements.resize(mNumRows * mNumCols);
+                mElements.resize(static_cast<size_t>(mNumRows) * static_cast<size_t>(mNumCols));
             }
             else
             {
@@ -94,9 +103,9 @@ namespace gte
             if (0 <= r && r < GetNumRows() && 0 <= c && c < GetNumCols())
             {
 #if defined(GTE_USE_ROW_MAJOR)
-                return mElements[c + mNumCols * r];
+                return mElements[c + static_cast<size_t>(mNumCols) * r];
 #else
-                return mElements[r + mNumRows * c];
+                return mElements[r + static_cast<size_t>(mNumRows) * c];
 #endif
             }
             LogError("Invalid index.");
@@ -107,9 +116,9 @@ namespace gte
             if (0 <= r && r < GetNumRows() && 0 <= c && c < GetNumCols())
             {
 #if defined(GTE_USE_ROW_MAJOR)
-                return mElements[c + mNumCols * r];
+                return mElements[c + static_cast<size_t>(mNumCols) * r];
 #else
-                return mElements[r + mNumRows * c];
+                return mElements[r + static_cast<size_t>(mNumRows) * c];
 #endif
             }
             LogError("Invalid index.");

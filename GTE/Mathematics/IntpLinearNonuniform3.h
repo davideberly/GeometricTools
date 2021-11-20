@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -58,10 +58,10 @@ namespace gte
             }
 
             // The result is a barycentric combination of function values.
-            std::array<int, 4> indices;
+            std::array<int, 4> indices{ 0, 0, 0, 0 };
             mMesh->GetIndices(t, indices);
             F = bary[0] * mF[indices[0]] + bary[1] * mF[indices[1]] +
-                bary[2] * mF[indices[2]] + bary[3] * mF[indices[4]];
+                bary[2] * mF[indices[2]] + bary[3] * mF[indices[3]];
             return true;
         }
 

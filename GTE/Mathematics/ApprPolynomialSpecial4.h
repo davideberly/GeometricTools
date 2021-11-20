@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -82,11 +82,11 @@ namespace gte
             // constructing the fitted polynomial. Powers of x, y, and z are
             // computed up to the powers for the evaluation of the fitted
             // polynomial.
-            mXPowers.resize(2 * mXDegrees.back() + 1);
+            mXPowers.resize(2 * static_cast<size_t>(mXDegrees.back()) + 1);
             mXPowers[0] = (Real)1;
-            mYPowers.resize(2 * mYDegrees.back() + 1);
+            mYPowers.resize(2 * static_cast<size_t>(mYDegrees.back()) + 1);
             mYPowers[0] = (Real)1;
-            mZPowers.resize(2 * mZDegrees.back() + 1);
+            mZPowers.resize(2 * static_cast<size_t>(mZDegrees.back()) + 1);
             mZPowers[0] = (Real)1;
         }
 
@@ -168,22 +168,22 @@ namespace gte
             z = (Real)-1 + (Real)2 * mScale[2] * (z - mZDomain[0]);
 
             // Compute relevant powers of x, y, and z.
-            int jmax = mXDegrees.back();;
-            for (int j = 1; j <= jmax; ++j)
+            int jmax = mXDegrees.back();
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mXPowers[j] = mXPowers[j - 1] * x;
+                mXPowers[j] = mXPowers[jm1] * x;
             }
 
-            jmax = mYDegrees.back();;
-            for (int j = 1; j <= jmax; ++j)
+            jmax = mYDegrees.back();
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mYPowers[j] = mYPowers[j - 1] * y;
+                mYPowers[j] = mYPowers[jm1] * y;
             }
 
-            jmax = mZDegrees.back();;
-            for (int j = 1; j <= jmax; ++j)
+            jmax = mZDegrees.back();
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mZPowers[j] = mZPowers[j - 1] * z;
+                mZPowers[j] = mZPowers[jm1] * z;
             }
 
             Real w = (Real)0;
@@ -276,17 +276,17 @@ namespace gte
                 Real y = transformed[i][1];
                 Real z = transformed[i][2];
                 Real w = transformed[i][3];
-                for (int j = 1; j <= twoMaxXDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
                 {
-                    mXPowers[j] = mXPowers[j - 1] * x;
+                    mXPowers[j] = mXPowers[jm1] * x;
                 }
-                for (int j = 1; j <= twoMaxYDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxYDegree; ++j, ++jm1)
                 {
-                    mYPowers[j] = mYPowers[j - 1] * y;
+                    mYPowers[j] = mYPowers[jm1] * y;
                 }
-                for (int j = 1; j <= twoMaxZDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxZDegree; ++j, ++jm1)
                 {
-                    mZPowers[j] = mZPowers[j - 1] * z;
+                    mZPowers[j] = mZPowers[jm1] * z;
                 }
 
                 for (row = 0; row < size; ++row)
@@ -296,9 +296,9 @@ namespace gte
                     Real xp, yp, zp;
                     for (col = row; col < size; ++col)
                     {
-                        xp = mXPowers[mXDegrees[row] + mXDegrees[col]];
-                        yp = mYPowers[mYDegrees[row] + mYDegrees[col]];
-                        zp = mZPowers[mZDegrees[row] + mZDegrees[col]];
+                        xp = mXPowers[static_cast<size_t>(mXDegrees[row]) + static_cast<size_t>(mXDegrees[col])];
+                        yp = mYPowers[static_cast<size_t>(mYDegrees[row]) + static_cast<size_t>(mYDegrees[col])];
+                        zp = mZPowers[static_cast<size_t>(mZDegrees[row]) + static_cast<size_t>(mZDegrees[col])];
                         A(row, col) += xp * yp * zp;
                     }
 

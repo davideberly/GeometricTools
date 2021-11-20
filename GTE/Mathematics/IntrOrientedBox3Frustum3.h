@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -25,12 +25,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(OrientedBox3<Real> const& box, Frustum3<Real> const& frustum)
         {
-            Result result;
+            Result result{};
 
             // Convenience variables.
             Vector3<Real> const* axis = &box.axis[0];
@@ -38,24 +44,24 @@ namespace gte
 
             Vector3<Real> diff = box.center - frustum.origin;  // C-E
 
-            Real A[3];      // Dot(R,A[i])
-            Real B[3];      // Dot(U,A[i])
-            Real C[3];      // Dot(D,A[i])
-            Real D[3];      // (Dot(R,C-E),Dot(U,C-E),Dot(D,C-E))
-            Real NA[3];     // dmin*Dot(R,A[i])
-            Real NB[3];     // dmin*Dot(U,A[i])
-            Real NC[3];     // dmin*Dot(D,A[i])
-            Real ND[3];     // dmin*(Dot(R,C-E),Dot(U,C-E),?)
-            Real RC[3];     // rmax*Dot(D,A[i])
-            Real RD[3];     // rmax*(?,?,Dot(D,C-E))
-            Real UC[3];     // umax*Dot(D,A[i])
-            Real UD[3];     // umax*(?,?,Dot(D,C-E))
-            Real NApRC[3];  // dmin*Dot(R,A[i]) + rmax*Dot(D,A[i])
-            Real NAmRC[3];  // dmin*Dot(R,A[i]) - rmax*Dot(D,A[i])
-            Real NBpUC[3];  // dmin*Dot(U,A[i]) + umax*Dot(D,A[i])
-            Real NBmUC[3];  // dmin*Dot(U,A[i]) - umax*Dot(D,A[i])
-            Real RBpUA[3];  // rmax*Dot(U,A[i]) + umax*Dot(R,A[i])
-            Real RBmUA[3];  // rmax*Dot(U,A[i]) - umax*Dot(R,A[i])
+            std::array<Real, 3> A;      // Dot(R,A[i])
+            std::array<Real, 3> B;      // Dot(U,A[i])
+            std::array<Real, 3> C;      // Dot(D,A[i])
+            std::array<Real, 3> D;      // (Dot(R,C-E),Dot(U,C-E),Dot(D,C-E))
+            std::array<Real, 3> NA;     // dmin*Dot(R,A[i])
+            std::array<Real, 3> NB;     // dmin*Dot(U,A[i])
+            std::array<Real, 3> NC;     // dmin*Dot(D,A[i])
+            std::array<Real, 3> ND;     // dmin*(Dot(R,C-E),Dot(U,C-E),?)
+            std::array<Real, 3> RC;     // rmax*Dot(D,A[i])
+            std::array<Real, 3> RD;     // rmax*(?,?,Dot(D,C-E))
+            std::array<Real, 3> UC;     // umax*Dot(D,A[i])
+            std::array<Real, 3> UD;     // umax*(?,?,Dot(D,C-E))
+            std::array<Real, 3> NApRC;  // dmin*Dot(R,A[i]) + rmax*Dot(D,A[i])
+            std::array<Real, 3> NAmRC;  // dmin*Dot(R,A[i]) - rmax*Dot(D,A[i])
+            std::array<Real, 3> NBpUC;  // dmin*Dot(U,A[i]) + umax*Dot(D,A[i])
+            std::array<Real, 3> NBmUC;  // dmin*Dot(U,A[i]) - umax*Dot(D,A[i])
+            std::array<Real, 3> RBpUA;  // rmax*Dot(U,A[i]) + umax*Dot(R,A[i])
+            std::array<Real, 3> RBmUA;  // rmax*Dot(U,A[i]) - umax*Dot(R,A[i])
             Real DdD, radius, p, fmin, fmax, MTwoUF, MTwoRF, tmp;
             int i, j;
 

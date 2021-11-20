@@ -1362,15 +1362,6 @@
     <ClInclude Include="Mathematics\Transform.h">
       <Filter>Algebra</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\LogToFile.h">
-      <Filter>LowLevel</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\LogToStdout.h">
-      <Filter>LowLevel</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\LogToStringArray.h">
-      <Filter>LowLevel</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\Logger.h">
       <Filter>LowLevel</Filter>
     </ClInclude>

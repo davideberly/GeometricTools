@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -36,26 +36,26 @@ namespace gte
             std::copy(controls, controls + mNumControls, mControls[0].begin());
 
             // Compute first-order differences.
-            mControls[1].resize(mNumControls - 1);
-            for (int i = 0; i < mNumControls - 1; ++i)
+            mControls[1].resize(static_cast<size_t>(mNumControls) - 1);
+            for (int i = 0, ip1 = 1; ip1 < mNumControls; ++i, ++ip1)
             {
-                mControls[1][i] = mControls[0][i + 1] - mControls[0][i];
+                mControls[1][i] = mControls[0][ip1] - mControls[0][i];
             }
 
             // Compute second-order differences.
-            mControls[2].resize(mNumControls - 2);
-            for (int i = 0; i < mNumControls - 2; ++i)
+            mControls[2].resize(static_cast<size_t>(mNumControls) - 2);
+            for (int i = 0, ip1 = 1, ip2 = 2; ip2 < mNumControls; ++i, ++ip1, ++ip2)
             {
-                mControls[2][i] = mControls[1][i + 1] - mControls[1][i];
+                mControls[2][i] = mControls[1][ip1] - mControls[1][i];
             }
 
             // Compute third-order differences.
             if (degree >= 3)
             {
-                mControls[3].resize(mNumControls - 3);
-                for (int i = 0; i < mNumControls - 3; ++i)
+                mControls[3].resize(static_cast<size_t>(mNumControls) - 3);
+                for (int i = 0, ip1 = 1, ip3 = 3; ip3 < mNumControls; ++i, ++ip1, ++ip3)
                 {
-                    mControls[3][i] = mControls[2][i + 1] - mControls[2][i];
+                    mControls[3][i] = mControls[2][ip1] - mControls[2][i];
                 }
             }
 

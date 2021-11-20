@@ -50,7 +50,7 @@ namespace gte
         virtual void CopyGpuToGpu(GL45Resource* target)
         {
             (void)target;
-            throw std::logic_error("Not yet implemented.");
+            throw std::logic_error(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): Not yet implemented.\n");
         }
 
     protected:

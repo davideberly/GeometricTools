@@ -3,26 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 4.0.2021.11.12
 
 #include "DistancePointHyperellipsoidConsole.h"
-#include <Applications/LogReporter.h>
-using namespace gte;
+#include <iostream>
 
 int main()
 {
-#if defined(_DEBUG)
-    LogReporter reporter(
-        "LogReport.txt",
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL,
-        Logger::Listener::LISTEN_FOR_ALL);
-#endif
+    try
+    {
+        Console::Parameters parameters(L"DistancePointHyperellipsoidConsole");
+        auto console = TheConsoleSystem.Create<DistancePointHyperellipsoidConsole>(parameters);
+        TheConsoleSystem.Execute(console);
+        TheConsoleSystem.Destroy(console);
+    }
+    catch (std::exception const& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
-    Console::Parameters parameters(L"DistancePointHyperellipsoidConsole");
-    auto console = TheConsoleSystem.Create<DistancePointHyperellipsoidConsole>(parameters);
-    TheConsoleSystem.Execute(console);
-    TheConsoleSystem.Destroy(console);
     return 0;
 }

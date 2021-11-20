@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -50,12 +50,12 @@ namespace gte
         }
 
         // Support for move semantics.
-        Image2(Image2&& image)
+        Image2(Image2&& image) noexcept
         {
             *this = std::move(image);
         }
 
-        Image2& operator= (Image2&& image)
+        Image2& operator=(Image2&& image) noexcept
         {
             Image<PixelType>::operator=(image);
             return *this;
@@ -163,7 +163,7 @@ namespace gte
             if (0 <= x && x < this->mDimensions[0]
                 && 0 <= y && y < this->mDimensions[1])
             {
-                return this->mPixels[x + this->mDimensions[0] * y];
+                return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
             }
             else
             {
@@ -172,7 +172,7 @@ namespace gte
                     std::to_string(y) + ").");
             }
 #else
-            return this->mPixels[x + this->mDimensions[0] * y];
+            return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
 #endif
         }
 
@@ -182,7 +182,7 @@ namespace gte
             if (0 <= x && x < this->mDimensions[0]
                 && 0 <= y && y < this->mDimensions[1])
             {
-                return this->mPixels[x + this->mDimensions[0] * y];
+                return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
             }
             else
             {
@@ -191,7 +191,7 @@ namespace gte
                     std::to_string(y) + ").");
             }
 #else
-            return this->mPixels[x + this->mDimensions[0] * y];
+            return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
 #endif
         }
 
@@ -201,7 +201,7 @@ namespace gte
             if (0 <= coord[0] && coord[0] < this->mDimensions[0]
                 && 0 <= coord[1] && coord[1] < this->mDimensions[1])
             {
-                return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+                return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
             }
             else
             {
@@ -210,7 +210,7 @@ namespace gte
                     std::to_string(coord[1]) + ").");
             }
 #else
-            return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+            return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
 #endif
         }
 
@@ -220,7 +220,7 @@ namespace gte
             if (0 <= coord[0] && coord[0] < this->mDimensions[0]
                 && 0 <= coord[1] && coord[1] < this->mDimensions[1])
             {
-                return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+                return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
             }
             else
             {
@@ -229,7 +229,7 @@ namespace gte
                     std::to_string(coord[1]) + ").");
             }
 #else
-            return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+            return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
 #endif
         }
 
@@ -254,7 +254,7 @@ namespace gte
                 y = this->mDimensions[1] - 1;
             }
 
-            return this->mPixels[x + this->mDimensions[0] * y];
+            return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
         }
 
         inline PixelType const& Get(int x, int y) const
@@ -278,7 +278,7 @@ namespace gte
                 y = this->mDimensions[1] - 1;
             }
 
-            return this->mPixels[x + this->mDimensions[0] * y];
+            return this->mPixels[x + static_cast<size_t>(this->mDimensions[0]) * y];
         }
 
         inline PixelType& Get(std::array<int, 2> coord)
@@ -296,7 +296,7 @@ namespace gte
                 }
             }
 
-            return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+            return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
         }
 
         inline PixelType const& Get(std::array<int, 2> coord) const
@@ -314,7 +314,7 @@ namespace gte
                 }
             }
 
-            return this->mPixels[coord[0] + this->mDimensions[0] * coord[1]];
+            return this->mPixels[coord[0] + static_cast<size_t>(this->mDimensions[0]) * coord[1]];
         }
 
         // In the following discussion, u and v are in {-1,1}.  Given a pixel

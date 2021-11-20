@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -26,30 +26,38 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, OrientedBox2<Real>, OrientedBox2<Real>>
+    template <typename T>
+    class TIQuery<T, OrientedBox2<T>, OrientedBox2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                separating(0)
+            {
+            }
+
             bool intersect;
             int separating;
         };
 
-        Result operator()(OrientedBox2<Real> const& box0, OrientedBox2<Real> const& box1)
+        Result operator()(OrientedBox2<T> const& box0, OrientedBox2<T> const& box1)
         {
-            Result result;
+            Result result{};
 
             // Convenience variables.
-            Vector2<Real> const* A0 = &box0.axis[0];
-            Vector2<Real> const* A1 = &box1.axis[0];
-            Vector2<Real> const& E0 = box0.extent;
-            Vector2<Real> const& E1 = box1.extent;
+            Vector2<T> const* A0 = &box0.axis[0];
+            Vector2<T> const* A1 = &box1.axis[0];
+            Vector2<T> const& E0 = box0.extent;
+            Vector2<T> const& E1 = box1.extent;
 
             // Compute difference of box centers, D = C1-C0.
-            Vector2<Real> D = box1.center - box0.center;
+            Vector2<T> D = box1.center - box0.center;
 
-            Real absA0dA1[2][2], rSum;
+            std::array<std::array<T, 2>, 2> absA0dA1{};
+            T rSum{};
 
             // Test box0.axis[0].
             absA0dA1[0][0] = std::fabs(Dot(A0[0], A1[0]));
@@ -96,27 +104,34 @@ namespace gte
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, OrientedBox2<Real>, OrientedBox2<Real>>
+    template <typename T>
+    class FIQuery<T, OrientedBox2<T>, OrientedBox2<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                polygon{}
+            {
+            }
+
             bool intersect;
 
             // If 'intersect' is true, the boxes intersect in a convex
             // 'polygon'.
-            std::vector<Vector2<Real>> polygon;
+            std::vector<Vector2<T>> polygon;
         };
 
-        Result operator()(OrientedBox2<Real> const& box0, OrientedBox2<Real> const& box1)
+        Result operator()(OrientedBox2<T> const& box0, OrientedBox2<T> const& box1)
         {
-            Result result;
+            Result result{};
             result.intersect = true;
 
             // Initialize the intersection polygon to box0, listing the
             // vertices in counterclockwise order.
-            std::array<Vector2<Real>, 4> vertex;
+            std::array<Vector2<T>, 4> vertex{};
             box0.GetVertices(vertex);
             result.polygon.push_back(vertex[0]);  // C - e0 * U0 - e1 * U1
             result.polygon.push_back(vertex[1]);  // C + e0 * U0 - e1 * U1
@@ -127,7 +142,7 @@ namespace gte
             // line normal points inside box1.  The line origin is the first
             // vertex of the edge when traversing box1 counterclockwise.
             box1.GetVertices(vertex);
-            std::array<Vector2<Real>, 4> normal =
+            std::array<Vector2<T>, 4> normal =
             {
                 box1.axis[1], -box1.axis[0], box1.axis[0], -box1.axis[1]
             };
@@ -152,18 +167,18 @@ namespace gte
         // boxes do not intersect.  If the function returns false, the
         // outgoing polygon is the incoming polygon intersected with the
         // closed halfspacedefined by the line.
-        bool Outside(Vector2<Real> const& origin, Vector2<Real> const& normal,
-            std::vector<Vector2<Real>>& polygon)
+        bool Outside(Vector2<T> const& origin, Vector2<T> const& normal,
+            std::vector<Vector2<T>>& polygon)
         {
             // Determine whether the polygon vertices are outside the polygon,
             // inside the polygon, or on the polygon boundary.
             int const numVertices = static_cast<int>(polygon.size());
-            std::vector<Real> distance(numVertices);
+            std::vector<T> distance(numVertices);
             int positive = 0, negative = 0, positiveIndex = -1;
             for (int i = 0; i < numVertices; ++i)
             {
                 distance[i] = Dot(normal, polygon[i] - origin);
-                if (distance[i] > (Real)0)
+                if (distance[i] > (T)0)
                 {
                     ++positive;
                     if (positiveIndex == -1)
@@ -171,7 +186,7 @@ namespace gte
                         positiveIndex = i;
                     }
                 }
-                else if (distance[i] < (Real)0)
+                else if (distance[i] < (T)0)
                 {
                     ++negative;
                 }
@@ -192,10 +207,10 @@ namespace gte
             }
 
             // The line transversely intersects the polygon. Clip the polygon.
-            std::vector<Vector2<Real>> clipPolygon;
-            Vector2<Real> vertex;
+            std::vector<Vector2<T>> clipPolygon;
+            Vector2<T> vertex;
             int curr, prev;
-            Real t;
+            T t;
 
             if (positiveIndex > 0)
             {
@@ -207,7 +222,7 @@ namespace gte
                 clipPolygon.push_back(vertex);
 
                 // Include the vertices on the positive side of line.
-                while (curr < numVertices && distance[curr] >(Real)0)
+                while (curr < numVertices && distance[curr] >(T)0)
                 {
                     clipPolygon.push_back(polygon[curr++]);
                 }
@@ -230,7 +245,7 @@ namespace gte
             {
                 // Include the vertices on the positive side of line.
                 curr = 0;
-                while (curr < numVertices && distance[curr] >(Real)0)
+                while (curr < numVertices && distance[curr] >(T)0)
                 {
                     clipPolygon.push_back(polygon[curr++]);
                 }
@@ -242,7 +257,7 @@ namespace gte
                 clipPolygon.push_back(vertex);
 
                 // Skip the vertices on the negative side of the line.
-                while (curr < numVertices && distance[curr] <= (Real)0)
+                while (curr < numVertices && distance[curr] <= (T)0)
                 {
                     curr++;
                 }
@@ -256,7 +271,7 @@ namespace gte
                     clipPolygon.push_back(vertex);
 
                     // Keep the vertices on the positive side of the line.
-                    while (curr < numVertices && distance[curr] >(Real)0)
+                    while (curr < numVertices && distance[curr] >(T)0)
                     {
                         clipPolygon.push_back(polygon[curr++]);
                     }

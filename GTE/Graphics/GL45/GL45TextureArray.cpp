@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45TextureArray.h>
@@ -182,11 +182,8 @@ bool GL45TextureArray::CopyGpuToCpu()
 bool GL45TextureArray::Update(unsigned int item, unsigned int level)
 {
     auto texture = GetTexture();
-    if (texture->GetUsage() != Resource::DYNAMIC_UPDATE)
-    {
-        LogWarning("Texture usage must be DYNAMIC_UPDATE.");
-    }
-
+    LogAssert(texture->GetUsage() != Resource::DYNAMIC_UPDATE,
+        "Texture usage must be DYNAMIC_UPDATE.");
     return DoCopyCpuToGpu(item, level);
 }
 
@@ -226,14 +223,14 @@ bool GL45TextureArray::CopyGpuToCpu(unsigned int item, unsigned int level)
     auto pixBuffer = mLevelPixelPackBuffer[level];
     if (0 == pixBuffer)
     {
-        LogError("Staging buffer not defined for level " + level);
+        LogError("Staging buffer not defined for level " + std::to_string(level));
     }
 
     auto data = texture->GetDataFor(item, level);
     auto numBytes = texture->GetNumBytesFor(level);
     if ((nullptr == data) || (0 == numBytes))
     {
-        LogError("No target data for texture level " + level);
+        LogError("No target data for texture level " + std::to_string(level));
     }
 
     auto const target = GetTarget();
@@ -300,7 +297,7 @@ bool GL45TextureArray::DoCopyCpuToGpu(unsigned int item, unsigned int level)
     auto numBytes = texture->GetNumBytesFor(level);
     if ((nullptr == data) || (0 == numBytes))
     {
-        LogError("No source data for texture array level " + level);
+        LogError("No source data for texture array level " + std::to_string(level));
     }
 
     auto const target = GetTarget();

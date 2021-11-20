@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45Buffer.h>
@@ -44,7 +44,7 @@ GL45Buffer::GL45Buffer(Buffer const* buffer, GLenum type)
         }
         else
         {
-            LogWarning("Can this buffer type be a shader output?");
+            // TODO: Can this buffer type be a shader output?
             mUsage = GL_STATIC_DRAW;
         }
     }
@@ -66,25 +66,20 @@ void GL45Buffer::Initialize()
 bool GL45Buffer::Update()
 {
     Buffer* buffer = GetBuffer();
-    if (buffer->GetUsage() != Resource::DYNAMIC_UPDATE)
-    {
-        LogWarning("Buffer usage is not DYNAMIC_UPDATE.");
-        return false;
-    }
+    LogAssert(buffer->GetUsage() == Resource::DYNAMIC_UPDATE,
+        "Buffer usage is not DYNAMIC_UPDATE.");
 
     GLuint numActiveBytes = buffer->GetNumActiveBytes();
     if (numActiveBytes > 0)
     {
         // Copy from CPU memory to GPU memory.
-        GLintptr offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+        GLintptr offsetInBytes =
+            static_cast<GLintptr>(buffer->GetOffset()) *
+            static_cast<GLintptr>(buffer->GetElementSize());
         char const* source = buffer->GetData() + offsetInBytes;
         glBindBuffer(mType, mGLHandle);
         glBufferSubData(mType, offsetInBytes, numActiveBytes, source);
         glBindBuffer(mType, 0);
-    }
-    else
-    {
-        LogInformation("Buffer has zero active bytes.");
     }
     return true;
 }
@@ -101,15 +96,13 @@ bool GL45Buffer::CopyCpuToGpu()
     if (numActiveBytes > 0)
     {
         // Copy from CPU memory to GPU memory.
-        GLintptr offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+        GLintptr offsetInBytes =
+            static_cast<GLintptr>(buffer->GetOffset()) *
+            static_cast<GLintptr>(buffer->GetElementSize());
         char const* source = buffer->GetData() + offsetInBytes;
         glBindBuffer(mType, mGLHandle);
         glBufferSubData(mType, offsetInBytes, numActiveBytes, source);
         glBindBuffer(mType, 0);
-    }
-    else
-    {
-        LogInformation("Buffer has zero active bytes.");
     }
     return true;
 }
@@ -126,15 +119,13 @@ bool GL45Buffer::CopyGpuToCpu()
     if (numActiveBytes > 0)
     {
         // Copy from GPU memory to CPU memory.
-        GLintptr offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+        GLintptr offsetInBytes =
+            static_cast<GLintptr>(buffer->GetOffset()) *
+            static_cast<GLintptr>(buffer->GetElementSize());
         char* target = buffer->GetData() + offsetInBytes;
         glBindBuffer(mType, mGLHandle);
         glGetBufferSubData(mType, offsetInBytes, numActiveBytes, target);
         glBindBuffer(mType, 0);
-    }
-    else
-    {
-        LogInformation("Buffer has zero active bytes.");
     }
     return true;
 }

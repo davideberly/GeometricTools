@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -29,6 +29,12 @@ namespace gte
             :
             public TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
         {
+            Result()
+                :
+                TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result{}
+            {
+            }
+
             // No additional relevant information to compute.
         };
 
@@ -47,7 +53,7 @@ namespace gte
                 Dot(line.direction, box.axis[1])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(lineOrigin, lineDirection, box.extent, result);
             return result;
         }
@@ -63,6 +69,12 @@ namespace gte
             :
             public FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
         {
+            Result()
+                :
+                FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result{}
+            {
+            }
+
             // No additional relevant information to compute.
         };
 
@@ -81,7 +93,7 @@ namespace gte
                 Dot(line.direction, box.axis[1])
             };
 
-            Result result;
+            Result result{};
             this->DoQuery(lineOrigin, lineDirection, box.extent, result);
             for (int i = 0; i < result.numIntersections; ++i)
             {

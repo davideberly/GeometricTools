@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.101
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -19,12 +19,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Plane3<Real> const& plane, Capsule3<Real> const& capsule)
         {
-            Result result;
+            Result result{};
 
             DCPQuery<Real, Vector3<Real>, Plane3<Real>> vpQuery;
             Real sdistance0 = vpQuery(capsule.segment.p[0], plane).signedDistance;

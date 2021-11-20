@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -52,7 +52,7 @@ namespace gte
             // Powers of x are computed up to twice the powers when
             // constructing the fitted polynomial. Powers of x are computed
             // up to the powers for the evaluation of the fitted polynomial.
-            mXPowers.resize(2 * mDegrees.back() + 1);
+            mXPowers.resize(2 * static_cast<size_t>(mDegrees.back()) + 1);
             mXPowers[0] = (Real)1;
         }
 
@@ -121,9 +121,9 @@ namespace gte
 
             // Compute relevant powers of x.
             int jmax = mDegrees.back();
-            for (int j = 1; j <= jmax; ++j)
+            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
-                mXPowers[j] = mXPowers[j - 1] * x;
+                mXPowers[j] = mXPowers[jm1] * x;
             }
 
             Real w = (Real)0;
@@ -206,9 +206,9 @@ namespace gte
                 // Compute relevant powers of x.
                 Real x = transformed[i][0];
                 Real w = transformed[i][1];
-                for (int j = 0; j <= twoMaxXDegree; ++j)
+                for (int j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
                 {
-                    mXPowers[j] = mXPowers[j - 1] * x;
+                    mXPowers[j] = mXPowers[jm1] * x;
                 }
 
                 for (row = 0; row < size; ++row)
@@ -217,7 +217,7 @@ namespace gte
                     // matrix.
                     for (col = row; col < size; ++col)
                     {
-                        A(row, col) += mXPowers[mDegrees[row] + mDegrees[col]];
+                        A(row, col) += mXPowers[static_cast<size_t>(mDegrees[row]) + static_cast<size_t>(mDegrees[col])];
                     }
 
                     // Update the right-hand side of the system.

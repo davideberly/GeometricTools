@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -42,16 +42,16 @@ namespace gte
             mZMin(zMin),
             mZSpacing(zSpacing),
             mF(F),
-            mPoly(xBound - 1, yBound - 1, zBound - 1)
+            mPoly(static_cast<size_t>(xBound) - 1, static_cast<size_t>(yBound) - 1, static_cast<size_t>(zBound) - 1)
         {
             // At least a 3x3x3 block of data points is needed to construct
             // the estimates of the boundary derivatives.
             LogAssert(mXBound >= 3 && mYBound >= 3 && mZBound >= 3 && mF != nullptr, "Invalid input.");
             LogAssert(mXSpacing > (Real)0 && mYSpacing > (Real)0 && mZSpacing > (Real)0, "Invalid input.");
 
-            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound - 1);
-            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound - 1);
-            mZMax = mZMin + mZSpacing * static_cast<Real>(mZBound - 1);
+            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound) - static_cast<Real>(1);
+            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound) - static_cast<Real>(1);
+            mZMax = mZMin + mZSpacing * static_cast<Real>(mZBound) - static_cast<Real>(1);
 
             // Create a 3D wrapper for the 1D samples.
             Array3<Real> Fmap(mXBound, mYBound, mZBound, const_cast<Real*>(mF));
@@ -349,7 +349,7 @@ namespace gte
         // Support for construction.
         void GetFX(Array3<Real> const& F, Array3<Real>& FX)
         {
-            Array3<Real> slope(mXBound + 3, mYBound, mZBound);
+            Array3<Real> slope(static_cast<size_t>(mXBound) + 3, mYBound, mZBound);
             Real invDX = (Real)1 / mXSpacing;
             int ix, iy, iz;
             for (iz = 0; iz < mZBound; ++iz)
@@ -363,8 +363,8 @@ namespace gte
 
                     slope[iz][iy][1] = (Real)2 * slope[iz][iy][2] - slope[iz][iy][3];
                     slope[iz][iy][0] = (Real)2 * slope[iz][iy][1] - slope[iz][iy][2];
-                    slope[iz][iy][mXBound + 1] = (Real)2 * slope[iz][iy][mXBound] - slope[iz][iy][mXBound - 1];
-                    slope[iz][iy][mXBound + 2] = (Real)2 * slope[iz][iy][mXBound + 1] - slope[iz][iy][mXBound];
+                    slope[iz][iy][static_cast<size_t>(mXBound) + 1] = (Real)2 * slope[iz][iy][mXBound] - slope[iz][iy][static_cast<size_t>(mXBound) - 1];
+                    slope[iz][iy][static_cast<size_t>(mXBound) + 2] = (Real)2 * slope[iz][iy][static_cast<size_t>(mXBound) + 1] - slope[iz][iy][mXBound];
                 }
             }
 
@@ -382,7 +382,7 @@ namespace gte
 
         void GetFY(Array3<Real> const& F, Array3<Real>& FY)
         {
-            Array3<Real> slope(mYBound + 3, mXBound, mZBound);
+            Array3<Real> slope(static_cast<size_t>(mYBound) + 3, mXBound, mZBound);
             Real invDY = (Real)1 / mYSpacing;
             int ix, iy, iz;
             for (iz = 0; iz < mZBound; ++iz)
@@ -396,8 +396,8 @@ namespace gte
 
                     slope[iz][ix][1] = (Real)2 * slope[iz][ix][2] - slope[iz][ix][3];
                     slope[iz][ix][0] = (Real)2 * slope[iz][ix][1] - slope[iz][ix][2];
-                    slope[iz][ix][mYBound + 1] = (Real)2 * slope[iz][ix][mYBound] - slope[iz][ix][mYBound - 1];
-                    slope[iz][ix][mYBound + 2] = (Real)2 * slope[iz][ix][mYBound + 1] - slope[iz][ix][mYBound];
+                    slope[iz][ix][static_cast<size_t>(mYBound) + 1] = (Real)2 * slope[iz][ix][mYBound] - slope[iz][ix][static_cast<size_t>(mYBound) - 1];
+                    slope[iz][ix][static_cast<size_t>(mYBound) + 2] = (Real)2 * slope[iz][ix][static_cast<size_t>(mYBound) + 1] - slope[iz][ix][mYBound];
                 }
             }
 
@@ -415,7 +415,7 @@ namespace gte
 
         void GetFZ(Array3<Real> const& F, Array3<Real>& FZ)
         {
-            Array3<Real> slope(mZBound + 3, mXBound, mYBound);
+            Array3<Real> slope(static_cast<size_t>(mZBound) + 3, mXBound, mYBound);
             Real invDZ = (Real)1 / mZSpacing;
             int ix, iy, iz;
             for (iy = 0; iy < mYBound; ++iy)
@@ -429,8 +429,8 @@ namespace gte
 
                     slope[iy][ix][1] = (Real)2 * slope[iy][ix][2] - slope[iy][ix][3];
                     slope[iy][ix][0] = (Real)2 * slope[iy][ix][1] - slope[iy][ix][2];
-                    slope[iy][ix][mZBound + 1] = (Real)2 * slope[iy][ix][mZBound] - slope[iy][ix][mZBound - 1];
-                    slope[iy][ix][mZBound + 2] = (Real)2 * slope[iy][ix][mZBound + 1] - slope[iy][ix][mZBound];
+                    slope[iy][ix][static_cast<size_t>(mZBound) + 1] = (Real)2 * slope[iy][ix][mZBound] - slope[iy][ix][static_cast<size_t>(mZBound) - 1];
+                    slope[iy][ix][static_cast<size_t>(mZBound) + 2] = (Real)2 * slope[iy][ix][static_cast<size_t>(mZBound) + 1] - slope[iy][ix][mZBound];
                 }
             }
 
@@ -1362,9 +1362,10 @@ namespace gte
 
         void XLookup(Real x, int& xIndex, Real& dx) const
         {
-            for (xIndex = 0; xIndex + 1 < mXBound; ++xIndex)
+            int xIndexP1;
+            for (xIndex = 0, xIndexP1 = 1; xIndexP1 < mXBound; ++xIndex, ++xIndexP1)
             {
-                if (x < mXMin + mXSpacing * (xIndex + 1))
+                if (x < mXMin + mXSpacing * static_cast<Real>(xIndexP1))
                 {
                     dx = x - (mXMin + mXSpacing * xIndex);
                     return;
@@ -1377,9 +1378,10 @@ namespace gte
 
         void YLookup(Real y, int& yIndex, Real & dy) const
         {
-            for (yIndex = 0; yIndex + 1 < mYBound; ++yIndex)
+            int yIndexP1;
+            for (yIndex = 0, yIndexP1 = 1; yIndexP1 < mYBound; ++yIndex, ++yIndexP1)
             {
-                if (y < mYMin + mYSpacing * (yIndex + 1))
+                if (y < mYMin + mYSpacing * static_cast<Real>(yIndexP1))
                 {
                     dy = y - (mYMin + mYSpacing * yIndex);
                     return;
@@ -1392,9 +1394,10 @@ namespace gte
 
         void ZLookup(Real z, int& zIndex, Real & dz) const
         {
-            for (zIndex = 0; zIndex + 1 < mZBound; ++zIndex)
+            int zIndexP1;
+            for (zIndex = 0, zIndexP1 = 1; zIndexP1 < mZBound; ++zIndex, ++zIndexP1)
             {
-                if (z < mZMin + mZSpacing * (zIndex + 1))
+                if (z < mZMin + mZSpacing * static_cast<Real>(zIndexP1))
                 {
                     dz = z - (mZMin + mZSpacing * zIndex);
                     return;

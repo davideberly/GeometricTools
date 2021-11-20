@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -250,12 +250,13 @@ namespace gte
             :
             mXBound(xBound),
             mYBound(yBound),
-            mInputPixels(inputPixels)
+            mInputPixels(inputPixels),
+            mPixels{}
         {
             static_assert(std::is_integral<T>::value && sizeof(T) <= 4,
                 "Type T must be int{8,16,32}_t or uint{8,16,32}_t.");
             LogAssert(mXBound > 1 && mYBound > 1 && mInputPixels != nullptr, "Invalid input.");
-            mPixels.resize(static_cast<size_t>(mXBound * mYBound));
+            mPixels.resize(static_cast<size_t>(static_cast<size_t>(mXBound) * static_cast<size_t>(mYBound)));
         }
 
         void AddVertex(std::vector<Vertex>& vertices,

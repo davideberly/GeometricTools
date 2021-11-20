@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -35,7 +35,13 @@ namespace gte
             RiemannianGeodesic<Real>(2),
             mXExtent(xExtent),
             mYExtent(yExtent),
-            mZExtent(zExtent)
+            mZExtent(zExtent),
+            mCos0((Real)0),
+            mSin0((Real)0),
+            mCos1((Real)0),
+            mSin1((Real)0),
+            mDer0(Vector3<Real>::Zero()),
+            mDer1(Vector3<Real>::Zero())
         {
         }
 

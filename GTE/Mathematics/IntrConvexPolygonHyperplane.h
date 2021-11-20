@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.10.03
 
 #pragma once
 
@@ -38,13 +38,20 @@ namespace gte
 
         struct Result
         {
+            Result()
+                :
+                intersect(false),
+                configuration(Configuration::INVALID_POLYGON)
+            {
+            }
+
             bool intersect;
             Configuration configuration;
         };
 
         Result operator()(std::vector<Vector<N, Real>> const& polygon, Hyperplane<N, Real> const& hyperplane)
         {
-            Result result;
+            Result result{};
 
             size_t const numVertices = polygon.size();
             if (numVertices < 3)
@@ -145,6 +152,15 @@ namespace gte
 
         struct Result
         {
+            Result()
+                :
+                configuration(Configuration::INVALID_POLYGON),
+                intersection{},
+                positivePolygon{},
+                negativePolygon{}
+            {
+            }
+
             // The intersection is either empty, a single vertex, a single
             // edge or the polygon is contained by the hyperplane.
             Configuration configuration;
@@ -163,7 +179,7 @@ namespace gte
 
         Result operator()(std::vector<Vector<N, Real>> const& polygon, Hyperplane<N, Real> const& hyperplane)
         {
-            Result result;
+            Result result{};
 
             size_t const numVertices = polygon.size();
             if (numVertices < 3)

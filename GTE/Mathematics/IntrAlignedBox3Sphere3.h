@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.25
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -18,8 +18,8 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>
+    template <typename T>
+    class TIQuery<T, AlignedBox3<T>, Sphere3<T>>
     {
     public:
         // The intersection query considers the box and sphere to be solids;
@@ -29,27 +29,41 @@ namespace gte
         // objects intersect.
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(AlignedBox3<Real> const& box, Sphere3<Real> const& sphere)
+        Result operator()(AlignedBox3<T> const& box, Sphere3<T> const& sphere)
         {
-            DCPQuery<Real, Vector3<Real>, AlignedBox3<Real>> pbQuery;
+            DCPQuery<T, Vector3<T>, AlignedBox3<T>> pbQuery;
             auto pbResult = pbQuery(sphere.center, box);
-            Result result;
+            Result result{};
             result.intersect = (pbResult.sqrDistance <= sphere.radius * sphere.radius);
             return result;
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>
+    template <typename T>
+    class FIQuery<T, AlignedBox3<T>, Sphere3<T>>
     {
     public:
         // Currently, only a dynamic query is supported.  A static query will
         // need to compute the intersection set of (solid) box and sphere.
         struct Result
         {
+            Result()
+                :
+                intersectionType(0),
+                contactTime(static_cast<T>(0)),
+                contactPoint(Vector3<T>::Zero())
+            {
+            }
+
             // The cases are
             // 1. Objects initially overlapping.  The contactPoint is only one
             //    of infinitely many points in the overlap.
@@ -66,8 +80,8 @@ namespace gte
             //      contactTime = first time T > 0
             //      contactPoint = corresponding first contact
             int intersectionType;
-            Real contactTime;
-            Vector3<Real> contactPoint;
+            T contactTime;
+            Vector3<T> contactPoint;
 
             // TODO: To support arbitrary precision for the contactTime,
             // return q0, q1 and q2 where contactTime = (q0 - sqrt(q1)) / q2.
@@ -77,29 +91,29 @@ namespace gte
             // the contactPoint.
         };
 
-        Result operator()(AlignedBox3<Real> const& box, Vector3<Real> const& boxVelocity,
-            Sphere3<Real> const& sphere, Vector3<Real> const& sphereVelocity)
+        Result operator()(AlignedBox3<T> const& box, Vector3<T> const& boxVelocity,
+            Sphere3<T> const& sphere, Vector3<T> const& sphereVelocity)
         {
-            Result result = { 0, (Real)0, { (Real)0, (Real)0, (Real)0 } };
+            Result result{};
 
             // Translate the sphere and box so that the box center becomes
             // the origin.  Compute the velocity of the sphere relative to
             // the box.
-            Vector3<Real> boxCenter = (box.max + box.min) * (Real)0.5;
-            Vector3<Real> extent = (box.max - box.min) * (Real)0.5;
-            Vector3<Real> C = sphere.center - boxCenter;
-            Vector3<Real> V = sphereVelocity - boxVelocity;
+            Vector3<T> boxCenter = (box.max + box.min) * (T)0.5;
+            Vector3<T> extent = (box.max - box.min) * (T)0.5;
+            Vector3<T> C = sphere.center - boxCenter;
+            Vector3<T> V = sphereVelocity - boxVelocity;
 
             // Test for no-intersection that leads to an early exit.  The test
             // is fast, using the method of separating axes.
-            AlignedBox3<Real> superBox;
+            AlignedBox3<T> superBox;
             for (int i = 0; i < 3; ++i)
             {
                 superBox.max[i] = extent[i] + sphere.radius;
                 superBox.min[i] = -superBox.max[i];
             }
-            TIQuery<Real, Ray3<Real>, AlignedBox3<Real>> rbQuery;
-            auto rbResult = rbQuery(Ray3<Real>(C, V), superBox);
+            TIQuery<T, Ray3<T>, AlignedBox3<T>> rbQuery;
+            auto rbResult = rbQuery(Ray3<T>(C, V), superBox);
             if (rbResult.intersect)
             {
                 DoQuery(extent, C, sphere.radius, V, result);
@@ -115,39 +129,39 @@ namespace gte
         // The query assumes the box is axis-aligned with center at the
         // origin. Callers need to convert the results back to the original
         // coordinate system of the query.
-        void DoQuery(Vector3<Real> const& K, Vector3<Real> const& inC,
-            Real radius, Vector3<Real> const& inV, Result& result)
+        void DoQuery(Vector3<T> const& K, Vector3<T> const& inC,
+            T radius, Vector3<T> const& inV, Result& result)
         {
             // Change signs on components, if necessary, to transform C to the
             // first quadrant. Adjust the velocity accordingly.
-            Vector3<Real> C = inC, V = inV;
-            Real sign[3];
+            Vector3<T> C = inC, V = inV;
+            std::array<T, 3> sign = { (T)0, (T)0, (T)0 };
             for (int i = 0; i < 3; ++i)
             {
-                if (C[i] >= (Real)0)
+                if (C[i] >= (T)0)
                 {
-                    sign[i] = (Real)1;
+                    sign[i] = (T)1;
                 }
                 else
                 {
                     C[i] = -C[i];
                     V[i] = -V[i];
-                    sign[i] = (Real)-1;
+                    sign[i] = (T)-1;
                 }
             }
 
-            Vector3<Real> delta = C - K;
+            Vector3<T> delta = C - K;
             if (delta[2] <= radius)
             {
                 if (delta[1] <= radius)
                 {
                     if (delta[0] <= radius)
                     {
-                        if (delta[2] <= (Real)0)
+                        if (delta[2] <= (T)0)
                         {
-                            if (delta[1] <= (Real)0)
+                            if (delta[1] <= (T)0)
                             {
-                                if (delta[0] <= (Real)0)
+                                if (delta[0] <= (T)0)
                                 {
                                     InteriorOverlap(C, result);
                                 }
@@ -159,7 +173,7 @@ namespace gte
                             }
                             else
                             {
-                                if (delta[0] <= (Real)0)
+                                if (delta[0] <= (T)0)
                                 {
                                     // y-face
                                     FaceOverlap(1, 2, 0, K, C, radius, delta, result);
@@ -180,9 +194,9 @@ namespace gte
                         }
                         else
                         {
-                            if (delta[1] <= (Real)0)
+                            if (delta[1] <= (T)0)
                             {
-                                if (delta[0] <= (Real)0)
+                                if (delta[0] <= (T)0)
                                 {
                                     // z-face
                                     FaceOverlap(2, 0, 1, K, C, radius, delta, result);
@@ -202,7 +216,7 @@ namespace gte
                             }
                             else
                             {
-                                if (delta[0] <= (Real)0)
+                                if (delta[0] <= (T)0)
                                 {
                                     // yz-edge
                                     if (delta[1] * delta[1] + delta[2] * delta[2] <= radius * radius)
@@ -285,7 +299,7 @@ namespace gte
                 // tranlated box and sphere.
                 for (int i = 0; i < 3; ++i)
                 {
-                    if (sign[i] < (Real)0)
+                    if (sign[i] < (T)0)
                     {
                         result.contactPoint[i] = -result.contactPoint[i];
                     }
@@ -294,81 +308,81 @@ namespace gte
         }
 
     private:
-        void InteriorOverlap(Vector3<Real> const& C, Result& result)
+        void InteriorOverlap(Vector3<T> const& C, Result& result)
         {
             result.intersectionType = -1;
-            result.contactTime = (Real)0;
+            result.contactTime = (T)0;
             result.contactPoint = C;
         }
 
-        void VertexOverlap(Vector3<Real> const& K, Real radius,
-            Vector3<Real> const& delta, Result& result)
+        void VertexOverlap(Vector3<T> const& K, T radius,
+            Vector3<T> const& delta, Result& result)
         {
             result.intersectionType = (Dot(delta, delta) < radius * radius ? -1 : 1);
-            result.contactTime = (Real)0;
+            result.contactTime = (T)0;
             result.contactPoint = K;
         }
 
-        void EdgeOverlap(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
+        void EdgeOverlap(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Result& result)
         {
             result.intersectionType = (delta[i0] * delta[i0] + delta[i1] * delta[i1] < radius * radius ? -1 : 1);
-            result.contactTime = (Real)0;
+            result.contactTime = (T)0;
             result.contactPoint[i0] = K[i0];
             result.contactPoint[i1] = K[i1];
             result.contactPoint[i2] = C[i2];
         }
 
-        void FaceOverlap(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
+        void FaceOverlap(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Result& result)
         {
             result.intersectionType = (delta[i0] < radius ? -1 : 1);
-            result.contactTime = (Real)0;
+            result.contactTime = (T)0;
             result.contactPoint[i0] = K[i0];
             result.contactPoint[i1] = C[i1];
             result.contactPoint[i2] = C[i2];
         }
 
-        void VertexSeparated(Vector3<Real> const& K, Real radius,
-            Vector3<Real> const& delta, Vector3<Real> const& V, Result& result)
+        void VertexSeparated(Vector3<T> const& K, T radius,
+            Vector3<T> const& delta, Vector3<T> const& V, Result& result)
         {
-            if (V[0] < (Real)0 || V[1] < (Real)0 || V[2] < (Real)0)
+            if (V[0] < (T)0 || V[1] < (T)0 || V[2] < (T)0)
             {
                 DoQueryRayRoundedVertex(K, radius, delta, V, result);
             }
         }
 
-        void EdgeSeparated(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
-            Vector3<Real> const& V, Result& result)
+        void EdgeSeparated(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
+            Vector3<T> const& V, Result& result)
         {
-            if (V[i0] < (Real)0 || V[i1] < (Real)0)
+            if (V[i0] < (T)0 || V[i1] < (T)0)
             {
                 DoQueryRayRoundedEdge(i0, i1, i2, K, C, radius, delta, V, result);
             }
         }
 
-        void VertexUnbounded(Vector3<Real> const& K, Vector3<Real> const& C, Real radius,
-            Vector3<Real> const& delta, Vector3<Real> const& V, Result& result)
+        void VertexUnbounded(Vector3<T> const& K, Vector3<T> const& C, T radius,
+            Vector3<T> const& delta, Vector3<T> const& V, Result& result)
         {
-            if (V[0] < (Real)0 && V[1] < (Real)0 && V[2] < (Real)0)
+            if (V[0] < (T)0 && V[1] < (T)0 && V[2] < (T)0)
             {
                 // Determine the face of the rounded box that is intersected
                 // by the ray C+T*V.
-                Real T = (radius - delta[0]) / V[0];
+                T tmax = (radius - delta[0]) / V[0];
                 int j0 = 0;
-                Real temp = (radius - delta[1]) / V[1];
-                if (temp > T)
+                T temp = (radius - delta[1]) / V[1];
+                if (temp > tmax)
                 {
-                    T = temp;
+                    tmax = temp;
                     j0 = 1;
                 }
                 temp = (radius - delta[2]) / V[2];
-                if (temp > T)
+                if (temp > tmax)
                 {
-                    T = temp;
+                    tmax = temp;
                     j0 = 2;
                 }
 
@@ -379,20 +393,20 @@ namespace gte
             }
         }
 
-        void EdgeUnbounded(int i0, int i1, int /* i2 */, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
-            Vector3<Real> const& V, Result& result)
+        void EdgeUnbounded(int i0, int i1, int /* i2 */, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
+            Vector3<T> const& V, Result& result)
         {
-            if (V[i0] < (Real)0 && V[i1] < (Real)0)
+            if (V[i0] < (T)0 && V[i1] < (T)0)
             {
                 // Determine the face of the rounded box that is intersected
                 // by the ray C+T*V.
-                Real T = (radius - delta[i0]) / V[i0];
+                T tmax = (radius - delta[i0]) / V[i0];
                 int j0 = i0;
-                Real temp = (radius - delta[i1]) / V[i1];
-                if (temp > T)
+                T temp = (radius - delta[i1]) / V[i1];
+                if (temp > tmax)
                 {
-                    T = temp;
+                    tmax = temp;
                     j0 = i1;
                 }
 
@@ -403,27 +417,27 @@ namespace gte
             }
         }
 
-        void FaceUnbounded(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
-            Vector3<Real> const& V, Result& result)
+        void FaceUnbounded(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
+            Vector3<T> const& V, Result& result)
         {
-            if (V[i0] < (Real)0)
+            if (V[i0] < (T)0)
             {
                 DoQueryRayRoundedFace(i0, i1, i2, K, C, radius, delta, V, result);
             }
         }
 
-        void DoQueryRayRoundedVertex(Vector3<Real> const& K, Real radius,
-            Vector3<Real> const& delta, Vector3<Real> const& V, Result& result)
+        void DoQueryRayRoundedVertex(Vector3<T> const& K, T radius,
+            Vector3<T> const& delta, Vector3<T> const& V, Result& result)
         {
-            Real a1 = Dot(V, delta);
-            if (a1 < (Real)0)
+            T a1 = Dot(V, delta);
+            if (a1 < (T)0)
             {
                 // The caller must ensure that a0 > 0 and a2 > 0.
-                Real a0 = Dot(delta, delta) - radius * radius;
-                Real a2 = Dot(V, V);
-                Real adiscr = a1 * a1 - a2 * a0;
-                if (adiscr >= (Real)0)
+                T a0 = Dot(delta, delta) - radius * radius;
+                T a2 = Dot(V, V);
+                T adiscr = a1 * a1 - a2 * a0;
+                if (adiscr >= (T)0)
                 {
                     // The ray intersects the rounded vertex, so the sphere-box
                     // contact point is the vertex.
@@ -434,21 +448,21 @@ namespace gte
             }
         }
 
-        void DoQueryRayRoundedEdge(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
-            Vector3<Real> const& V, Result& result)
+        void DoQueryRayRoundedEdge(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
+            Vector3<T> const& V, Result& result)
         {
-            Real b1 = V[i0] * delta[i0] + V[i1] * delta[i1];
-            if (b1 < (Real)0)
+            T b1 = V[i0] * delta[i0] + V[i1] * delta[i1];
+            if (b1 < (T)0)
             {
                 // The caller must ensure that b0 > 0 and b2 > 0.
-                Real b0 = delta[i0] * delta[i0] + delta[i1] * delta[i1] - radius * radius;
-                Real b2 = V[i0] * V[i0] + V[i1] * V[i1];
-                Real bdiscr = b1 * b1 - b2 * b0;
-                if (bdiscr >= (Real)0)
+                T b0 = delta[i0] * delta[i0] + delta[i1] * delta[i1] - radius * radius;
+                T b2 = V[i0] * V[i0] + V[i1] * V[i1];
+                T bdiscr = b1 * b1 - b2 * b0;
+                if (bdiscr >= (T)0)
                 {
-                    Real T = -(b1 + std::sqrt(bdiscr)) / b2;
-                    Real p2 = C[i2] + T * V[i2];
+                    T tmax = -(b1 + std::sqrt(bdiscr)) / b2;
+                    T p2 = C[i2] + tmax * V[i2];
                     if (-K[i2] <= p2)
                     {
                         if (p2 <= K[i2])
@@ -457,7 +471,7 @@ namespace gte
                             // rounded edge, so the sphere-box contact point
                             // is on the corresponding box edge.
                             result.intersectionType = 1;
-                            result.contactTime = T;
+                            result.contactTime = tmax;
                             result.contactPoint[i0] = K[i0];
                             result.contactPoint[i1] = K[i1];
                             result.contactPoint[i2] = p2;
@@ -477,7 +491,7 @@ namespace gte
                         // not the finite cylinder of the rounded edge.
                         // It is possible the ray intersects the rounded
                         // vertex for otherK.
-                        Vector3<Real> otherK, otherDelta;
+                        Vector3<T> otherK, otherDelta;
                         otherK[i0] = K[i0];
                         otherK[i1] = K[i1];
                         otherK[i2] = -K[i2];
@@ -490,15 +504,15 @@ namespace gte
             }
         }
 
-        void DoQueryRayRoundedFace(int i0, int i1, int i2, Vector3<Real> const& K,
-            Vector3<Real> const& C, Real radius, Vector3<Real> const& delta,
-            Vector3<Real> const& V, Result& result)
+        void DoQueryRayRoundedFace(int i0, int i1, int i2, Vector3<T> const& K,
+            Vector3<T> const& C, T radius, Vector3<T> const& delta,
+            Vector3<T> const& V, Result& result)
         {
-            Vector3<Real> otherK, otherDelta;
+            Vector3<T> otherK, otherDelta;
 
-            Real T = (radius - delta[i0]) / V[i0];
-            Real p1 = C[i1] + T * V[i1];
-            Real p2 = C[i2] + T * V[i2];
+            T tmax = (radius - delta[i0]) / V[i0];
+            T p1 = C[i1] + tmax * V[i1];
+            T p2 = C[i2] + tmax * V[i2];
 
             if (p1 < -K[i1])
             {
@@ -553,7 +567,7 @@ namespace gte
                     // the sphere-box contact point is on the corresponding
                     // box face.
                     result.intersectionType = 1;
-                    result.contactTime = T;
+                    result.contactTime = tmax;
                     result.contactPoint[i0] = K[i0];
                     result.contactPoint[i1] = p1;
                     result.contactPoint[i2] = p2;

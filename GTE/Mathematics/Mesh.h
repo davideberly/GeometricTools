@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -99,10 +99,19 @@ namespace gte
         MeshDescription(MeshTopology inTopology, uint32_t inNumRows, uint32_t inNumCols)
             :
             topology(inTopology),
+            numVertices(0),
+            numTriangles(0),
+            vertexAttributes{},
+            indexAttribute{},
             wantDynamicTangentSpaceUpdate(false),
             wantCCW(true),
             hasTangentSpaceVectors(false),
             allowUpdateFrame(false),
+            numRows(0),
+            numCols(0),
+            rMax(0),
+            cMax(0),
+            rIncrement(0),
             constructed(false)
         {
             switch (topology)

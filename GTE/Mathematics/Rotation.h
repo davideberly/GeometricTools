@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -28,31 +28,43 @@ namespace gte
         // Create rotations from various representations.
         Rotation(Matrix<N, N, Real> const& matrix)
             :
-            mType(IS_MATRIX),
-            mMatrix(matrix)
+            mType(Type::IS_MATRIX),
+            mMatrix(matrix),
+            mQuaternion{},
+            mAxisAngle{},
+            mEulerAngles{}
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
         }
 
         Rotation(Quaternion<Real> const& quaternion)
             :
-            mType(IS_QUATERNION),
-            mQuaternion(quaternion)
+            mType(Type::IS_QUATERNION),
+            mMatrix{},
+            mQuaternion(quaternion),
+            mAxisAngle{},
+            mEulerAngles{}
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
         }
 
         Rotation(AxisAngle<N, Real> const& axisAngle)
             :
-            mType(IS_AXIS_ANGLE),
-            mAxisAngle(axisAngle)
+            mType(Type::IS_AXIS_ANGLE),
+            mMatrix{},
+            mQuaternion{},
+            mAxisAngle(axisAngle),
+            mEulerAngles{}
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
         }
 
         Rotation(EulerAngles<Real> const& eulerAngles)
             :
-            mType(IS_EULER_ANGLES),
+            mType(Type::IS_EULER_ANGLES),
+            mMatrix{},
+            mQuaternion{},
+            mAxisAngle{},
             mEulerAngles(eulerAngles)
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
@@ -65,15 +77,15 @@ namespace gte
 
             switch (mType)
             {
-            case IS_MATRIX:
+            case Type::IS_MATRIX:
                 break;
-            case IS_QUATERNION:
+            case Type::IS_QUATERNION:
                 Convert(mQuaternion, mMatrix);
                 break;
-            case IS_AXIS_ANGLE:
+            case Type::IS_AXIS_ANGLE:
                 Convert(mAxisAngle, mMatrix);
                 break;
-            case IS_EULER_ANGLES:
+            case Type::IS_EULER_ANGLES:
                 Convert(mEulerAngles, mMatrix);
                 break;
             }
@@ -87,15 +99,15 @@ namespace gte
 
             switch (mType)
             {
-            case IS_MATRIX:
+            case Type::IS_MATRIX:
                 Convert(mMatrix, mQuaternion);
                 break;
-            case IS_QUATERNION:
+            case Type::IS_QUATERNION:
                 break;
-            case IS_AXIS_ANGLE:
+            case Type::IS_AXIS_ANGLE:
                 Convert(mAxisAngle, mQuaternion);
                 break;
-            case IS_EULER_ANGLES:
+            case Type::IS_EULER_ANGLES:
                 Convert(mEulerAngles, mQuaternion);
                 break;
             }
@@ -109,15 +121,15 @@ namespace gte
 
             switch (mType)
             {
-            case IS_MATRIX:
+            case Type::IS_MATRIX:
                 Convert(mMatrix, mAxisAngle);
                 break;
-            case IS_QUATERNION:
+            case Type::IS_QUATERNION:
                 Convert(mQuaternion, mAxisAngle);
                 break;
-            case IS_AXIS_ANGLE:
+            case Type::IS_AXIS_ANGLE:
                 break;
-            case IS_EULER_ANGLES:
+            case Type::IS_EULER_ANGLES:
                 Convert(mEulerAngles, mAxisAngle);
                 break;
             }
@@ -135,16 +147,16 @@ namespace gte
 
             switch (mType)
             {
-            case IS_MATRIX:
+            case Type::IS_MATRIX:
                 Convert(mMatrix, mEulerAngles);
                 break;
-            case IS_QUATERNION:
+            case Type::IS_QUATERNION:
                 Convert(mQuaternion, mEulerAngles);
                 break;
-            case IS_AXIS_ANGLE:
+            case Type::IS_AXIS_ANGLE:
                 Convert(mAxisAngle, mEulerAngles);
                 break;
-            case IS_EULER_ANGLES:
+            case Type::IS_EULER_ANGLES:
                 break;
             }
 
@@ -152,7 +164,7 @@ namespace gte
         }
 
     private:
-        enum RepresentationType
+        enum class Type
         {
             IS_MATRIX,
             IS_QUATERNION,
@@ -160,7 +172,7 @@ namespace gte
             IS_EULER_ANGLES
         };
 
-        RepresentationType mType;
+        Type mType;
         mutable Matrix<N, N, Real> mMatrix;
         mutable Quaternion<Real> mQuaternion;
         mutable AxisAngle<N, Real> mAxisAngle;
@@ -501,8 +513,8 @@ namespace gte
 
         // Convert a rotation matrix to Euler angles.  Factorization into
         // Euler angles is not necessarily unique.  If the result is
-        // ER_NOT_UNIQUE_SUM, then the multiple solutions occur because
-        // angleN2+angleN0 is constant.  If the result is ER_NOT_UNIQUE_DIF,
+        // NOT_UNIQUE_SUM, then the multiple solutions occur because
+        // angleN2+angleN0 is constant.  If the result is NOT_UNIQUE_DIF,
         // then the multiple solutions occur because angleN2-angleN0 is
         // constant.  In either type of nonuniqueness, the function returns
         // angleN0=0.
@@ -533,7 +545,7 @@ namespace gte
                             e.angle[1] = std::asin(-sgn * r(e.axis[2], e.axis[0]));
                             e.angle[0] = std::atan2(sgn * r(e.axis[2], e.axis[1]),
                                 r(e.axis[2], e.axis[2]));
-                            e.result = ER_UNIQUE;
+                            e.result = EulerResult::UNIQUE;
                         }
                         else
                         {
@@ -541,7 +553,7 @@ namespace gte
                             e.angle[1] = sgn * (Real)GTE_C_HALF_PI;
                             e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
                                 r(e.axis[1], e.axis[1]));
-                            e.result = ER_NOT_UNIQUE_DIF;
+                            e.result = EulerResult::NOT_UNIQUE_DIF;
                         }
                     }
                     else
@@ -550,7 +562,7 @@ namespace gte
                         e.angle[1] = -sgn * (Real)GTE_C_HALF_PI;
                         e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
                             r(e.axis[1], e.axis[1]));
-                        e.result = ER_NOT_UNIQUE_SUM;
+                        e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
 #else
                     // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
@@ -567,7 +579,7 @@ namespace gte
                             e.angle[1] = std::asin(-sgn * r(e.axis[0], e.axis[2]));
                             e.angle[2] = std::atan2(sgn * r(e.axis[0], e.axis[1]),
                                 r(e.axis[0], e.axis[0]));
-                            e.result = ER_UNIQUE;
+                            e.result = EulerResult::UNIQUE;
                         }
                         else
                         {
@@ -575,7 +587,7 @@ namespace gte
                             e.angle[1] = sgn * (Real)GTE_C_HALF_PI;
                             e.angle[2] = std::atan2(-sgn * r(e.axis[1], e.axis[0]),
                                 r(e.axis[1], e.axis[1]));
-                            e.result = ER_NOT_UNIQUE_DIF;
+                            e.result = EulerResult::NOT_UNIQUE_DIF;
                         }
                     }
                     else
@@ -584,7 +596,7 @@ namespace gte
                         e.angle[1] = -sgn * (Real)GTE_C_HALF_PI;
                         e.angle[2] = std::atan2(-sgn * r(e.axis[1], e.axis[0]),
                             r(e.axis[1], e.axis[1]));
-                        e.result = ER_NOT_UNIQUE_SUM;
+                        e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
 #endif
                 }
@@ -606,7 +618,7 @@ namespace gte
                             e.angle[1] = std::acos(r(e.axis[2], e.axis[2]));
                             e.angle[0] = std::atan2(r(e.axis[2], e.axis[1]),
                                 -sgn * r(e.axis[2], b0));
-                            e.result = ER_UNIQUE;
+                            e.result = EulerResult::UNIQUE;
                         }
                         else
                         {
@@ -614,7 +626,7 @@ namespace gte
                             e.angle[1] = (Real)GTE_C_PI;
                             e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
                                 r(e.axis[1], e.axis[1]));
-                            e.result = ER_NOT_UNIQUE_DIF;
+                            e.result = EulerResult::NOT_UNIQUE_DIF;
                         }
                     }
                     else
@@ -623,7 +635,7 @@ namespace gte
                         e.angle[1] = (Real)0;
                         e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
                             r(e.axis[1], e.axis[1]));
-                        e.result = ER_NOT_UNIQUE_SUM;
+                        e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
 #else
                     // Map (0,2,0), (1,0,1), and (2,1,2) to -1.
@@ -641,7 +653,7 @@ namespace gte
                             e.angle[1] = std::acos(r(e.axis[0], e.axis[0]));
                             e.angle[2] = std::atan2(r(e.axis[0], e.axis[1]),
                                 -sgn * r(e.axis[0], b2));
-                            e.result = ER_UNIQUE;
+                            e.result = EulerResult::UNIQUE;
                         }
                         else
                         {
@@ -649,7 +661,7 @@ namespace gte
                             e.angle[1] = (Real)GTE_C_PI;
                             e.angle[2] = std::atan2(sgn * r(e.axis[1], b2),
                                 r(e.axis[1], e.axis[1]));
-                            e.result = ER_NOT_UNIQUE_DIF;
+                            e.result = EulerResult::NOT_UNIQUE_DIF;
                         }
                     }
                     else
@@ -658,7 +670,7 @@ namespace gte
                         e.angle[1] = (Real)0;
                         e.angle[2] = std::atan2(sgn * r(e.axis[1], b2),
                             r(e.axis[1], e.axis[1]));
-                        e.result = ER_NOT_UNIQUE_SUM;
+                        e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
 #endif
                 }
@@ -669,7 +681,7 @@ namespace gte
                 e.angle[0] = (Real)0;
                 e.angle[1] = (Real)0;
                 e.angle[2] = (Real)0;
-                e.result = ER_INVALID;
+                e.result = EulerResult::INVALID;
             }
         }
 

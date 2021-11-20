@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -18,10 +18,16 @@ namespace gte
     {
     public:
         // The tuple is length zero (uninitialized).
-        GVector() = default;
+        GVector()
+            :
+            mTuple{}
+        {
+        }
 
         // The tuple is length 'size' and the elements are uninitialized.
         GVector(int size)
+            :
+            mTuple{}
         {
             SetSize(size);
         }
@@ -31,6 +37,8 @@ namespace gte
         // creating the standard Euclidean basis vectors; see also
         // MakeUnit(int,int) and Unit(int,int).
         GVector(int size, int d)
+            :
+            mTuple{}
         {
             SetSize(size);
             MakeUnit(d);

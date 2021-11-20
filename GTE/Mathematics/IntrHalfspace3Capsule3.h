@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -16,27 +16,33 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Halfspace3<Real>, Capsule3<Real>>
+    template <typename T>
+    class TIQuery<T, Halfspace3<T>, Capsule3<T>>
     {
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
-        Result operator()(Halfspace3<Real> const& halfspace, Capsule3<Real> const& capsule)
+        Result operator()(Halfspace3<T> const& halfspace, Capsule3<T> const& capsule)
         {
-            Result result;
+            Result result{};
 
             // Project the capsule onto the normal line.  The plane of the
             // halfspace occurs at the origin (zero) of the normal line.
-            Real e0 = Dot(halfspace.normal, capsule.segment.p[0]) - halfspace.constant;
-            Real e1 = Dot(halfspace.normal, capsule.segment.p[1]) - halfspace.constant;
+            T e0 = Dot(halfspace.normal, capsule.segment.p[0]) - halfspace.constant;
+            T e1 = Dot(halfspace.normal, capsule.segment.p[1]) - halfspace.constant;
 
             // The capsule and halfspace intersect when the projection
             // interval maximum is nonnegative.
-            result.intersect = (std::max(e0, e1) + capsule.radius >= (Real)0);
+            result.intersect = (std::max(e0, e1) + capsule.radius >= (T)0);
             return result;
         }
     };

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -37,15 +37,15 @@ namespace gte
             mYMin(yMin),
             mYSpacing(ySpacing),
             mF(F),
-            mPoly(xBound - 1, mYBound - 1)
+            mPoly(static_cast<size_t>(xBound) - 1, static_cast<size_t>(yBound) - 1)
         {
             // At least a 3x3 block of data points is needed to construct the
             // estimates of the boundary derivatives.
             LogAssert(mXBound >= 3 && mYBound >= 3 && mF != nullptr, "Invalid input.");
             LogAssert(mXSpacing > (Real)0 && mYSpacing > (Real)0, "Invalid input.");
 
-            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound - 1);
-            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound - 1);
+            mXMax = mXMin + mXSpacing * (static_cast<Real>(mXBound) - (Real)1);
+            mYMax = mYMin + mYSpacing * (static_cast<Real>(mYBound) - (Real)1);
 
             // Create a 2D wrapper for the 1D samples.
             Array2<Real> Fmap(mXBound, mYBound, const_cast<Real*>(mF));
@@ -258,7 +258,7 @@ namespace gte
         // Support for construction.
         void GetFX(Array2<Real> const& F, Array2<Real>& FX)
         {
-            Array2<Real> slope(mXBound + 3, mYBound);
+            Array2<Real> slope(static_cast<size_t>(mXBound) + 3, mYBound);
             Real invDX = (Real)1 / mXSpacing;
             int ix, iy;
             for (iy = 0; iy < mYBound; ++iy)
@@ -285,7 +285,7 @@ namespace gte
 
         void GetFY(Array2<Real> const& F, Array2<Real>& FY)
         {
-            Array2<Real> slope(mYBound + 3, mXBound);
+            Array2<Real> slope(static_cast<size_t>(mYBound) + 3, mXBound);
             Real invDY = (Real)1 / mYSpacing;
             int ix, iy;
             for (ix = 0; ix < mXBound; ++ix)
@@ -526,9 +526,10 @@ namespace gte
         // Support for evaluation.
         void XLookup(Real x, int& xIndex, Real& dx) const
         {
-            for (xIndex = 0; xIndex + 1 < mXBound; ++xIndex)
+            int xIndexP1;
+            for (xIndex = 0, xIndexP1 = 1; xIndexP1 < mXBound; ++xIndex, ++xIndexP1)
             {
-                if (x < mXMin + mXSpacing * (xIndex + 1))
+                if (x < mXMin + mXSpacing * static_cast<Real>(xIndexP1))
                 {
                     dx = x - (mXMin + mXSpacing * xIndex);
                     return;
@@ -541,9 +542,10 @@ namespace gte
 
         void YLookup(Real y, int& yIndex, Real& dy) const
         {
-            for (yIndex = 0; yIndex + 1 < mYBound; ++yIndex)
+            int yIndexP1;
+            for (yIndex = 0, yIndexP1 = 1; yIndexP1 < mYBound; ++yIndex, ++yIndexP1)
             {
-                if (y < mYMin + mYSpacing * (yIndex + 1))
+                if (y < mYMin + mYSpacing * static_cast<Real>(yIndexP1))
                 {
                     dy = y - (mYMin + mYSpacing * yIndex);
                     return;

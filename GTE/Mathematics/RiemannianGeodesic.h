@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -44,7 +44,7 @@ namespace gte
             mSubdivide(0),
             mRefine(0),
             mCurrentQuantity(0),
-            mIntegralStep((Real)1 / (Real)(integralSamples - 1)),
+            mIntegralStep((Real)1 / ((Real)integralSamples - (Real)1)),
             mSearchStep((Real)1 / (Real)searchSamples),
             mDerivativeFactor((Real)0.5 / derivativeStep)
         {
@@ -138,9 +138,9 @@ namespace gte
         {
             LogAssert(quantity >= 2, "Path must have at least two points.");
             Real length = ComputeSegmentLength(path[0], path[1]);
-            for (int i = 1; i <= quantity - 2; ++i)
+            for (int i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
             {
-                length += ComputeSegmentLength(path[i], path[i + 1]);
+                length += ComputeSegmentLength(path[i], path[ip1]);
             }
             return length;
         }
@@ -173,13 +173,15 @@ namespace gte
                 // between the old points.
                 for (int i = mCurrentQuantity - 1; i > 0; --i)
                 {
-                    path[2 * i] = path[i];
+                    size_t twoI = 2 * static_cast<size_t>(i);
+                    path[twoI] = path[i];
                 }
 
                 // Subdivide the polyline.
                 for (int i = 0; i <= mCurrentQuantity - 2; ++i)
                 {
-                    Subdivide(path[2 * i], path[2 * i + 1], path[2 * i + 2]);
+                    size_t twoI = 2 * static_cast<size_t>(i);
+                    Subdivide(path[twoI], path[twoI + 1], path[twoI + 2]);
                 }
 
                 mCurrentQuantity = newQuantity;
@@ -187,9 +189,9 @@ namespace gte
                 // Refine the current polyline vertices.
                 for (mRefine = 1; mRefine <= refinements; ++mRefine)
                 {
-                    for (int i = 1; i <= mCurrentQuantity - 2; ++i)
+                    for (int i = 1, im1 = 0, ip1 = 2; i <= mCurrentQuantity - 2; ++i, ++im1, ++ip1)
                     {
-                        Refine(path[i - 1], path[i], path[i + 1]);
+                        Refine(path[im1], path[i], path[ip1]);
                     }
                 }
             }
@@ -328,9 +330,9 @@ namespace gte
         {
             LogAssert(quantity >= 2, "Path must have at least two points.");
             Real curvature = ComputeSegmentCurvature(path[0], path[1]);
-            for (int i = 1; i <= quantity - 2; ++i)
+            for (int i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
             {
-                curvature += ComputeSegmentCurvature(path[i], path[i + 1]);
+                curvature += ComputeSegmentCurvature(path[i], path[ip1]);
             }
             return curvature;
         }

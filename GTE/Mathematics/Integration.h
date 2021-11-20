@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -22,7 +22,7 @@ namespace gte
         static Real TrapezoidRule(int numSamples, Real a, Real b,
             std::function<Real(Real)> const& integrand)
         {
-            Real h = (b - a) / (Real)(numSamples - 1);
+            Real h = (b - a) / ((Real)numSamples - (Real)1);
             Real result = (Real)0.5 * (integrand(a) + integrand(b));
             for (int i = 1; i <= numSamples - 2; ++i)
             {
@@ -54,9 +54,9 @@ namespace gte
 
                 // Richardson extrapolation.
                 rom[0][1] = half * (rom[0][0] + h * sum);
-                for (int i2 = 1, p2 = 4; i2 < i0; ++i2, p2 *= 4)
+                for (int i2 = 1, i2m1 = 0, p2 = 4; i2 < i0; ++i2, ++i2m1, p2 *= 4)
                 {
-                    rom[i2][1] = (p2 * rom[i2 - 1][1] - rom[i2 - 1][0]) / (p2 - 1);
+                    rom[i2][1] = (p2 * rom[i2m1][1] - rom[i2m1][0]) / (static_cast<size_t>(p2) - 1);
                 }
 
                 for (i1 = 0; i1 < i0; ++i1)
@@ -65,7 +65,7 @@ namespace gte
                 }
             }
 
-            Real result = rom[order - 1][0];
+            Real result = rom[static_cast<size_t>(order) - 1][0];
             return result;
         }
 
@@ -93,7 +93,7 @@ namespace gte
             Real const one = (Real)1;
             Real const half = (Real)0.5;
 
-            std::vector<std::vector<Real>> poly(degree + 1);
+            std::vector<std::vector<Real>> poly(static_cast<size_t>(degree) + 1);
 
             poly[0].resize(1);
             poly[0][0] = one;
@@ -102,19 +102,19 @@ namespace gte
             poly[1][0] = zero;
             poly[1][1] = one;
 
-            for (int n = 2; n <= degree; ++n)
+            for (int n = 2, nm1 = 1, nm2 = 0, np1 = 3; n <= degree; ++n, ++nm1, ++nm2, ++np1)
             {
-                Real mult0 = (Real)(n - 1) / (Real)n;
-                Real mult1 = (Real)(2 * n - 1) / (Real)n;
+                Real mult0 = (Real)nm1 / (Real)n;
+                Real mult1 = ((Real)2 * (Real)n - (Real)1) / (Real)n;
 
-                poly[n].resize(n + 1);
-                poly[n][0] = -mult0 * poly[n - 2][0];
-                for (int i = 1; i <= n - 2; ++i)
+                poly[n].resize(np1);
+                poly[n][0] = -mult0 * poly[nm2][0];
+                for (int i = 1, im1 = 0; i <= nm2; ++i, ++im1)
                 {
-                    poly[n][i] = mult1 * poly[n - 1][i - 1] - mult0 * poly[n - 2][i];
+                    poly[n][i] = mult1 * poly[nm1][im1] - mult0 * poly[nm2][i];
                 }
-                poly[n][n - 1] = mult1 * poly[n - 1][n - 2];
-                poly[n][n] = mult1 * poly[n - 1][n - 1];
+                poly[n][nm1] = mult1 * poly[nm1][nm2];
+                poly[n][n] = mult1 * poly[nm1][nm1];
             }
 
             roots.resize(degree);

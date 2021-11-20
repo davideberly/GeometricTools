@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -224,12 +224,7 @@ namespace gte
             Real tmin, Real tmax) const
         {
             Real radius = GetRadius();
-            if (radius == (Real)0)
-            {
-                // The bound is invalid and cannot be intersected.
-                LogWarning("Invalid bound. Did you forget to call UpdateModelBound()?");
-                return false;
-            }
+            LogAssert(radius > (Real)0, "Invalid bound. Did you forget to call UpdateModelBound()?");
 
             Vector3<Real> center = GetCenter();
             Real const infinity = std::numeric_limits<Real>::max();
@@ -312,12 +307,8 @@ namespace gte
         // Test for intersection of the two stationary spheres.
         bool TestIntersection(BoundingSphere const& sphere) const
         {
-            if (sphere.GetRadius() == (Real)0 || GetRadius() == (Real)0)
-            {
-                // One of the bounds is invalid and cannot be intersected.
-                LogWarning("Invalid bound. Did you forget to call UpdateModelBound()?");
-                return false;
-            }
+            LogAssert(sphere.GetRadius() > (Real)0 && GetRadius() > (Real)0,
+                "Invalid bound. Did you forget to call UpdateModelBound()?");
 
             // Test for staticSphere-staticSphere intersection.
             Vector3<Real> diff = GetCenter() - sphere.GetCenter();
@@ -330,12 +321,8 @@ namespace gte
         bool TestIntersection(BoundingSphere const& sphere, Real tmax,
             Vector3<Real> const& velocity0, Vector3<Real> const& velocity1) const
         {
-            if (sphere.GetRadius() == (Real)0 || GetRadius() == (Real)0)
-            {
-                // One of the bounds is invalid and cannot be intersected.
-                LogWarning("Invalid bound. Did you forget to call UpdateModelBound()?");
-                return false;
-            }
+            LogAssert(sphere.GetRadius() > (Real)0 && GetRadius() > (Real)0,
+                "Invalid bound. Did you forget to call UpdateModelBound()?");
 
             // Test for movingSphere-movingSphere intersection.
             Vector3<Real> relVelocity = velocity1 - velocity0;

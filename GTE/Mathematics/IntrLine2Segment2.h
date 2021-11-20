@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.15
+// Version: 4.0.2021.11.19
 
 #pragma once
 
@@ -132,8 +132,8 @@ namespace gte
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= (T)0 &&
-                    llResult.line1Parameter[1] <= (T)1)
+                if (llResult.line1Parameter[0] >= zero &&
+                    llResult.line1Parameter[1] <= one)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -156,8 +156,8 @@ namespace gte
                 T maxT = std::numeric_limits<T>::max();
                 result.lineParameter[0] = -maxT;
                 result.lineParameter[1] = +maxT;
-                result.segmentParameter[0] = (T)0;
-                result.segmentParameter[1] = (T)1;
+                result.segmentParameter[0] = zero;
+                result.segmentParameter[1] = one;
             }
             else
             {

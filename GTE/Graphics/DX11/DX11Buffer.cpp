@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.05.28
+// Version: 4.0.2021.11.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Buffer.h>
@@ -43,10 +43,6 @@ bool DX11Buffer::Update(ID3D11DeviceContext* context)
         }
         context->Unmap(dxBuffer, 0);
     }
-    else
-    {
-        LogWarning("Buffer has zero active bytes.");
-    }
     return true;
 }
 
@@ -76,10 +72,6 @@ bool DX11Buffer::CopyCpuToGpu(ID3D11DeviceContext* context)
         D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
         context->CopySubresourceRegion(GetDXBuffer(), 0, offsetInBytes, 0, 0, mStaging, 0, &box);
     }
-    else
-    {
-        LogWarning("Buffer has zero active bytes.");
-    }
     return true;
 }
 
@@ -106,10 +98,6 @@ bool DX11Buffer::CopyGpuToCpu(ID3D11DeviceContext* context)
         std::memcpy(target, source, numActiveBytes);
         context->Unmap(mStaging, 0);
     }
-    else
-    {
-        LogWarning("Buffer has zero active bytes.");
-    }
     return true;
 }
 
@@ -132,10 +120,6 @@ void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* targ
             D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
             context->CopySubresourceRegion(target, 0, offsetInBytes, 0, 0, GetDXBuffer(), 0, &box);
         }
-    }
-    else
-    {
-        LogWarning("Buffer has zero active bytes.");
     }
 }
 

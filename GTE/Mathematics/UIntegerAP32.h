@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.04
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -87,7 +87,7 @@ namespace gte
                 int32_t last = BitHacks::GetTrailingBit(number);
                 number >>= last;
                 mNumBits = first - last + 1;
-                mBits.resize(1 + (mNumBits - 1) / 32);
+                mBits.resize(static_cast<size_t>(1) + (mNumBits - 1) / 32);
                 mBits[0] = (uint32_t)(number & 0x00000000FFFFFFFFull);
                 if (mBits.size() > 1)
                 {
@@ -132,7 +132,7 @@ namespace gte
             if (numBits > 0)
             {
                 mNumBits = numBits;
-                mBits.resize(1 + (numBits - 1) / 32);
+                mBits.resize(static_cast<size_t>(1) + (numBits - 1) / 32);
             }
             else if (numBits == 0)
             {

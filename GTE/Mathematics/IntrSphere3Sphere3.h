@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -22,12 +22,18 @@ namespace gte
     public:
         struct Result
         {
+            Result()
+                :
+                intersect(false)
+            {
+            }
+
             bool intersect;
         };
 
         Result operator()(Sphere3<Real> const& sphere0, Sphere3<Real> const& sphere1)
         {
-            Result result;
+            Result result{};
             Vector3<Real> diff = sphere1.center - sphere0.center;
             Real rSum = sphere0.radius + sphere1.radius;
             result.intersect = (Dot(diff, diff) <= rSum * rSum);
@@ -41,7 +47,14 @@ namespace gte
     public:
         struct Result
         {
-            bool intersect;
+            Result()
+                :
+                intersect(false),
+                type(-1),
+                point(Vector3<Real>::Zero()),
+                circle(Vector3<Real>::Zero(), Vector3<Real>::Zero(), (Real)0)
+            {
+            }
 
             // The type of intersection.
             //   0: spheres are disjoint and separated
@@ -51,6 +64,7 @@ namespace gte
             //   4: sphere0 contained in sphere1, share common point
             //   5: sphere1 strictly contained in sphere0
             //   6: sphere1 contained in sphere0, share common point
+            bool intersect;
             int type;
             Vector3<Real> point;    // types 1, 4, 6
             Circle3<Real> circle;   // type 2
@@ -58,7 +72,7 @@ namespace gte
 
         Result operator()(Sphere3<Real> const& sphere0, Sphere3<Real> const& sphere1)
         {
-            Result result;
+            Result result{};
 
             // The plane of intersection must have C1-C0 as its normal
             // direction.

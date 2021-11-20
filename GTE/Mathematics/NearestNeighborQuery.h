@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -218,8 +218,8 @@ namespace gte
                                     {
                                         for (int n = numNeighbors; n > k; --n)
                                         {
-                                            localNeighbors[n] = localNeighbors[n - 1];
-                                            neighborSqrLength[n] = neighborSqrLength[n - 1];
+                                            localNeighbors[n] = localNeighbors[static_cast<size_t>(n) - 1];
+                                            neighborSqrLength[n] = neighborSqrLength[static_cast<size_t>(n) - 1];
                                         }
                                         break;
                                     }
@@ -297,7 +297,7 @@ namespace gte
                 std::nth_element(begin, mid, end, sorter);
 
                 // Get the median position.
-                node.split = mSortedPoints[siteOffset + halfNumSites].first[axis];
+                node.split = mSortedPoints[static_cast<size_t>(siteOffset) + static_cast<size_t>(halfNumSites)].first[axis];
                 node.axis = axis;
                 node.siteOffset = -1;
 

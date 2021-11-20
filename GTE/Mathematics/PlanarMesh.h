@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 4.0.2021.11.11
 
 #pragma once
 
 #include <Mathematics/ContPointInPolygon2.h>
 #include <Mathematics/ETManifoldMesh.h>
 #include <Mathematics/PrimalQuery2.h>
+#include <set>
 
 // The planar mesh class is convenient for many applications involving
 // searches for triangles containing a specified point.  A couple of
@@ -148,11 +149,11 @@ namespace gte
                     if (adj)
                     {
                         key = TriangleKey<true>(adj->V[0], adj->V[1], adj->V[2]);
-                        mAdjacencies[base + i] = mTriIndexMap.find(key)->second;
+                        mAdjacencies[static_cast<size_t>(base) + i] = mTriIndexMap.find(key)->second;
                     }
                     else
                     {
-                        mAdjacencies[base + i] = -1;
+                        mAdjacencies[static_cast<size_t>(base) + i] = -1;
                     }
                 }
             }
@@ -166,7 +167,7 @@ namespace gte
         {
             if (numVertices < 3 || !vertices || mesh.GetTriangles().size() < 1)
             {
-                throw std::invalid_argument("Invalid input in PlanarMesh constructor.");
+                LogError("Invalid input in PlanarMesh constructor.");
             }
 
             // We have a valid mesh.
@@ -176,7 +177,7 @@ namespace gte
             // by the mesh triangle map.
             auto const& tmap = mesh.GetTriangles();
             mNumTriangles = static_cast<int>(tmap.size());
-            mIndices.resize(3 * mNumTriangles);
+            mIndices.resize(3 * static_cast<size_t>(mNumTriangles));
 
             int tIndex = 0, vIndex = 0;
             for (auto const& element : tmap)
@@ -188,7 +189,7 @@ namespace gte
                 }
             }
 
-            mAdjacencies.resize(3 * mNumTriangles);
+            mAdjacencies.resize(3 * static_cast<size_t>(mNumTriangles));
             vIndex = 0;
             for (auto const& element : tmap)
             {
@@ -267,7 +268,7 @@ namespace gte
 
                 if (mQuery.ToLine(test, v[1], v[2]) > 0)
                 {
-                    triangle = mAdjacencies[ibase + 1];
+                    triangle = mAdjacencies[static_cast<size_t>(ibase) + 1];
                     if (triangle == -1)
                     {
                         return -1;
@@ -277,7 +278,7 @@ namespace gte
 
                 if (mQuery.ToLine(test, v[2], v[0]) > 0)
                 {
-                    triangle = mAdjacencies[ibase + 2];
+                    triangle = mAdjacencies[static_cast<size_t>(ibase) + 2];
                     if (triangle == -1)
                     {
                         return -1;
@@ -316,7 +317,7 @@ namespace gte
 
                 if (mQuery.ToLine(test, v[1], v[2]) > 0)
                 {
-                    triangle = mAdjacencies[ibase + 1];
+                    triangle = mAdjacencies[static_cast<size_t>(ibase) + 1];
                     if (triangle == -1 || visited.find(triangle) != visited.end())
                     {
                         return -1;
@@ -326,7 +327,7 @@ namespace gte
 
                 if (mQuery.ToLine(test, v[2], v[0]) > 0)
                 {
-                    triangle = mAdjacencies[ibase + 2];
+                    triangle = mAdjacencies[static_cast<size_t>(ibase) + 2];
                     if (triangle == -1 || visited.find(triangle) != visited.end())
                     {
                         return -1;
@@ -412,9 +413,10 @@ namespace gte
         {
             Vector2<ComputeType> test{ P[0], P[1] };
             Vector2<ComputeType> v[3];
-            v[0] = mComputeVertices[mIndices[3 * triangle + 0]];
-            v[1] = mComputeVertices[mIndices[3 * triangle + 1]];
-            v[2] = mComputeVertices[mIndices[3 * triangle + 2]];
+            size_t base = 3 * static_cast<size_t>(triangle);
+            v[0] = mComputeVertices[mIndices[base + 0]];
+            v[1] = mComputeVertices[mIndices[base + 1]];
+            v[2] = mComputeVertices[mIndices[base + 2]];
             PointInPolygon2<ComputeType> pip(3, v);
             return pip.Contains(test);
         }

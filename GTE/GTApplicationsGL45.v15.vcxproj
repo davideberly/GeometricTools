@@ -216,11 +216,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Applications\LogReporter.cpp" />
     <ClCompile Include="Applications\MSW\Console.cpp" />
     <ClCompile Include="Applications\MSW\ConsoleSystem.cpp" />
-    <ClCompile Include="Applications\MSW\LogToMessageBox.cpp" />
-    <ClCompile Include="Applications\MSW\LogToOutputWindow.cpp" />
     <ClCompile Include="Applications\MSW\WICFileIO.cpp" />
     <ClCompile Include="Applications\MSW\WICFileIONative.cpp" />
     <ClCompile Include="Applications\MSW\Window.cpp" />
@@ -273,11 +270,8 @@
     </ClInclude>
     <ClInclude Include="Applications\GTApplications.h" />
     <ClInclude Include="Applications\GTApplicationsPCH.h" />
-    <ClInclude Include="Applications\LogReporter.h" />
     <ClInclude Include="Applications\MSW\Console.h" />
     <ClInclude Include="Applications\MSW\ConsoleSystem.h" />
-    <ClInclude Include="Applications\MSW\LogToMessageBox.h" />
-    <ClInclude Include="Applications\MSW\LogToOutputWindow.h" />
     <ClInclude Include="Applications\MSW\WICFileIO.h" />
     <ClInclude Include="Applications\MSW\WICFileIONative.h" />
     <ClInclude Include="Applications\MSW\Window.h" />

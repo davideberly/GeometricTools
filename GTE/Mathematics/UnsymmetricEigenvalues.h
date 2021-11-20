@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -39,19 +39,27 @@ namespace gte
             mSize(0),
             mSizeM1(0),
             mMaxIterations(0),
-            mNumEigenvalues(0)
+            mMatrix{},
+            mX{},
+            mV{},
+            mScaledV{},
+            mW{},
+            mFlagStorage{},
+            mSubdiagonalFlag(nullptr),
+            mNumEigenvalues(0),
+            mEigenvalues{}
         {
             if (size >= 3 && maxIterations > 0)
             {
                 mSize = size;
                 mSizeM1 = size - 1;
                 mMaxIterations = maxIterations;
-                mMatrix.resize(size * size);
+                mMatrix.resize(static_cast<size_t>(size) * static_cast<size_t>(size));
                 mX.resize(size);
                 mV.resize(size);
                 mScaledV.resize(size);
                 mW.resize(size);
-                mFlagStorage.resize(size + 1);
+                mFlagStorage.resize(static_cast<size_t>(size) + 1);
                 std::fill(mFlagStorage.begin(), mFlagStorage.end(), 0);
                 mSubdiagonalFlag = &mFlagStorage[1];
                 mEigenvalues.resize(mSize);
@@ -68,7 +76,7 @@ namespace gte
         {
             if (mSize > 0)
             {
-                std::copy(input, input + mSize * mSize, mMatrix.begin());
+                std::copy(input, input + static_cast<size_t>(mSize) * static_cast<size_t>(mSize), mMatrix.begin());
                 ReduceToUpperHessenberg();
 
                 std::array<int, 2> block;
@@ -175,12 +183,12 @@ namespace gte
         // 2D accessors to elements of mMatrix[].
         inline Real const& A(int r, int c) const
         {
-            return mMatrix[c + r * mSize];
+            return mMatrix[c + r * static_cast<size_t>(mSize)];
         }
 
         inline Real& A(int r, int c)
         {
-            return mMatrix[c + r * mSize];
+            return mMatrix[c + r * static_cast<size_t>(mSize)];
         }
 
         // Compute the Householder vector for (X[rmin],...,x[rmax]).  The
@@ -294,8 +302,8 @@ namespace gte
             Real b11 = A(j1, j1);
             Real b21 = A(j2, j1);
             mX[rmin] = b00 * (b00 - tr) + b01 * b10 + det;
-            mX[rmin + 1] = b10 * (b00 + b11 - tr);
-            mX[rmin + 2] = b10 * b21;
+            mX[static_cast<size_t>(rmin) + 1] = b10 * (b00 + b11 - tr);
+            mX[static_cast<size_t>(rmin) + 2] = b10 * b21;
 
             House(rmin, rmin + 2);
             RowHouse(rmin, rmin + 2, rmin, rmax);

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -111,7 +111,7 @@ namespace gte
             int key;
             Real dt;
             GetKeyInfo(t, key, dt);
-            dt /= (this->mTime[key + 1] - this->mTime[key]);
+            dt /= (this->mTime[static_cast<size_t>(key) + 1] - this->mTime[key]);
 
             // Compute position.
             jet[0] = mA[key] + dt * (mB[key] + dt * (mC[key] + dt * mD[key]));
@@ -183,9 +183,9 @@ namespace gte
 
             if (t < this->mTime[numSegments])
             {
-                for (int i = 0; i < numSegments; ++i)
+                for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
                 {
-                    if (t < this->mTime[i + 1])
+                    if (t < this->mTime[ip1])
                     {
                         key = i;
                         dt = t - this->mTime[i];
@@ -195,7 +195,7 @@ namespace gte
             }
 
             key = numSegments - 1;
-            dt = this->mTime[numSegments] - this->mTime[numSegments - 1];
+            dt = this->mTime[numSegments] - this->mTime[static_cast<size_t>(numSegments) - 1];
         }
 
         std::vector<Vector<N, Real>> mPoints;

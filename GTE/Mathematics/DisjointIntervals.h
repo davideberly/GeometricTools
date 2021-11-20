@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.24
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -52,13 +52,13 @@ namespace gte
         }
 
         // Move operations.
-        DisjointIntervals(DisjointIntervals&& other)
+        DisjointIntervals(DisjointIntervals&& other) noexcept
             :
             mEndpoints(std::move(other.mEndpoints))
         {
         }
 
-        DisjointIntervals& operator=(DisjointIntervals&& other)
+        DisjointIntervals& operator=(DisjointIntervals&& other) noexcept
         {
             mEndpoints = std::move(other.mEndpoints);
             return *this;

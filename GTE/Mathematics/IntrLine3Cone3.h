@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -41,36 +41,37 @@ namespace gte
             // to decide how to interpret the t[] and P[] values.
 
             // No interesection.
-            static int const isEmpty = 0;
+            static int constexpr isEmpty = 0;
 
             // t[0] is finite, t[1] is set to t[0], P[0] is the point of
             // intersection, P[1] is set to P[0].
-            static int const isPoint = 1;
+            static int constexpr isPoint = 1;
 
             // t[0] and t[1] are finite with t[0] < t[1], P[0] and P[1] are
             // the endpoints of the segment of intersection.
-            static int const isSegment = 2;
+            static int constexpr isSegment = 2;
 
             // Dot(line.direction, cone.ray.direction) > 0:
             // t[0] is finite, t[1] is +infinity (set to +1), P[0] is the ray
             // origin, P[1] is the ray direction (set to line.direction).
             // NOTE: The ray starts at P[0] and you walk away from it in the
             // line direction.
-            static int const isRayPositive = 3;
+            static int constexpr isRayPositive = 3;
 
             // Dot(line.direction, cone.ray.direction) < 0:
             // t[0] is -infinity (set to -1), t[1] is finite, P[0] is the ray
             // endpoint, P[1] is the ray direction (set to line.direction).
             // NOTE: The ray ends at P[1] and you walk towards it in the line
             // direction.
-            static int const isRayNegative = 4;
+            static int constexpr isRayNegative = 4;
 
             Result()
                 :
                 intersect(false),
-                type(Result::isEmpty)
+                type(Result::isEmpty),
+                t{},
+                P{}
             {
-                // t[], h[] and P[] are initialized to zero via QFN1 constructors
             }
 
             void ComputePoints(Vector3<Real> const& origin, Vector3<Real> const& direction)
@@ -141,7 +142,7 @@ namespace gte
 
         Result operator()(Line3<Real> const& line, Cone3<Real> const& cone)
         {
-            Result result;
+            Result result{};
             DoQuery(line.origin, line.direction, cone, result);
             result.ComputePoints(line.origin, line.direction);
             result.intersect = (result.type != Result::isEmpty);

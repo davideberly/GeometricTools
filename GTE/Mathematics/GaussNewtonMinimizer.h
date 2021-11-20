@@ -124,9 +124,9 @@ namespace gte
             Result()
                 :
                 minLocation{},
-                minUpdateLength(static_cast<T>(0)),
-                minErrorDifference(static_cast<T>(0)),
                 minError(static_cast<T>(0)),
+                minErrorDifference(static_cast<T>(0)),
+                minUpdateLength(static_cast<T>(0)),
                 numIterations(0),
                 converged(false)
             {

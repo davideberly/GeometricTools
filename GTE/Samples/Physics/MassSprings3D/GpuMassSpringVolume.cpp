@@ -86,7 +86,7 @@ GpuMassSpringVolume::GpuMassSpringVolume(std::shared_ptr<GraphicsEngine> const& 
     mNumZGroups = p.dimensions[2] / numThreads;
 
     // Step 1a
-    auto cshader = mRK4Shader[0]->GetComputeShader();
+    std::shared_ptr<Shader> cshader = mRK4Shader[0]->GetComputeShader();
     cshader->Set("SimulationParameters", mParameters);
     cshader->Set("invMass", mInvMass);
     cshader->Set("constantC", mConstantC);

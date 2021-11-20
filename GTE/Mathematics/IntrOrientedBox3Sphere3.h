@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.11
 
 #pragma once
 
@@ -25,6 +25,12 @@ namespace gte
             :
             public TIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>::Result
         {
+            Result()
+                :
+                TIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
@@ -32,7 +38,7 @@ namespace gte
         {
             DCPQuery<Real, Vector3<Real>, OrientedBox3<Real>> pbQuery;
             auto pbResult = pbQuery(sphere.center, box);
-            Result result;
+            Result result{};
             result.intersect = (pbResult.sqrDistance <= sphere.radius * sphere.radius);
             return result;
         }
@@ -50,13 +56,19 @@ namespace gte
             :
             public FIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>::Result
         {
+            Result()
+                :
+                FIQuery<Real, AlignedBox3<Real>, Sphere3<Real>>::Result{}
+            {
+            }
+
             // No additional information to compute.
         };
 
         Result operator()(OrientedBox3<Real> const& box, Vector3<Real> const& boxVelocity,
             Sphere3<Real> const& sphere, Vector3<Real> const& sphereVelocity)
         {
-            Result result;
+            Result result{};
             result.intersectionType = 0;
             result.contactTime = (Real)0;
             result.contactPoint = { (Real)0, (Real)0, (Real)0 };
