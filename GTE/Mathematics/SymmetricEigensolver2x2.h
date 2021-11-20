@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.11.12
 
 #pragma once
 
@@ -55,12 +55,15 @@ namespace gte
             Real s = std::sqrt(half * (one - c2));  // >= 1/sqrt(2)
             Real c = half * s2 / s;
 
-            Real diagonal[2];
             Real csqr = c * c, ssqr = s * s, mid = s2 * a01;
-            diagonal[0] = csqr * a00 + mid + ssqr * a11;
-            diagonal[1] = csqr * a11 - mid + ssqr * a00;
+            std::array<Real, 2> diagonal
+            {
+                csqr * a00 + mid + ssqr * a11,
+                csqr * a11 - mid + ssqr * a00
+            };
 
-            if (sortType == 0 || sortType * diagonal[0] <= sortType * diagonal[1])
+            if (sortType == 0 ||
+                static_cast<Real>(sortType) * diagonal[0] <= static_cast<Real>(sortType) * diagonal[1])
             {
                 eval[0] = diagonal[0];
                 eval[1] = diagonal[1];
