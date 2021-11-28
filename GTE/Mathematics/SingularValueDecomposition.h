@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.19
+// Version: 4.0.2021.11.28
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/Math.h>
 #include <algorithm>
+#include <functional>
 #include <vector>
 
 // The SingularValueDecomposition class is an implementation of Algorithm
@@ -121,7 +122,10 @@ namespace gte
 
             // Copy the input to mMatrix. The latter matrix is modified
             // internally by the solver.
-            std::copy(input, input + mNumRows * mNumCols, mMatrix.begin());
+            for (size_t i = 0; i < mMatrix.size(); ++i)
+            {
+                mMatrix[i] = input[i];
+            }
 
             // Reduce mMatrix to bidiagonal form, storing the diagonal
             // mMatrix(d,d) and superdiagonal mMatrix(d,d+1) in mDiagonal
@@ -213,7 +217,10 @@ namespace gte
                 uMatrix != nullptr,
                 "Nonnull pointer required for uMatrix.");
 
-            std::copy(mUMatrix.begin(), mUMatrix.end(), uMatrix);
+            for (size_t i = 0; i < mUMatrix.size(); ++i)
+            {
+                uMatrix[i] = mUMatrix[i];
+            }
         }
 
         // Get the V-matrix, which is NxN and stored in row-major order.
@@ -223,7 +230,10 @@ namespace gte
                 vMatrix != nullptr,
                 "Nonnull pointer required for vMatrix.");
 
-            std::copy(mVMatrix.begin(), mVMatrix.end(), vMatrix);
+            for (size_t i = 0; i < mUMatrix.size(); ++i)
+            {
+                vMatrix[i] = mVMatrix[i];
+            }
         }
 
         // Get the S-matrix, which is MxN and stored in row-major order.
@@ -233,7 +243,10 @@ namespace gte
                 sMatrix != nullptr,
                 "Nonnull pointer required for sMatrix.");
 
-            std::copy(mSMatrix.begin(), mSMatrix.end(), sMatrix);
+            for (size_t i = 0; i < mSMatrix.size(); ++i)
+            {
+                sMatrix[i] = mSMatrix[i];
+            }
         }
 
         Real GetSingularValue(size_t index) const
