@@ -80,6 +80,8 @@
     <ClInclude Include="Mathematics\ChebyshevRatio.h" />
     <ClInclude Include="Mathematics\CholeskyDecomposition.h" />
     <ClInclude Include="Mathematics\Circle3.h" />
+    <ClInclude Include="Mathematics\CircleThroughPointSpecifiedTangentAndRadius.h" />
+    <ClInclude Include="Mathematics\CircleThroughTwoPointsSpecifiedRadius.h" />
     <ClInclude Include="Mathematics\CLODPolyline.h" />
     <ClInclude Include="Mathematics\Cone.h" />
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />

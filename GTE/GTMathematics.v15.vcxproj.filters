@@ -94,6 +94,9 @@
     <Filter Include="Primitives\ND">
       <UniqueIdentifier>{36e3a98b-c471-4ff6-9f0a-d4fab0a357ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Miscellaneous">
+      <UniqueIdentifier>{af1275bf-bf3a-49b9-a40b-dc4339f391e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mathematics\ACosEstimate.h">
@@ -1445,6 +1448,12 @@
     </ClInclude>
     <ClInclude Include="Mathematics\IntrCylinder3Cylinder3.h">
       <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\CircleThroughTwoPointsSpecifiedRadius.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\CircleThroughPointSpecifiedTangentAndRadius.h">
+      <Filter>Miscellaneous</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

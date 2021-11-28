@@ -74,6 +74,8 @@
     <ClInclude Include="Mathematics\BSRational.h" />
     <ClInclude Include="Mathematics\CanonicalBox.h" />
     <ClInclude Include="Mathematics\CholeskyDecomposition.h" />
+    <ClInclude Include="Mathematics\CircleThroughPointSpecifiedTangentAndRadius.h" />
+    <ClInclude Include="Mathematics\CircleThroughTwoPointsSpecifiedRadius.h" />
     <ClInclude Include="Mathematics\CLODPolyline.h" />
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />
     <ClInclude Include="Mathematics\ConstrainedDelaunay2.h" />
@@ -254,6 +256,7 @@
     <ClInclude Include="Mathematics\IntrAlignedBox3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrAlignedBox3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrArc2Arc2.h" />
+    <ClInclude Include="Mathematics\IntrCanonicalBox3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrCapsule3Capsule3.h" />
     <ClInclude Include="Mathematics\IntrCircle2Arc2.h" />
     <ClInclude Include="Mathematics\IntrCircle2Circle2.h" />
