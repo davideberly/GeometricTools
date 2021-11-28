@@ -53,3 +53,23 @@ Here is a Bibtex entry you can use to cite this project in a publication.
   howpublished = {\url{https://github.com/davideberly/GeometricTools}}
 }
 ```
+## Current Technical Support Queue ##
+
+* Replacing the LCP approach by a geometric approach for the
+  intersection of a finite cylinder and a box to fix the robustness
+  problem reported by Seb Wouters. This is a longer-term project
+  than I had planned. Wouters' approach uses convex hulls of 2D
+  projections. I am implementing an approach that avoids this when
+  the cylinder direction has 1 or 2 zero components. When the direction
+  has no zero components, the explicit projection can be avoided and
+  reduces computation time. The project includes writing a PDF that
+  describes the ideas (of LCP and its robustness failure, of Wouters'
+  approach, and my variation).
+* Fixing a bug in the code for intersection of an infinite cylinder
+  and a plane. The new code also supports finite cylinders. I am
+  writing a PDF to describe the algorithms.
+* Adding a minor improvement to the TriangulateEC algorithm as
+  describe in my online PDF.
+* The never ending attempts to finish the GTL implementation. Adding
+  unit tests takes a lot of time, and technical support of GTE takes
+  higher precedence when bugs are reported.
