@@ -70,6 +70,6 @@ Here is a Bibtex entry you can use to cite this project in a publication.
   writing a PDF to describe the algorithms.
 * Adding a minor improvement to the TriangulateEC algorithm as
   describe in my online PDF.
-* The never ending attempts to finish the GTL implementation. Adding
+* The neverending attempts to finish the GTL implementation. Adding
   unit tests takes a lot of time, and technical support of GTE takes
   higher precedence when bugs are reported.
