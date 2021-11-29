@@ -31,9 +31,9 @@ On Ubuntu 20.04.1 LTS, the code is maintained using Visual Studio Code
 1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
 gcc 9.3.0, 
 
-On Fedora 34, the code is maintained using Visual Studio Code 1.49.2
+On Fedora 35, the code is maintained using Visual Studio Code 1.49.2
 and CMake 3.18.3, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 11.1.1.
+gcc 11.2.1.
 
 ## Getting Started ##
 
