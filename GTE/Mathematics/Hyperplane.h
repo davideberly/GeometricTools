@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.07.29
+// Version: 4.0.2021.12.01
 
 #pragma once
 
@@ -17,6 +17,22 @@
 // hyperplane constant is c = Dot(U, P) so that Dot(U, X) = c. If P is not
 // specified when constructing a hyperplane, it is chosen to be the point on
 // the plane closest to the origin, P = c * U.
+//
+// NOTE: You cannot set 'origin' and 'constant' independently. Use the
+// constructors instead.
+//
+// // Construct from normal N and constant c.
+// Plane3<T> plane(N, c);  // plane.origin = c * N
+// 
+// // Construct from normal N and origin P.
+// Plane3<T> plane(N, P);  // plane.constant = Dot(N, P)
+//
+// Plane3<T> plane{};  // N = (0,0,0), P = (0,0,0), c = 0 [invalid]
+// plane.normal = (0,0,1);
+// plane.constant = 3;
+// // If you consume plane now, the origin and constant are inconsistent
+// // because P = (0,0,0) but Dot(N,P) = 0 != 3 = c. Instead use
+// plane = Plane3<T>({ 0, 0, 1 }, 3);
 
 namespace gte
 {
