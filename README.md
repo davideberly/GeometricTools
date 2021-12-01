@@ -65,9 +65,6 @@ Here is a Bibtex entry you can use to cite this project in a publication.
   reduces computation time. The project includes writing a PDF that
   describes the ideas (of LCP and its robustness failure, of Wouters'
   approach, and my variation).
-* Fixing a bug in the code for intersection of an infinite cylinder
-  and a plane. The new code also supports finite cylinders. I am
-  writing a PDF to describe the algorithms.
 * Adding a minor improvement to the TriangulateEC algorithm as
   describe in my online PDF.
 * The neverending attempts to finish the GTL implementation. Adding
