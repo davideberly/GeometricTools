@@ -57,4 +57,4 @@ Here is a Bibtex entry you can use to cite this project in a publication.
 
 The current queue of technical support issues, whether reported on github
 or privately by email, is found at the Geometric Tools website. See the
-document {\url{https://www.geometrictools.com/Downloads/TechnicalSupportQueue.pdf}}
+document https://www.geometrictools.com/Downloads/TechnicalSupportQueue.pdf
