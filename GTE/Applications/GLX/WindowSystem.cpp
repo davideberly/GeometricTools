@@ -27,7 +27,7 @@ WindowSystem::~WindowSystem()
 
 WindowSystem::WindowSystem()
     :
-    mDisplayName("GTEngineWindow"),
+    // mDisplayName("GTEngineWindow"), /*< Unused variables */
     mDisplay(nullptr)
 {
     // Connect to the X server.

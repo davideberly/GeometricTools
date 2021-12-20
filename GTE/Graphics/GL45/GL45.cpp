@@ -14,8 +14,8 @@
 #include <vector>
 
 // Support for versioning.
-int constexpr OPENGL_VERSION_NONE = 0;
-int constexpr OPENGL_VERSION_1_0 = 10;
+// int constexpr OPENGL_VERSION_NONE = 0; /*< Unused variable */
+// int constexpr OPENGL_VERSION_1_0 = 10; /*< Unused variable */
 int constexpr OPENGL_VERSION_1_1 = 11;
 int constexpr OPENGL_VERSION_1_2 = 12;
 int constexpr OPENGL_VERSION_1_3 = 13;
