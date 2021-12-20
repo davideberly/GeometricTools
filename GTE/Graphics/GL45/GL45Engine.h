@@ -137,14 +137,14 @@ namespace gte
 
         // The function returns 'true' when the depth range is [0,1] (DirectX)
         // or 'false' when the depth range is [-1,1] (OpenGL).
-        virtual bool HasDepthRange01() const
+        virtual bool HasDepthRange01() const override
         {
             return false;
         }
 
         // Append the extension of the shader file to 'name' (.hlsl for DirectX,
         // .glsl for OpenGL).
-        virtual std::string GetShaderName(std::string const& name) const
+        virtual std::string GetShaderName(std::string const& name) const override
         {
             return name + ".glsl";
         }

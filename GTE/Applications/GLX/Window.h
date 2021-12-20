@@ -38,7 +38,7 @@ namespace gte
     public:
         virtual ~Window();
 
-        virtual void SetTitle(std::wstring const& title);
+        virtual void SetTitle(std::wstring const& title) override;
 
         // Draw the window.
         void ShowWindow();

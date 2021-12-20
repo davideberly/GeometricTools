@@ -106,8 +106,8 @@ namespace gte
         void GetTotalAllocation(size_t& numBytes, size_t& numObjects) const;
 
         // Support for copying from CPU to GPU via mapped memory.
-        virtual bool Update(std::shared_ptr<Buffer> const& buffer) = 0;
-        virtual bool Update(std::shared_ptr<TextureSingle> const& texture) = 0;
+        virtual bool Update(std::shared_ptr<Buffer> const& buffer) override = 0;
+        virtual bool Update(std::shared_ptr<TextureSingle> const& texture) override = 0;
         virtual bool Update(std::shared_ptr<TextureSingle> const& texture, unsigned int level) = 0;
         virtual bool Update(std::shared_ptr<TextureArray> const& textureArray) = 0;
         virtual bool Update(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) = 0;
@@ -184,7 +184,7 @@ namespace gte
     protected:
 
         // Helper for destruction.
-        virtual void DestroyDefaultGlobalState();
+        virtual void DestroyDefaultGlobalState() override;
 
         // Support for drawing.  If occlusion queries are enabled, the return
         // values are the number of samples that passed the depth and stencil
