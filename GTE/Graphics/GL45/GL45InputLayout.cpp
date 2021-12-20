@@ -19,7 +19,7 @@ GL45InputLayout::~GL45InputLayout()
 GL45InputLayout::GL45InputLayout(GLuint programHandle, GLuint vbufferHandle,
     VertexBuffer const* vbuffer)
     :
-    mProgramHandle(programHandle),
+    // mProgramHandle(programHandle), /*< Unused variable */
     mVBufferHandle(vbufferHandle),
     mNumAttributes(0)
 {

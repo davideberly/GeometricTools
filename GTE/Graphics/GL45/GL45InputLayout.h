@@ -24,7 +24,7 @@ namespace gte
         void Disable();
 
     private:
-        GLuint mProgramHandle;
+        // GLuint mProgramHandle; /*< Unused variable */
         GLuint mVBufferHandle;
         GLuint mVArrayHandle;
 

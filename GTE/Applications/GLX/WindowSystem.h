@@ -48,7 +48,7 @@ namespace gte
         // Window creation and destruction.
         void CreateFrom(Window::Parameters& parameters);
 
-        char const* mDisplayName;
+        // char const* mDisplayName; /*< Unused variable */
         _XDisplay* mDisplay;
         std::map<unsigned long, std::shared_ptr<Window>> mWindowMap;
     };
