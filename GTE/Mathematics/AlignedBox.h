@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 4.0.2021.12.20
 
 #pragma once
 
@@ -57,7 +57,8 @@ namespace gte
 
         // Compute the vertices of the box. If index i has the bit pattern
         // i = b[N-1]...b[0], then the corner at index i is vertex[i], where
-        // vertex[i] = min[i] whern b[d] = 0 or max[i] when b[d] = 1.
+        // vertex[i][d] = min[d] whern b[d] = 0 or vertex[i][d = max[d] when
+        // b[d] = 1.
         void GetVertices(std::array<Vector<N, T>, (1 << N)>& vertex) const
         {
             int32_t const imax = (1 << N);

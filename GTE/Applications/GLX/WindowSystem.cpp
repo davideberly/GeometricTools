@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.12.20
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/WindowSystem.h>
@@ -27,7 +27,6 @@ WindowSystem::~WindowSystem()
 
 WindowSystem::WindowSystem()
     :
-    // mDisplayName("GTEngineWindow"), /*< Unused variables */
     mDisplay(nullptr)
 {
     // Connect to the X server.

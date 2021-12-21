@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.7.2021.05.27
+// Version: 4.7.2021.12.20
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/WICFileIONative.h>
@@ -439,15 +439,16 @@ void WICFileIONative::SaveTo(std::string const& filename, uint32_t inFormat,
         throw std::runtime_error("wicEncoder->CreateNewFrame failed.");
     }
 
+    // Set the options for the PNG encoder.
+    PROPBAG2 option{};
+    VARIANT varValue{};
+    ZeroMemory(&option, sizeof(option));
+    VariantInit(&varValue);
+
     if (imageQuality == -1.0f)
     {
-        // Set the options for the PNG encoder.
-        PROPBAG2 option = { 0 };
-        VARIANT varValue;
-
         // Default subsampling.
         option.pstrName = const_cast<LPOLESTR>(L"InterlaceOption");
-        VariantInit(&varValue);
         varValue.vt = VT_BOOL;
         varValue.boolVal = FALSE;
         hr = wicPropertyBag->Write(1, &option, &varValue);
@@ -458,7 +459,6 @@ void WICFileIONative::SaveTo(std::string const& filename, uint32_t inFormat,
 
         // Disable filtering.
         option.pstrName = const_cast<LPOLESTR>(L"FilterOption");
-        VariantInit(&varValue);
         varValue.vt = VT_UI1;
         varValue.bVal = WICPngFilterNone;
         hr = wicPropertyBag->Write(1, &option, &varValue);
@@ -469,13 +469,8 @@ void WICFileIONative::SaveTo(std::string const& filename, uint32_t inFormat,
     }
     else
     {
-        // Set the options for the PNG encoder.
-        PROPBAG2 option = { 0 };
-        VARIANT varValue;
-
         // Set image quality, a number in [0,1].
         option.pstrName = const_cast<LPOLESTR>(L"ImageQuality");
-        VariantInit(&varValue);
         varValue.vt = VT_R4;
         varValue.fltVal = imageQuality;
         hr = wicPropertyBag->Write(1, &option, &varValue);

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.12
+// Version: 4.0.2021.12.20
 
 #pragma once
 
@@ -224,14 +224,14 @@ namespace gte
 
         // The function returns 'true' when the depth range is [0,1] (DirectX)
         // or 'false' when the depth range is [-1,1] (OpenGL).
-        virtual bool HasDepthRange01() const
+        virtual bool HasDepthRange01() const override
         {
             return true;
         }
 
         // Append the extension of the shader file to 'name' (.hlsl for DirectX,
         // .glsl for OpenGL).
-        virtual std::string GetShaderName(std::string const& name) const
+        virtual std::string GetShaderName(std::string const& name) const override
         {
             return name + ".hlsl";
         }

@@ -3,11 +3,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 4.0.2021.12.20
 
 #pragma once
 
-#include <Mathematics/Logger.h>
 #include <Mathematics/Line.h>
 
 // The cylinder axis is a line. The origin of the cylinder is chosen to be

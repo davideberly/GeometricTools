@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.12.20
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Mathematics/Logger.h>
@@ -16,10 +16,9 @@ GL45InputLayout::~GL45InputLayout()
     glDeleteVertexArrays(1, &mVArrayHandle);
 }
 
-GL45InputLayout::GL45InputLayout(GLuint programHandle, GLuint vbufferHandle,
+GL45InputLayout::GL45InputLayout(GLuint, GLuint vbufferHandle,
     VertexBuffer const* vbuffer)
     :
-    // mProgramHandle(programHandle), /*< Unused variable */
     mVBufferHandle(vbufferHandle),
     mNumAttributes(0)
 {

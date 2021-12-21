@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 4.0.2021.12.20
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/MorphController.h>
@@ -109,12 +109,9 @@ bool MorphController::Update(double applicationTime)
     float const* weights0 = &mWeights[key0 * mNumTargets];
     float const* weights1 = &mWeights[key1 * mNumTargets];
     Vector3<float> const* vertices = mVertices.data();
-    // float wsum0 = 0.0f, wsum1 = 0.0f; /*< Unused variables */
     for (size_t n = 0; n < mNumTargets; ++n)
     {
         float w = oneMinusNormTime * weights0[n] + normTime * weights1[n];
-        // wsum0 += weights0[n]; /*< Unused variables */
-        // wsum1 += weights1[n]; /*< Unused variables */
         combination = vbuffer->GetData();
         for (size_t m = 0; m < mNumVertices; ++m)
         {

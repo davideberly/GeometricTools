@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 4.0.2021.12.20
 
 #include <Graphics/GL45/GL45.h>
 #include <cassert>
@@ -14,9 +14,6 @@
 #include <vector>
 
 // Support for versioning.
-// int constexpr OPENGL_VERSION_NONE = 0; /*< Unused variable */
-// int constexpr OPENGL_VERSION_1_0 = 10; /*< Unused variable */
-int constexpr OPENGL_VERSION_1_1 = 11;
 int constexpr OPENGL_VERSION_1_2 = 12;
 int constexpr OPENGL_VERSION_1_3 = 13;
 int constexpr OPENGL_VERSION_1_4 = 14;
@@ -126,6 +123,8 @@ static void ReportGLNullFunction(const char* glFunction)
 }
 
 #if !defined(GTE_USE_MSWINDOWS)
+
+int constexpr OPENGL_VERSION_1_1 = 11;
 
 // GL_VERSION_1_0
 

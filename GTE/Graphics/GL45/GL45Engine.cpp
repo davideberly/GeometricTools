@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 4.0.2021.12.20
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/FontArialW400H18.h>
@@ -213,7 +213,7 @@ uint64_t GL45Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
     unsigned int offset = ibuffer->GetOffset();
     if (ibuffer->IsIndexed())
     {
-        void const* data = (char*)0 + static_cast<size_t>(indexSize) * static_cast<size_t>(offset);
+        void const* data = reinterpret_cast<void const*>(static_cast<size_t>(indexSize) * static_cast<size_t>(offset));
         glDrawRangeElements(topology, 0, numActiveVertices - 1,
             static_cast<GLsizei>(numActiveIndices), indexType, data);
     }
@@ -1223,7 +1223,7 @@ void GL45Engine::Execute(std::shared_ptr<ComputeProgram> const& program,
     auto glslProgram = std::dynamic_pointer_cast<GLSLComputeProgram>(program);
     if (glslProgram && numXGroups > 0 && numYGroups > 0 && numZGroups > 0)
     {
-        auto cshader = glslProgram->GetComputeShader();
+        auto const& cshader = glslProgram->GetComputeShader();
         auto programHandle = glslProgram->GetProgramHandle();
         if (cshader && programHandle > 0)
         {

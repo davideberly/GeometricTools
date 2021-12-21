@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2021.11.11
+// Version: 4.6.2021.12.20
 
 #pragma once
 
@@ -76,7 +76,7 @@ namespace gte
             auto XFunction = [this, &F, &G, &yMin, &yMax](Real const& x)
             {
                 // YFunction(y) = G(x,y)
-                auto YFunction = [this, &G, &x](Real const& y)
+                auto YFunction = [&G, &x](Real const& y)
                 {
                     return G(x, y);
                 };
