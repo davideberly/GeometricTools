@@ -24,6 +24,7 @@
 #include <Mathematics/Ellipse3.h>
 #include <Mathematics/Hyperellipsoid.h>
 #include <Mathematics/Matrix.h>
+#include <Mathematics/Matrix3x3.h>
 #include <Mathematics/IntrPlane3Plane3.h>
 
 namespace gte
