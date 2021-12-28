@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 4.0.2021.12.28
 
 #pragma once
 
@@ -70,7 +70,7 @@ namespace gte
     // chosen InputType are listed in the next table. The numerical
     // computations are encapsulated in PrimalQuery2<ComputeType>::ToLine and
     // PrimalQuery2<ComputeType>::ToCircumcircle, the latter query the
-    // dominant one in/ determining N. We recommend using only BSNumber,
+    // dominant one in determining N. We recommend using only BSNumber,
     // because no divisions are performed in the triangulation computations.
     //
     //    input type | compute type | N
@@ -81,12 +81,10 @@ namespace gte
     //    double     | BSRational   |  4329
 
     template <typename InputType, typename ComputeType>
-    class // [[deprecated("Use Delaunay2<InputType> instead.")]]
+    class // [[deprecated("Use Delaunay2<T> instead.")]]
         Delaunay2<InputType, ComputeType>
     {
     public:
-        // The class is a functor to support computing the Delaunay
-        // triangulation of multiple data sets using the same class object.
         virtual ~Delaunay2() = default;
 
         Delaunay2()
@@ -842,8 +840,6 @@ namespace gte
     class Delaunay2<T>
     {
     public:
-        // The class is a functor to support computing the Delaunay
-        // triangulation of multiple data sets using the same class object.
         virtual ~Delaunay2() = default;
 
         Delaunay2()
