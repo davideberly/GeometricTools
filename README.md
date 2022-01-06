@@ -42,17 +42,6 @@ features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the installation and release
 notes to understand what is expected of your development environment.
  
-## Citing ##
-
-Here is a Bibtex entry you can use to cite this project in a publication.
-
-```
-@misc{GeometricToolsEngine5,
-  title = {{G}eometric {T}ools {E}ngine, Version 5},
-  author = {David Eberly},
-  howpublished = {\url{https://github.com/davideberly/GeometricTools}}
-}
-```
 ## Technical Support Queue ##
 
 The current queue of technical support issues, whether reported on github
