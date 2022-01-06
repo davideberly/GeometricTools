@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -34,7 +34,7 @@ namespace gte
         void ResetAccumulateTime();
         void AccumulateTime();
         double GetAverageSeconds() const;
-        unsigned int GetNumMeasurements() const;
+        uint32_t GetNumMeasurements() const;
 
     private:
         // Allow the engine to access the members directly to avoid exposing
@@ -48,6 +48,6 @@ namespace gte
         double mFrequency, mInvFrequency;
         int64_t mStartTime, mFinalTime;
         double mTotalSeconds;
-        unsigned int mNumMeasurements;
+        uint32_t mNumMeasurements;
     };
 }

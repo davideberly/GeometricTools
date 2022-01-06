@@ -1,16 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/DirectionalLightEffect.h>
 using namespace gte;
 
 DirectionalLightEffect::DirectionalLightEffect(std::shared_ptr<ProgramFactory> const& factory,
-    BufferUpdater const& updater, int select, std::shared_ptr<Material> const& material,
+    BufferUpdater const& updater, int32_t select, std::shared_ptr<Material> const& material,
     std::shared_ptr<Lighting> const& lighting, std::shared_ptr<LightCameraGeometry> const& geometry)
     :
     LightEffect(factory, updater, msVSSource[select & 1], msPSSource[select & 1],
@@ -27,14 +27,14 @@ DirectionalLightEffect::DirectionalLightEffect(std::shared_ptr<ProgramFactory> c
 
     if ((select & 1) == 0)
     {
-        auto vshader = mProgram->GetVertexShader();
+        auto const& vshader = mProgram->GetVertexShader();
         vshader->Set("Material", mMaterialConstant);
         vshader->Set("Lighting", mLightingConstant);
         vshader->Set("LightCameraGeometry", mGeometryConstant);
     }
     else
     {
-        auto pshader = mProgram->GetPixelShader();
+        auto const& pshader = mProgram->GetPixelShader();
         pshader->Set("Material", mMaterialConstant);
         pshader->Set("Lighting", mLightingConstant);
         pshader->Set("LightCameraGeometry", mGeometryConstant);

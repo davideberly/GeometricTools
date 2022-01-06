@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MovingSphereBoxWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -24,13 +24,13 @@ MovingSphereBoxWindow3::MovingSphereBoxWindow3(Parameters& parameters)
 {
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     CreateScene();
@@ -62,22 +62,22 @@ void MovingSphereBoxWindow3::OnIdle()
         mEngine->Draw(mSphereVisual);
     }
     mEngine->Draw(mVelocityVisual);
-    if (mSphereContactVisual->culling != CullingMode::CULL_ALWAYS)
+    if (mSphereContactVisual->culling != CullingMode::ALWAYS)
     {
         mEngine->Draw(mPointContactVisual);
         mEngine->Draw(mSphereContactVisual);
     }
 
     mEngine->Draw(mBoxVisual);
-    for (int i = 0; i < 8; ++i)
+    for (int32_t i = 0; i < 8; ++i)
     {
         mEngine->Draw(mVertexVisual[i]);
     }
-    for (int i = 0; i < 12; ++i)
+    for (int32_t i = 0; i < 12; ++i)
     {
         mEngine->Draw(mEdgeVisual[i]);
     }
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         mEngine->Draw(mFaceVisual[i]);
     }
@@ -92,7 +92,7 @@ void MovingSphereBoxWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MovingSphereBoxWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MovingSphereBoxWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -218,9 +218,9 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
     float b2 = 4.0f;
     float b3 = sqrt2 * (3.0f + 2.0f * sqrt2 - sqrt3) / sqrt3;
 
-    Vector3<float> control[5][5];
-    float weight[5][5];
-    std::function<float(float, float, float)> bernstein[5][5];
+    std::array<std::array<Vector3<float>, 5>, 5> control{};
+    std::array<std::array<float, 5>, 5> weight{};
+    std::array<std::array<std::function<float(float, float, float)>, 5>, 5> bernstein{};
 
     control[0][0] = { 0.0f, 0.0f, 1.0f };   // P004
     control[0][1] = { 0.0f, a0,   1.0f };   // P013
@@ -299,23 +299,23 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
     bernstein[4][0] = [](float u, float, float) { return u * u * u * u; };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, DENSITY * DENSITY);
     auto vertices = vbuffer->Get<Vector3<float>>();
     std::memset(vbuffer->GetData(), 0, vbuffer->GetNumBytes());
-    for (int iv = 0; iv <= DENSITY - 1; ++iv)
+    for (int32_t iv = 0; iv <= DENSITY - 1; ++iv)
     {
         float v = (float)iv / (float)(DENSITY - 1);
-        for (int iu = 0; iu + iv <= DENSITY - 1; ++iu)
+        for (int32_t iu = 0; iu + iv <= DENSITY - 1; ++iu)
         {
             float u = (float)iu / (float)(DENSITY - 1);
             float w = 1.0f - u - v;
 
             Vector3<float> numer{ 0.0f, 0.0f, 0.0f };
             float denom = 0.0f;
-            for (int j1 = 0; j1 <= 4; ++j1)
+            for (int32_t j1 = 0; j1 <= 4; ++j1)
             {
-                for (int j0 = 0; j0 + j1 <= 4; ++j0)
+                for (int32_t j0 = 0; j0 + j1 <= 4; ++j0)
                 {
                     float product = weight[j1][j0] * bernstein[j1][j0](u, v, w);
                     numer += product * control[j1][j0];
@@ -327,11 +327,11 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
         }
     }
 
-    std::vector<int> indices;
-    for (int iv = 0; iv <= DENSITY - 2; ++iv)
+    std::vector<int32_t> indices;
+    for (int32_t iv = 0; iv <= DENSITY - 2; ++iv)
     {
         // two triangles per square
-        int iu, j0, j1, j2, j3;
+        int32_t iu, j0, j1, j2, j3;
         for (iu = 0; iu + iv <= DENSITY - 3; ++iu)
         {
             j0 = iu + DENSITY * iv;
@@ -356,8 +356,8 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
     }
 
     uint32_t numTriangles = (uint32_t)(indices.size() / 3);
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(int));
-    std::memcpy(ibuffer->GetData(), indices.data(), indices.size() * sizeof(int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(int32_t));
+    std::memcpy(ibuffer->GetData(), indices.data(), indices.size() * sizeof(int32_t));
 
     Vector4<float> color[8] =
     {
@@ -419,7 +419,7 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
     mVNormal[6] = { -1.0f, +1.0f, +1.0f, 0.0f };
     mVNormal[7] = { +1.0f, +1.0f, +1.0f, 0.0f };
 
-    for (int i = 0; i < 8; ++i)
+    for (int32_t i = 0; i < 8; ++i)
     {
         auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
         mVertexVisual[i] = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -434,17 +434,17 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
 void MovingSphereBoxWindow3::CreateRoundedBoxEdges()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto visual = mf.CreateRectangle(DENSITY, DENSITY, 1.0f, 1.0f);
-    auto vbuffer = visual->GetVertexBuffer();
-    auto ibuffer = visual->GetIndexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
+    auto const& ibuffer = visual->GetIndexBuffer();
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (int row = 0; row < DENSITY; ++row)
+    for (int32_t row = 0; row < DENSITY; ++row)
     {
         float z = -1.0f + 2.0f * (float)row / (float)(DENSITY - 1);
-        for (int col = 0; col < DENSITY; ++col)
+        for (int32_t col = 0; col < DENSITY; ++col)
         {
             float angle = (float)GTE_C_HALF_PI * (float)col / (float)(DENSITY - 1);
             float cs = std::cos(angle), sn = std::sin(angle);
@@ -566,7 +566,7 @@ void MovingSphereBoxWindow3::CreateRoundedBoxEdges()
     mENormal[10] = { 0.0f, +1.0f, -1.0f, 0.0f };
     mENormal[11] = { 0.0f, +1.0f, +1.0f, 0.0f };
 
-    for (int i = 0; i < 12; ++i)
+    for (int32_t i = 0; i < 12; ++i)
     {
         auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
         mEdgeVisual[i] = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -582,12 +582,12 @@ void MovingSphereBoxWindow3::CreateRoundedBoxEdges()
 void MovingSphereBoxWindow3::CreateRoundedBoxFaces()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto visual = mf.CreateRectangle(DENSITY, DENSITY, 1.0f, 1.0f);
-    auto vbuffer = visual->GetVertexBuffer();
-    auto ibuffer = visual->GetIndexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
+    auto const& ibuffer = visual->GetIndexBuffer();
 
     Vector4<float> color[6] =
     {
@@ -665,7 +665,7 @@ void MovingSphereBoxWindow3::CreateRoundedBoxFaces()
     mFNormal[4] = { -1.0f, 0.0f, 0.0f, 0.0f };
     mFNormal[5] = { +1.0f, 0.0f, 0.0f, 0.0f };
 
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
         mFaceVisual[i] = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -681,7 +681,7 @@ void MovingSphereBoxWindow3::CreateRoundedBoxFaces()
 void MovingSphereBoxWindow3::CreateBox()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 #if defined(APP_USE_OBB)
@@ -701,7 +701,7 @@ void MovingSphereBoxWindow3::CreateBox()
 void MovingSphereBoxWindow3::CreateSpheres()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mSphereVisual = mf.CreateSphere(16, 16, mSphere.radius);
@@ -714,7 +714,7 @@ void MovingSphereBoxWindow3::CreateSpheres()
 
     mSphereContactVisual = mf.CreateSphere(16, 16, mSphere.radius);
     color = { 0.25f, 0.25f, 0.25f, mAlpha };
-    mSphereContactVisual->culling = CullingMode::CULL_ALWAYS;
+    mSphereContactVisual->culling = CullingMode::ALWAYS;
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color);
     mSphereContactVisual->SetEffect(effect);
     mSphereContactVisual->localTransform.SetTranslation(mSphere.center);
@@ -733,7 +733,7 @@ void MovingSphereBoxWindow3::CreateSpheres()
 void MovingSphereBoxWindow3::CreateMotionCylinder()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { 0.0f, 0.0f, 0.0f };
@@ -754,10 +754,10 @@ void MovingSphereBoxWindow3::UpdateSphereVelocity()
     float cs1 = std::cos(angle1), sn1 = std::sin(angle1);
     mSphereVelocity = { cs0 * sn1, sn0 * sn1, cs1 };
 
-    Vector3<float> basis[3];
+    std::array<Vector3<float>, 3> basis{};
     basis[0] = mSphereVelocity;
-    ComputeOrthogonalComplement(1, basis);
-    Matrix3x3<float> rotate;
+    ComputeOrthogonalComplement(1, basis.data());
+    Matrix3x3<float> rotate{};
     rotate.SetCol(0, basis[1]);
     rotate.SetCol(1, basis[2]);
     rotate.SetCol(2, basis[0]);
@@ -769,7 +769,7 @@ void MovingSphereBoxWindow3::UpdateSphereVelocity()
     bool intersect = (result.intersectionType != 0);
     if (intersect)
     {
-        mSphereContactVisual->culling = CullingMode::CULL_DYNAMIC;
+        mSphereContactVisual->culling = CullingMode::DYNAMIC;
         mSphereContactVisual->localTransform.SetTranslation(
             mSphere.center + result.contactTime * mSphereVelocity);
         mSphereContactVisual->Update();
@@ -790,7 +790,7 @@ void MovingSphereBoxWindow3::UpdateSphereVelocity()
     }
     else
     {
-        mSphereContactVisual->culling = CullingMode::CULL_ALWAYS;
+        mSphereContactVisual->culling = CullingMode::ALWAYS;
         mMessage = "";
     }
 

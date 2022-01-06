@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "LightsWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -17,7 +17,7 @@ LightsWindow3::LightsWindow3(Parameters& parameters)
 {
     mEngine->SetClearColor({ 0.0f, 0.25f, 0.75f, 1.0f });
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
 
@@ -53,7 +53,7 @@ void LightsWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
+bool LightsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -89,9 +89,9 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
     // only once.  This is the case for cases 'i', 'I', 'a', 'A', 'e' and 'E'.
 
     case 'i':   // decrease light intensity
-        for (int lt = 0; lt < LNUM; ++lt)
+        for (int32_t lt = 0; lt < LNUM; ++lt)
         {
-            for (int gt = 0; gt < GNUM; ++gt)
+            for (int32_t gt = 0; gt < GNUM; ++gt)
             {
                 auto effect0 = mEffect[lt][gt][0];
                 auto lighting0 = effect0->GetLighting();
@@ -107,9 +107,9 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
         return true;
 
     case 'I':   // increase light intensity
-        for (int lt = 0; lt < LNUM; ++lt)
+        for (int32_t lt = 0; lt < LNUM; ++lt)
         {
-            for (int gt = 0; gt < GNUM; ++gt)
+            for (int32_t gt = 0; gt < GNUM; ++gt)
             {
                 auto effect0 = mEffect[lt][gt][0];
                 auto lighting0 = effect0->GetLighting();
@@ -125,7 +125,7 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
         return true;
 
     case 'a':   // decrease spot angle
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
             auto effect0 = mEffect[LSPT][gt][0];
             auto lighting0 = effect0->GetLighting();
@@ -142,7 +142,7 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
         return true;
 
     case 'A':   // increase spot angle
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
             auto effect0 = mEffect[LSPT][gt][0];
             auto lighting0 = effect0->GetLighting();
@@ -159,7 +159,7 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
         return true;
 
     case 'e':   // decrease spot exponent
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
             auto effect0 = mEffect[LSPT][gt][0];
             auto lighting0 = effect0->GetLighting();
@@ -173,7 +173,7 @@ bool LightsWindow3::OnCharPress(unsigned char key, int x, int y)
         return true;
 
     case 'E':   // increase spot exponent
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
             auto effect0 = mEffect[LSPT][gt][0];
             auto lighting0 = effect0->GetLighting();
@@ -220,9 +220,9 @@ void LightsWindow3::CreateScene()
     std::shared_ptr<Material> material[LNUM][GNUM];
     std::shared_ptr<Lighting> lighting[LNUM][GNUM];
     std::shared_ptr<LightCameraGeometry> geometry[LNUM][GNUM];
-    for (int lt = 0; lt < LNUM; ++lt)
+    for (int32_t lt = 0; lt < LNUM; ++lt)
     {
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
             material[lt][gt] = std::make_shared<Material>();
             lighting[lt][gt] = std::make_shared<Lighting>();
@@ -266,9 +266,9 @@ void LightsWindow3::CreateScene()
     // constant buffers are shared by the vertex and pixel shaders.  This
     // is important to remember when processing keystroked; see the comments
     // in OnCharPress.
-    for (int gt = 0; gt < GNUM; ++gt)
+    for (int32_t gt = 0; gt < GNUM; ++gt)
     {
-        for (int st = 0; st < SNUM; ++st)
+        for (int32_t st = 0; st < SNUM; ++st)
         {
             mEffect[LDIR][gt][st] = std::make_shared<DirectionalLightEffect>(
                 mProgramFactory, mUpdater, st,
@@ -286,8 +286,8 @@ void LightsWindow3::CreateScene()
 
     // Create the planes and spheres.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -316,7 +316,7 @@ void LightsWindow3::CreateScene()
     UseLightType(LDIR);
 }
 
-void LightsWindow3::UseLightType(int type)
+void LightsWindow3::UseLightType(int32_t type)
 {
     mPVWMatrices.Unsubscribe(mPlane[SVTX]->worldTransform);
     mPlane[SVTX]->SetEffect(mEffect[type][GPLN][SVTX]);
@@ -356,20 +356,20 @@ void LightsWindow3::UpdateConstants()
 
     // Compute the world-to-model transforms for the planes and spheres.
     Matrix4x4<float> invWMatrix[GNUM][SNUM];
-    for (int gt = 0; gt < GNUM; ++gt)
+    for (int32_t gt = 0; gt < GNUM; ++gt)
     {
-        for (int st = 0; st < SNUM; ++st)
+        for (int32_t st = 0; st < SNUM; ++st)
         {
             invWMatrix[gt][st] = Inverse(wMatrix[gt][st]);
         }
     }
 
     Vector4<float> cameraWorldPosition = mCamera->GetPosition();
-    for (int lt = 0; lt < LNUM; ++lt)
+    for (int32_t lt = 0; lt < LNUM; ++lt)
     {
-        for (int gt = 0; gt < GNUM; ++gt)
+        for (int32_t gt = 0; gt < GNUM; ++gt)
         {
-            for (int st = 0; st < SNUM; ++st)
+            for (int32_t st = 0; st < SNUM; ++st)
             {
                 auto effect = mEffect[lt][gt][st];
                 auto lighting = mEffect[lt][gt][st]->GetLighting();

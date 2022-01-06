@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ConformalMappingWindow3.h"
 #include <Graphics/VertexColorEffect.h>
@@ -23,7 +23,7 @@ ConformalMappingWindow3::ConformalMappingWindow3(Parameters& parameters)
 
     mEngine->SetClearColor({ 0.4f, 0.5f, 0.6f, 1.0f });
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.01f,
         { 0.0f, 0.0f, -6.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
@@ -51,7 +51,7 @@ void ConformalMappingWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool ConformalMappingWindow3::OnCharPress(unsigned char key, int x, int y)
+bool ConformalMappingWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -103,11 +103,11 @@ bool ConformalMappingWindow3::SetEnvironment()
 }
 
 void ConformalMappingWindow3::LoadBrain(std::vector<Vector3<float>>& positions,
-    std::vector<Vector4<float>>& colors, std::vector<unsigned int>& indices)
+    std::vector<Vector4<float>>& colors, std::vector<uint32_t>& indices)
 {
     // Load the brain mesh, which has the topology of a sphere.
-    unsigned int const numPositions = NUM_BRAIN_VERTICES;
-    unsigned int const numTriangles = NUM_BRAIN_TRIANGLES;
+    uint32_t const numPositions = NUM_BRAIN_VERTICES;
+    uint32_t const numTriangles = NUM_BRAIN_TRIANGLES;
     positions.resize(numPositions);
     colors.resize(numPositions);
     indices.resize(3 * numTriangles);
@@ -121,10 +121,10 @@ void ConformalMappingWindow3::LoadBrain(std::vector<Vector3<float>>& positions,
     // Scale the data to the cube [-10,10]^3 for numerical preconditioning
     // of the conformal mapping.
     float minValue = positions[0][0], maxValue = minValue;
-    for (unsigned int i = 0; i < numPositions; ++i)
+    for (uint32_t i = 0; i < numPositions; ++i)
     {
         auto const& position = positions[i];
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             if (position[j] < minValue)
             {
@@ -138,10 +138,10 @@ void ConformalMappingWindow3::LoadBrain(std::vector<Vector3<float>>& positions,
     }
     float halfRange = 0.5f * (maxValue - minValue);
     float mult = mExtreme / halfRange;
-    for (unsigned int i = 0; i < numPositions; ++i)
+    for (uint32_t i = 0; i < numPositions; ++i)
     {
         auto& position = positions[i];
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             position[j] = -mExtreme + mult * (position[j] - minValue);
         }
@@ -155,7 +155,7 @@ void ConformalMappingWindow3::LoadBrain(std::vector<Vector3<float>>& positions,
     std::vector<float> meanCurvatures(numPositions);
     float minMeanCurvature = minCurvatures[0] + maxCurvatures[0];
     float maxMeanCurvature = minMeanCurvature;
-    for (unsigned int i = 0; i < numPositions; ++i)
+    for (uint32_t i = 0; i < numPositions; ++i)
     {
         meanCurvatures[i] = minCurvatures[i] + maxCurvatures[i];
         if (meanCurvatures[i] < minMeanCurvature)
@@ -168,7 +168,7 @@ void ConformalMappingWindow3::LoadBrain(std::vector<Vector3<float>>& positions,
         }
     }
 
-    for (unsigned int i = 0; i < numPositions; ++i)
+    for (uint32_t i = 0; i < numPositions; ++i)
     {
         auto& color = colors[i];
         if (meanCurvatures[i] > 0.0f)
@@ -198,22 +198,22 @@ void ConformalMappingWindow3::CreateScene()
     // Load and preprocess the brain data set.
     std::vector<Vector3<float>> positions;
     std::vector<Vector4<float>> colors;
-    std::vector<unsigned int> indices;
+    std::vector<uint32_t> indices;
     LoadBrain(positions, colors, indices);
 
     // Create the brain mesh.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, NUM_BRAIN_VERTICES);
     auto vertices = vbuffer->Get<Vertex>();
-    for (int i = 0; i < NUM_BRAIN_VERTICES; ++i)
+    for (uint32_t i = 0; i < NUM_BRAIN_VERTICES; ++i)
     {
         vertices[i].position = positions[i];
         vertices[i].color = colors[i];
     }
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, NUM_BRAIN_TRIANGLES, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, NUM_BRAIN_TRIANGLES, sizeof(uint32_t));
     std::memcpy(ibuffer->GetData(), indices.data(), ibuffer->GetNumBytes());
 
     auto effect = std::make_shared<VertexColorEffect>(mProgramFactory);
@@ -223,7 +223,7 @@ void ConformalMappingWindow3::CreateScene()
 
     // Select the first triangle as the puncture triangle and use red
     // vertex colors for it.
-    int punctureTriangle = 100;
+    size_t punctureTriangle = 100;
     Vector4<float> red{ 1.0f, 0.0f, 0.0f, 1.0f };
     vertices[indices[3 * punctureTriangle + 0]].color = red;
     vertices[indices[3 * punctureTriangle + 1]].color = red;
@@ -231,13 +231,14 @@ void ConformalMappingWindow3::CreateScene()
 
     // Conformally map the mesh to a sphere.
     ConformalMapGenus0<float> cm;
-    cm(NUM_BRAIN_VERTICES, positions.data(), NUM_BRAIN_TRIANGLES,
-         ibuffer->Get<int>(), punctureTriangle);
+    cm(static_cast<int32_t>(NUM_BRAIN_VERTICES), positions.data(),
+        static_cast<int32_t>(NUM_BRAIN_TRIANGLES), ibuffer->Get<int32_t>(),
+        static_cast<int32_t>(punctureTriangle));
     auto const& sphereCoordinates = cm.GetSphereCoordinates();
 
     vbuffer = std::make_shared<VertexBuffer>(vformat, NUM_BRAIN_VERTICES);
     vertices = vbuffer->Get<Vertex>();
-    for (int i = 0; i < NUM_BRAIN_VERTICES; ++i)
+    for (uint32_t i = 0; i < NUM_BRAIN_VERTICES; ++i)
     {
         vertices[i].position = sphereCoordinates[i];
         vertices[i].color = colors[i];

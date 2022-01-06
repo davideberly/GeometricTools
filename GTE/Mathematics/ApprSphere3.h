@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Mathematics/Hypersphere.h>
 #include <Mathematics/Vector3.h>
+#include <cstdint>
 
 // Least-squares fit of a sphere to a set of points. The algorithms are
 // described in Section 5 of
@@ -25,12 +26,12 @@ namespace gte
         // The return value is 'true' when the linear system of the algorithm
         // is solvable, 'false' otherwise. If 'false' is returned, the sphere
         // center and radius are set to zero values.
-        bool FitUsingSquaredLengths(int numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
+        bool FitUsingSquaredLengths(int32_t numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
         {
             // Compute the average of the data points.
             Real const zero(0);
             Vector3<Real> A = { zero, zero, zero };
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 A += points[i];
             }
@@ -41,7 +42,7 @@ namespace gte
             // right-hand side R of the linear system M*(C-A) = R.
             Real M00 = zero, M01 = zero, M02 = zero, M11 = zero, M12 = zero, M22 = zero;
             Vector3<Real> R = { zero, zero, zero };
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Vector3<Real> Y = points[i] - A;
                 Real Y0Y0 = Y[0] * Y[0];
@@ -74,7 +75,7 @@ namespace gte
                 sphere.center[1] = A[1] + (cof01 * R[0] + cof11 * R[1] + cof12 * R[2]) / det;
                 sphere.center[2] = A[2] + (cof02 * R[0] + cof12 * R[1] + cof22 * R[2]) / det;
                 Real rsqr = zero;
-                for (int i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector3<Real> delta = points[i] - sphere.center;
                     rsqr += Dot(delta, delta);
@@ -110,13 +111,13 @@ namespace gte
         // input maxIterations, you can either accept the result or polish the
         // result by calling the function again with initialCenterIsAverage
         // set to 'true'.
-        unsigned int FitUsingLengths(int numPoints, Vector3<Real> const* points,
-            unsigned int maxIterations, bool initialCenterIsAverage,
+        uint32_t FitUsingLengths(int32_t numPoints, Vector3<Real> const* points,
+            uint32_t maxIterations, bool initialCenterIsAverage,
             Sphere3<Real>& sphere, Real epsilon = (Real)0)
         {
             // Compute the average of the data points.
             Vector3<Real> average = points[0];
-            for (int i = 1; i < numPoints; ++i)
+            for (int32_t i = 1; i < numPoints; ++i)
             {
                 average += points[i];
             }
@@ -130,7 +131,7 @@ namespace gte
             }
 
             Real epsilonSqr = epsilon * epsilon;
-            unsigned int iteration;
+            uint32_t iteration;
             for (iteration = 0; iteration < maxIterations; ++iteration)
             {
                 // Update the iterates.
@@ -139,7 +140,7 @@ namespace gte
                 // Compute average L, dL/da, dL/db, dL/dc.
                 Real lenAverage = (Real)0;
                 Vector3<Real> derLenAverage = Vector3<Real>::Zero();
-                for (int i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector3<Real> diff = points[i] - sphere.center;
                     Real length = Length(diff);

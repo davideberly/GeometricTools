@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,13 +20,13 @@ public:
     MorphFacesWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
     void CreateScene();
     void CreateMorphResult();
-    void LoadTarget(int i, std::string const& targetName);
+    void LoadTarget(int32_t i, std::string const& targetName);
     void UpdateMorph(float time);
 
     std::shared_ptr<Node> mScene, mMorphResult;
@@ -36,7 +36,7 @@ private:
     std::array<std::shared_ptr<PointLightEffect>, 4> mPLEffects;
     std::vector<std::shared_ptr<Visual>> mVisuals;
 
-    enum { NUM_TARGETS = 12 };
+    static int32_t constexpr NUM_TARGETS = 12;
 
     struct InVertex
     {
@@ -49,7 +49,7 @@ private:
         Vector2<float> tcoord;
     };
 
-    int mNumVertices;
+    int32_t mNumVertices;
     std::array<std::vector<InVertex>, NUM_TARGETS> mVertices;
     std::array<std::shared_ptr<CubicInterpolator<1, float>>, NUM_TARGETS> mWeightInterpolator;
     std::shared_ptr<CubicInterpolator<3, float>> mColorInterpolator;

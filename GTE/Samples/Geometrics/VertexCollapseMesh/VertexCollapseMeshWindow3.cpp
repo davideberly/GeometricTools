@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "VertexCollapseMeshWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -16,29 +16,30 @@ VertexCollapseMeshWindow3::VertexCollapseMeshWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 1.0f, 0.01f,
         { 0.0f, 0.0f, 6.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f, 0.0f });
 
     VertexFormat format;
-    format.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    format.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(format);
     auto cylinder = mf.CreateCylinderOpen(8, 8, 1.0f, 2.0f);
-    unsigned int numPositions = cylinder->GetVertexBuffer()->GetNumElements();
+    uint32_t numPositions = cylinder->GetVertexBuffer()->GetNumElements();
     mPositions.resize(numPositions);
     std::memcpy(mPositions.data(), cylinder->GetVertexBuffer()->GetData(), numPositions * sizeof(Vector3<float>));
-    unsigned int numTriangles = cylinder->GetIndexBuffer()->GetNumPrimitives();
+    uint32_t numTriangles = cylinder->GetIndexBuffer()->GetNumPrimitives();
     mTriangles.resize(numTriangles);
-    std::memcpy(mTriangles.data(), cylinder->GetIndexBuffer()->GetData(), numTriangles * 3 * sizeof(int));
+    std::memcpy(mTriangles.data(), cylinder->GetIndexBuffer()->GetData(),
+        static_cast<size_t>(numTriangles) * 3 * sizeof(int32_t));
 
     mVCMesh = std::make_shared<VertexCollapseMesh<float>>(numPositions, &mPositions[0],
-        3 * numTriangles, (int const*)&mTriangles[0]);
+        3 * numTriangles, (int32_t const*)&mTriangles[0]);
 
     struct Vertex
     {
@@ -46,14 +47,14 @@ VertexCollapseMeshWindow3::VertexCollapseMeshWindow3(Parameters& parameters)
         Vector4<float> color;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numPositions);
     auto* vertex = vbuffer->Get<Vertex>();
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.0f, 1.0f);
     Vector3<float> average{ 0.0f, 0.0f, 0.0f };
-    for (unsigned int i = 0; i < numPositions; ++i)
+    for (uint32_t i = 0; i < numPositions; ++i)
     {
         vertex[i].position = mPositions[i];
         vertex[i].color[0] = rnd(mte);
@@ -64,8 +65,8 @@ VertexCollapseMeshWindow3::VertexCollapseMeshWindow3(Parameters& parameters)
     }
     average /= (float)numPositions;
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(int));
-    int* index = ibuffer->Get<int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(int32_t));
+    int32_t* index = ibuffer->Get<int32_t>();
     for (auto const& element : mVCMesh->GetMesh().GetTriangles())
     {
         *index++ = element.first.V[0];
@@ -99,7 +100,7 @@ void VertexCollapseMeshWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool VertexCollapseMeshWindow3::OnCharPress(unsigned char key, int x, int y)
+bool VertexCollapseMeshWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -123,9 +124,9 @@ bool VertexCollapseMeshWindow3::OnCharPress(unsigned char key, int x, int y)
         {
             std::cout << "v = " << record.vertex << " rs = " << record.removed.size() << " is = " << record.inserted.size() << std::endl;
             auto const& mesh = mVCMesh->GetMesh();
-            unsigned int const numTriangles = static_cast<unsigned int>(mesh.GetTriangles().size());
-            auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-            unsigned int* index = ibuffer->Get<unsigned int>();
+            uint32_t const numTriangles = static_cast<uint32_t>(mesh.GetTriangles().size());
+            auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+            uint32_t* index = ibuffer->Get<uint32_t>();
             for (auto const& element : mesh.GetTriangles())
             {
                 *index++ = element.first.V[0];

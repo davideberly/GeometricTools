@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FoucaultPendulumWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -25,7 +25,7 @@ FoucaultPendulumWindow3::FoucaultPendulumWindow3(Parameters& parameters)
 
     mEngine->SetClearColor({ 0.819607f, 0.909803f, 0.713725f, 1.0f });
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
 
@@ -54,7 +54,7 @@ void FoucaultPendulumWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool FoucaultPendulumWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FoucaultPendulumWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
 #if defined(FOUCAULT_PENDULUM_SINGLE_STEP)
     if (key == 'g' || key == 'G')
@@ -131,12 +131,12 @@ void FoucaultPendulumWindow3::CreateFloor()
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Wood.png"), true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP,
-        SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -152,12 +152,12 @@ void FoucaultPendulumWindow3::CreatePath()
 {
     // The points used to display the path of the pendulum.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
 
-    unsigned int const numPoints = 8192;
+    uint32_t const numPoints = 8192;
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numPoints);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     std::memset(vbuffer->GetData(), 0, vbuffer->GetNumBytes());
 
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYPOINT, numPoints);
@@ -178,8 +178,8 @@ void FoucaultPendulumWindow3::CreatePath()
 void FoucaultPendulumWindow3::CreatePendulum()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -187,10 +187,10 @@ void FoucaultPendulumWindow3::CreatePendulum()
     // the purpose of rotation.
     auto rod = mf.CreateCylinderOpen(2, 8, 0.05f, 12.0f);
     rod->localTransform.SetTranslation(0.0f, 0.0f, 10.0f);
-    auto vbuffer = rod->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    std::shared_ptr<VertexBuffer> vbuffer = rod->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<VertexPT>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].position[2] -= 16.0f;
     }
@@ -202,7 +202,7 @@ void FoucaultPendulumWindow3::CreatePendulum()
     vbuffer = bulb->GetVertexBuffer();
     numVertices = vbuffer->GetNumElements();
     vertices = vbuffer->Get<VertexPT>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& position = vertices[i].position;
         float r = std::sqrt(position[0] * position[0] + position[1] * position[1]);
@@ -220,15 +220,15 @@ void FoucaultPendulumWindow3::CreatePendulum()
     mPendulum->localTransform.SetTranslation(0.0f, 0.0f, 16.0f);
 
     // Use a color gradient texture for visualization.
-    unsigned int const height = 256;
+    uint32_t const height = 256;
     auto texture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, 1, height);
     Vector4<float> color{ 0.99607f, 0.83920f, 0.67059f, 1.0f };
     auto texels = texture->Get<std::array<uint8_t, 4>>();
     float const multiplier = 255.0f / static_cast<float>(height - 1);
-    for (unsigned int i = 0; i < height; ++i)
+    for (uint32_t i = 0; i < height; ++i)
     {
         float t = static_cast<float>(i) * multiplier;
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             texels[i][j] = static_cast<uint8_t>(color[j] * t);
         }
@@ -236,13 +236,13 @@ void FoucaultPendulumWindow3::CreatePendulum()
     }
 
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     rod->SetEffect(effect);
     mPVWMatrices.Subscribe(rod->worldTransform, effect->GetPVWMatrixConstant());
     mVisuals.push_back(rod);
 
     effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     bulb->SetEffect(effect);
     mPVWMatrices.Subscribe(bulb->worldTransform, effect->GetPVWMatrixConstant());
     mVisuals.push_back(bulb);
@@ -261,8 +261,8 @@ void FoucaultPendulumWindow3::PhysicsTick()
     // Draw only the active quantity of pendulum points for the initial
     // portion of the simulation.  Once all points are activated, then all
     // are drawn.
-    auto ibuffer = mPath->GetIndexBuffer();
-    unsigned int numActive = ibuffer->GetNumActivePrimitives() + 1;
+    auto const& ibuffer = mPath->GetIndexBuffer();
+    uint32_t numActive = ibuffer->GetNumActivePrimitives() + 1;
     if (numActive > ibuffer->GetNumPrimitives())
     {
         numActive = ibuffer->GetNumPrimitives();
@@ -277,12 +277,12 @@ void FoucaultPendulumWindow3::PhysicsTick()
     Vector4<float> proj = DoTransform(wMatrix, translation);
     proj[2] = 0.0f;
 
-    auto vbuffer = mPath->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mPath->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<VertexPC>();
     vertices[mNextPoint].position = HProject(proj);
     vertices[mNextPoint].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         if (i != mNextPoint)
         {

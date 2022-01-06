@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "PointControllersWindow3.h"
 #include <Graphics/VertexColorEffect.h>
@@ -47,13 +47,13 @@ void PointControllersWindow3::CreateScene()
     std::uniform_real_distribution<float> urd(-1.0f, 1.0f);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
-    unsigned int numVertices = 1024;
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
+    uint32_t numVertices = 1024;
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].position = { urd(dre), urd(dre), urd(dre) };
         vertices[i].color = { urd(dre), urd(dre), urd(dre), 1.0f };

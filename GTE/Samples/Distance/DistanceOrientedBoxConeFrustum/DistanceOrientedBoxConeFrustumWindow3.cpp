@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.10.2021.05.22
+// Version: 6.0.2022.01.06
 
 #include "DistanceOrientedBoxConeFrustumWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -31,11 +31,11 @@ DistanceOrientedBoxConeFrustumWindow3::DistanceOrientedBoxConeFrustumWindow3(Par
     mBoxConeQuery{}
 {
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->fillMode = RasterizerState::FILL_SOLID;
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->fill = RasterizerState::Fill::SOLID;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.01f, 100.0f, 0.001f, 0.001f,
@@ -79,7 +79,7 @@ void DistanceOrientedBoxConeFrustumWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool DistanceOrientedBoxConeFrustumWindow3::OnCharPress(unsigned char key, int x, int y)
+bool DistanceOrientedBoxConeFrustumWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const deltaAngle = (float)(GTE_C_PI / 180.0);
     float const deltaTranslate = 0.1f;
@@ -197,8 +197,8 @@ void DistanceOrientedBoxConeFrustumWindow3::CreateScene()
     mBoxClosestToCone = bcResult.boxClosestPoint;
     mConeClosest = bcResult.coneClosestPoint;
 
-    mVFormat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    mVFormat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
 
     CreateBoxMesh();
     CreateConeMesh();
@@ -212,7 +212,7 @@ void DistanceOrientedBoxConeFrustumWindow3::CreateBoxMesh()
     std::array<Vector<3, float>, 8> corners{};
     mBox.GetVertices(corners);
     auto vbuffer = std::make_shared<VertexBuffer>(mVFormat, 8);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto* vertices = vbuffer->Get<Vertex>();
     for (uint32_t i = 0; i < 8; ++i)
     {
@@ -271,7 +271,7 @@ void DistanceOrientedBoxConeFrustumWindow3::CreateConeMesh()
 void DistanceOrientedBoxConeFrustumWindow3::CreateQuadMesh()
 {
     auto vbuffer = std::make_shared<VertexBuffer>(mVFormat, 4);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto* vertices = vbuffer->Get<Vertex>();
     for (uint32_t i = 0; i < 4; ++i)
     {
@@ -296,7 +296,7 @@ void DistanceOrientedBoxConeFrustumWindow3::CreateSegmentMeshes()
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 2);
 
     auto vbuffer = std::make_shared<VertexBuffer>(mVFormat, 2);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto* vertices = vbuffer->Get<Vertex>();
     vertices[0].position = mBoxClosestToQuad;
     vertices[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -308,7 +308,7 @@ void DistanceOrientedBoxConeFrustumWindow3::CreateSegmentMeshes()
     mTrackBall.Attach(mBoxQuadSegmentMesh);
 
     vbuffer = std::make_shared<VertexBuffer>(mVFormat, 2);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     vertices = vbuffer->Get<Vertex>();
     vertices[0].position = mBoxClosestToCone;
     vertices[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };

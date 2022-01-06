@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.03.25
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,9 +19,9 @@ namespace gte
     protected:
         // Construction.
         Font(std::shared_ptr<ProgramFactory> const& factory,
-            unsigned int width, unsigned int height,
-            unsigned char const* texels, float const* characterData,
-            unsigned int maxMessageLength);
+            uint32_t width, uint32_t height,
+            uint8_t const* texels, float const* characterData,
+            uint32_t maxMessageLength);
     public:
         virtual ~Font() = default;
 
@@ -41,15 +41,15 @@ namespace gte
             return mIndexBuffer;
         }
 
-        int GetHeight() const;
-        int GetWidth(std::string const& message) const;
+        int32_t GetHeight() const;
+        int32_t GetWidth(std::string const& message) const;
 
         // Populate the vertex buffer for the specified string.
-        void Typeset(int viewportWidth, int viewportHeight, int x, int y,
+        void Typeset(int32_t viewportWidth, int32_t viewportHeight, int32_t x, int32_t y,
             Vector4<float> const& color, std::string const& message) const;
 
     protected:
-        unsigned int mMaxMessageLength;
+        uint32_t mMaxMessageLength;
         std::shared_ptr<VertexBuffer> mVertexBuffer;
         std::shared_ptr<IndexBuffer> mIndexBuffer;
         std::shared_ptr<Texture2> mTexture;

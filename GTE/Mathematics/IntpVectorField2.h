@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // Construction and destruction.
         ~IntpVectorField2() = default;
 
-        IntpVectorField2(int numPoints, Vector2<InputType> const* domain,
+        IntpVectorField2(int32_t numPoints, Vector2<InputType> const* domain,
             Vector2<InputType> const* range)
             :
             mMesh(mDelaunay)
@@ -33,7 +33,7 @@ namespace gte
             // interpolator expects for its input data.
             mXRange.resize(numPoints);
             mYRange.resize(numPoints);
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 mXRange[i] = range[i][0];
                 mYRange[i] = range[i][1];

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11InputLayout.h>
@@ -22,15 +22,15 @@ DX11InputLayout::DX11InputLayout(ID3D11Device* device,
 {
     LogAssert(vbuffer != nullptr && vshader != nullptr, "Invalid inputs.");
 
-    std::memset(&mElements[0], 0, VA_MAX_ATTRIBUTES*sizeof(mElements[0]));
+    std::memset(&mElements[0], 0, VAConstant::MAX_ATTRIBUTES*sizeof(mElements[0]));
 
     VertexFormat const& format = vbuffer->GetFormat();
     mNumElements = format.GetNumAttributes();
-    for (int i = 0; i < mNumElements; ++i)
+    for (int32_t i = 0; i < mNumElements; ++i)
     {
-        VASemantic semantic;
-        DFType type;
-        unsigned int unit, offset;
+        VASemantic semantic{};
+        DFType type{};
+        uint32_t unit{}, offset{};
         format.GetAttribute(i, semantic, type, unit, offset);
 
         D3D11_INPUT_ELEMENT_DESC& element = mElements[i];
@@ -72,7 +72,7 @@ HRESULT DX11InputLayout::SetName(std::string const& name)
 }
 
 
-char const* DX11InputLayout::msSemantic[VA_NUM_SEMANTICS] =
+char const* DX11InputLayout::msSemantic[VASemantic::NUM_SEMANTICS] =
 {
     "",
     "POSITION",

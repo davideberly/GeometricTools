@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.10.17
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -32,7 +32,7 @@ namespace gte
         {
         }
 
-        PrimalQuery3(int numVertices, Vector3<Real> const* vertices)
+        PrimalQuery3(int32_t numVertices, Vector3<Real> const* vertices)
             :
             mNumVertices(numVertices),
             mVertices(vertices)
@@ -40,13 +40,13 @@ namespace gte
         }
 
         // Member access.
-        inline void Set(int numVertices, Vector3<Real> const* vertices)
+        inline void Set(int32_t numVertices, Vector3<Real> const* vertices)
         {
             mNumVertices = numVertices;
             mVertices = vertices;
         }
 
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
@@ -72,12 +72,12 @@ namespace gte
         //    double     | BSNumber     | 197
         //    float      | BSRational   |  79
         //    double     | BSRational   | 591
-        int ToPlane(int i, int v0, int v1, int v2) const
+        int32_t ToPlane(int32_t i, int32_t v0, int32_t v1, int32_t v2) const
         {
             return ToPlane(mVertices[i], v0, v1, v2);
         }
 
-        int ToPlane(Vector3<Real> const& test, int v0, int v1, int v2) const
+        int32_t ToPlane(Vector3<Real> const& test, int32_t v0, int32_t v1, int32_t v2) const
         {
             Vector3<Real> const& vec0 = mVertices[v0];
             Vector3<Real> const& vec1 = mVertices[v1];
@@ -126,32 +126,32 @@ namespace gte
         //    double     | BSRational   | 591
         // The query involves four calls of ToPlane, so the numbers match
         // those of ToPlane.
-        int ToTetrahedron(int i, int v0, int v1, int v2, int v3) const
+        int32_t ToTetrahedron(int32_t i, int32_t v0, int32_t v1, int32_t v2, int32_t v3) const
         {
             return ToTetrahedron(mVertices[i], v0, v1, v2, v3);
         }
 
-        int ToTetrahedron(Vector3<Real> const& test, int v0, int v1, int v2, int v3) const
+        int32_t ToTetrahedron(Vector3<Real> const& test, int32_t v0, int32_t v1, int32_t v2, int32_t v3) const
         {
-            int sign0 = ToPlane(test, v1, v2, v3);
+            int32_t sign0 = ToPlane(test, v1, v2, v3);
             if (sign0 > 0)
             {
                 return +1;
             }
 
-            int sign1 = ToPlane(test, v0, v2, v3);
+            int32_t sign1 = ToPlane(test, v0, v2, v3);
             if (sign1 < 0)
             {
                 return +1;
             }
 
-            int sign2 = ToPlane(test, v0, v1, v3);
+            int32_t sign2 = ToPlane(test, v0, v1, v3);
             if (sign2 > 0)
             {
                 return +1;
             }
 
-            int sign3 = ToPlane(test, v0, v1, v2);
+            int32_t sign3 = ToPlane(test, v0, v1, v2);
             if (sign3 < 0)
             {
                 return +1;
@@ -173,12 +173,12 @@ namespace gte
         //    double     | BSNumber     |  329
         //    float      | BSNumber     |  262
         //    double     | BSRational   | 1969
-        int ToCircumsphere(int i, int v0, int v1, int v2, int v3) const
+        int32_t ToCircumsphere(int32_t i, int32_t v0, int32_t v1, int32_t v2, int32_t v3) const
         {
             return ToCircumsphere(mVertices[i], v0, v1, v2, v3);
         }
 
-        int ToCircumsphere(Vector3<Real> const& test, int v0, int v1, int v2, int v3) const
+        int32_t ToCircumsphere(Vector3<Real> const& test, int32_t v0, int32_t v1, int32_t v2, int32_t v3) const
         {
             Vector3<Real> const& vec0 = mVertices[v0];
             Vector3<Real> const& vec1 = mVertices[v1];
@@ -287,7 +287,7 @@ namespace gte
         }
 
     private:
-        int mNumVertices;
+        int32_t mNumVertices;
         Vector3<Real> const* mVertices;
     };
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BillboardNodesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -50,7 +50,7 @@ void BillboardNodesWindow3::OnIdle()
 #if defined(DEMONSTRATE_VIEWPORT_BOUNDING_RECTANGLE)
     ComputeTorusBoundingRectangle();
     mEngine->SetBlendState(mBlendState);
-    auto rstate = mEngine->GetRasterizerState();
+    auto const& rstate = mEngine->GetRasterizerState();
     mEngine->SetRasterizerState(mNoCullState);
     mEngine->Draw(mOverlay);
     mEngine->SetRasterizerState(rstate);
@@ -63,7 +63,7 @@ void BillboardNodesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool BillboardNodesWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BillboardNodesWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -87,8 +87,8 @@ bool BillboardNodesWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool BillboardNodesWindow3::OnMouseMotion(MouseButton button, int x, int y,
-    unsigned int modifiers)
+bool BillboardNodesWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y,
+    uint32_t modifiers)
 {
     if (Window3::OnMouseMotion(button, x, y, modifiers))
     {
@@ -137,8 +137,8 @@ void BillboardNodesWindow3::CreateScene()
     mSkyTexture = WICFileIO::Load(path, false);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -148,17 +148,17 @@ void BillboardNodesWindow3::CreateScene()
     // to enhance the wrap-around.
     mGround = mf.CreateRectangle(2, 2, 16.0f, 16.0f);
     mScene->AttachChild(mGround);
-    auto vbuffer = mGround->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mGround->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].tcoord *= 128.0f;
     }
 
     // Create a texture effect for the ground.
     auto groundEffect = std::make_shared<Texture2Effect>(mProgramFactory, mGroundTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
     mGround->SetEffect(groundEffect);
 
     // Create a rectangle mesh.  The mesh is in the xy-plane.  Do not apply
@@ -168,7 +168,7 @@ void BillboardNodesWindow3::CreateScene()
 
     // Create a texture effect for the rectangle.
     auto rectEffect = std::make_shared<Texture2Effect>(mProgramFactory, mSkyTexture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mRectangle->SetEffect(rectEffect);
 
     // Create a torus mesh.  Do not apply local transformations to the mesh.
@@ -179,7 +179,7 @@ void BillboardNodesWindow3::CreateScene()
 
     // Create a texture effect for the torus.
     auto torusEffect = std::make_shared<Texture2Effect>(mProgramFactory, mSkyTexture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mTorus->SetEffect(torusEffect);
 
     // Create a billboard node that causes a rectangle always to be facing the
@@ -222,26 +222,26 @@ void BillboardNodesWindow3::CreateScene()
 #if defined(DEMONSTRATE_VIEWPORT_BOUNDING_RECTANGLE)
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
-        mYSize, 1, 1, SamplerState::MIN_P_MAG_P_MIP_P, SamplerState::CLAMP,
-        SamplerState::CLAMP, true);
+        mYSize, 1, 1, SamplerState::Filter::MIN_P_MAG_P_MIP_P, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP, true);
     auto overlayTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, 1, 1);
     mOverlay->SetTexture(overlayTexture);
-    unsigned int& texel = *overlayTexture->Get<unsigned int>();
+    uint32_t& texel = *overlayTexture->Get<uint32_t>();
     texel = 0x40FF0000;  // (r,g,b,a) = (0,0,255,64)
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
 #endif
 
 #if defined(DEMONSTRATE_POST_PROJECTION_REFLECTION)
     mCullCWState = std::make_shared<RasterizerState>();
-    mCullCWState->cullMode = RasterizerState::CULL_FRONT;
+    mCullCWState->cull = RasterizerState::Cull::FRONT;
 #endif
 }
 
@@ -253,15 +253,15 @@ void BillboardNodesWindow3::ComputeTorusBoundingRectangle()
     Matrix4x4<float> wMatrix = mTorus->worldTransform;
     Matrix4x4<float> pvwMatrix = DoTransform(pvMatrix, wMatrix);
 
-    auto vbuffer = mTorus->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mTorus->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto const* vertex = vbuffer->Get<Vertex>();
 
     // Compute the extremes of the normalized display coordinates.
-    float const maxFloat = std::numeric_limits<float>::max();
+    float constexpr maxFloat = std::numeric_limits<float>::max();
     float xmin = maxFloat, xmax = -maxFloat;
     float ymin = maxFloat, ymax = -maxFloat;
-    for (unsigned int i = 0; i < numVertices; ++i, ++vertex)
+    for (uint32_t i = 0; i < numVertices; ++i, ++vertex)
     {
         Vector4<float> input{ vertex->position[0], vertex->position[1], vertex->position[2], 1.0f };
         Vector4<float> output = DoTransform(pvwMatrix, input);
@@ -297,11 +297,11 @@ void BillboardNodesWindow3::ComputeTorusBoundingRectangle()
     ymax = 0.5f * (ymax + 1.0f);
 
     // Update the overlay to the region covered by the bounding rectangle.
-    std::array<int, 4> rectangle;
-    rectangle[0] = static_cast<int>(xmin * mXSize);
-    rectangle[1] = static_cast<int>(ymin * mYSize);
-    rectangle[2] = static_cast<int>((xmax - xmin) * mXSize);
-    rectangle[3] = static_cast<int>((ymax - ymin) * mYSize);
+    std::array<int32_t, 4> rectangle{};
+    rectangle[0] = static_cast<int32_t>(xmin * mXSize);
+    rectangle[1] = static_cast<int32_t>(ymin * mYSize);
+    rectangle[2] = static_cast<int32_t>((xmax - xmin) * mXSize);
+    rectangle[3] = static_cast<int32_t>((ymax - ymin) * mYSize);
     mOverlay->SetOverlayRectangle(rectangle);
     mEngine->Update(mOverlay->GetVertexBuffer());
 }

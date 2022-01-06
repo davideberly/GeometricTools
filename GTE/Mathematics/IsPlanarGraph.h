@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -61,8 +61,8 @@ namespace gte
         // If the positions.size() < 2 or edges.size() == 0, the
         // IPG_INVALID_INPUT_SIZES flag is set.
 
-        int operator()(std::vector<std::array<Real, 2>> const& positions,
-            std::vector<std::array<int, 2>> const& edges)
+        int32_t operator()(std::vector<std::array<Real, 2>> const& positions,
+            std::vector<std::array<int32_t, 2>> const& edges)
         {
             mDuplicatedPositions.clear();
             mDuplicatedEdges.clear();
@@ -70,7 +70,7 @@ namespace gte
             mEdgesWithInvalidVertices.clear();
             mInvalidIntersections.clear();
 
-            int flags = IsValidTopology(positions, edges);
+            int32_t flags = IsValidTopology(positions, edges);
             if (flags == IPG_INVALID_INPUT_SIZES)
             {
                 return flags;
@@ -84,8 +84,8 @@ namespace gte
                 // bounding rectangles overlapped.  Determine whether the line
                 // segments intersect.  If they do, determine how they
                 // intersect.
-                std::array<int, 2> e0 = edges[key.V[0]];
-                std::array<int, 2> e1 = edges[key.V[1]];
+                std::array<int32_t, 2> e0 = edges[key.V[0]];
+                std::array<int32_t, 2> e1 = edges[key.V[1]];
                 std::array<Real, 2> const& p0 = positions[e0[0]];
                 std::array<Real, 2> const& p1 = positions[e0[1]];
                 std::array<Real, 2> const& q0 = positions[e1[0]];
@@ -109,7 +109,7 @@ namespace gte
         // edges.
         struct OrderedEdge
         {
-            OrderedEdge(int v0 = -1, int v1 = -1)
+            OrderedEdge(int32_t v0 = -1, int32_t v1 = -1)
             {
                 if (v0 < v1)
                 {
@@ -127,29 +127,29 @@ namespace gte
 
             bool operator<(OrderedEdge const& edge) const
             {
-                // Lexicographical ordering used by std::array<int,2>.
+                // Lexicographical ordering used by std::array<int32_t,2>.
                 return V < edge.V;
             }
 
-            std::array<int, 2> V;
+            std::array<int32_t, 2> V;
         };
 
-        inline std::vector<std::vector<int>> const& GetDuplicatedPositions() const
+        inline std::vector<std::vector<int32_t>> const& GetDuplicatedPositions() const
         {
             return mDuplicatedPositions;
         }
 
-        inline std::vector<std::vector<int>> const& GetDuplicatedEdges() const
+        inline std::vector<std::vector<int32_t>> const& GetDuplicatedEdges() const
         {
             return mDuplicatedEdges;
         }
 
-        inline std::vector<int> const& GetDegenerateEdges() const
+        inline std::vector<int32_t> const& GetDegenerateEdges() const
         {
             return mDegenerateEdges;
         }
 
-        inline std::vector<int> const& GetEdgesWithInvalidVertices() const
+        inline std::vector<int32_t> const& GetEdgesWithInvalidVertices() const
         {
             return mEdgesWithInvalidVertices;
         }
@@ -164,9 +164,17 @@ namespace gte
         class Endpoint
         {
         public:
+            Endpoint()
+                :
+                value(static_cast<Real>(0)),
+                type(0),
+                index(0)
+            {
+            }
+
             Real value;     // endpoint value
-            int type;       // '0' if interval min, '1' if interval max.
-            int index;      // index of interval containing this endpoint
+            int32_t type;       // '0' if interval min, '1' if interval max.
+            int32_t index;      // index of interval containing this endpoint
 
             // Comparison operator for sorting.
             bool operator<(Endpoint const& endpoint) const
@@ -183,11 +191,11 @@ namespace gte
             }
         };
 
-        int IsValidTopology(std::vector<std::array<Real, 2>> const& positions,
-            std::vector<std::array<int, 2>> const& edges)
+        int32_t IsValidTopology(std::vector<std::array<Real, 2>> const& positions,
+            std::vector<std::array<int32_t, 2>> const& edges)
         {
-            int const numPositions = static_cast<int>(positions.size());
-            int const numEdges = static_cast<int>(edges.size());
+            int32_t const numPositions = static_cast<int32_t>(positions.size());
+            int32_t const numEdges = static_cast<int32_t>(edges.size());
             if (numPositions < 2 || numEdges == 0)
             {
                 // The graph must have at least one edge.
@@ -195,15 +203,15 @@ namespace gte
             }
 
             // The positions must be unique.
-            int flags = IPG_IS_PLANAR_GRAPH;
-            std::map<std::array<Real, 2>, std::vector<int>> uniquePositions;
-            for (int i = 0; i < numPositions; ++i)
+            int32_t flags = IPG_IS_PLANAR_GRAPH;
+            std::map<std::array<Real, 2>, std::vector<int32_t>> uniquePositions;
+            for (int32_t i = 0; i < numPositions; ++i)
             {
                 std::array<Real, 2> p = positions[i];
                 auto iter = uniquePositions.find(p);
                 if (iter == uniquePositions.end())
                 {
-                    std::vector<int> indices;
+                    std::vector<int32_t> indices;
                     indices.push_back(i);
                     uniquePositions.insert(std::make_pair(p, indices));
                 }
@@ -226,14 +234,14 @@ namespace gte
             }
 
             // The edges must be unique.
-            std::map<OrderedEdge, std::vector<int>> uniqueEdges;
-            for (int i = 0; i < numEdges; ++i)
+            std::map<OrderedEdge, std::vector<int32_t>> uniqueEdges;
+            for (int32_t i = 0; i < numEdges; ++i)
             {
                 OrderedEdge key(edges[i][0], edges[i][1]);
                 auto iter = uniqueEdges.find(key);
                 if (iter == uniqueEdges.end())
                 {
-                    std::vector<int> indices;
+                    std::vector<int32_t> indices;
                     indices.push_back(i);
                     uniqueEdges.insert(std::make_pair(key, indices));
                 }
@@ -262,9 +270,9 @@ namespace gte
             // different (no edges allowed from a vertex to itself) and all
             // indices must be valid.  At the same time, keep track of unique
             // edges.
-            for (int i = 0; i < numEdges; ++i)
+            for (int32_t i = 0; i < numEdges; ++i)
             {
-                std::array<int, 2> e = edges[i];
+                std::array<int32_t, 2> e = edges[i];
                 if (e[0] == e[1])
                 {
                     // The edge is degenerate, originating and terminating at
@@ -286,20 +294,20 @@ namespace gte
         }
 
         void ComputeOverlappingRectangles(std::vector<std::array<Real, 2>> const& positions,
-            std::vector<std::array<int, 2>> const& edges,
+            std::vector<std::array<int32_t, 2>> const& edges,
             std::set<OrderedEdge>& overlappingRectangles) const
         {
             // Compute axis-aligned bounding rectangles for the edges.
-            int const numEdges = static_cast<int>(edges.size());
+            int32_t const numEdges = static_cast<int32_t>(edges.size());
             std::vector<std::array<Real, 2>> emin(numEdges);
             std::vector<std::array<Real, 2>> emax(numEdges);
-            for (int i = 0; i < numEdges; ++i)
+            for (int32_t i = 0; i < numEdges; ++i)
             {
-                std::array<int, 2> e = edges[i];
+                std::array<int32_t, 2> e = edges[i];
                 std::array<Real, 2> const& p0 = positions[e[0]];
                 std::array<Real, 2> const& p1 = positions[e[1]];
 
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     if (p0[j] < p1[j])
                     {
@@ -315,10 +323,10 @@ namespace gte
             }
 
             // Get the rectangle endpoints.
-            int const numEndpoints = 2 * numEdges;
+            int32_t const numEndpoints = 2 * numEdges;
             std::vector<Endpoint> xEndpoints(numEndpoints);
             std::vector<Endpoint> yEndpoints(numEndpoints);
-            for (int i = 0, j = 0; i < numEdges; ++i)
+            for (int32_t i = 0, j = 0; i < numEdges; ++i)
             {
                 xEndpoints[j].type = 0;
                 xEndpoints[j].value = emin[i][0];
@@ -344,11 +352,11 @@ namespace gte
             // Sweep through the endpoints to determine overlapping
             // x-intervals.  Use an active set of rectangles to reduce the
             // complexity of the algorithm.
-            std::set<int> active;
-            for (int i = 0; i < numEndpoints; ++i)
+            std::set<int32_t> active;
+            for (int32_t i = 0; i < numEndpoints; ++i)
             {
                 Endpoint const& endpoint = xEndpoints[i];
-                int index = endpoint.index;
+                int32_t index = endpoint.index;
                 if (endpoint.type == 0)  // an interval 'begin' value
                 {
                     // In the 1D problem, the current interval overlaps with
@@ -399,7 +407,7 @@ namespace gte
             // (0 < t1 < 1).
 
             std::array<Real, 2> p1mp0, q1mq0, q0mp0;
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 p1mp0[j] = p1[j] - p0[j];
                 q1mq0[j] = q1[j] - q0[j];
@@ -452,7 +460,7 @@ namespace gte
                     // parameter intervals for the segments in terms of the
                     // t0-parameter and determine their overlap (if any).
                     std::array<Real, 2> q1mp0;
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         q1mp0[j] = q1[j] - p0[j];
                     }
@@ -475,10 +483,10 @@ namespace gte
             }
         }
 
-        std::vector<std::vector<int>> mDuplicatedPositions;
-        std::vector<std::vector<int>> mDuplicatedEdges;
-        std::vector<int> mDegenerateEdges;
-        std::vector<int> mEdgesWithInvalidVertices;
+        std::vector<std::vector<int32_t>> mDuplicatedPositions;
+        std::vector<std::vector<int32_t>> mDuplicatedEdges;
+        std::vector<int32_t> mDegenerateEdges;
+        std::vector<int32_t> mEdgesWithInvalidVertices;
         std::vector<OrderedEdge> mInvalidIntersections;
         Real mZero, mOne;
     };

@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Buffer.h>
+#include <cstdint>
 
 // RawBuffer is currently supported only in the DirectX graphics engine.
 
@@ -17,10 +18,10 @@ namespace gte
     {
     public:
         // Construction.  The element size is always 4 bytes.
-        RawBuffer(unsigned int numElements, bool createStorage = true);
+        RawBuffer(uint32_t numElements, bool createStorage = true);
 
     public:
         // For use by the Shader class for storing reflection information.
-        static int const shaderDataLookup = 3;
+        static int32_t const shaderDataLookup = 3;
     };
 }

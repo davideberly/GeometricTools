@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // as desired.
         virtual ~TrackCylinder() = default;
         TrackCylinder();
-        TrackCylinder(int xSize, int ySize, std::shared_ptr<Camera> const& camera);
+        TrackCylinder(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera);
 
         // Reset the trackcylinder rotation to the identity.
         void Reset();

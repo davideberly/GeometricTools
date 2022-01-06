@@ -1,24 +1,24 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/FontArialW700H18.h>
 using namespace gte;
 
-FontArialW700H18::FontArialW700H18(std::shared_ptr<ProgramFactory> const& factory, int maxMessageLength)
+FontArialW700H18::FontArialW700H18(std::shared_ptr<ProgramFactory> const& factory, int32_t maxMessageLength)
     :
-    Font(factory, msWidth, msHeight, reinterpret_cast<unsigned char const*>(msTexels), msCharacterData, maxMessageLength)
+    Font(factory, msWidth, msHeight, reinterpret_cast<uint8_t const*>(msTexels), msCharacterData, maxMessageLength)
 {
 }
 
-int FontArialW700H18::msWidth = 2553;
-int FontArialW700H18::msHeight = 18;
+int32_t FontArialW700H18::msWidth = 2553;
+int32_t FontArialW700H18::msHeight = 18;
 
-unsigned char FontArialW700H18::msTexels[45954] =
+uint8_t FontArialW700H18::msTexels[45954] =
 {
 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 
 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 

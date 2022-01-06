@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -43,29 +43,38 @@ namespace gte
     class MinimumVolumeSphere3
     {
     public:
-        bool operator()(int numPoints, Vector3<InputType> const* points, Sphere3<InputType>& minimal)
+        MinimumVolumeSphere3()
+            :
+            mNumSupport(0),
+            mSupport{ 0, 0, 0, 0 },
+            mDRE{},
+            mComputePoints{}
+        {
+        }
+
+        bool operator()(int32_t numPoints, Vector3<InputType> const* points, Sphere3<InputType>& minimal)
         {
             if (numPoints >= 1 && points)
             {
                 // Function array to avoid switch statement in the main loop.
-                std::function<UpdateResult(int)> update[5];
-                update[1] = [this](int i) { return UpdateSupport1(i); };
-                update[2] = [this](int i) { return UpdateSupport2(i); };
-                update[3] = [this](int i) { return UpdateSupport3(i); };
-                update[4] = [this](int i) { return UpdateSupport4(i); };
+                std::function<UpdateResult(int32_t)> update[5];
+                update[1] = [this](int32_t i) { return UpdateSupport1(i); };
+                update[2] = [this](int32_t i) { return UpdateSupport2(i); };
+                update[3] = [this](int32_t i) { return UpdateSupport3(i); };
+                update[4] = [this](int32_t i) { return UpdateSupport4(i); };
 
                 // Process only the unique points.
-                std::vector<int> permuted(numPoints);
-                for (int i = 0; i < numPoints; ++i)
+                std::vector<int32_t> permuted(numPoints);
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     permuted[i] = i;
                 }
                 std::sort(permuted.begin(), permuted.end(),
-                    [points](int i0, int i1) { return points[i0] < points[i1]; });
+                    [points](int32_t i0, int32_t i1) { return points[i0] < points[i1]; });
                 auto end = std::unique(permuted.begin(), permuted.end(),
-                    [points](int i0, int i1) { return points[i0] == points[i1]; });
+                    [points](int32_t i0, int32_t i1) { return points[i0] == points[i1]; });
                 permuted.erase(end, permuted.end());
-                numPoints = static_cast<int>(permuted.size());
+                numPoints = static_cast<int32_t>(permuted.size());
 
                 // Create a random permutation of the points.
                 std::shuffle(permuted.begin(), permuted.end(), mDRE);
@@ -73,9 +82,9 @@ namespace gte
                 // Convert to the compute type, which is a simple copy when
                 // ComputeType is the same as InputType.
                 mComputePoints.resize(numPoints);
-                for (int i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
-                    for (int j = 0; j < 3; ++j)
+                    for (int32_t j = 0; j < 3; ++j)
                     {
                         mComputePoints[i][j] = points[permuted[i]][j];
                     }
@@ -96,7 +105,7 @@ namespace gte
                 // boundary) because they were enclosed by the previous
                 // sphere.  The chances are better that points after the
                 // current one will cause growth of the bounding sphere.
-                for (int i = 1 % numPoints, n = 0; i != n; i = (i + 1) % numPoints)
+                for (int32_t i = 1 % numPoints, n = 0; i != n; i = (i + 1) % numPoints)
                 {
                     if (!SupportContains(i))
                     {
@@ -128,14 +137,14 @@ namespace gte
                     }
                 }
 
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     minimal.center[j] = static_cast<InputType>(ctMinimal.center[j]);
                 }
                 minimal.radius = static_cast<InputType>(ctMinimal.radius);
                 minimal.radius = std::sqrt(minimal.radius);
 
-                for (int i = 0; i < mNumSupport; ++i)
+                for (int32_t i = 0; i < mNumSupport; ++i)
                 {
                     mSupport[i] = permuted[mSupport[i]];
                 }
@@ -148,12 +157,12 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumSupport() const
+        inline int32_t GetNumSupport() const
         {
             return mNumSupport;
         }
 
-        inline std::array<int, 4> const& GetSupport() const
+        inline std::array<int32_t, 4> const& GetSupport() const
         {
             return mSupport;
         }
@@ -161,7 +170,7 @@ namespace gte
     private:
         // Test whether point P is inside sphere S using squared distance and
         // squared radius.
-        bool Contains(int i, Sphere3<ComputeType> const& sphere) const
+        bool Contains(int32_t i, Sphere3<ComputeType> const& sphere) const
         {
             // NOTE: In this algorithm, sphere.radius is the *squared radius*
             // until the function returns at which time a square root is
@@ -170,7 +179,7 @@ namespace gte
             return Dot(diff, diff) <= sphere.radius;
         }
 
-        Sphere3<ComputeType> ExactSphere1(int i0) const
+        Sphere3<ComputeType> ExactSphere1(int32_t i0) const
         {
             Sphere3<ComputeType> minimal;
             minimal.center = mComputePoints[i0];
@@ -178,7 +187,7 @@ namespace gte
             return minimal;
         }
 
-        Sphere3<ComputeType> ExactSphere2(int i0, int i1) const
+        Sphere3<ComputeType> ExactSphere2(int32_t i0, int32_t i1) const
         {
             Vector3<ComputeType> const& P0 = mComputePoints[i0];
             Vector3<ComputeType> const& P1 = mComputePoints[i1];
@@ -189,7 +198,7 @@ namespace gte
             return minimal;
         }
 
-        Sphere3<ComputeType> ExactSphere3(int i0, int i1, int i2) const
+        Sphere3<ComputeType> ExactSphere3(int32_t i0, int32_t i1, int32_t i2) const
         {
             // Compute the 2D circle containing P0, P1, and P2.  The center in
             // barycentric coordinates is C = x0*P0 + x1*P1 + x2*P2, where
@@ -247,7 +256,7 @@ namespace gte
             return minimal;
         }
 
-        Sphere3<ComputeType> ExactSphere4(int i0, int i1, int i2, int i3) const
+        Sphere3<ComputeType> ExactSphere4(int32_t i0, int32_t i1, int32_t i2, int32_t i3) const
         {
             // Compute the sphere containing P0, P1, P2, and P3.  The center
             // in barycentric coordinates is
@@ -320,7 +329,7 @@ namespace gte
 
         typedef std::pair<Sphere3<ComputeType>, bool> UpdateResult;
 
-        UpdateResult UpdateSupport1(int i)
+        UpdateResult UpdateSupport1(int32_t i)
         {
             Sphere3<ComputeType> minimal = ExactSphere2(mSupport[0], i);
             mNumSupport = 2;
@@ -328,26 +337,26 @@ namespace gte
             return std::make_pair(minimal, true);
         }
 
-        UpdateResult UpdateSupport2(int i)
+        UpdateResult UpdateSupport2(int32_t i)
         {
             // Permutations of type 2, used for calling ExactSphere2(...).
-            int const numType2 = 2;
-            int const type2[numType2][2] =
+            int32_t const numType2 = 2;
+            int32_t const type2[numType2][2] =
             {
                 { 0, /*2*/ 1 },
                 { 1, /*2*/ 0 }
             };
 
             // Permutations of type 3, used for calling ExactSphere3(...).
-            int const numType3 = 1;  // {0, 1, 2}
+            int32_t const numType3 = 1;  // {0, 1, 2}
 
             Sphere3<ComputeType> sphere[numType2 + numType3];
             ComputeType minRSqr = (ComputeType)std::numeric_limits<InputType>::max();
-            int iSphere = 0, iMinRSqr = -1;
-            int k0, k1;
+            int32_t iSphere = 0, iMinRSqr = -1;
+            int32_t k0, k1;
 
             // Permutations of type 2.
-            for (int j = 0; j < numType2; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType2; ++j, ++iSphere)
             {
                 k0 = mSupport[type2[j][0]];
                 sphere[iSphere] = ExactSphere2(k0, i);
@@ -395,11 +404,11 @@ namespace gte
             return std::make_pair(sphere[iMinRSqr], true);
         }
 
-        UpdateResult UpdateSupport3(int i)
+        UpdateResult UpdateSupport3(int32_t i)
         {
             // Permutations of type 2, used for calling ExactSphere2(...).
-            int const numType2 = 3;
-            int const type2[numType2][3] =
+            int32_t const numType2 = 3;
+            int32_t const type2[numType2][3] =
             {
                 { 0, /*3*/ 1, 2 },
                 { 1, /*3*/ 0, 2 },
@@ -407,8 +416,8 @@ namespace gte
             };
 
             // Permutations of type 3, used for calling ExactSphere3(...).
-            int const numType3 = 3;
-            int const type3[numType3][3] =
+            int32_t const numType3 = 3;
+            int32_t const type3[numType3][3] =
             {
                 { 0, 1, /*3*/ 2 },
                 { 0, 2, /*3*/ 1 },
@@ -416,15 +425,15 @@ namespace gte
             };
 
             // Permutations of type 4, used for calling ExactSphere4(...).
-            int const numType4 = 1;  // {0, 1, 2, 3}
+            int32_t const numType4 = 1;  // {0, 1, 2, 3}
 
             Sphere3<ComputeType> sphere[numType2 + numType3 + numType4];
             ComputeType minRSqr = (ComputeType)std::numeric_limits<InputType>::max();
-            int iSphere = 0, iMinRSqr = -1;
-            int k0, k1, k2;
+            int32_t iSphere = 0, iMinRSqr = -1;
+            int32_t k0, k1, k2;
 
             // Permutations of type 2.
-            for (int j = 0; j < numType2; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType2; ++j, ++iSphere)
             {
                 k0 = mSupport[type2[j][0]];
                 sphere[iSphere] = ExactSphere2(k0, i);
@@ -441,7 +450,7 @@ namespace gte
             }
 
             // Permutations of type 3.
-            for (int j = 0; j < numType3; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType3; ++j, ++iSphere)
             {
                 k0 = mSupport[type3[j][0]];
                 k1 = mSupport[type3[j][1]];
@@ -507,11 +516,11 @@ namespace gte
             return std::make_pair(sphere[iMinRSqr], true);
         }
 
-        UpdateResult UpdateSupport4(int i)
+        UpdateResult UpdateSupport4(int32_t i)
         {
             // Permutations of type 2, used for calling ExactSphere2(...).
-            int const numType2 = 4;
-            int const type2[numType2][4] =
+            int32_t const numType2 = 4;
+            int32_t const type2[numType2][4] =
             {
                 { 0, /*4*/ 1, 2, 3 },
                 { 1, /*4*/ 0, 2, 3 },
@@ -520,8 +529,8 @@ namespace gte
             };
 
             // Permutations of type 3, used for calling ExactSphere3(...).
-            int const numType3 = 6;
-            int const type3[numType3][4] =
+            int32_t const numType3 = 6;
+            int32_t const type3[numType3][4] =
             {
                 { 0, 1, /*4*/ 2, 3 },
                 { 0, 2, /*4*/ 1, 3 },
@@ -532,8 +541,8 @@ namespace gte
             };
 
             // Permutations of type 4, used for calling ExactSphere4(...).
-            int const numType4 = 4;
-            int const type4[numType4][4] =
+            int32_t const numType4 = 4;
+            int32_t const type4[numType4][4] =
             {
                 { 0, 1, 2, /*4*/ 3 },
                 { 0, 1, 3, /*4*/ 2 },
@@ -543,11 +552,11 @@ namespace gte
 
             Sphere3<ComputeType> sphere[numType2 + numType3 + numType4];
             ComputeType minRSqr = (ComputeType)std::numeric_limits<InputType>::max();
-            int iSphere = 0, iMinRSqr = -1;
-            int k0, k1, k2, k3;
+            int32_t iSphere = 0, iMinRSqr = -1;
+            int32_t k0, k1, k2, k3;
 
             // Permutations of type 2.
-            for (int j = 0; j < numType2; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType2; ++j, ++iSphere)
             {
                 k0 = mSupport[type2[j][0]];
                 sphere[iSphere] = ExactSphere2(k0, i);
@@ -565,7 +574,7 @@ namespace gte
             }
 
             // Permutations of type 3.
-            for (int j = 0; j < numType3; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType3; ++j, ++iSphere)
             {
                 k0 = mSupport[type3[j][0]];
                 k1 = mSupport[type3[j][1]];
@@ -583,7 +592,7 @@ namespace gte
             }
 
             // Permutations of type 4.
-            for (int j = 0; j < numType4; ++j, ++iSphere)
+            for (int32_t j = 0; j < numType4; ++j, ++iSphere)
             {
                 k0 = mSupport[type4[j][0]];
                 k1 = mSupport[type4[j][1]];
@@ -671,9 +680,9 @@ namespace gte
         }
 
         // Indices of points that support current minimum volume sphere.
-        bool SupportContains(int j) const
+        bool SupportContains(int32_t j) const
         {
-            for (int i = 0; i < mNumSupport; ++i)
+            for (int32_t i = 0; i < mNumSupport; ++i)
             {
                 if (j == mSupport[i])
                 {
@@ -683,8 +692,8 @@ namespace gte
             return false;
         }
 
-        int mNumSupport;
-        std::array<int, 4> mSupport;
+        int32_t mNumSupport;
+        std::array<int32_t, 4> mSupport;
 
         // Random permutation of the unique input points to produce expected
         // linear time for the algorithm.

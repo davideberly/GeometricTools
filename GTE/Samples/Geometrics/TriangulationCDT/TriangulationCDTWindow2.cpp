@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 6.0.2022.01.06
 
 #include "TriangulationCDTWindow2.h"
 #include <numeric>
@@ -18,7 +18,7 @@ TriangulationCDTWindow2::TriangulationCDTWindow2(Parameters& parameters)
     UnindexedSimplePolygon();
 }
 
-bool TriangulationCDTWindow2::OnCharPress(unsigned char key, int x, int y)
+bool TriangulationCDTWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -52,16 +52,16 @@ void TriangulationCDTWindow2::DrawTriangulation()
     ClearScreen(0xFFFFFFFF);
 
     Vector2<float> pmin{ 0.0f, 0.0f }, pmax{ 0.0f, 0.0f };
-    ComputeExtremes(static_cast<int>(mPoints.size()), &mPoints[0], pmin, pmax);
-    int xmin = static_cast<int>(std::floor(pmin[0]));
-    int ymin = static_cast<int>(std::floor(pmin[1]));
-    int xmax = static_cast<int>(std::ceil(pmax[0]));
-    int ymax = static_cast<int>(std::ceil(pmax[1]));
+    ComputeExtremes(static_cast<int32_t>(mPoints.size()), &mPoints[0], pmin, pmax);
+    int32_t xmin = static_cast<int32_t>(std::floor(pmin[0]));
+    int32_t ymin = static_cast<int32_t>(std::floor(pmin[1]));
+    int32_t xmax = static_cast<int32_t>(std::ceil(pmax[0]));
+    int32_t ymax = static_cast<int32_t>(std::ceil(pmax[1]));
 
-    for (int y = ymin; y <= ymax; ++y)
+    for (int32_t y = ymin; y <= ymax; ++y)
     {
         std::cout << "y = " << y << std::endl;
-        for (int x = xmin; x <= xmax; ++x)
+        for (int32_t x = xmin; x <= xmax; ++x)
         {
             Vector2<float> test{ static_cast<float>(x), static_cast<float>(y) };
             auto result = mOutput.GetContainingTriangle(test, mPoints.data());
@@ -81,26 +81,26 @@ void TriangulationCDTWindow2::DrawTriangulation()
 
     for (auto const& tri : mOutput.allTriangles)
     {
-        int v0 = tri[0];
-        int v1 = tri[1];
-        int v2 = tri[2];
+        int32_t v0 = tri[0];
+        int32_t v1 = tri[1];
+        int32_t v2 = tri[2];
 
-        int x0 = static_cast<int>(mPoints[v0][0]);
-        int y0 = static_cast<int>(mPoints[v0][1]);
-        int x1 = static_cast<int>(mPoints[v1][0]);
-        int y1 = static_cast<int>(mPoints[v1][1]);
+        int32_t x0 = static_cast<int32_t>(mPoints[v0][0]);
+        int32_t y0 = static_cast<int32_t>(mPoints[v0][1]);
+        int32_t x1 = static_cast<int32_t>(mPoints[v1][0]);
+        int32_t y1 = static_cast<int32_t>(mPoints[v1][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
 
-        x0 = static_cast<int>(mPoints[v1][0]);
-        y0 = static_cast<int>(mPoints[v1][1]);
-        x1 = static_cast<int>(mPoints[v2][0]);
-        y1 = static_cast<int>(mPoints[v2][1]);
+        x0 = static_cast<int32_t>(mPoints[v1][0]);
+        y0 = static_cast<int32_t>(mPoints[v1][1]);
+        x1 = static_cast<int32_t>(mPoints[v2][0]);
+        y1 = static_cast<int32_t>(mPoints[v2][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
 
-        x0 = static_cast<int>(mPoints[v2][0]);
-        y0 = static_cast<int>(mPoints[v2][1]);
-        x1 = static_cast<int>(mPoints[v0][0]);
-        y1 = static_cast<int>(mPoints[v0][1]);
+        x0 = static_cast<int32_t>(mPoints[v2][0]);
+        y0 = static_cast<int32_t>(mPoints[v2][1]);
+        x1 = static_cast<int32_t>(mPoints[v0][0]);
+        y1 = static_cast<int32_t>(mPoints[v0][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
     }
 

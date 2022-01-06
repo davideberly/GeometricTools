@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 6.0.2022.01.06
 
 #include "MinimumVolumeBox3DWindow3.h"
 #include <Applications/Timer.h>
@@ -21,8 +21,8 @@ MinimumVolumeBox3DWindow3::MinimumVolumeBox3DWindow3(Parameters& parameters)
     mVertices(NUM_POINTS)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->cullMode = RasterizerState::CULL_NONE;
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->cull = RasterizerState::Cull::NONE;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mWireState);
 
     CreateScene();
@@ -83,11 +83,11 @@ void MinimumVolumeBox3DWindow3::CreateScene()
         Vector4<float> color;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, NUM_POINTS);
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (int i = 0; i < NUM_POINTS; ++i)
+    for (int32_t i = 0; i < static_cast<int32_t>(NUM_POINTS); ++i)
     {
         vertex[i].position[0] = (float)mVertices[i][0];
         vertex[i].position[1] = (float)mVertices[i][1];
@@ -119,11 +119,11 @@ void MinimumVolumeBox3DWindow3::CreateScene()
     ch3(NUM_POINTS, mVertices.data(), numThreads);
     auto const& triangles = ch3.GetHull();
     ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-        static_cast<uint32_t>(triangles.size() / 3), sizeof(int));
-    auto indices = ibuffer->Get<int>();
+        static_cast<uint32_t>(triangles.size() / 3), sizeof(int32_t));
+    auto indices = ibuffer->Get<int32_t>();
     for (size_t i = 0; i < triangles.size(); ++i)
     {
-        *indices++ = static_cast<int>(triangles[i]);
+        *indices++ = static_cast<int32_t>(triangles[i]);
     }
     mPolytope = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mScene->AttachChild(mPolytope);
@@ -135,7 +135,7 @@ void MinimumVolumeBox3DWindow3::CreateScene()
     vertex = vbuffer->Get<Vertex>();
     std::array<Vector3<float>, 8> corner;
     minBox.GetVertices(corner);
-    for (int i = 0; i < 8; ++i)
+    for (int32_t i = 0; i < 8; ++i)
     {
         vertex[i].position[0] = corner[i][0];
         vertex[i].position[1] = corner[i][1];

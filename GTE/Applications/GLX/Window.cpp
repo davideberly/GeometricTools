@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/Window.h>
@@ -25,7 +25,7 @@ namespace gte
     }
 
     Window::Parameters::Parameters(std::wstring const& inTitle,
-        int inXOrigin, int inYOrigin, int inXSize, int inYSize)
+        int32_t inXOrigin, int32_t inYOrigin, int32_t inXSize, int32_t inYSize)
         :
         WindowApplication::Parameters(inTitle, inXOrigin, inYOrigin, inXSize, inYSize),
         display(nullptr),
@@ -64,17 +64,17 @@ namespace gte
         XMapWindow(mDisplay, mWindow);
     }
 
-    void Window::SetMousePosition(int x, int y)
+    void Window::SetMousePosition(int32_t x, int32_t y)
     {
         XWarpPointer(mDisplay, 0, mWindow, 0, 0, 0, 0, x, y);
         XFlush(mDisplay);
     }
 
-    void Window::GetMousePosition(int& x, int& y) const
+    void Window::GetMousePosition(int32_t& x, int32_t& y) const
     {
         XID rootWindow, childWindow;
-        int rootX, rootY;
-        unsigned int modifier;
+        int32_t rootX, rootY;
+        uint32_t modifier;
         XQueryPointer(mDisplay, mWindow, &rootWindow, &childWindow,
             &rootX, &rootY, &x, &y, &modifier);
     }
@@ -84,7 +84,7 @@ namespace gte
         XDestroyWindow(mDisplay, mWindow);
     }
 
-    int Window::ProcessedEvent()
+    int32_t Window::ProcessedEvent()
     {
         if (!XPending(mDisplay))
         {
@@ -119,8 +119,8 @@ namespace gte
 
         if (evt.type == MotionNotify)
         {
-            int button = MOUSE_NONE;
-            for (int i = MOUSE_LEFT; i <= MOUSE_RIGHT; ++i)
+            int32_t button = MOUSE_NONE;
+            for (int32_t i = MOUSE_LEFT; i <= MOUSE_RIGHT; ++i)
             {
                 if (mButtonDown[i])
                 {
@@ -134,11 +134,11 @@ namespace gte
 
         if (evt.type == KeyPress || evt.type == KeyRelease)
         {
-            int keysyms_per_keycode_return;
+            int32_t keysyms_per_keycode_return;
             KeySym* pKeySym = XGetKeyboardMapping(mDisplay,
                 evt.xkey.keycode, 1, &keysyms_per_keycode_return);
             KeySym& keySym = *pKeySym;
-            int key = (keySym & 0x00FF);
+            int32_t key = (keySym & 0x00FF);
 
             // Quit application if the KEY_ESCAPE key is pressed.
             if (key == KEY_ESCAPE)
@@ -208,10 +208,10 @@ namespace gte
                 if (evt.type == KeyPress)
                 {
                     // Get key-modifier state.  Adjust for shift state.
-                    unsigned char ucKey = static_cast<unsigned char>(key);
+                    uint8_t ucKey = static_cast<uint8_t>(key);
                     if (mShiftDown && 'a' <= ucKey && ucKey <= 'z')
                     {
-                        ucKey = static_cast<unsigned char>(key - 32);
+                        ucKey = static_cast<uint8_t>(key - 32);
                     }
                     OnCharPress(ucKey, evt.xbutton.x, evt.xbutton.y);
                 }
@@ -236,7 +236,7 @@ namespace gte
         if (evt.type == ClientMessage)
         {
             Atom* wmDelete = nullptr;
-            int count;
+            int32_t count;
             if (XGetWMProtocols(mDisplay, mWindow, &wmDelete, &count))
             {
                 if ((unsigned long)evt.xclient.data.l[0] == *wmDelete)
@@ -249,49 +249,49 @@ namespace gte
         return EVT_NONE_PENDING;
     }
 
-    int const WindowApplication::KEY_ESCAPE = 0x1B;
-    int const WindowApplication::KEY_HOME = 0x95;
-    int const WindowApplication::KEY_LEFT = 0x96;
-    int const WindowApplication::KEY_UP = 0x97;
-    int const WindowApplication::KEY_RIGHT = 0x98;
-    int const WindowApplication::KEY_DOWN = 0x99;
-    int const WindowApplication::KEY_PAGE_UP = 0x9A;
-    int const WindowApplication::KEY_PAGE_DOWN = 0x9B;
-    int const WindowApplication::KEY_END = 0x9C;
-    int const WindowApplication::KEY_INSERT = 0x9E;
-    int const WindowApplication::KEY_DELETE = 0x9F;
-    int const WindowApplication::KEY_F1 = 0xBE;
-    int const WindowApplication::KEY_F2 = 0xBF;
-    int const WindowApplication::KEY_F3 = 0xC0;
-    int const WindowApplication::KEY_F4 = 0xC1;
-    int const WindowApplication::KEY_F5 = 0xC2;
-    int const WindowApplication::KEY_F6 = 0xC3;
-    int const WindowApplication::KEY_F7 = 0xC4;
-    int const WindowApplication::KEY_F8 = 0xC5;
-    int const WindowApplication::KEY_F9 = 0xC6;
-    int const WindowApplication::KEY_F10 = 0xC7;
-    int const WindowApplication::KEY_F11 = 0xC8;
-    int const WindowApplication::KEY_F12 = 0xC9;
-    int const WindowApplication::KEY_BACKSPACE = 0x08;
-    int const WindowApplication::KEY_TAB = 0x09;
-    int const WindowApplication::KEY_ENTER = 0x0D;
-    int const WindowApplication::KEY_RETURN = 0x0D;
+    int32_t const WindowApplication::KEY_ESCAPE = 0x1B;
+    int32_t const WindowApplication::KEY_HOME = 0x95;
+    int32_t const WindowApplication::KEY_LEFT = 0x96;
+    int32_t const WindowApplication::KEY_UP = 0x97;
+    int32_t const WindowApplication::KEY_RIGHT = 0x98;
+    int32_t const WindowApplication::KEY_DOWN = 0x99;
+    int32_t const WindowApplication::KEY_PAGE_UP = 0x9A;
+    int32_t const WindowApplication::KEY_PAGE_DOWN = 0x9B;
+    int32_t const WindowApplication::KEY_END = 0x9C;
+    int32_t const WindowApplication::KEY_INSERT = 0x9E;
+    int32_t const WindowApplication::KEY_DELETE = 0x9F;
+    int32_t const WindowApplication::KEY_F1 = 0xBE;
+    int32_t const WindowApplication::KEY_F2 = 0xBF;
+    int32_t const WindowApplication::KEY_F3 = 0xC0;
+    int32_t const WindowApplication::KEY_F4 = 0xC1;
+    int32_t const WindowApplication::KEY_F5 = 0xC2;
+    int32_t const WindowApplication::KEY_F6 = 0xC3;
+    int32_t const WindowApplication::KEY_F7 = 0xC4;
+    int32_t const WindowApplication::KEY_F8 = 0xC5;
+    int32_t const WindowApplication::KEY_F9 = 0xC6;
+    int32_t const WindowApplication::KEY_F10 = 0xC7;
+    int32_t const WindowApplication::KEY_F11 = 0xC8;
+    int32_t const WindowApplication::KEY_F12 = 0xC9;
+    int32_t const WindowApplication::KEY_BACKSPACE = 0x08;
+    int32_t const WindowApplication::KEY_TAB = 0x09;
+    int32_t const WindowApplication::KEY_ENTER = 0x0D;
+    int32_t const WindowApplication::KEY_RETURN = 0x0D;
 
-    int const WindowApplication::KEY_SHIFT = 0xE1;  // L-shift
-    int const WindowApplication::KEY_CONTROL = 0xE3;  // L-ctrl
-    int const WindowApplication::KEY_ALT = 0xE9;  // L-alt
-    int const WindowApplication::KEY_COMMAND = 0xEB;  // L-command
+    int32_t const WindowApplication::KEY_SHIFT = 0xE1;  // L-shift
+    int32_t const WindowApplication::KEY_CONTROL = 0xE3;  // L-ctrl
+    int32_t const WindowApplication::KEY_ALT = 0xE9;  // L-alt
+    int32_t const WindowApplication::KEY_COMMAND = 0xEB;  // L-command
 
-    int const WindowApplication::MOUSE_NONE = 0x0000;
-    int const WindowApplication::MOUSE_LEFT = 0x0001;
-    int const WindowApplication::MOUSE_MIDDLE = 0x0002;
-    int const WindowApplication::MOUSE_RIGHT = 0x0003;
-    int const WindowApplication::MOUSE_DOWN = 0x0004;
-    int const WindowApplication::MOUSE_UP = 0x0005;
+    int32_t const WindowApplication::MOUSE_NONE = 0x0000;
+    int32_t const WindowApplication::MOUSE_LEFT = 0x0001;
+    int32_t const WindowApplication::MOUSE_MIDDLE = 0x0002;
+    int32_t const WindowApplication::MOUSE_RIGHT = 0x0003;
+    int32_t const WindowApplication::MOUSE_DOWN = 0x0004;
+    int32_t const WindowApplication::MOUSE_UP = 0x0005;
 
-    int const WindowApplication::MODIFIER_CONTROL = 0x0004;
-    int const WindowApplication::MODIFIER_LBUTTON = 0x0001;
-    int const WindowApplication::MODIFIER_MBUTTON = 0x0002;
-    int const WindowApplication::MODIFIER_RBUTTON = 0x0003;
-    int const WindowApplication::MODIFIER_SHIFT = 0x0001;
+    int32_t const WindowApplication::MODIFIER_CONTROL = 0x0004;
+    int32_t const WindowApplication::MODIFIER_LBUTTON = 0x0001;
+    int32_t const WindowApplication::MODIFIER_MBUTTON = 0x0002;
+    int32_t const WindowApplication::MODIFIER_RBUTTON = 0x0003;
+    int32_t const WindowApplication::MODIFIER_SHIFT = 0x0001;
 }

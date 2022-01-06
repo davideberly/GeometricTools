@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,16 +19,16 @@ public:
     AllPairsTrianglesWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
 
-    bool CreateCylinder(unsigned int numAxisSamples,
-        unsigned int numRadialSamples, float radius, float height);
+    bool CreateCylinder(uint32_t numAxisSamples,
+        uint32_t numRadialSamples, float radius, float height);
 
-    bool CreateTorus(unsigned int numCircleSamples,
-        unsigned int numRadialSamples, float outerRadius, float innerRadius);
+    bool CreateTorus(uint32_t numCircleSamples,
+        uint32_t numRadialSamples, float outerRadius, float innerRadius);
 
 #if !defined(USE_CPU_FIND_INTERSECTIONS)
     bool CreateShaders();
@@ -38,7 +38,6 @@ private:
     void FindIntersections();
 
     Environment mEnvironment;
-    Vector4<float> mTextColor;
     std::shared_ptr<RasterizerState> mWireState;
 
     struct Vertex
@@ -47,13 +46,13 @@ private:
         float colorIndex;
     };
 
-    unsigned int mNumCylinderTriangles, mNumTorusTriangles;
+    uint32_t mNumCylinderTriangles, mNumTorusTriangles;
     std::shared_ptr<Visual> mCylinder, mTorus;
     std::shared_ptr<VisualEffect> mCylinderEffect, mTorusEffect;
     std::shared_ptr<ConstantBuffer> mCylinderPVWMatrix, mTorusPVWMatrix;
 
 #if !defined(USE_CPU_FIND_INTERSECTIONS)
-    unsigned int mNumXGroups, mNumYGroups;
+    uint32_t mNumXGroups, mNumYGroups;
 
     std::shared_ptr<StructuredBuffer> mColor0Buffer, mColor1Buffer;
     std::shared_ptr<ComputeProgram> mInitializeColor;
@@ -61,7 +60,7 @@ private:
     struct TIParameters
     {
         Matrix4x4<float> wMatrix0, wMatrix1;
-        unsigned int numTriangles0, numTriangles1;
+        uint32_t numTriangles0, numTriangles1;
     };
     std::shared_ptr<ConstantBuffer> mTIParameters;
     std::shared_ptr<StructuredBuffer> mVertices0, mVertices1;

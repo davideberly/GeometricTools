@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -36,7 +36,7 @@ namespace gte
         // Compute the extreme vertices in the specified direction and return
         // the indices of the vertices in the polyhedron vertex array.
         virtual void GetExtremeVertices(Vector3<Real> const& direction,
-            int& positiveDirection, int& negativeDirection) = 0;
+            int32_t& positiveDirection, int32_t& negativeDirection) = 0;
 
     protected:
         // The caller must ensure that the input polyhedron is convex.

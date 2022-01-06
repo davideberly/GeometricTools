@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,8 +25,8 @@ namespace gte
     public:
         // Initialize the model parameters to zero.  The degrees must be
         // nonnegative and strictly increasing.
-        ApprPolynomialSpecial4(std::vector<int> const& xDegrees,
-            std::vector<int> const& yDegrees, std::vector<int> const& zDegrees)
+        ApprPolynomialSpecial4(std::vector<int32_t> const& xDegrees,
+            std::vector<int32_t> const& yDegrees, std::vector<int32_t> const& zDegrees)
             :
             mXDegrees(xDegrees),
             mYDegrees(yDegrees),
@@ -39,7 +39,7 @@ namespace gte
                 "The input arrays must have the same size.");
 
             LogAssert(mXDegrees.size() > 0, "The input array must have elements.");
-            int lastDegree = -1;
+            int32_t lastDegree = -1;
             for (auto degree : mXDegrees)
             {
                 LogAssert(degree > lastDegree, "Degrees must be increasing.");
@@ -94,7 +94,7 @@ namespace gte
         // functions that you can call.
         virtual bool FitIndexed(
             size_t numObservations, std::array<Real, 4> const* observations,
-            size_t numIndices, int const* indices) override
+            size_t numIndices, int32_t const* indices) override
         {
             if (this->ValidIndices(numObservations, observations, numIndices, indices))
             {
@@ -168,27 +168,27 @@ namespace gte
             z = (Real)-1 + (Real)2 * mScale[2] * (z - mZDomain[0]);
 
             // Compute relevant powers of x, y, and z.
-            int jmax = mXDegrees.back();
-            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
+            int32_t jmax = mXDegrees.back();
+            for (int32_t j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
                 mXPowers[j] = mXPowers[jm1] * x;
             }
 
             jmax = mYDegrees.back();
-            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
+            for (int32_t j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
                 mYPowers[j] = mYPowers[jm1] * y;
             }
 
             jmax = mZDegrees.back();
-            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
+            for (int32_t j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
                 mZPowers[j] = mZPowers[jm1] * z;
             }
 
             Real w = (Real)0;
-            int isup = static_cast<int>(mXDegrees.size());
-            for (int i = 0; i < isup; ++i)
+            int32_t isup = static_cast<int32_t>(mXDegrees.size());
+            for (int32_t i = 0; i < isup; ++i)
             {
                 Real xp = mXPowers[mXDegrees[i]];
                 Real yp = mYPowers[mYDegrees[i]];
@@ -204,15 +204,15 @@ namespace gte
     private:
         // Transform the (x,y,z,w) values to (x',y',z',w') in [-1,1]^4.
         void Transform(std::array<Real, 4> const* observations, size_t numIndices,
-            int const* indices, std::vector<std::array<Real, 4>> & transformed)
+            int32_t const* indices, std::vector<std::array<Real, 4>> & transformed)
         {
-            int numSamples = static_cast<int>(numIndices);
+            int32_t numSamples = static_cast<int32_t>(numIndices);
             transformed.resize(numSamples);
 
             std::array<Real, 4> omin = observations[indices[0]];
             std::array<Real, 4> omax = omin;
             std::array<Real, 4> obs;
-            int s, i;
+            int32_t s, i;
             for (s = 1; s < numSamples; ++s)
             {
                 obs = observations[indices[s]];
@@ -258,33 +258,33 @@ namespace gte
         {
             // Set up a linear system A*X = B, where X are the polynomial
             // coefficients.
-            int size = static_cast<int>(mXDegrees.size());
+            int32_t size = static_cast<int32_t>(mXDegrees.size());
             GMatrix<Real> A(size, size);
             A.MakeZero();
             GVector<Real> B(size);
             B.MakeZero();
 
-            int numSamples = static_cast<int>(transformed.size());
-            int twoMaxXDegree = 2 * mXDegrees.back();
-            int twoMaxYDegree = 2 * mYDegrees.back();
-            int twoMaxZDegree = 2 * mZDegrees.back();
-            int row, col;
-            for (int i = 0; i < numSamples; ++i)
+            int32_t numSamples = static_cast<int32_t>(transformed.size());
+            int32_t twoMaxXDegree = 2 * mXDegrees.back();
+            int32_t twoMaxYDegree = 2 * mYDegrees.back();
+            int32_t twoMaxZDegree = 2 * mZDegrees.back();
+            int32_t row, col;
+            for (int32_t i = 0; i < numSamples; ++i)
             {
                 // Compute relevant powers of x, y, and z.
                 Real x = transformed[i][0];
                 Real y = transformed[i][1];
                 Real z = transformed[i][2];
                 Real w = transformed[i][3];
-                for (int j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
+                for (int32_t j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
                 {
                     mXPowers[j] = mXPowers[jm1] * x;
                 }
-                for (int j = 1, jm1 = 0; j <= twoMaxYDegree; ++j, ++jm1)
+                for (int32_t j = 1, jm1 = 0; j <= twoMaxYDegree; ++j, ++jm1)
                 {
                     mYPowers[j] = mYPowers[jm1] * y;
                 }
-                for (int j = 1, jm1 = 0; j <= twoMaxZDegree; ++j, ++jm1)
+                for (int32_t j = 1, jm1 = 0; j <= twoMaxZDegree; ++j, ++jm1)
                 {
                     mZPowers[j] = mZPowers[jm1] * z;
                 }
@@ -328,7 +328,7 @@ namespace gte
             // Solve for the polynomial coefficients.
             GVector<Real> coefficients = Inverse(A) * B;
             bool hasNonzero = false;
-            for (int i = 0; i < size; ++i)
+            for (int32_t i = 0; i < size; ++i)
             {
                 mParameters[i] = coefficients[i];
                 if (coefficients[i] != (Real)0)
@@ -339,7 +339,7 @@ namespace gte
             return hasNonzero;
         }
 
-        std::vector<int> mXDegrees, mYDegrees, mZDegrees;
+        std::vector<int32_t> mXDegrees, mYDegrees, mZDegrees;
         std::vector<Real> mParameters;
 
         // Support for evaluation. The coefficients were generated for the

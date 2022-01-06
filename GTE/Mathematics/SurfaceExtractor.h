@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -139,7 +139,7 @@ namespace gte
         {
             Triangle() = default;
 
-            Triangle(int v0, int v1, int v2)
+            Triangle(int32_t v0, int32_t v1, int32_t v2)
             {
                 // After the code is executed, (v[0],v[1],v[2]) is a cyclic
                 // permutation of (v0,v1,v2) with v[0] = min{v0,v1,v2}.
@@ -182,7 +182,7 @@ namespace gte
 
             bool operator<(Triangle const& other) const
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     if (v[i] < other.v[i])
                     {
@@ -196,7 +196,7 @@ namespace gte
                 return false;
             }
 
-            std::array<int, 3> v;
+            std::array<int32_t, 3> v;
         };
 
         // Extract level surfaces and return rational vertices.
@@ -228,8 +228,8 @@ namespace gte
 
             // Compute the map of unique vertices and assign to them new and
             // unique indices.
-            std::map<Vertex, int> vmap;
-            int nextVertex = 0;
+            std::map<Vertex, int32_t> vmap;
+            int32_t nextVertex = 0;
             for (size_t v = 0; v < numVertices; ++v)
             {
                 // Keep only unique vertices.
@@ -242,12 +242,12 @@ namespace gte
 
             // Compute the map of unique triangles and assign to them new and
             // unique indices.
-            std::map<Triangle, int> tmap;
-            int nextTriangle = 0;
+            std::map<Triangle, int32_t> tmap;
+            int32_t nextTriangle = 0;
             for (size_t t = 0; t < numTriangles; ++t)
             {
                 Triangle& triangle = triangles[t];
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     auto iter = vmap.find(vertices[triangle.v[i]]);
                     LogAssert(iter != vmap.end(), "Expecting the vertex to be in the vmap.");
@@ -321,7 +321,7 @@ namespace gte
                 // Construct the triangle normal based on the current
                 // orientation.
                 std::array<Real, 3> edge1, edge2, normal;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     edge1[i] = v1[i] - v0[i];
                     edge2[i] = v2[i] - v0[i];
@@ -337,7 +337,7 @@ namespace gte
 
                 // Compute the average gradient.
                 std::array<Real, 3> gradAvr;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     gradAvr[i] = (grad0[i] + grad1[i] + grad2[i]) / (Real)3;
                 }
@@ -386,7 +386,7 @@ namespace gte
 
                 // Construct the triangle normal.
                 std::array<Real, 3> edge1, edge2, normal;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     edge1[i] = v1[i] - v0[i];
                     edge2[i] = v2[i] - v0[i];
@@ -396,9 +396,9 @@ namespace gte
                 normal[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
 
                 // Maintain the sum of normals at each vertex.
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
-                    for (int j = 0; j < 3; ++j)
+                    for (int32_t j = 0; j < 3; ++j)
                     {
                         normals[triangle.v[i]][j] += normal[j];
                     }
@@ -414,14 +414,14 @@ namespace gte
                 Real length = std::sqrt(sqrLength);
                 if (length > (Real)0)
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         normal[i] /= length;
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         normal[i] = (Real)0;
                     }
@@ -437,7 +437,7 @@ namespace gte
         // there is at least one image cube to process.  The inputVoxels must
         // be nonnull and point to contiguous storage that contains at least
         // xBound * yBound * zBound elements.
-        SurfaceExtractor(int xBound, int yBound, int zBound, T const* inputVoxels)
+        SurfaceExtractor(int32_t xBound, int32_t yBound, int32_t zBound, T const* inputVoxels)
             :
             mXBound(xBound),
             mYBound(yBound),
@@ -447,7 +447,7 @@ namespace gte
             mVoxels{}
         {
             static_assert(std::is_integral<T>::value && sizeof(T) <= 4,
-                "Type T must be int{8,16,32}_t or uint{8,16,32}_t.");
+                "Type T must be int32_t{8,16,32}_t or uint{8,16,32}_t.");
             LogAssert(xBound > 1 && yBound > 1 && zBound > 1 && mInputVoxels != nullptr,
                 "Invalid input.");
 
@@ -456,7 +456,7 @@ namespace gte
 
         virtual std::array<Real, 3> GetGradient(std::array<Real, 3> const& pos) = 0;
 
-        int mXBound, mYBound, mZBound, mXYBound;
+        int32_t mXBound, mYBound, mZBound, mXYBound;
         T const* mInputVoxels;
         std::vector<int64_t> mVoxels;
     };

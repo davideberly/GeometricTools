@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace gte
@@ -25,7 +26,7 @@ namespace gte
         {
         }
 
-        Image(std::vector<int> const& dimensions)
+        Image(std::vector<int32_t> const& dimensions)
         {
             Reconstruct(dimensions);
         }
@@ -60,7 +61,7 @@ namespace gte
 
         // Support for changing the image dimensions.  All pixel data is lost
         // by this operation.
-        void Reconstruct(std::vector<int> const& dimensions)
+        void Reconstruct(std::vector<int32_t> const& dimensions)
         {
             mDimensions.clear();
             mOffsets.clear();
@@ -96,17 +97,17 @@ namespace gte
         }
 
         // Access to image data.
-        inline std::vector<int> const& GetDimensions() const
+        inline std::vector<int32_t> const& GetDimensions() const
         {
             return mDimensions;
         }
 
-        inline int GetNumDimensions() const
+        inline int32_t GetNumDimensions() const
         {
-            return static_cast<int>(mDimensions.size());
+            return static_cast<int32_t>(mDimensions.size());
         }
 
-        inline int GetDimension(int d) const
+        inline int32_t GetDimension(int32_t d) const
         {
             return mDimensions[d];
         }
@@ -116,7 +117,7 @@ namespace gte
             return mOffsets;
         }
 
-        inline size_t GetOffset(int d) const
+        inline size_t GetOffset(int32_t d) const
         {
             return mOffsets[d];
         }
@@ -138,23 +139,23 @@ namespace gte
 
         // Conversions between n-dim and 1-dim structures.  The 'coord' arrays
         // must have GetNumDimensions() elements.
-        size_t GetIndex(int const* coord) const
+        size_t GetIndex(int32_t const* coord) const
         {
             // assert:  coord is array of mNumDimensions elements
-            int const numDimensions = static_cast<int>(mDimensions.size());
+            int32_t const numDimensions = static_cast<int32_t>(mDimensions.size());
             size_t index = coord[0];
-            for (int d = 1; d < numDimensions; ++d)
+            for (int32_t d = 1; d < numDimensions; ++d)
             {
                 index += mOffsets[d] * coord[d];
             }
             return index;
         }
 
-        void GetCoordinates(size_t index, int* coord) const
+        void GetCoordinates(size_t index, int32_t* coord) const
         {
             // assert:  coord is array of numDimensions elements
-            int const numDimensions = static_cast<int>(mDimensions.size());
-            for (int d = 0; d < numDimensions; ++d)
+            int32_t const numDimensions = static_cast<int32_t>(mDimensions.size());
+            for (int32_t d = 0; d < numDimensions; ++d)
             {
                 coord[d] = index % mDimensions[d];
                 index /= mDimensions[d];
@@ -186,7 +187,7 @@ namespace gte
         }
 
     protected:
-        std::vector<int> mDimensions;
+        std::vector<int32_t> mDimensions;
         std::vector<size_t> mOffsets;
         std::vector<PixelType> mPixels;
     };

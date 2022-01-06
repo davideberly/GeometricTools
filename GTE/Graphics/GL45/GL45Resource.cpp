@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45Resource.h>
@@ -39,22 +39,22 @@ bool GL45Resource::PreparedForCopy(GLenum access) const
     LogAssert(mGLHandle != 0, "GL object does not exist.");
 
     // Verify the copy type.
-    Resource::CopyType copyType = GetResource()->GetCopyType();
-    if (copyType == Resource::COPY_CPU_TO_STAGING)  // CPU -> GPU
+    uint32_t copyType = GetResource()->GetCopy();
+    if (copyType == Resource::Copy::CPU_TO_STAGING)  // CPU -> GPU
     {
         if (access == GL_WRITE_ONLY)
         {
             return true;
         }
     }
-    else if (copyType == Resource::COPY_STAGING_TO_CPU)  // GPU -> CPU
+    else if (copyType == Resource::Copy::STAGING_TO_CPU)  // GPU -> CPU
     {
         if (access == GL_READ_ONLY)
         {
             return true;
         }
     }
-    else if (copyType == Resource::COPY_BIDIRECTIONAL)
+    else if (copyType == Resource::Copy::BIDIRECTIONAL)
     {
         if (access == GL_READ_WRITE)
         {

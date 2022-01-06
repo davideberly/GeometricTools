@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "DeformableBall.h"
 #include <Mathematics/SurfaceExtractorMC.h>
@@ -30,7 +30,7 @@ void DeformableBall::Set(float duration, float period)
 void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
 {
     // Create initial image for surface extraction (16 x 16 x 16).
-    int const bound = 16;
+    int32_t const bound = 16;
     float const invBoundM1 = 1.0f / static_cast<float>(bound - 1);
     Image3<float> image(bound, bound, bound);
     SurfaceExtractorMC<float> extractor(image);
@@ -41,13 +41,13 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
     // Initialize image and extract level surface F = 0.  Data stores samples
     // for (x,y,z) in [-1,1]x[-1,1]x[0,2].
     Vector3<float> position;
-    for (int z = 0, i = 0; z < bound; ++z)
+    for (int32_t z = 0, i = 0; z < bound; ++z)
     {
         position[2] = -0.1f + 2.2f * invBoundM1 * z;
-        for (int y = 0; y < bound; ++y)
+        for (int32_t y = 0; y < bound; ++y)
         {
             position[1] = -1.1f + 2.2f * invBoundM1 * y;
-            for (int x = 0; x < bound; ++x, ++i)
+            for (int32_t x = 0; x < bound; ++x, ++i)
             {
                 position[0] = -1.1f + 2.2f * invBoundM1 * x;
 
@@ -61,7 +61,7 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
 
     // Extract the level surface.
     std::vector<Vector3<float>> vertices;
-    std::vector<int> indices;
+    std::vector<int32_t> indices;
     extractor.Extract(0.0f, vertices, indices);
     extractor.MakeUnique(vertices, indices);
     extractor.OrientTriangles(vertices, indices, true);
@@ -73,15 +73,15 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
     // as the error tolerance for Newton's method in the level surface
     // evolution.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
-    unsigned int const numVertices = static_cast<unsigned int>(vertices.size());
+    uint32_t const numVertices = static_cast<uint32_t>(vertices.size());
     std::shared_ptr<VertexBuffer> vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     Vertex* vertex = vbuffer->Get<Vertex>();
     float maxAbsLevel = 0.0f;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> surfacePosition = vertices[i];
         vertex[i].position[0] = -1.1f + 2.2f * invBoundM1 * surfacePosition[0];
@@ -119,9 +119,9 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
         vertex[i].tcoord[1] = height;
     }
 
-    unsigned int const numTriangles = static_cast<unsigned int>(indices.size() / 3);
+    uint32_t const numTriangles = static_cast<uint32_t>(indices.size() / 3);
     std::shared_ptr<IndexBuffer> ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-        numTriangles, sizeof(unsigned int));
+        numTriangles, sizeof(uint32_t));
     std::memcpy(ibuffer->GetData(), indices.data(), ibuffer->GetNumBytes());
 
     mMesh = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -134,16 +134,16 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
 
 void DeformableBall::CreateSmoother()
 {
-    unsigned int const numVertices = mMesh->GetVertexBuffer()->GetNumElements();
+    uint32_t const numVertices = mMesh->GetVertexBuffer()->GetNumElements();
     mNormal.resize(numVertices);
     mMean.resize(numVertices);
     mNeighborCount.resize(numVertices);
 
     // Count the number of vertex neighbors.
     std::fill(mNeighborCount.begin(), mNeighborCount.end(), 0);
-    unsigned int const numTriangles = mMesh->GetIndexBuffer()->GetNumElements() / 3;
-    unsigned int const* indices = mMesh->GetIndexBuffer()->Get<unsigned int>();
-    for (unsigned int i = 0; i < numTriangles; ++i)
+    uint32_t const numTriangles = mMesh->GetIndexBuffer()->GetNumElements() / 3;
+    uint32_t const* indices = mMesh->GetIndexBuffer()->Get<uint32_t>();
+    for (uint32_t i = 0; i < numTriangles; ++i)
     {
         mNeighborCount[*indices++] += 2;
         mNeighborCount[*indices++] += 2;
@@ -153,20 +153,20 @@ void DeformableBall::CreateSmoother()
 
 void DeformableBall::Update(float time)
 {
-    unsigned int const numVertices = mMesh->GetVertexBuffer()->GetNumElements();
+    uint32_t const numVertices = mMesh->GetVertexBuffer()->GetNumElements();
     Vertex* vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    unsigned int const numTriangles = mMesh->GetIndexBuffer()->GetNumElements() / 3;
-    unsigned int const* indices = mMesh->GetIndexBuffer()->Get<unsigned int>();
+    uint32_t const numTriangles = mMesh->GetIndexBuffer()->GetNumElements() / 3;
+    uint32_t const* indices = mMesh->GetIndexBuffer()->Get<uint32_t>();
 
     Vector3<float> zero = Vector3<float>::Zero();
     std::fill(mNormal.begin(), mNormal.end(), zero);
     std::fill(mMean.begin(), mMean.end(), zero);
 
-    for (unsigned int i = 0; i < numTriangles; ++i)
+    for (uint32_t i = 0; i < numTriangles; ++i)
     {
-        int i0 = *indices++;
-        int i1 = *indices++;
-        int i2 = *indices++;
+        int32_t i0 = *indices++;
+        int32_t i1 = *indices++;
+        int32_t i2 = *indices++;
 
         Vector3<float> v0 = vertices[i0].position;
         Vector3<float> v1 = vertices[i1].position;
@@ -185,13 +185,13 @@ void DeformableBall::Update(float time)
         mMean[i2] += v0 + v1;
     }
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Normalize(mNormal[i]);
         mMean[i] /= static_cast<float>(mNeighborCount[i]);
     }
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> position = vertices[i].position;
         if (VertexInfluenced(i, time, position))
@@ -259,22 +259,22 @@ bool DeformableBall::DoSimulationStep(float realTime)
     return false;
 }
 
-bool DeformableBall::VertexInfluenced(unsigned int, float time, Vector3<float> const& position) const
+bool DeformableBall::VertexInfluenced(uint32_t, float time, Vector3<float> const& position) const
 {
     float rSqr = Dot(position, position);
     return rSqr < 1.0f && mMinActive < time && time < mMaxActive;
 }
 
-float DeformableBall::GetTangentWeight(unsigned int, float, Vector3<float> const&) const
+float DeformableBall::GetTangentWeight(uint32_t, float, Vector3<float> const&) const
 {
     return 0.5f;
 }
 
-float DeformableBall::GetNormalWeight(unsigned int i, float time, Vector3<float> const& position) const
+float DeformableBall::GetNormalWeight(uint32_t i, float time, Vector3<float> const& position) const
 {
     // Find root of F along line origin+s*dir using Newton's method.
     float s = 0.0f;
-    for (int iter = 0; iter < mMaxIterations; ++iter)
+    for (int32_t iter = 0; iter < mMaxIterations; ++iter)
     {
         // Point of evaluation.
         Vector3<float> evalPosition = position + s * mNormal[i];

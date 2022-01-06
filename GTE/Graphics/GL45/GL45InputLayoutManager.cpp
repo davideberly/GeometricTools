@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Mathematics/Logger.h>
@@ -12,53 +12,61 @@ using namespace gte;
 
 GL45InputLayoutManager::~GL45InputLayoutManager()
 {
-    if (mMap.HasElements())
-    {
-        UnbindAll();
-    }
+    mMutex.lock();
+    mMap.clear();
+    mMutex.unlock();
 }
 
 GL45InputLayout* GL45InputLayoutManager::Bind(GLuint programHandle,
     GLuint vbufferHandle, VertexBuffer const* vbuffer)
 {
-    std::shared_ptr<GL45InputLayout> layout;
-    if (programHandle)
+    LogAssert(programHandle != 0, "Invalid input.");
+
+    if (vbuffer)
     {
-        if (vbuffer)
+        mMutex.lock();
+        VBPPair vbp(vbuffer, programHandle);
+        auto iter = mMap.find(vbp);
+        if (iter == mMap.end())
         {
-            if (!mMap.Get(std::make_pair(vbuffer, programHandle), layout))
-            {
-                layout = std::make_shared<GL45InputLayout>(programHandle, vbufferHandle, vbuffer);
-                mMap.Insert(std::make_pair(vbuffer, programHandle), layout);
-            }
+            auto layout = std::make_shared<GL45InputLayout>(programHandle, vbufferHandle, vbuffer);
+            iter = mMap.insert(std::make_pair(vbp, layout)).first;
         }
-        // else: A null vertex buffer is passed when an effect wants to
-        // bypass the input assembler.
-        return layout.get();
+        GL45InputLayout* inputLayout = iter->second.get();
+        mMutex.unlock();
+        return inputLayout;
     }
     else
     {
-        LogError("Program must exist.");
+        // A null vertex buffer is passed when an effect wants to bypass the
+        // input assembler.
+        return nullptr;
     }
 }
 
 bool GL45InputLayoutManager::Unbind(VertexBuffer const* vbuffer)
 {
-    if (vbuffer)
+    LogAssert(vbuffer != nullptr, "Invalid input.");
+
+    mMutex.lock();
+    if (mMap.size() > 0)
     {
-        std::vector<VBPPair> matches;
-        mMap.GatherMatch(vbuffer, matches);
-        for (auto match : matches)
+        std::vector<VBPPair> matches{};
+        for (auto const& element : mMap)
         {
-            std::shared_ptr<GL45InputLayout> layout;
-            mMap.Remove(match, layout);
+            if (vbuffer == element.first.first)
+            {
+                matches.push_back(element.first);
+            }
         }
-        return true;
+
+        for (auto const& match : matches)
+        {
+            mMap.erase(match);
+        }
     }
-    else
-    {
-        LogError("Vertex buffer must be nonnull.");
-    }
+    mMutex.unlock();
+    return true;
 }
 
 bool GL45InputLayoutManager::Unbind(Shader const*)
@@ -68,26 +76,15 @@ bool GL45InputLayoutManager::Unbind(Shader const*)
 
 void GL45InputLayoutManager::UnbindAll()
 {
-    mMap.RemoveAll();
+    mMutex.lock();
+    mMap.clear();
+    mMutex.unlock();
 }
 
 bool GL45InputLayoutManager::HasElements() const
 {
-    return mMap.HasElements();
-}
-
-void GL45InputLayoutManager::LayoutMap::GatherMatch(
-    VertexBuffer const* vbuffer, std::vector<VBPPair>& matches)
-{
     mMutex.lock();
-    {
-        for (auto vbp : mMap)
-        {
-            if (vbuffer == vbp.first.first)
-            {
-                matches.push_back(vbp.first);
-            }
-        }
-    }
+    bool hasElements = mMap.size() > 0;
     mMutex.unlock();
+    return hasElements;
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.05
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLX/GLXEngine.h>
@@ -17,7 +17,7 @@ GLXEngine::~GLXEngine()
 }
 
 GLXEngine::GLXEngine(Display* display, unsigned long window, GLXContext context,
-    int xSize, int ySize, bool useDepth24Stencil8, bool saveDriverInfo, int requiredMajor, int requiredMinor)
+    int32_t xSize, int32_t ySize, bool useDepth24Stencil8, bool saveDriverInfo, int32_t requiredMajor, int32_t requiredMinor)
     :
     GL45Engine(),
     mDisplay(display),
@@ -30,7 +30,7 @@ GLXEngine::GLXEngine(Display* display, unsigned long window, GLXContext context,
     Initialize(requiredMajor, requiredMinor, useDepth24Stencil8, saveDriverInfo);
 }
 
-GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredMajor, int requiredMinor)
+GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int32_t requiredMajor, int32_t requiredMinor)
     :
     GL45Engine(),
     mDisplay(nullptr),
@@ -47,7 +47,7 @@ GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
     }
 
     // Make sure the X server has OpenGL GLX extensions.
-    int errorBase, eventBase;
+    int32_t errorBase, eventBase;
     Bool success = glXQueryExtension(mDisplay, &errorBase, &eventBase);
     if (!success)
     {
@@ -60,10 +60,10 @@ GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
     }
 
     // Select the attributes for the frame buffer.
-    int attributes[256];
+    int32_t attributes[256];
 
     // Create a 32-bit RGBA buffer.
-    int i = 0;
+    int32_t i = 0;
     attributes[i++] = GLX_RGBA;
     attributes[i++] = GLX_RED_SIZE;
     attributes[i++] = 8;
@@ -98,7 +98,7 @@ GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
     attributes[i] = 0;
 
     // Get an OpenGL-capable visual.
-    int screen = DefaultScreen(mDisplay);
+    int32_t screen = DefaultScreen(mDisplay);
     XVisualInfo* visualInfo = glXChooseVisual(mDisplay, screen, attributes);
     if (!visualInfo)
     {
@@ -139,8 +139,8 @@ GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
         ExposureMask |
         StructureNotifyMask;
 
-    unsigned int xOrigin = 0, yOrigin = 0, xSize = 16, ySize = 16;
-    unsigned int borderWidth = 0;
+    uint32_t xOrigin = 0, yOrigin = 0, xSize = 16, ySize = 16;
+    uint32_t borderWidth = 0;
     unsigned long valueMask = CWBorderPixel | CWColormap | CWEventMask;
     mWindow = XCreateWindow(mDisplay, rootWindow, xOrigin,
         yOrigin, xSize, ySize, borderWidth,
@@ -156,7 +156,7 @@ GLXEngine::GLXEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
 
     std::string title = "GL4ComputeWindowClass";
     Pixmap iconPixmap = None;
-    int numArguments = 0;
+    int32_t numArguments = 0;
     char** arguments = nullptr;
     XSetStandardProperties(mDisplay, mWindow, title.c_str(),
         title.c_str(), iconPixmap, arguments, numArguments, &hints);
@@ -183,7 +183,7 @@ void GLXEngine::MakeActive()
     }
 }
 
-void GLXEngine::DisplayColorBuffer(unsigned int syncInterval)
+void GLXEngine::DisplayColorBuffer(uint32_t syncInterval)
 {
     // TODO: Disable vertical sync if possible.
     (void)syncInterval;
@@ -191,7 +191,7 @@ void GLXEngine::DisplayColorBuffer(unsigned int syncInterval)
     glXSwapBuffers(mDisplay, mWindow);
 }
 
-bool GLXEngine::Initialize(int requiredMajor, int requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo)
+bool GLXEngine::Initialize(int32_t requiredMajor, int32_t requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo)
 {
     if (!glXMakeCurrent(mDisplay, mWindow, mImmediate))
     {

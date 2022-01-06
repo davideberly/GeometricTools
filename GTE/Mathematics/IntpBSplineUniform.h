@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -36,18 +36,18 @@
 //   typedef control_point_type Type;
 //
 //   // The number of elements in the specified dimension.
-//   int GetSize(int dimension) const;
+//   int32_t GetSize(int32_t dimension) const;
 //
 //   // Get a control point based on an n-tuple lookup.  The interpolator
 //   // does not need to know your organization; all it needs is the
 //   // desired control point.  The 'tuple' input must have n elements.
-//   Type operator() (int const* tuple) const;
+//   Type operator() (int32_t const* tuple) const;
 //
 //   // If you choose to use the specialized interpolators for dimensions
 //   // 1, 2 or 3, you must also provide the following accessor, where
 //   // the input is an n-tuple listed component-by-component (1, 2 or 3
 //   // components).
-//   Type operator() (int i0, int i1, ..., int inm1) const;
+//   Type operator() (int32_t i0, int32_t i1, ..., int32_t inm1) const;
 // }
 
 namespace gte
@@ -59,8 +59,8 @@ namespace gte
         // Abstract base class construction.  A virtual destructor is not
         // provided because there are no required side effects in the base
         // class when destroying objects from the derived classes.
-        IntpBSplineUniformShared(int numDimensions, int const* degrees,
-            Controls const& controls, typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniformShared(int32_t numDimensions, int32_t const* degrees,
+            Controls const& controls, typename Controls::Type ctZero, int32_t cacheMode)
             :
             mNumDimensions(numDimensions),
             mDegree(numDimensions),
@@ -86,7 +86,7 @@ namespace gte
         {
             // The condition c+1 > d+1 is required so that when s = c+1-d, its
             // maximum value, we have at least two s-knots (d and d + 1).
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 if (mControls->GetSize(dim) <= degrees[dim] + 1)
                 {
@@ -95,7 +95,7 @@ namespace gte
             }
 
             mNumLocalControls = 1;
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 mDegree[dim] = degrees[dim];
                 mDegreeP1[dim] = degrees[dim] + 1;
@@ -111,7 +111,7 @@ namespace gte
             if (mCacheMode == NO_CACHING)
             {
                 mPhi.resize(mNumDimensions);
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     mPhi[dim].resize(mDegreeP1[dim]);
                 }
@@ -150,27 +150,27 @@ namespace gte
         };
 
         // Member access.
-        inline int GetDegree(int dim) const
+        inline int32_t GetDegree(int32_t dim) const
         {
             return mDegree[dim];
         }
 
-        inline int GetNumControls(int dim) const
+        inline int32_t GetNumControls(int32_t dim) const
         {
             return mNumControls[dim];
         }
 
-        inline Real GetTMin(int dim) const
+        inline Real GetTMin(int32_t dim) const
         {
             return mTMin[dim];
         }
 
-        inline Real GetTMax(int dim) const
+        inline Real GetTMax(int32_t dim) const
         {
             return mTMax[dim];
         }
 
-        inline int GetCacheMode() const
+        inline int32_t GetCacheMode() const
         {
             return mCacheMode;
         }
@@ -188,9 +188,9 @@ namespace gte
 
         // Compute the blending matrix that combines the control points and
         // the polynomial vector.  The matrix A is stored in row-major order.
-        static void ComputeBlendingMatrix(int degree, std::vector<Real>& A)
+        static void ComputeBlendingMatrix(int32_t degree, std::vector<Real>& A)
         {
-            int const degreeP1 = degree + 1;
+            int32_t const degreeP1 = degree + 1;
             A.resize(static_cast<size_t>(degreeP1) * static_cast<size_t>(degreeP1));
 
             if (degree == 0)
@@ -225,14 +225,14 @@ namespace gte
             // computing P[k] (level j) from P[k] (level j-1) and P[k-1]
             // (level j-1), which means we have to process k = j down to
             // k = 0.
-            for (int j = 1; j <= degree; ++j)
+            for (int32_t j = 1; j <= degree; ++j)
             {
                 Real invJ = (Real)1 / (Real)j;
                 L0[1] = invJ;
                 L1[0] = (Real)1 + invJ;
                 L1[1] = -invJ;
 
-                for (int k = j; k >= 0; --k)
+                for (int32_t k = j; k >= 0; --k)
                 {
                     Polynomial1<Real> result = { (Real)0 };
 
@@ -252,16 +252,16 @@ namespace gte
 
             // Compute Q_{d,k}(s) = P_{d,k}(s + k).
             std::vector<Polynomial1<Real>> Q(degreeP1);
-            for (int k = 0; k <= degree; ++k)
+            for (int32_t k = 0; k <= degree; ++k)
             {
                 Q[k] = P[k].GetTranslation(static_cast<Real>(-k));
             }
 
             // Extract the matrix A from the Q-polynomials.  Row r of A
             // contains the coefficients of Q_{d,d-r}(s).
-            for (int k = 0, row = degree; k <= degree; ++k, --row)
+            for (int32_t k = 0, row = degree; k <= degree; ++k, --row)
             {
-                for (int col = 0; col <= degree; ++col)
+                for (int32_t col = 0; col <= degree; ++col)
                 {
                     A[col + static_cast<size_t>(degreeP1) * row] = Q[k][col];
                 }
@@ -269,20 +269,20 @@ namespace gte
         }
 
         // Compute the coefficients for the derivative polynomial terms.
-        static void ComputeDCoefficients(int degree, std::vector<Real>& dCoefficients,
-            std::vector<int>& ellMax)
+        static void ComputeDCoefficients(int32_t degree, std::vector<Real>& dCoefficients,
+            std::vector<int32_t>& ellMax)
         {
-            int numDCoefficients = (degree + 1) * (degree + 2) / 2;
+            int32_t numDCoefficients = (degree + 1) * (degree + 2) / 2;
             dCoefficients.resize(numDCoefficients);
-            for (int i = 0; i < numDCoefficients; ++i)
+            for (int32_t i = 0; i < numDCoefficients; ++i)
             {
                 dCoefficients[i] = 1;
             }
 
-            for (int order = 1, col0 = 0, col1 = degree + 1; order <= degree; ++order)
+            for (int32_t order = 1, col0 = 0, col1 = degree + 1; order <= degree; ++order)
             {
                 ++col0;
-                for (int c = order, m = 1; c <= degree; ++c, ++m, ++col0, ++col1)
+                for (int32_t c = order, m = 1; c <= degree; ++c, ++m, ++col0, ++col1)
                 {
                     dCoefficients[col1] = dCoefficients[col0] * m;
                 }
@@ -290,21 +290,21 @@ namespace gte
 
             ellMax.resize(static_cast<size_t>(degree) + 1);
             ellMax[0] = degree;
-            for (int i0 = 0, i1 = 1; i1 <= degree; i0 = i1++)
+            for (int32_t i0 = 0, i1 = 1; i1 <= degree; i0 = i1++)
             {
                 ellMax[i1] = ellMax[i0] + degree - i0;
             }
         }
 
         // Compute powers of ds/dt.
-        void ComputePowers(int degree, int numControls, Real tmin, Real tmax,
+        void ComputePowers(int32_t degree, int32_t numControls, Real tmin, Real tmax,
             std::vector<Real>& powerDSDT)
         {
             Real dsdt = (static_cast<Real>(numControls) - static_cast<Real>(degree)) / (tmax - tmin);
             powerDSDT.resize(static_cast<size_t>(degree) + 1);
             powerDSDT[0] = (Real)1;
             powerDSDT[1] = dsdt;
-            for (int i = 2, im1 = 1; i <= degree; ++i, ++im1)
+            for (int32_t i = 2, im1 = 1; i <= degree; ++i, ++im1)
             {
                 powerDSDT[i] = powerDSDT[im1] * dsdt;
             }
@@ -312,8 +312,8 @@ namespace gte
 
         // Determine the interval [index,index+1) corresponding to the
         // specified value of t and compute u in that interval.
-        static void GetKey(Real t, Real tmin, Real tmax, Real dsdt, int numControls,
-            int degree, int& index, Real& u)
+        static void GetKey(Real t, Real tmin, Real tmax, Real dsdt, int32_t numControls,
+            int32_t degree, int32_t& index, Real& u)
         {
             // Compute s - d = ((c + 1 - d)/(c + 1))(t + 1/2), the index for
             // which d + index <= s < d + index + 1.  Let u = s - d - index so
@@ -348,11 +348,11 @@ namespace gte
 
         // For the multidimensional tensor Phi{iTuple, kTuple), compute the
         // portion of the 1-dimensional index that corresponds to iTuple.
-        int GetRowIndex(std::vector<int> const& i) const
+        int32_t GetRowIndex(std::vector<int32_t> const& i) const
         {
-            int rowIndex = i[static_cast<size_t>(mNumDimensions) - 1];
-            int j1 = 2 * mNumDimensions - 2;
-            for (int j0 = mNumDimensions - 2; j0 >= 0; --j0, --j1)
+            int32_t rowIndex = i[static_cast<size_t>(mNumDimensions) - 1];
+            int32_t j1 = 2 * mNumDimensions - 2;
+            for (int32_t j0 = mNumDimensions - 2; j0 >= 0; --j0, --j1)
             {
                 rowIndex = mTBound[j1] * rowIndex + i[j0];
             }
@@ -363,10 +363,10 @@ namespace gte
         // For the multidimensional tensor Phi{iTuple, kTuple), combine the
         // GetRowIndex(...) output with kTuple to produce the full
         // 1-dimensional index.
-        int GetIndex(int rowIndex, std::vector<int> const& k) const
+        int32_t GetIndex(int32_t rowIndex, std::vector<int32_t> const& k) const
         {
-            int index = rowIndex + k[static_cast<size_t>(mNumDimensions) - 1];
-            for (int j = mNumDimensions - 2; j >= 0; --j)
+            int32_t index = rowIndex + k[static_cast<size_t>(mNumDimensions) - 1];
+            for (int32_t j = mNumDimensions - 2; j >= 0; --j)
             {
                 index = mTBound[j] * index + k[j];
             }
@@ -375,24 +375,24 @@ namespace gte
 
         // Compute Phi(iTuple, kTuple).  The 'index' value is an already
         // computed 1-dimensional index for the tensor.
-        void ComputeTensor(int const* i, int const* k, int index)
+        void ComputeTensor(int32_t const* i, int32_t const* k, int32_t index)
         {
             typename Controls::Type element = mCTZero;
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 mComputeJTuple[dim] = 0;
             }
-            for (int iterate = 0; iterate < mNumLocalControls; ++iterate)
+            for (int32_t iterate = 0; iterate < mNumLocalControls; ++iterate)
             {
                 Real blend(1);
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     blend *= mBlender[dim][k[dim] + static_cast<size_t>(mDegreeP1[dim]) * mComputeJTuple[dim]];
                     mComputeSumIJTuple[dim] = i[dim] + mComputeJTuple[dim];
                 }
                 element = element + (*mControls)(mComputeSumIJTuple.data()) * blend;
 
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     if (++mComputeJTuple[dim] < mDegreeP1[dim])
                     {
@@ -414,14 +414,14 @@ namespace gte
             mDegreeMinusOrder.resize(mNumDimensions);
             mTerm.resize(mNumDimensions);
 
-            int current = 0;
-            int numCached = 1;
-            for (int dim = 0; dim < mNumDimensions; ++dim, ++current)
+            int32_t current = 0;
+            int32_t numCached = 1;
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim, ++current)
             {
                 mTBound[current] = mDegreeP1[dim];
                 numCached *= mTBound[current];
             }
-            for (int dim = 0; dim < mNumDimensions; ++dim, ++current)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim, ++current)
             {
                 mTBound[current] = mNumControls[dim] - mDegree[dim];
                 numCached *= mTBound[current];
@@ -430,11 +430,11 @@ namespace gte
             mCached.resize(numCached);
             if (mCacheMode == PRE_CACHING)
             {
-                std::vector<int> tuple(2 * static_cast<size_t>(mNumDimensions), 0);
-                for (int index = 0; index < numCached; ++index)
+                std::vector<int32_t> tuple(2 * static_cast<size_t>(mNumDimensions), 0);
+                for (int32_t index = 0; index < numCached; ++index)
                 {
                     ComputeTensor(&tuple[mNumDimensions], &tuple[0], index);
-                    for (int i = 0; i < 2 * mNumDimensions; ++i)
+                    for (int32_t i = 0; i < 2 * mNumDimensions; ++i)
                     {
                         if (++tuple[i] < mTBound[i])
                         {
@@ -454,10 +454,10 @@ namespace gte
         // Evaluate the interpolator.  Each element of 'order' indicates the
         // order of the derivative you want to compute.  For the function
         // value itself, pass in 'order' that has all 0 elements.
-        typename Controls::Type EvaluateNoCaching(int const* order, Real const* t)
+        typename Controls::Type EvaluateNoCaching(int32_t const* order, Real const* t)
         {
             typename Controls::Type result = mCTZero;
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 if (order[dim] < 0 || order[dim] > mDegree[dim])
                 {
@@ -465,21 +465,21 @@ namespace gte
                 }
             }
 
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
                     mNumControls[dim], mDegree[dim], mITuple[dim], mUTuple[dim]);
             }
 
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
-                int jIndex = 0;
-                for (int j = 0; j <= mDegree[dim]; ++j)
+                int32_t jIndex = 0;
+                for (int32_t j = 0; j <= mDegree[dim]; ++j)
                 {
-                    int kjIndex = mDegree[dim] + jIndex;
-                    int ell = mLMax[dim][order[dim]];
+                    int32_t kjIndex = mDegree[dim] + jIndex;
+                    int32_t ell = mLMax[dim][order[dim]];
                     mPhi[dim][j] = (Real)0;
-                    for (int k = mDegree[dim]; k >= order[dim]; --k)
+                    for (int32_t k = mDegree[dim]; k >= order[dim]; --k)
                     {
                         mPhi[dim][j] = mPhi[dim][j] * mUTuple[dim] +
                             mBlender[dim][kjIndex--] * mDCoefficient[dim][ell--];
@@ -488,23 +488,23 @@ namespace gte
                 }
             }
 
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 mJTuple[dim] = 0;
                 mSumIJTuple[dim] = mITuple[dim];
                 mPTuple[dim] = mPhi[dim][0];
             }
-            for (int iterate = 0; iterate < mNumLocalControls; ++iterate)
+            for (int32_t iterate = 0; iterate < mNumLocalControls; ++iterate)
             {
                 Real product(1);
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     product *= mPTuple[dim];
                 }
 
                 result = result + (*mControls)(mSumIJTuple.data()) * product;
 
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     if (++mJTuple[dim] <= mDegree[dim])
                     {
@@ -519,7 +519,7 @@ namespace gte
             }
 
             Real adjust(1);
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 adjust *= mPowerDSDT[dim][order[dim]];
             }
@@ -527,10 +527,10 @@ namespace gte
             return result;
         }
 
-        typename Controls::Type EvaluateCaching(int const* order, Real const* t)
+        typename Controls::Type EvaluateCaching(int32_t const* order, Real const* t)
         {
-            int numIterates = 1;
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            int32_t numIterates = 1;
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 mDegreeMinusOrder[dim] = mDegree[dim] - order[dim];
                 if (mDegreeMinusOrder[dim] < 0 || mDegreeMinusOrder[dim] > mDegree[dim])
@@ -540,30 +540,30 @@ namespace gte
                 numIterates *= mDegreeMinusOrder[dim] + 1;
             }
 
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
                     mNumControls[dim], mDegree[dim], mITuple[dim], mUTuple[dim]);
             }
 
-            int rowIndex = GetRowIndex(mITuple);
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            int32_t rowIndex = GetRowIndex(mITuple);
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 mJTuple[dim] = 0;
                 mKTuple[dim] = mDegree[dim];
                 mLTuple[dim] = mLMax[dim][order[dim]];
                 mTerm[dim] = mCTZero;
             }
-            for (int iterate = 0; iterate < numIterates; ++iterate)
+            for (int32_t iterate = 0; iterate < numIterates; ++iterate)
             {
-                int index = GetIndex(rowIndex, mKTuple);
+                int32_t index = GetIndex(rowIndex, mKTuple);
                 if (mCacheMode == ON_DEMAND_CACHING && !mCached[index])
                 {
                     ComputeTensor(mITuple.data(), mKTuple.data(), index);
                     mCached[index] = true;
                 }
                 mTerm[0] = mTerm[0] * mUTuple[0] + mTensor[index] * mDCoefficient[0][mLTuple[0]];
-                for (int dim = 0; dim < mNumDimensions; ++dim)
+                for (int32_t dim = 0; dim < mNumDimensions; ++dim)
                 {
                     if (++mJTuple[dim] <= mDegreeMinusOrder[dim])
                     {
@@ -571,7 +571,7 @@ namespace gte
                         --mLTuple[dim];
                         break;
                     }
-                    int dimp1 = dim + 1;
+                    int32_t dimp1 = dim + 1;
                     if (dimp1 < mNumDimensions)
                     {
                         mTerm[dimp1] = mTerm[dimp1] * mUTuple[dimp1] + mTerm[dim] * mDCoefficient[dimp1][mLTuple[dimp1]];
@@ -585,7 +585,7 @@ namespace gte
             typename Controls::Type result = mTerm[static_cast<size_t>(mNumDimensions) - 1];
 
             Real adjust(1);
-            for (int dim = 0; dim < mNumDimensions; ++dim)
+            for (int32_t dim = 0; dim < mNumDimensions; ++dim)
             {
                 adjust *= mPowerDSDT[dim][order[dim]];
             }
@@ -594,28 +594,28 @@ namespace gte
         }
 
         // Constructor inputs.
-        int const mNumDimensions;  // N
-        std::vector<int> mDegree;  // degree[N]
+        int32_t const mNumDimensions;  // N
+        std::vector<int32_t> mDegree;  // degree[N]
         Controls const* mControls;
         typename Controls::Type const mCTZero;
-        int const mCacheMode;
+        int32_t const mCacheMode;
 
         // Parameters for B-spline evaluation.  All std::vector containers
         // have N elements.
-        int mNumLocalControls;  // product of (degree[]+1)
-        std::vector<int> mDegreeP1;
-        std::vector<int> mNumControls;
+        int32_t mNumLocalControls;  // product of (degree[]+1)
+        std::vector<int32_t> mDegreeP1;
+        std::vector<int32_t> mNumControls;
         std::vector<Real> mTMin;
         std::vector<Real> mTMax;
         std::vector<std::vector<Real>> mBlender;
         std::vector<std::vector<Real>> mDCoefficient;
-        std::vector<std::vector<int>> mLMax;
+        std::vector<std::vector<int32_t>> mLMax;
         std::vector<std::vector<Real>> mPowerDSDT;
-        std::vector<int> mITuple;
-        std::vector<int> mJTuple;
-        std::vector<int> mKTuple;
-        std::vector<int> mLTuple;
-        std::vector<int> mSumIJTuple;
+        std::vector<int32_t> mITuple;
+        std::vector<int32_t> mJTuple;
+        std::vector<int32_t> mKTuple;
+        std::vector<int32_t> mLTuple;
+        std::vector<int32_t> mSumIJTuple;
         std::vector<Real> mUTuple;
         std::vector<Real> mPTuple;
 
@@ -624,10 +624,10 @@ namespace gte
         std::vector<std::vector<Real>> mPhi;
 
         // Support for cached B-spline evaluation.
-        std::vector<int> mTBound;  // tbound[2*N]
-        std::vector<int> mComputeJTuple;  // computejtuple[N]
-        std::vector<int> mComputeSumIJTuple;  // computesumijtuple[N]
-        std::vector<int> mDegreeMinusOrder;  // degreeminusorder[N]
+        std::vector<int32_t> mTBound;  // tbound[2*N]
+        std::vector<int32_t> mComputeJTuple;  // computejtuple[N]
+        std::vector<int32_t> mComputeSumIJTuple;  // computesumijtuple[N]
+        std::vector<int32_t> mDegreeMinusOrder;  // degreeminusorder[N]
         std::vector<typename Controls::Type> mTerm;  // mTerm[N]
         std::vector<typename Controls::Type> mTensor;  // depends on numcontrols
         std::vector<bool> mCached;  // same size as mTensor
@@ -638,14 +638,14 @@ namespace gte
 // compile time.
 namespace gte
 {
-    template <typename Real, typename Controls, int N = 0>
+    template <typename Real, typename Controls, int32_t N = 0>
     class IntpBSplineUniform : public IntpBSplineUniformShared<Real, Controls>
     {
     public:
         // The caller is responsible for ensuring that the IntpBSplineUniform
         // object persists as long as the input 'controls' exists.
-        IntpBSplineUniform(std::array<int, N> const& degrees, Controls const& controls,
-            typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniform(std::array<int32_t, N> const& degrees, Controls const& controls,
+            typename Controls::Type ctZero, int32_t cacheMode)
             :
             IntpBSplineUniformShared<Real, Controls>(N, degrees.data(), controls,
                 ctZero, cacheMode)
@@ -661,7 +661,7 @@ namespace gte
         // Evaluate the interpolator.  Each element of 'order' indicates the
         // order of the derivative you want to compute.  For the function
         // value itself, pass in 'order' that has all 0 elements.
-        typename Controls::Type Evaluate(std::array<int, N> const& order,
+        typename Controls::Type Evaluate(std::array<int32_t, N> const& order,
             std::array<Real, N> const& t)
         {
             if (this->mCacheMode == this->NO_CACHING)
@@ -686,10 +686,10 @@ namespace gte
     public:
         // The caller is responsible for ensuring that the IntpBSplineUniform
         // object persists as long as the input 'controls' exists.
-        IntpBSplineUniform(std::vector<int> const& degrees, Controls const& controls,
-            typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniform(std::vector<int32_t> const& degrees, Controls const& controls,
+            typename Controls::Type ctZero, int32_t cacheMode)
             :
-            IntpBSplineUniformShared<Real, Controls>(static_cast<int>(degrees.size()),
+            IntpBSplineUniformShared<Real, Controls>(static_cast<int32_t>(degrees.size()),
                 degrees.data(), controls, ctZero, cacheMode)
         {
         }
@@ -703,11 +703,11 @@ namespace gte
         // Evaluate the interpolator.  Each element of 'order' indicates the
         // order of the derivative you want to compute.  For the function
         // value itself, pass in 'order' that has all 0 elements.
-        typename Controls::Type Evaluate(std::vector<int> const& order,
+        typename Controls::Type Evaluate(std::vector<int32_t> const& order,
             std::vector<Real> const& t)
         {
-            if (static_cast<int>(order.size()) >= this->mNumDimensions
-                && static_cast<int>(t.size()) >= this->mNumDimensions)
+            if (static_cast<int32_t>(order.size()) >= this->mNumDimensions
+                && static_cast<int32_t>(t.size()) >= this->mNumDimensions)
             {
                 if (this->mCacheMode == this->NO_CACHING)
                 {
@@ -741,8 +741,8 @@ namespace gte
     public:
         // The caller is responsible for ensuring that the IntpBSplineUniform
         // object persists as long as the input 'controls' exists.
-        IntpBSplineUniform(int degree, Controls const& controls,
-            typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniform(int32_t degree, Controls const& controls,
+            typename Controls::Type ctZero, int32_t cacheMode)
             :
             IntpBSplineUniformShared<Real, Controls>(),
             mDegree(degree),
@@ -783,27 +783,27 @@ namespace gte
         IntpBSplineUniform& operator=(IntpBSplineUniform&&) = delete;
 
         // Member access.
-        inline int GetDegree(int) const
+        inline int32_t GetDegree(int32_t) const
         {
             return mDegree;
         }
 
-        inline int GetNumControls(int) const
+        inline int32_t GetNumControls(int32_t) const
         {
             return mNumControls;
         }
 
-        inline Real GetTMin(int) const
+        inline Real GetTMin(int32_t) const
         {
             return mTMin;
         }
 
-        inline Real GetTMax(int) const
+        inline Real GetTMax(int32_t) const
         {
             return mTMax;
         }
 
-        inline int GetCacheMode() const
+        inline int32_t GetCacheMode() const
         {
             return mCacheMode;
         }
@@ -811,42 +811,42 @@ namespace gte
         // Evaluate the interpolator.  The order is 0 when you want the B-spline
         // function value itself.  The order is 1 for the first derivative of the
         // function, and so on.
-        typename Controls::Type Evaluate(std::array<int, 1> const& order,
+        typename Controls::Type Evaluate(std::array<int32_t, 1> const& order,
             std::array<Real,1> const& t)
         {
             typename Controls::Type result = mCTZero;
             if (0 <= order[0] && order[0] <= mDegree)
             {
-                int i = 0;
+                int32_t i = 0;
                 Real u = static_cast<Real>(0);
                 this->GetKey(t[0], mTMin, mTMax, mPowerDSDT[1], mNumControls, mDegree, i, u);
 
                 if (mCacheMode == this->NO_CACHING)
                 {
-                    int jIndex = 0;
-                    for (int j = 0; j <= mDegree; ++j)
+                    int32_t jIndex = 0;
+                    for (int32_t j = 0; j <= mDegree; ++j)
                     {
-                        int kjIndex = mDegree + jIndex;
-                        int ell = mLMax[order[0]];
+                        int32_t kjIndex = mDegree + jIndex;
+                        int32_t ell = mLMax[order[0]];
                         mPhi[j] = (Real)0;
-                        for (int k = mDegree; k >= order[0]; --k)
+                        for (int32_t k = mDegree; k >= order[0]; --k)
                         {
                             mPhi[j] = mPhi[j] * u + mBlender[kjIndex--] * mDCoefficient[ell--];
                         }
                         jIndex += mDegreeP1;
                     }
 
-                    for (int j = 0; j <= mDegree; ++j)
+                    for (int32_t j = 0; j <= mDegree; ++j)
                     {
                         result = result + (*mControls)(i + j) * mPhi[j];
                     }
                 }
                 else
                 {
-                    int iIndex = mNumTCols * i;
-                    int kiIndex = mDegree + iIndex;
-                    int ell = mLMax[order[0]];
-                    for (int k = mDegree; k >= order[0]; --k)
+                    int32_t iIndex = mNumTCols * i;
+                    int32_t kiIndex = mDegree + iIndex;
+                    int32_t ell = mLMax[order[0]];
+                    for (int32_t k = mDegree; k >= order[0]; --k)
                     {
                         if (mCacheMode == this->ON_DEMAND_CACHING && !mCached[kiIndex])
                         {
@@ -864,10 +864,10 @@ namespace gte
         }
 
     protected:
-        void ComputeTensor(int r, int c, int index)
+        void ComputeTensor(int32_t r, int32_t c, int32_t index)
         {
             typename Controls::Type element = mCTZero;
-            for (int j = 0; j <= mDegree; ++j)
+            for (int32_t j = 0; j <= mDegree; ++j)
             {
                 element = element + (*mControls)(r + j) * mBlender[c + static_cast<size_t>(mDegreeP1) * j];
             }
@@ -878,14 +878,14 @@ namespace gte
         {
             mNumTRows = mNumControls - mDegree;
             mNumTCols = mDegreeP1;
-            int numCached = mNumTRows * mNumTCols;
+            int32_t numCached = mNumTRows * mNumTCols;
             mTensor.resize(numCached);
             mCached.resize(numCached);
             if (mCacheMode == this->PRE_CACHING)
             {
-                for (int r = 0, index = 0; r < mNumTRows; ++r)
+                for (int32_t r = 0, index = 0; r < mNumTRows; ++r)
                 {
-                    for (int c = 0; c < mNumTCols; ++c, ++index)
+                    for (int32_t c = 0; c < mNumTCols; ++c, ++index)
                     {
                         ComputeTensor(r, c, index);
                     }
@@ -899,25 +899,25 @@ namespace gte
         }
 
         // Constructor inputs.
-        int mDegree;
+        int32_t mDegree;
         Controls const* mControls;
         typename Controls::Type mCTZero;
-        int mCacheMode;
+        int32_t mCacheMode;
 
         // Parameters for B-spline evaluation.
-        int mDegreeP1;
-        int mNumControls;
+        int32_t mDegreeP1;
+        int32_t mNumControls;
         Real mTMin, mTMax;
         std::vector<Real> mBlender;
         std::vector<Real> mDCoefficient;
-        std::vector<int> mLMax;
+        std::vector<int32_t> mLMax;
         std::vector<Real> mPowerDSDT;
 
         // Support for no-cached B-spline evaluation.
         std::vector<Real> mPhi;
 
         // Support for cached B-spline evaluation.
-        int mNumTRows, mNumTCols;
+        int32_t mNumTRows, mNumTCols;
         std::vector<typename Controls::Type> mTensor;
         std::vector<bool> mCached;
     };
@@ -932,8 +932,8 @@ namespace gte
     public:
         // The caller is responsible for ensuring that the IntpBSplineUniform2
         // object persists as long as the input 'controls' exists.
-        IntpBSplineUniform(std::array<int, 2> const& degrees, Controls const& controls,
-            typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniform(std::array<int32_t, 2> const& degrees, Controls const& controls,
+            typename Controls::Type ctZero, int32_t cacheMode)
             :
             IntpBSplineUniformShared<Real, Controls>(),
             mDegree(degrees),
@@ -943,7 +943,7 @@ namespace gte
         {
             // The condition c+1 > d+1 is required so that when s = c+1-d, its
             // maximum value, we have at least two s-knots (d and d + 1).
-            for (int dim = 0; dim < 2; ++dim)
+            for (int32_t dim = 0; dim < 2; ++dim)
             {
                 if (mControls->GetSize(dim) <= mDegree[dim] + 1)
                 {
@@ -951,7 +951,7 @@ namespace gte
                 }
             }
 
-            for (int dim = 0; dim < 2; ++dim)
+            for (int32_t dim = 0; dim < 2; ++dim)
             {
                 mDegreeP1[dim] = mDegree[dim] + 1;
                 mNumControls[dim] = mControls->GetSize(dim);
@@ -966,7 +966,7 @@ namespace gte
 
             if (mCacheMode == this->NO_CACHING)
             {
-                for (int dim = 0; dim < 2; ++dim)
+                for (int32_t dim = 0; dim < 2; ++dim)
                 {
                     mPhi[dim].resize(mDegreeP1[dim]);
                 }
@@ -984,27 +984,27 @@ namespace gte
         IntpBSplineUniform& operator=(IntpBSplineUniform&&) = delete;
 
         // Member access.
-        inline int GetDegree(int dim) const
+        inline int32_t GetDegree(int32_t dim) const
         {
             return mDegree[dim];
         }
 
-        inline int GetNumControls(int dim) const
+        inline int32_t GetNumControls(int32_t dim) const
         {
             return mNumControls[dim];
         }
 
-        inline Real GetTMin(int dim) const
+        inline Real GetTMin(int32_t dim) const
         {
             return mTMin[dim];
         }
 
-        inline Real GetTMax(int dim) const
+        inline Real GetTMax(int32_t dim) const
         {
             return mTMax[dim];
         }
 
-        inline int GetCacheMode() const
+        inline int32_t GetCacheMode() const
         {
             return mCacheMode;
         }
@@ -1014,16 +1014,16 @@ namespace gte
         // derivative with respect to t0 and the order1 is 1 for the first
         // derivative with respect to t1.  Higher-order derivatives in other
         // t-inputs are computed similarly.
-        typename Controls::Type Evaluate(std::array<int, 2> const& order,
+        typename Controls::Type Evaluate(std::array<int32_t, 2> const& order,
             std::array<Real, 2> const& t)
         {
             typename Controls::Type result = mCTZero;
             if (0 <= order[0] && order[0] <= mDegree[0]
                 && 0 <= order[1] && order[1] <= mDegree[1])
             {
-                std::array<int, 2> i{ 0, 0 };
+                std::array<int32_t, 2> i{ 0, 0 };
                 std::array<Real, 2> u{ (Real)0, (Real)0 };
-                for (int dim = 0; dim < 2; ++dim)
+                for (int32_t dim = 0; dim < 2; ++dim)
                 {
                     this->GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
                         mNumControls[dim], mDegree[dim], i[dim], u[dim]);
@@ -1031,15 +1031,15 @@ namespace gte
 
                 if (mCacheMode == this->NO_CACHING)
                 {
-                    for (int dim = 0; dim < 2; ++dim)
+                    for (int32_t dim = 0; dim < 2; ++dim)
                     {
-                        int jIndex = 0;
-                        for (int j = 0; j <= mDegree[dim]; ++j)
+                        int32_t jIndex = 0;
+                        for (int32_t j = 0; j <= mDegree[dim]; ++j)
                         {
-                            int kjIndex = mDegree[dim] + jIndex;
-                            int ell = mLMax[dim][order[dim]];
+                            int32_t kjIndex = mDegree[dim] + jIndex;
+                            int32_t ell = mLMax[dim][order[dim]];
                             mPhi[dim][j] = (Real)0;
-                            for (int k = mDegree[dim]; k >= order[dim]; --k)
+                            for (int32_t k = mDegree[dim]; k >= order[dim]; --k)
                             {
                                 mPhi[dim][j] = mPhi[dim][j] * u[dim] +
                                     mBlender[dim][kjIndex--] * mDCoefficient[dim][ell--];
@@ -1048,10 +1048,10 @@ namespace gte
                         }
                     }
 
-                    for (int j1 = 0; j1 <= mDegree[1]; ++j1)
+                    for (int32_t j1 = 0; j1 <= mDegree[1]; ++j1)
                     {
                         Real phi1 = mPhi[1][j1];
-                        for (int j0 = 0; j0 <= mDegree[0]; ++j0)
+                        for (int32_t j0 = 0; j0 <= mDegree[0]; ++j0)
                         {
                             Real phi0 = mPhi[0][j0];
                             Real phi01 = phi0 * phi1;
@@ -1061,15 +1061,15 @@ namespace gte
                 }
                 else
                 {
-                    int i0i1Index = mNumTCols[1] * (i[0] + mNumTRows[0] * i[1]);
-                    int k1i0i1Index = mDegree[1] + i0i1Index;
-                    int ell1 = mLMax[1][order[1]];
-                    for (int k1 = mDegree[1]; k1 >= order[1]; --k1)
+                    int32_t i0i1Index = mNumTCols[1] * (i[0] + mNumTRows[0] * i[1]);
+                    int32_t k1i0i1Index = mDegree[1] + i0i1Index;
+                    int32_t ell1 = mLMax[1][order[1]];
+                    for (int32_t k1 = mDegree[1]; k1 >= order[1]; --k1)
                     {
-                        int k0k1i0i1Index = mDegree[0] + mNumTCols[0] * k1i0i1Index;
-                        int ell0 = mLMax[0][order[0]];
+                        int32_t k0k1i0i1Index = mDegree[0] + mNumTCols[0] * k1i0i1Index;
+                        int32_t ell0 = mLMax[0][order[0]];
                         typename Controls::Type term = mCTZero;
-                        for (int k0 = mDegree[0]; k0 >= order[0]; --k0)
+                        for (int32_t k0 = mDegree[0]; k0 >= order[0]; --k0)
                         {
                             if (mCacheMode == this->ON_DEMAND_CACHING && !mCached[k0k1i0i1Index])
                             {
@@ -1084,7 +1084,7 @@ namespace gte
                 }
 
                 Real adjust(1);
-                for (int dim = 0; dim < 2; ++dim)
+                for (int32_t dim = 0; dim < 2; ++dim)
                 {
                     adjust *= mPowerDSDT[dim][order[dim]];
                 }
@@ -1093,13 +1093,13 @@ namespace gte
             return result;
         }
 
-        void ComputeTensor(int r0, int r1, int c0, int c1, int index)
+        void ComputeTensor(int32_t r0, int32_t r1, int32_t c0, int32_t c1, int32_t index)
         {
             typename Controls::Type element = mCTZero;
-            for (int j1 = 0; j1 <= mDegree[1]; ++j1)
+            for (int32_t j1 = 0; j1 <= mDegree[1]; ++j1)
             {
                 Real blend1 = mBlender[1][c1 + static_cast<size_t>(mDegreeP1[1]) * j1];
-                for (int j0 = 0; j0 <= mDegree[0]; ++j0)
+                for (int32_t j0 = 0; j0 <= mDegree[0]; ++j0)
                 {
                     Real blend0 = mBlender[0][c0 + static_cast<size_t>(mDegreeP1[0]) * j0];
                     Real blend01 = blend0 * blend1;
@@ -1111,8 +1111,8 @@ namespace gte
 
         void InitializeTensors()
         {
-            int numCached = 1;
-            for (int dim = 0; dim < 2; ++dim)
+            int32_t numCached = 1;
+            for (int32_t dim = 0; dim < 2; ++dim)
             {
                 mNumTRows[dim] = mNumControls[dim] - mDegree[dim];
                 mNumTCols[dim] = mDegreeP1[dim];
@@ -1122,13 +1122,13 @@ namespace gte
             mCached.resize(numCached);
             if (mCacheMode == this->PRE_CACHING)
             {
-                for (int r1 = 0, index = 0; r1 < mNumTRows[1]; ++r1)
+                for (int32_t r1 = 0, index = 0; r1 < mNumTRows[1]; ++r1)
                 {
-                    for (int r0 = 0; r0 < mNumTRows[0]; ++r0)
+                    for (int32_t r0 = 0; r0 < mNumTRows[0]; ++r0)
                     {
-                        for (int c1 = 0; c1 < mNumTCols[1]; ++c1)
+                        for (int32_t c1 = 0; c1 < mNumTCols[1]; ++c1)
                         {
-                            for (int c0 = 0; c0 < mNumTCols[0]; ++c0, ++index)
+                            for (int32_t c0 = 0; c0 < mNumTCols[0]; ++c0, ++index)
                             {
                                 ComputeTensor(r0, r1, c0, c1, index);
                             }
@@ -1144,25 +1144,25 @@ namespace gte
         }
 
         // Constructor inputs.
-        std::array<int, 2> mDegree;
+        std::array<int32_t, 2> mDegree;
         Controls const* mControls;
         typename Controls::Type mCTZero;
-        int mCacheMode;
+        int32_t mCacheMode;
 
         // Parameters for B-spline evaluation.
-        std::array<int, 2> mDegreeP1;
-        std::array<int, 2> mNumControls;
+        std::array<int32_t, 2> mDegreeP1;
+        std::array<int32_t, 2> mNumControls;
         std::array<Real, 2> mTMin, mTMax;
         std::array<std::vector<Real>, 2> mBlender;
         std::array<std::vector<Real>, 2> mDCoefficient;
-        std::array<std::vector<int>, 2> mLMax;
+        std::array<std::vector<int32_t>, 2> mLMax;
         std::array<std::vector<Real>, 2> mPowerDSDT;
 
         // Support for no-cached B-spline evaluation.
         std::array<std::vector<Real>, 2> mPhi;
 
         // Support for cached B-spline evaluation.
-        std::array<int, 2> mNumTRows, mNumTCols;
+        std::array<int32_t, 2> mNumTRows, mNumTCols;
         std::vector<typename Controls::Type> mTensor;
         std::vector<bool> mCached;
     };
@@ -1177,8 +1177,8 @@ namespace gte
     public:
         // The caller is responsible for ensuring that the IntpBSplineUniform3
         // object persists as long as the input 'controls' exists.
-        IntpBSplineUniform(std::array<int, 3> const& degrees, Controls const& controls,
-            typename Controls::Type ctZero, int cacheMode)
+        IntpBSplineUniform(std::array<int32_t, 3> const& degrees, Controls const& controls,
+            typename Controls::Type ctZero, int32_t cacheMode)
             :
             IntpBSplineUniformShared<Real, Controls>(),
             mDegree(degrees),
@@ -1188,7 +1188,7 @@ namespace gte
         {
             // The condition c+1 > d+1 is required so that when s = c+1-d, its
             // maximum value, we have at least two s-knots (d and d + 1).
-            for (int dim = 0; dim < 3; ++dim)
+            for (int32_t dim = 0; dim < 3; ++dim)
             {
                 if (mControls->GetSize(dim) <= mDegree[dim] + 1)
                 {
@@ -1196,7 +1196,7 @@ namespace gte
                 }
             }
 
-            for (int dim = 0; dim < 3; ++dim)
+            for (int32_t dim = 0; dim < 3; ++dim)
             {
                 mDegreeP1[dim] = mDegree[dim] + 1;
                 mNumControls[dim] = mControls->GetSize(dim);
@@ -1211,7 +1211,7 @@ namespace gte
 
             if (mCacheMode == this->NO_CACHING)
             {
-                for (int dim = 0; dim < 3; ++dim)
+                for (int32_t dim = 0; dim < 3; ++dim)
                 {
                     mPhi[dim].resize(mDegreeP1[dim]);
                 }
@@ -1230,22 +1230,22 @@ namespace gte
         IntpBSplineUniform& operator=(IntpBSplineUniform&&) = delete;
 
         // Member access.  The input i specifies the dimension (0, 1, 2).
-        inline int GetDegree(int dim) const
+        inline int32_t GetDegree(int32_t dim) const
         {
             return mDegree[dim];
         }
 
-        inline int GetNumControls(int dim) const
+        inline int32_t GetNumControls(int32_t dim) const
         {
             return mNumControls[dim];
         }
 
-        inline Real GetTMin(int dim) const
+        inline Real GetTMin(int32_t dim) const
         {
             return mTMin[dim];
         }
 
-        inline Real GetTMax(int dim) const
+        inline Real GetTMax(int32_t dim) const
         {
             return mTMax[dim];
         }
@@ -1256,7 +1256,7 @@ namespace gte
         // derivative with respect to t1 or the order2 is 1 for the first
         // derivative with respect to t2.  Higher-order derivatives in other
         // t-inputs are computed similarly.
-        typename Controls::Type Evaluate(std::array<int, 3> const& order,
+        typename Controls::Type Evaluate(std::array<int32_t, 3> const& order,
             std::array<Real, 3> const& t)
         {
             typename Controls::Type result = mCTZero;
@@ -1264,9 +1264,9 @@ namespace gte
                 && 0 <= order[1] && order[1] <= mDegree[1]
                 && 0 <= order[2] && order[2] <= mDegree[2])
             {
-                std::array<int, 3> i{ 0, 0, 0 };
+                std::array<int32_t, 3> i{ 0, 0, 0 };
                 std::array<Real, 3> u{ (Real)0, (Real)0, (Real)0 };
-                for (int dim = 0; dim < 3; ++dim)
+                for (int32_t dim = 0; dim < 3; ++dim)
                 {
                     this->GetKey(t[dim], mTMin[dim], mTMax[dim], mPowerDSDT[dim][1],
                         mNumControls[dim], mDegree[dim], i[dim], u[dim]);
@@ -1274,15 +1274,15 @@ namespace gte
 
                 if (mCacheMode == this->NO_CACHING)
                 {
-                    for (int dim = 0; dim < 3; ++dim)
+                    for (int32_t dim = 0; dim < 3; ++dim)
                     {
-                        int jIndex = 0;
-                        for (int j = 0; j <= mDegree[dim]; ++j)
+                        int32_t jIndex = 0;
+                        for (int32_t j = 0; j <= mDegree[dim]; ++j)
                         {
-                            int kjIndex = mDegree[dim] + jIndex;
-                            int ell = mLMax[dim][order[dim]];
+                            int32_t kjIndex = mDegree[dim] + jIndex;
+                            int32_t ell = mLMax[dim][order[dim]];
                             mPhi[dim][j] = (Real)0;
-                            for (int k = mDegree[dim]; k >= order[dim]; --k)
+                            for (int32_t k = mDegree[dim]; k >= order[dim]; --k)
                             {
                                 mPhi[dim][j] = mPhi[dim][j] * u[dim] +
                                     mBlender[dim][kjIndex--] * mDCoefficient[dim][ell--];
@@ -1291,14 +1291,14 @@ namespace gte
                         }
                     }
 
-                    for (int j2 = 0; j2 <= mDegree[2]; ++j2)
+                    for (int32_t j2 = 0; j2 <= mDegree[2]; ++j2)
                     {
                         Real phi2 = mPhi[2][j2];
-                        for (int j1 = 0; j1 <= mDegree[1]; ++j1)
+                        for (int32_t j1 = 0; j1 <= mDegree[1]; ++j1)
                         {
                             Real phi1 = mPhi[1][j1];
                             Real phi12 = phi1 * phi2;
-                            for (int j0 = 0; j0 <= mDegree[0]; ++j0)
+                            for (int32_t j0 = 0; j0 <= mDegree[0]; ++j0)
                             {
                                 Real phi0 = mPhi[0][j0];
                                 Real phi012 = phi0 * phi12;
@@ -1309,20 +1309,20 @@ namespace gte
                 }
                 else
                 {
-                    int i0i1i2Index = mNumTCols[2] * (i[0] + mNumTRows[0] * (i[1] + mNumTRows[1] * i[2]));
-                    int k2i0i1i2Index = mDegree[2] + i0i1i2Index;
-                    int ell2 = mLMax[2][order[2]];
-                    for (int k2 = mDegree[2]; k2 >= order[2]; --k2)
+                    int32_t i0i1i2Index = mNumTCols[2] * (i[0] + mNumTRows[0] * (i[1] + mNumTRows[1] * i[2]));
+                    int32_t k2i0i1i2Index = mDegree[2] + i0i1i2Index;
+                    int32_t ell2 = mLMax[2][order[2]];
+                    for (int32_t k2 = mDegree[2]; k2 >= order[2]; --k2)
                     {
-                        int k1k2i0i1i2Index = mDegree[1] + mNumTCols[1] * k2i0i1i2Index;
-                        int ell1 = mLMax[1][order[1]];
+                        int32_t k1k2i0i1i2Index = mDegree[1] + mNumTCols[1] * k2i0i1i2Index;
+                        int32_t ell1 = mLMax[1][order[1]];
                         typename Controls::Type term1 = mCTZero;
-                        for (int k1 = mDegree[1]; k1 >= order[1]; --k1)
+                        for (int32_t k1 = mDegree[1]; k1 >= order[1]; --k1)
                         {
-                            int k0k1k2i0i1i2Index = mDegree[0] + mNumTCols[0] * k1k2i0i1i2Index;
-                            int ell0 = mLMax[0][order[0]];
+                            int32_t k0k1k2i0i1i2Index = mDegree[0] + mNumTCols[0] * k1k2i0i1i2Index;
+                            int32_t ell0 = mLMax[0][order[0]];
                             typename Controls::Type term0 = mCTZero;
-                            for (int k0 = mDegree[0]; k0 >= order[0]; --k0)
+                            for (int32_t k0 = mDegree[0]; k0 >= order[0]; --k0)
                             {
                                 if (mCacheMode == this->ON_DEMAND_CACHING && !mCached[k0k1k2i0i1i2Index])
                                 {
@@ -1341,7 +1341,7 @@ namespace gte
                 }
 
                 Real adjust(1);
-                for (int dim = 0; dim < 3; ++dim)
+                for (int32_t dim = 0; dim < 3; ++dim)
                 {
                     adjust *= mPowerDSDT[dim][order[dim]];
                 }
@@ -1351,17 +1351,17 @@ namespace gte
         }
 
     protected:
-        void ComputeTensor(int r0, int r1, int r2, int c0, int c1, int c2, int index)
+        void ComputeTensor(int32_t r0, int32_t r1, int32_t r2, int32_t c0, int32_t c1, int32_t c2, int32_t index)
         {
             typename Controls::Type element = mCTZero;
-            for (int j2 = 0; j2 <= mDegree[2]; ++j2)
+            for (int32_t j2 = 0; j2 <= mDegree[2]; ++j2)
             {
                 Real blend2 = mBlender[2][c2 + static_cast<size_t>(mDegreeP1[2]) * j2];
-                for (int j1 = 0; j1 <= mDegree[1]; ++j1)
+                for (int32_t j1 = 0; j1 <= mDegree[1]; ++j1)
                 {
                     Real blend1 = mBlender[1][c1 + static_cast<size_t>(mDegreeP1[1]) * j1];
                     Real blend12 = blend1 * blend2;
-                    for (int j0 = 0; j0 <= mDegree[0]; ++j0)
+                    for (int32_t j0 = 0; j0 <= mDegree[0]; ++j0)
                     {
                         Real blend0 = mBlender[0][c0 + static_cast<size_t>(mDegreeP1[0]) * j0];
                         Real blend012 = blend0 * blend12;
@@ -1374,8 +1374,8 @@ namespace gte
 
         void InitializeTensors()
         {
-            int numCached = 1;
-            for (int dim = 0; dim < 3; ++dim)
+            int32_t numCached = 1;
+            for (int32_t dim = 0; dim < 3; ++dim)
             {
                 mNumTRows[dim] = mNumControls[dim] - mDegree[dim];
                 mNumTCols[dim] = mDegreeP1[dim];
@@ -1385,17 +1385,17 @@ namespace gte
             mCached.resize(numCached);
             if (mCacheMode == this->PRE_CACHING)
             {
-                for (int r2 = 0, index = 0; r2 < mNumTRows[2]; ++r2)
+                for (int32_t r2 = 0, index = 0; r2 < mNumTRows[2]; ++r2)
                 {
-                    for (int r1 = 0; r1 < mNumTRows[1]; ++r1)
+                    for (int32_t r1 = 0; r1 < mNumTRows[1]; ++r1)
                     {
-                        for (int r0 = 0; r0 < mNumTRows[0]; ++r0)
+                        for (int32_t r0 = 0; r0 < mNumTRows[0]; ++r0)
                         {
-                            for (int c2 = 0; c2 < mNumTCols[2]; ++c2)
+                            for (int32_t c2 = 0; c2 < mNumTCols[2]; ++c2)
                             {
-                                for (int c1 = 0; c1 < mNumTCols[1]; ++c1)
+                                for (int32_t c1 = 0; c1 < mNumTCols[1]; ++c1)
                                 {
-                                    for (int c0 = 0; c0 < mNumTCols[0]; ++c0, ++index)
+                                    for (int32_t c0 = 0; c0 < mNumTCols[0]; ++c0, ++index)
                                     {
                                         ComputeTensor(r0, r1, r2, c0, c1, c2, index);
                                     }
@@ -1413,25 +1413,25 @@ namespace gte
         }
 
         // Constructor inputs.
-        std::array<int, 3> mDegree;
+        std::array<int32_t, 3> mDegree;
         Controls const* mControls;
         typename Controls::Type mCTZero;
-        int mCacheMode;
+        int32_t mCacheMode;
 
         // Parameters for B-spline evaluation.
-        std::array<int, 3> mDegreeP1;
-        std::array<int, 3> mNumControls;
+        std::array<int32_t, 3> mDegreeP1;
+        std::array<int32_t, 3> mNumControls;
         std::array<Real, 3> mTMin, mTMax;
         std::array<std::vector<Real>, 3> mBlender;
         std::array<std::vector<Real>, 3> mDCoefficient;
-        std::array<std::vector<int>, 3> mLMax;
+        std::array<std::vector<int32_t>, 3> mLMax;
         std::array<std::vector<Real>, 3> mPowerDSDT;
 
         // Support for no-cached B-spline evaluation.
         std::array<std::vector<Real>, 3> mPhi;
 
         // Support for cached B-spline evaluation.
-        std::array<int, 3> mNumTRows, mNumTCols;
+        std::array<int32_t, 3> mNumTRows, mNumTCols;
         std::vector<typename Controls::Type> mTensor;
         std::vector<bool> mCached;
     };

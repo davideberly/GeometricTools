@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -16,17 +16,17 @@ namespace gte
     // Compute the smallest bounding circle whose center is the average of
     // the input points.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector2<Real> const* points, Circle2<Real>& circle)
+    bool GetContainer(int32_t numPoints, Vector2<Real> const* points, Circle2<Real>& circle)
     {
         circle.center = points[0];
-        for (int i = 1; i < numPoints; ++i)
+        for (int32_t i = 1; i < numPoints; ++i)
         {
             circle.center += points[i];
         }
         circle.center /= (Real)numPoints;
 
         circle.radius = (Real)0;
-        for (int i = 0; i < numPoints; ++i)
+        for (int32_t i = 0; i < numPoints; ++i)
         {
             Vector2<Real> diff = points[i] - circle.center;
             Real radiusSqr = Dot(diff, diff);
@@ -43,7 +43,7 @@ namespace gte
     template <typename Real>
     bool GetContainer(std::vector<Vector2<Real>> const& points, Circle2<Real>& circle)
     {
-        return GetContainer(static_cast<int>(points.size()), points.data(), circle);
+        return GetContainer(static_cast<int32_t>(points.size()), points.data(), circle);
     }
 
     // Test for containment of a point inside a circle.

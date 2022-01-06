@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -70,12 +70,12 @@ namespace gte
                 // 'self < number' but 'numBits(1u) > numBits(1v)'.  Compare
                 // the bits one 32-bit block at a time.
                 auto const& bits = self.GetBits();
-                int bitIndex0 = numBits - 1;
-                int bitIndex1 = nNumBits - 1;
-                int block0 = bitIndex0 / 32;
-                int block1 = bitIndex1 / 32;
-                int numBlockBits0 = 1 + (bitIndex0 % 32);
-                int numBlockBits1 = 1 + (bitIndex1 % 32);
+                int32_t bitIndex0 = numBits - 1;
+                int32_t bitIndex1 = nNumBits - 1;
+                int32_t block0 = bitIndex0 / 32;
+                int32_t block1 = bitIndex1 / 32;
+                int32_t numBlockBits0 = 1 + (bitIndex0 % 32);
+                int32_t numBlockBits1 = 1 + (bitIndex1 % 32);
                 uint64_t n0shift = bits[block0];
                 uint64_t n1shift = nBits[block1];
                 while (block0 >= 0 && block1 >= 0)
@@ -142,7 +142,7 @@ namespace gte
 
             // Add the numbers considered as positive integers.  Set the last
             // block to zero in case no carry-out occurs.
-            int numBits = std::max(n0NumBits, n1NumBits) + 1;
+            int32_t numBits = std::max(n0NumBits, n1NumBits) + 1;
             self.SetNumBits(numBits);
             self.SetBack(0);
 
@@ -178,7 +178,13 @@ namespace gte
                 }
                 if (carry > 0)
                 {
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+#endif
                     bits[i] = (uint32_t)(carry & 0x00000000FFFFFFFFull);
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
                 }
             }
             else
@@ -294,7 +300,7 @@ namespace gte
             auto const& n1Bits = n1.GetBits();
 
             // The number of bits is at most this, possibly one bit smaller.
-            int numBits = n0NumBits + n1NumBits;
+            int32_t numBits = n0NumBits + n1NumBits;
             self.SetNumBits(numBits);
             auto& bits = self.GetBits();
 
@@ -411,7 +417,13 @@ namespace gte
                     // The leading 1-bit of the source is at a relative index
                     // such that when you add the shift amount, that bit
                     // occurs in a new block.
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+#endif
                     bits[i] = (prev >> rshift);
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
                 }
             }
             else

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,7 +24,7 @@ public:
     // "edge" mass has 4 neighbors, and a "corner" mass has 3 neighbors.
     ~CpuMassSpringVolume() = default;
     CpuMassSpringVolume(std::shared_ptr<ProgramFactory> const& factory,
-        int numColumns, int numRows, int numSlices, float step, float viscosity,
+        int32_t numColumns, int32_t numRows, int32_t numSlices, float step, float viscosity,
         Environment& environment, bool& created);
 
     // Deferred construction.  The physical parameters must be set before
@@ -32,9 +32,9 @@ public:
 
     // Basic physical parameters.  The indices must satisfy 0 <= c < C,
     // 0 <= r < R, and 0 <= s < S.
-    void SetMass(int c, int r, int s, float mass);
-    void SetPosition(int c, int r, int s, Vector3<float> const& position);
-    void SetVelocity(int c, int r, int s, Vector3<float> const& velocity);
+    void SetMass(int32_t c, int32_t r, int32_t s, float mass);
+    void SetPosition(int32_t c, int32_t r, int32_t s, Vector3<float> const& position);
+    void SetVelocity(int32_t c, int32_t r, int32_t s, Vector3<float> const& velocity);
 
     // Each interior mass at (c,r,s) has 6 adjacent springs.  Face masses
     // have only 5 neighbors, edge masses have only 4 neighbors, and corner
@@ -45,15 +45,15 @@ public:
     //   ConstantC/LengthC:  0 <= c < C-1, 0 <= r < R,   0 <= s < S
     //   ConstantR/LengthR:  0 <= c < C,   0 <= r < R-1, 0 <= s < S
     //   ConstantS/LengthS:  0 <= c < C,   0 <= r < R,   0 <= s < S-1
-    void SetConstantC(int c, int r, int s, float v);  // spring to (c+1,r,s)
-    void SetLengthC(int c, int r, int s, float v);    // spring to (c+1,r,s)
-    void SetConstantR(int c, int r, int s, float v);  // spring to (c,r+1,s)
-    void SetLengthR(int c, int r, int s, float v);    // spring to (c,r+1,s)
-    void SetConstantS(int c, int r, int s, float v);  // spring to (c,r,s+1)
-    void SetLengthS(int c, int r, int s, float v);    // spring to (c,r,s+1)
+    void SetConstantC(int32_t c, int32_t r, int32_t s, float v);  // spring to (c+1,r,s)
+    void SetLengthC(int32_t c, int32_t r, int32_t s, float v);    // spring to (c+1,r,s)
+    void SetConstantR(int32_t c, int32_t r, int32_t s, float v);  // spring to (c,r+1,s)
+    void SetLengthR(int32_t c, int32_t r, int32_t s, float v);    // spring to (c,r+1,s)
+    void SetConstantS(int32_t c, int32_t r, int32_t s, float v);  // spring to (c,r,s+1)
+    void SetLengthS(int32_t c, int32_t r, int32_t s, float v);    // spring to (c,r,s+1)
 
     // Member access.
-    Vector3<float> GetPosition(int c, int r, int s) const;
+    Vector3<float> GetPosition(int32_t c, int32_t r, int32_t s) const;
     std::vector<Vector3<float>>& GetPosition();
 
     // Update the particle positions and velocities based on current time and
@@ -63,16 +63,16 @@ public:
 private:
     // Compute the acceleration x" = F/m applied to the specified particle.
     // The internal forces are from the mass-spring equations of motion.
-    Vector3<float> Acceleration(int i, int c, int r, int s, float time,
+    Vector3<float> Acceleration(int32_t i, int32_t c, int32_t r, int32_t s, float time,
         std::vector<Vector3<float>> const& position,
         std::vector<Vector3<float>> const& velocity);
 
     // Mapping from 3D array to 1D memory.
-    int GetIndex(int c, int r, int s) const;
+    int32_t GetIndex(int32_t c, int32_t r, int32_t s) const;
 
     // Constructor inputs.
-    int mNumColumns, mNumRows, mNumSlices;
-    int mNumSliceElements, mNumVolumeElements;
+    int32_t mNumColumns, mNumRows, mNumSlices;
+    int32_t mNumSliceElements, mNumVolumeElements;
     float mStep, mHalfStep, mSixthStep;
     float mViscosity;
 

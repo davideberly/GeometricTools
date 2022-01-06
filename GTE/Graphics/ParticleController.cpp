@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/ParticleController.h>
@@ -49,7 +49,7 @@ void ParticleController::SetObject(ControlledObject* object)
     auto visual = dynamic_cast<Particles*>(object);
     LogAssert(visual != nullptr, "Object is not of type Particles.");
 
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     size_t numParticles = static_cast<size_t>(vbuffer->GetNumElements() / 4);
     mParticleLinearSpeed.resize(numParticles);
     mParticleLinearAxis.resize(numParticles);
@@ -92,8 +92,8 @@ void ParticleController::UpdatePointMotion(float ctrlTime)
 {
     auto particles = static_cast<Particles*>(mObject);
     auto& posSize = particles->GetPositionSize();
-    unsigned int numActive = particles->GetNumActive();
-    for (unsigned int i = 0; i < numActive; ++i)
+    uint32_t numActive = particles->GetNumActive();
+    for (uint32_t i = 0; i < numActive; ++i)
     {
         float distance = ctrlTime * mParticleLinearSpeed[i];
         Vector3<float> deltaTrn = distance * mParticleLinearAxis[i];

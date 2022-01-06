@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "SurfaceExtractionWindow3.h"
 #include <random>
@@ -60,7 +60,7 @@ void SurfaceExtractionWindow3::OnIdle()
 
     // Copy from the GPU to the CPU only the number of voxels extracted.
     mEngine->GetNumActiveElements(mIndirectVoxels);
-    int numVoxels = mIndirectVoxels->GetNumActiveElements();
+    int32_t numVoxels = mIndirectVoxels->GetNumActiveElements();
     if (numVoxels > 0)
     {
         // Draw the triangle mesh directly from the voxel information
@@ -78,7 +78,7 @@ void SurfaceExtractionWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool SurfaceExtractionWindow3::OnCharPress(unsigned char key, int x, int y)
+bool SurfaceExtractionWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -162,19 +162,19 @@ void SurfaceExtractionWindow3::CreateSharedResources()
 {
     // Disable culling.
     mNoCullSolidState = std::make_shared<RasterizerState>();
-    mNoCullSolidState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullSolidState->fillMode = RasterizerState::FILL_SOLID;
+    mNoCullSolidState->cull = RasterizerState::Cull::NONE;
+    mNoCullSolidState->fill = RasterizerState::Fill::SOLID;
     mEngine->SetRasterizerState(mNoCullSolidState);
 
     // Enable wireframe (when requested).
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     // Create the Marching Cubes table.
-    unsigned int const numElements = 256 * 41;
-    unsigned int const numBytes = numElements * sizeof(int);
-    mLookup = std::make_shared<StructuredBuffer>(numElements, sizeof(int));
+    uint32_t const numElements = 256 * 41;
+    uint32_t const numBytes = numElements * sizeof(int32_t);
+    mLookup = std::make_shared<StructuredBuffer>(numElements, sizeof(int32_t));
     std::memcpy(mLookup->GetData(), mMarchingCubes.GetTable(), numBytes);
 
     // Use a Mersenne twister engine for random numbers.
@@ -185,9 +185,9 @@ void SurfaceExtractionWindow3::CreateSharedResources()
     // Create an image as a sum of randomly generated Gaussians distributions.
     std::vector<Vector3<float>> mean(NUM_GAUSSIANS);
     std::vector<Matrix3x3<float>> covariance(NUM_GAUSSIANS);
-    for (int i = 0; i < NUM_GAUSSIANS; ++i)
+    for (uint32_t i = 0; i < NUM_GAUSSIANS; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             mean[i][j] = symr(mte);
             mean[i][j] = symr(mte);
@@ -203,23 +203,25 @@ void SurfaceExtractionWindow3::CreateSharedResources()
         covariance[i] = rotate*diagonal*Transpose(rotate);
     }
 
-    float const dx = 2.0f / XBOUND, dy = 2.0f / YBOUND, dz = 2.0f / ZBOUND;
+    float const dx = 2.0f / static_cast<float>(XBOUND);
+    float const dy = 2.0f / static_cast<float>(YBOUND);
+    float const dz = 2.0f / static_cast<float>(ZBOUND);
     mImage = std::make_shared<StructuredBuffer>(NUM_VOXELS, sizeof(float));
     auto* image = mImage->Get<float>();
-    Vector3<float> pos;
+    Vector3<float> pos{};
     float wmin = std::numeric_limits<float>::max(), wmax = 0.0f;
-    for (int z = 0; z < ZBOUND; ++z)
+    for (uint32_t z = 0; z < ZBOUND; ++z)
     {
-        pos[2] = -1.0f + 2.0f * z / ZBOUND;
-        for (int y = 0; y < YBOUND; ++y)
+        pos[2] = -1.0f + 2.0f * z / static_cast<float>(ZBOUND);
+        for (uint32_t y = 0; y < YBOUND; ++y)
         {
-            pos[1] = -1.0f + 2.0f * y / YBOUND;
-            for (int x = 0; x < XBOUND; ++x)
+            pos[1] = -1.0f + 2.0f * y / static_cast<float>(YBOUND);
+            for (uint32_t x = 0; x < XBOUND; ++x)
             {
-                pos[0] = -1.0f + 2.0f * x / XBOUND;
+                pos[0] = -1.0f + 2.0f * x / static_cast<float>(XBOUND);
 
                 float w = 0.0f;
-                for (int i = 0; i < NUM_GAUSSIANS; ++i)
+                for (uint32_t i = 0; i < NUM_GAUSSIANS; ++i)
                 {
                     Vector3<float> diff = pos - mean[i];
                     float arg = Dot(diff, covariance[i] * diff);
@@ -242,7 +244,7 @@ void SurfaceExtractionWindow3::CreateSharedResources()
     // Scale to [0,1].
     float invRange = 1.0f / (wmax - wmin);
     image = mImage->Get<float>();
-    for (int i = 0; i < NUM_VOXELS; ++i)
+    for (uint32_t i = 0; i < NUM_VOXELS; ++i)
     {
         image[i] = (image[i] - wmin)*invRange;
     }
@@ -258,7 +260,7 @@ void SurfaceExtractionWindow3::CreateSharedResources()
     mTranslate.SetTranslation(-1.0f, -1.0f, -1.0f);
 
     mColorTexture = std::make_shared<Texture3>(DF_R8G8B8A8_UNORM, 2, 2, 2);
-    auto* color = mColorTexture->Get<unsigned int>();
+    auto* color = mColorTexture->Get<uint32_t>();
     color[0] = 0xFF000000;
     color[1] = 0xFF0000FF;
     color[2] = 0xFF00FF00;
@@ -293,10 +295,10 @@ bool SurfaceExtractionWindow3::CreateDirectResources()
     // (avoids creating/destroying a staging buffer on each read back).
     mDirectVoxels = std::make_shared<StructuredBuffer>(NUM_VOXELS, sizeof(DirectVoxel));
     mDirectVoxels->MakeAppendConsume();
-    mDirectVoxels->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mDirectVoxels->SetCopy(Resource::Copy::STAGING_TO_CPU);
 
     // Attach resources to the shader.
-    auto cshader = mDirectExtractProgram->GetComputeShader();
+    auto const& cshader = mDirectExtractProgram->GetComputeShader();
     cshader->Set("Parameters", mParametersBuffer);
     cshader->Set("lookup", mLookup);
     cshader->Set("image", mImage);
@@ -304,8 +306,8 @@ bool SurfaceExtractionWindow3::CreateDirectResources()
 
     // Create a vertex color effect (for now uses only red).
     mDirectDrawEffect = std::make_shared<Texture3Effect>(mProgramFactory,
-        mColorTexture, SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        mColorTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     // The mDirectMesh will be created each frame by a call to CreateMesh().
     return true;
@@ -315,7 +317,7 @@ void SurfaceExtractionWindow3::CreateMesh()
 {
     mEngine->CopyGpuToCpu(mDirectVoxels);
     DirectVoxel* voxels = mDirectVoxels->Get<DirectVoxel>();
-    int numActive = mDirectVoxels->GetNumActiveElements();
+    int32_t numActive = mDirectVoxels->GetNumActiveElements();
     if (numActive <= 0)
     {
         return;
@@ -323,11 +325,11 @@ void SurfaceExtractionWindow3::CreateMesh()
 
     // Create the mesh.
     std::vector<Vector3<float>> vertices;
-    std::vector<int> indices;
-    for (int i = 0, vbase = 0; i < numActive; ++i)
+    std::vector<int32_t> indices;
+    for (int32_t i = 0, vbase = 0; i < numActive; ++i)
     {
         DirectVoxel const& voxel = voxels[i];
-        for (int j = 0; j < voxel.numVertices; ++j)
+        for (int32_t j = 0; j < voxel.numVertices; ++j)
         {
             Vector3<float> vertex;
             vertex[0] = voxel.vertices[j][0];
@@ -336,7 +338,7 @@ void SurfaceExtractionWindow3::CreateMesh()
             vertices.push_back(vertex);
         }
 
-        for (int j = 0; j < 3 * voxel.numTriangles; ++j)
+        for (int32_t j = 0; j < 3 * voxel.numTriangles; ++j)
         {
             indices.push_back(vbase + voxel.indices[j]);
         }
@@ -345,19 +347,19 @@ void SurfaceExtractionWindow3::CreateMesh()
     }
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32B32_FLOAT, 0);
-    unsigned int numVertices = static_cast<unsigned int>(vertices.size());
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32B32_FLOAT, 0);
+    uint32_t numVertices = static_cast<uint32_t>(vertices.size());
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto* v = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i, ++v)
+    for (uint32_t i = 0; i < numVertices; ++i, ++v)
     {
         v->position = vertices[i];
         v->tcoord = 0.5f*vertices[i];
     }
 
-    unsigned int numTriangles = static_cast<int>(indices.size() / 3);
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
+    uint32_t numTriangles = static_cast<int32_t>(indices.size() / 3);
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
     std::memcpy(ibuffer->GetData(), &indices[0], ibuffer->GetNumBytes());
 
     mDirectMesh = std::make_shared<Visual>(vbuffer, ibuffer, mDirectDrawEffect);
@@ -385,7 +387,7 @@ bool SurfaceExtractionWindow3::CreateIndirectResources()
 
 #if defined(GTE_USE_OPENGL)
     BufferLayout layoutVoxelsCS;
-    auto iepCShader = mIndirectExtractProgram->GetComputeShader();
+    auto const& iepCShader = mIndirectExtractProgram->GetComputeShader();
     iepCShader->GetStructuredBufferLayout("voxels", layoutVoxelsCS);
     for (auto const& layout : layoutVoxelsCS)
     {
@@ -423,12 +425,12 @@ bool SurfaceExtractionWindow3::CreateIndirectResources()
 
     // Create the vertex and index buffers for SV_VertexID-based drawing.
     VertexFormat vformat;
-    vformat.Bind(VA_NO_SEMANTIC, DF_R32G32_UINT, 0);
+    vformat.Bind(VASemantic::NONE, DF_R32G32_UINT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, mIndirectVoxels);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYPOINT, NUM_VOXELS);
 
     // Create and attach resources to the shaders.
-    auto cshader = mIndirectExtractProgram->GetComputeShader();
+    auto const& cshader = mIndirectExtractProgram->GetComputeShader();
     cshader->Set("Parameters", mParametersBuffer);
     cshader->Set("image", mImage);
     cshader->Set("voxels", mIndirectVoxels);
@@ -439,17 +441,17 @@ bool SurfaceExtractionWindow3::CreateIndirectResources()
     mIndirectPVWMatrix = mIndirectPVWMatrixBuffer->Get<Matrix4x4<float>>();
     *mIndirectPVWMatrix = Matrix4x4<float>::Identity();
 
-    auto gshader = program->GetGeometryShader();
+    auto const& gshader = program->GetGeometryShader();
     gshader->Set("Parameters", mParametersBuffer);
     gshader->Set("PVWMatrix", mIndirectPVWMatrixBuffer);
     gshader->Set("lookup", mLookup);
     gshader->Set("image", mImage);
 
     mColorSampler = std::make_shared<SamplerState>();
-    mColorSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    mColorSampler->mode[0] = SamplerState::CLAMP;
-    mColorSampler->mode[1] = SamplerState::CLAMP;
-    mColorSampler->mode[2] = SamplerState::CLAMP;
+    mColorSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    mColorSampler->mode[0] = SamplerState::Mode::CLAMP;
+    mColorSampler->mode[1] = SamplerState::Mode::CLAMP;
+    mColorSampler->mode[2] = SamplerState::Mode::CLAMP;
 
     program->GetPixelShader()->Set("colorTexture", mColorTexture, "colorSampler", mColorSampler);
 

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -49,7 +49,7 @@ namespace gte
     public:
         // Supporting constants and types for rational arithmetic used in
         // the exact predicate for sign computations.
-        static int constexpr NumWords = std::is_same<Real, float>::value ? 27 : 197;
+        static int32_t constexpr NumWords = std::is_same<Real, float>::value ? 27 : 197;
         using Rational = BSNumber<UIntegerFP32<NumWords>>;
 
         // The class is a functor to support computing the convex hull of
@@ -402,7 +402,7 @@ namespace gte
                 }
 
                 ConvexHull2<Real> ch2;
-                ch2((int)projections.size(), projections.data(), static_cast<Real>(0));
+                ch2((int32_t)projections.size(), projections.data(), static_cast<Real>(0));
                 auto const& hull2 = ch2.GetHull();
 
                 std::vector<size_t> tempHull(hull2.size());
@@ -572,7 +572,7 @@ namespace gte
             if (mConverted[index] == 0)
             {
                 mConverted[index] = 1;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     mRPoints[index][i] = mPoints[index][i];
                 }
@@ -605,7 +605,7 @@ namespace gte
         //   +1, V3 on positive side of plane (side to which N points)
         //   -1, V3 on negative side of plane (side to which -N points)
         //    0, V3 on the plane
-        int ToPlane(size_t v0, size_t v1, size_t v2, size_t v3)
+        int32_t ToPlane(size_t v0, size_t v1, size_t v2, size_t v3)
         {
             using SInterval = SWInterval<Real>;
             using SVector3 = Vector3<SInterval>;

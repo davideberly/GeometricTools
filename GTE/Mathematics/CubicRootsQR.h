@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -113,12 +113,12 @@ namespace gte
             ColHouse<2>(0, 2, 1, 2, W, MW, A);
         }
 
-        template <int N>
+        template <int32_t N>
         std::array<Real, N> House(std::array<Real, N> const& X) const
         {
             std::array<Real, N> V;
             Real length = (Real)0;
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 length += X[i] * X[i];
             }
@@ -127,7 +127,7 @@ namespace gte
             {
                 Real sign = (X[0] >= (Real)0 ? (Real)1 : (Real)-1);
                 Real denom = X[0] + sign * length;
-                for (int i = 1; i < N; ++i)
+                for (int32_t i = 1; i < N; ++i)
                 {
                     V[i] = X[i] / denom;
                 }
@@ -140,57 +140,57 @@ namespace gte
             return V;
         }
 
-        template <int N>
-        void RowHouse(int rmin, int rmax, int cmin, int cmax,
+        template <int32_t N>
+        void RowHouse(int32_t rmin, int32_t rmax, int32_t cmin, int32_t cmax,
             std::array<Real, N> const& V, std::array<Real, N> const& MV, Matrix& A) const
         {
             // Only the elements cmin through cmax are used.
             std::array<Real, 3> W;
 
-            for (int c = cmin; c <= cmax; ++c)
+            for (int32_t c = cmin; c <= cmax; ++c)
             {
                 W[c] = (Real)0;
-                for (int r = rmin, k = 0; r <= rmax; ++r, ++k)
+                for (int32_t r = rmin, k = 0; r <= rmax; ++r, ++k)
                 {
                     W[c] += V[k] * A[r][c];
                 }
             }
 
-            for (int r = rmin, k = 0; r <= rmax; ++r, ++k)
+            for (int32_t r = rmin, k = 0; r <= rmax; ++r, ++k)
             {
-                for (int c = cmin; c <= cmax; ++c)
+                for (int32_t c = cmin; c <= cmax; ++c)
                 {
                     A[r][c] += MV[k] * W[c];
                 }
             }
         }
 
-        template <int N>
-        void ColHouse(int rmin, int rmax, int cmin, int cmax,
+        template <int32_t N>
+        void ColHouse(int32_t rmin, int32_t rmax, int32_t cmin, int32_t cmax,
             std::array<Real, N> const& V, std::array<Real, N> const& MV, Matrix& A) const
         {
             // Only elements rmin through rmax are used.
             std::array<Real, 3> W;
 
-            for (int r = rmin; r <= rmax; ++r)
+            for (int32_t r = rmin; r <= rmax; ++r)
             {
                 W[r] = (Real)0;
-                for (int c = cmin, k = 0; c <= cmax; ++c, ++k)
+                for (int32_t c = cmin, k = 0; c <= cmax; ++c, ++k)
                 {
                     W[r] += V[k] * A[r][c];
                 }
             }
 
-            for (int r = rmin; r <= rmax; ++r)
+            for (int32_t r = rmin; r <= rmax; ++r)
             {
-                for (int c = cmin, k = 0; c <= cmax; ++c, ++k)
+                for (int32_t c = cmin, k = 0; c <= cmax; ++c, ++k)
                 {
                     A[r][c] += W[r] * MV[k];
                 }
             }
         }
 
-        void GetQuadraticRoots(int i0, int i1, Matrix const& A,
+        void GetQuadraticRoots(int32_t i0, int32_t i1, Matrix const& A,
             uint32_t& numRoots, std::array<Real, 3>& roots) const
         {
             // Solve x^2 - t * x + d = 0, where t is the trace and d is the

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FreeFormDeformationWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -40,7 +40,7 @@ FreeFormDeformationWindow3::FreeFormDeformationWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.02f,
@@ -88,7 +88,7 @@ void FreeFormDeformationWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool FreeFormDeformationWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FreeFormDeformationWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -119,7 +119,7 @@ bool FreeFormDeformationWindow3::OnCharPress(unsigned char key, int x, int y)
 }
 
 bool FreeFormDeformationWindow3::OnMouseClick(MouseButton button, MouseState state,
-    int x, int y, unsigned int modifiers)
+    int32_t x, int32_t y, uint32_t modifiers)
 {
     if (button == MOUSE_RIGHT && !mDoRandom)
     {
@@ -138,8 +138,8 @@ bool FreeFormDeformationWindow3::OnMouseClick(MouseButton button, MouseState sta
     return Window3::OnMouseClick(button, state, x, y, modifiers);
 }
 
-bool FreeFormDeformationWindow3::OnMouseMotion(MouseButton button, int x, int y,
-    unsigned int modifiers)
+bool FreeFormDeformationWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y,
+    uint32_t modifiers)
 {
     if (mMouseDown && mSelected)
     {
@@ -176,16 +176,17 @@ void FreeFormDeformationWindow3::CreateScene()
 
     // Start with a torus that the user can deform during execution.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mMesh = mf.CreateTorus(32, 32, 2.0f, 0.5f);
-    mMesh->GetVertexBuffer()->SetUsage(Resource::DYNAMIC_UPDATE);
+    mMesh->GetVertexBuffer()->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Checkerboard.png"), true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mMesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mMesh->worldTransform, effect->GetPVWMatrixConstant());
     mScene->AttachChild(mMesh);
@@ -210,15 +211,15 @@ void FreeFormDeformationWindow3::CreateBSplineVolume()
     mVolume = std::make_unique<BSplineVolume<3, float>>(input, nullptr);
 
     // Compute a bounding box of the form [xmin,xmax]x[ymin,ymax]x[zmin,zmax].
-    auto vbuffer = mMesh->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mMesh->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
     mMin = vertices[0].position;
     mMax = mMin;
-    for (unsigned int i = 1; i < numVertices; ++i)
+    for (uint32_t i = 1; i < numVertices; ++i)
     {
         Vector3<float> position = vertices[i].position;
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             if (position[j] < mMin[j])
             {
@@ -232,15 +233,15 @@ void FreeFormDeformationWindow3::CreateBSplineVolume()
     }
 
     // Generate the control points.
-    Vector3<float> range = mMax - mMin, ctrl;
+    Vector3<float> range = mMax - mMin, ctrl{};
     mDelta = range / static_cast<float>(mQuantity - 1);
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
         ctrl[2] = mMin[2] + mDelta[2] * i2;
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
             ctrl[1] = mMin[1] + mDelta[1] * i1;
-            for (int i0 = 0; i0 < mQuantity; ++i0)
+            for (int32_t i0 = 0; i0 < mQuantity; ++i0)
             {
                 ctrl[0] = mMin[0] + mDelta[0] * i0;
                 mVolume->SetControl(i0, i1, i2, ctrl);
@@ -251,11 +252,11 @@ void FreeFormDeformationWindow3::CreateBSplineVolume()
     // Compute the (u,v,w) values of the mesh relative to the B-spline volume.
     Vector3<float> invRange{ 1.0f / range[0], 1.0f / range[1], 1.0f / range[2] };
     mParameters.resize(numVertices);
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> position = vertices[i].position;
         Vector3<float>& param = mParameters[i];
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             param[j] = (position[j] - mMin[j]) * invRange[j];
         }
@@ -269,7 +270,7 @@ void FreeFormDeformationWindow3::CreateSegments()
     mScene->AttachChild(mPolysegmentRoot);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     std::shared_ptr<VertexBuffer> vbuffer;
     Vector3<float>* vertices;
@@ -278,14 +279,14 @@ void FreeFormDeformationWindow3::CreateSegments()
     std::shared_ptr<Visual> segment;
 
     // Create segments with direction (1,0,0).
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
-            for (int i0 = 0; i0 < mQuantity - 1; ++i0)
+            for (int32_t i0 = 0; i0 < mQuantity - 1; ++i0)
             {
                 vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-                vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+                vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
                 vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0 + 1, i1, i2);
@@ -299,15 +300,15 @@ void FreeFormDeformationWindow3::CreateSegments()
     }
 
     // Create segments with direction (0,1,0).
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i0 = 0; i0 < mQuantity; ++i0)
+        for (int32_t i0 = 0; i0 < mQuantity; ++i0)
         {
-            for (int i1 = 0; i1 < mQuantity - 1; ++i1)
+            for (int32_t i1 = 0; i1 < mQuantity - 1; ++i1)
             {
                 vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-                vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
-                vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+                vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+                vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
                 vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0, i1 + 1, i2);
@@ -321,14 +322,14 @@ void FreeFormDeformationWindow3::CreateSegments()
     }
 
     // Create segments with direction (0,0,1).
-    for (int i1 = 0; i1 < mQuantity; ++i1)
+    for (int32_t i1 = 0; i1 < mQuantity; ++i1)
     {
-        for (int i0 = 0; i0 < mQuantity; ++i0)
+        for (int32_t i0 = 0; i0 < mQuantity; ++i0)
         {
-            for (int i2 = 0; i2 < mQuantity - 1; ++i2)
+            for (int32_t i2 = 0; i2 < mQuantity - 1; ++i2)
             {
                 vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-                vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+                vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
                 vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0, i1, i2 + 1);
@@ -351,7 +352,7 @@ void FreeFormDeformationWindow3::CreateBoxes()
     // Create a single box to be shared by each control point box.
     float const halfWidth = 0.05f;
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 8);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { -halfWidth, -halfWidth, -halfWidth };
@@ -363,8 +364,8 @@ void FreeFormDeformationWindow3::CreateBoxes()
     vertices[6] = { +halfWidth, +halfWidth, +halfWidth };
     vertices[7] = { -halfWidth, +halfWidth, +halfWidth };
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 12, sizeof(unsigned int));
-    auto indices = ibuffer->Get<unsigned int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 12, sizeof(uint32_t));
+    auto indices = ibuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 2;  indices[2] = 1;
     indices[3] = 0;  indices[4] = 3;  indices[5] = 2;
     indices[6] = 4;  indices[7] = 5;  indices[8] = 6;
@@ -378,11 +379,11 @@ void FreeFormDeformationWindow3::CreateBoxes()
     indices[30] = 0;  indices[31] = 4;  indices[32] = 7;
     indices[33] = 0;  indices[34] = 7;  indices[35] = 3;
 
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
-            for (int i0 = 0; i0 < mQuantity; ++i0)
+            for (int32_t i0 = 0; i0 < mQuantity; ++i0)
             {
                 auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, mGray);
                 auto box = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -405,11 +406,11 @@ void FreeFormDeformationWindow3::CreateBoxes()
 
 void FreeFormDeformationWindow3::UpdateMesh()
 {
-    auto vbuffer = mMesh->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mMesh->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
     Vector3<float> values[10];
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> param = mParameters[i];
         mVolume->Evaluate(param[0], param[1], param[2], 0, values);
@@ -429,17 +430,17 @@ void FreeFormDeformationWindow3::UpdateSegments()
     // for creating the segments, so we need i to index into the array of
     // children to ensure consistency of pairing the control points with
     // the segments.
-    int i = 0;
+    int32_t i = 0;
 
     // Update segments with direction (1,0,0).
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
-            for (int i0 = 0; i0 < mQuantity - 1; ++i0)
+            for (int32_t i0 = 0; i0 < mQuantity - 1; ++i0)
             {
                 auto segment = std::static_pointer_cast<Visual>(mPolysegmentRoot->GetChild(i));
-                auto vbuffer = segment->GetVertexBuffer();
+                auto const& vbuffer = segment->GetVertexBuffer();
                 auto vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0 + 1, i1, i2);
@@ -450,14 +451,14 @@ void FreeFormDeformationWindow3::UpdateSegments()
     }
 
     // Update segments with direction (0,1,0).
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i0 = 0; i0 < mQuantity; ++i0)
+        for (int32_t i0 = 0; i0 < mQuantity; ++i0)
         {
-            for (int i1 = 0; i1 < mQuantity - 1; ++i1)
+            for (int32_t i1 = 0; i1 < mQuantity - 1; ++i1)
             {
                 auto segment = std::static_pointer_cast<Visual>(mPolysegmentRoot->GetChild(i));
-                auto vbuffer = segment->GetVertexBuffer();
+                auto const& vbuffer = segment->GetVertexBuffer();
                 auto vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0, i1 + 1, i2);
@@ -468,14 +469,14 @@ void FreeFormDeformationWindow3::UpdateSegments()
     }
 
     // Update segments with direction (0,0,1).
-    for (int i1 = 0; i1 < mQuantity; ++i1)
+    for (int32_t i1 = 0; i1 < mQuantity; ++i1)
     {
-        for (int i0 = 0; i0 < mQuantity; ++i0)
+        for (int32_t i0 = 0; i0 < mQuantity; ++i0)
         {
-            for (int i2 = 0; i2 < mQuantity - 1; ++i2)
+            for (int32_t i2 = 0; i2 < mQuantity - 1; ++i2)
             {
                 auto segment = std::static_pointer_cast<Visual>(mPolysegmentRoot->GetChild(i));
-                auto vbuffer = segment->GetVertexBuffer();
+                auto const& vbuffer = segment->GetVertexBuffer();
                 auto vertices = vbuffer->Get<Vector3<float>>();
                 vertices[0] = mVolume->GetControl(i0, i1, i2);
                 vertices[1] = mVolume->GetControl(i0, i1, i2 + 1);
@@ -497,13 +498,13 @@ void FreeFormDeformationWindow3::UpdateBoxes()
     // for creating the boxes, so we need i to index into the array of
     // children to ensure consistency of pairing the control points with
     // the boxes.
-    int i = 0;
+    int32_t i = 0;
 
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
-            for (int i0 = 0; i2 < mQuantity; ++i2)
+            for (int32_t i0 = 0; i2 < mQuantity; ++i2)
             {
                 auto box = std::static_pointer_cast<Visual>(mControlRoot->GetChild(i));
                 Vector3<float> ctrl = mVolume->GetControl(i0, i1, i2);
@@ -520,14 +521,14 @@ void FreeFormDeformationWindow3::DoRandomControlPoints()
     // control points.
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(-1.0f, 1.0f);
-    Vector3<float> ctrl;
-    for (int i2 = 0; i2 < mQuantity; ++i2)
+    Vector3<float> ctrl{};
+    for (int32_t i2 = 0; i2 < mQuantity; ++i2)
     {
         ctrl[2] = mMin[2] + mDelta[2] * i2;
-        for (int i1 = 0; i1 < mQuantity; ++i1)
+        for (int32_t i1 = 0; i1 < mQuantity; ++i1)
         {
             ctrl[1] = mMin[1] + mDelta[1] * i1;
-            for (int i0 = 0; i0 < mQuantity; ++i0)
+            for (int32_t i0 = 0; i0 < mQuantity; ++i0)
             {
                 ctrl[0] = mMin[0] + mDelta[0] * i0;
 
@@ -551,7 +552,7 @@ void FreeFormDeformationWindow3::DoRandomControlPoints()
     UpdateBoxes();
 }
 
-void FreeFormDeformationWindow3::OnMouseDown(int x, int y)
+void FreeFormDeformationWindow3::OnMouseDown(int32_t x, int32_t y)
 {
     std::shared_ptr<ConstantColorEffect> effect;
     std::shared_ptr<ConstantBuffer> cbuffer;
@@ -567,13 +568,14 @@ void FreeFormDeformationWindow3::OnMouseDown(int x, int y)
     }
 
     // Determine which control point has been selected (if any).
-    int viewX, viewY, viewW, viewH;
+    int32_t viewX, viewY, viewW, viewH;
     mEngine->GetViewport(viewX, viewY, viewW, viewH);
     Vector4<float> origin, direction;
     if (mCamera->GetPickLine(viewX, viewY, viewW, viewH, x, y, origin, direction))
     {
         // Use a ray for picking.
-        float tmin = 0.0f, tmax = std::numeric_limits<float>::max();
+        float tmin = 0.0f;
+        float constexpr tmax = std::numeric_limits<float>::max();
 
         // Request the results in model-space coordinates.  All the objects
         // in the scene have the same model space, so we can set the sphere
@@ -592,11 +594,11 @@ void FreeFormDeformationWindow3::OnMouseDown(int x, int y)
     }
 }
 
-void FreeFormDeformationWindow3::OnMouseMove(int x, int y)
+void FreeFormDeformationWindow3::OnMouseMove(int32_t x, int32_t y)
 {
     // Construct a pick ray.  We want to move the control point from its
     // current location to this ray.
-    int viewX, viewY, viewW, viewH;
+    int32_t viewX, viewY, viewW, viewH;
     mEngine->GetViewport(viewX, viewY, viewW, viewH);
     Vector4<float> origin, direction;
     if (!mCamera->GetPickLine(viewX, viewY, viewW, viewH, x, y, origin, direction))
@@ -643,9 +645,9 @@ void FreeFormDeformationWindow3::OnMouseMove(int x, int y)
 
     // Modify the control point itself.  It is known that the name string
     // has three single-digit numbers separated by blanks.
-    int i0 = static_cast<int>(mSelected->name[0] - '0');
-    int i1 = static_cast<int>(mSelected->name[2] - '0');
-    int i2 = static_cast<int>(mSelected->name[4] - '0');
+    int32_t i0 = static_cast<int32_t>(mSelected->name[0] - '0');
+    int32_t i1 = static_cast<int32_t>(mSelected->name[2] - '0');
+    int32_t i2 = static_cast<int32_t>(mSelected->name[4] - '0');
     mVolume->SetControl(i0, i1, i2, mSelected->localTransform.GetTranslation());
 
     // TODO.  We need only update mesh vertices that are affected by the

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MinimumVolumeSphere3DWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -16,8 +16,8 @@ MinimumVolumeSphere3DWindow3::MinimumVolumeSphere3DWindow3(Parameters& parameter
     mVertices(NUM_POINTS)
 {
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullWireState);
 
     CreateScene();
@@ -39,7 +39,7 @@ void MinimumVolumeSphere3DWindow3::OnIdle()
     }
 
     mEngine->ClearBuffers();
-    for (int i = 0; i < mNumActive; ++i)
+    for (int32_t i = 0; i < mNumActive; ++i)
     {
         mEngine->Draw(mPoints[i]);
     }
@@ -51,7 +51,7 @@ void MinimumVolumeSphere3DWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MinimumVolumeSphere3DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MinimumVolumeSphere3DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -79,24 +79,24 @@ void MinimumVolumeSphere3DWindow3::CreateScene()
     }
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     std::shared_ptr<ConstantColorEffect> effect;
     Vector4<float> gray{ 0.5f, 0.5f, 0.5f, 1.0f };
-    for (int i = 0; i < NUM_POINTS; ++i)
+    for (int32_t i = 0; i < NUM_POINTS; ++i)
     {
         mPoints[i] = mf.CreateSphere(6, 6, 0.01f);
         effect = std::make_shared<ConstantColorEffect>(mProgramFactory, gray);
         mPoints[i]->SetEffect(effect);
         mPVWMatrices.Subscribe(mPoints[i]->worldTransform, effect->GetPVWMatrixConstant());
 
-        auto vbuffer = mPoints[i]->GetVertexBuffer();
+        auto const& vbuffer = mPoints[i]->GetVertexBuffer();
         auto* vertex = vbuffer->Get<Vector3<float>>();
         Vector3<float> offset = mVertices[i];
-        for (unsigned int j = 0; j < vbuffer->GetNumElements(); ++j)
+        for (uint32_t j = 0; j < vbuffer->GetNumElements(); ++j)
         {
             vertex[j] += offset;
         }
@@ -104,7 +104,7 @@ void MinimumVolumeSphere3DWindow3::CreateScene()
 
     // Create the segments.
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 12);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 6);
     Vector4<float> red{ 0.5f, 0.0f, 0.0f, 1.0f };
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory, red);
@@ -125,12 +125,11 @@ void MinimumVolumeSphere3DWindow3::CreateScene()
 void MinimumVolumeSphere3DWindow3::UpdateScene()
 {
     // Update the segments.
-    auto vbuffer = mSegments->GetVertexBuffer();
+    auto const& vbuffer = mSegments->GetVertexBuffer();
     auto* vertex = vbuffer->Get<Vector3<float>>();
-    auto ibuffer = mSegments->GetIndexBuffer();
 
-    int numSupport = mMVS3.GetNumSupport();
-    std::array<int, 4> support = mMVS3.GetSupport();
+    int32_t numSupport = mMVS3.GetNumSupport();
+    std::array<int32_t, 4> support = mMVS3.GetSupport();
 
     if (numSupport >= 2)
     {

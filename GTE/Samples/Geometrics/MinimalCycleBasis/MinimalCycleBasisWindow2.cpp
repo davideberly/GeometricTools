@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MinimalCycleBasisWindow2.h"
 #include <Mathematics/IsPlanarGraph.h>
@@ -23,7 +23,7 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
 
     // Possible inputs are "SimpleGraphN.txt", where N is in {0,1,2,3,4,5}.
     std::ifstream input(mEnvironment.GetPath("SimpleGraph0.txt"));
-    int numPositions;
+    int32_t numPositions;
     input >> numPositions;
     mPositions.resize(numPositions);
     mFPositions.resize(numPositions);
@@ -32,9 +32,9 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     vmin[1] = std::numeric_limits<float>::max();
     vmax[0] = -std::numeric_limits<float>::max();
     vmax[1] = -std::numeric_limits<float>::max();
-    for (int i = 0; i < numPositions; ++i)
+    for (int32_t i = 0; i < numPositions; ++i)
     {
-        for (int j = 0; j < 2; ++j)
+        for (int32_t j = 0; j < 2; ++j)
         {
             float value;
             input >> value;
@@ -50,10 +50,10 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
             }
         }
     }
-    int numEdges;
+    int32_t numEdges;
     input >> numEdges;
     mEdges.resize(numEdges);
-    for (int i = 0; i < numEdges; ++i)
+    for (int32_t i = 0; i < numEdges; ++i)
     {
         input >> mEdges[i][0];
         input >> mEdges[i][1];
@@ -61,7 +61,7 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     input.close();
 
     IsPlanarGraph<Rational> isPlanarGraph;
-    int result;
+    int32_t result;
     result = isPlanarGraph(mPositions, mEdges);
     if (result != IsPlanarGraph<Rational>::IPG_IS_PLANAR_GRAPH)
     {
@@ -83,11 +83,11 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
         vmult = static_cast<float>(mYSize - 1) / (vmax[1] - vmin[1]);
     }
     mSPositions.resize(numPositions);
-    for (int i = 0; i < numPositions; ++i)
+    for (int32_t i = 0; i < numPositions; ++i)
     {
-        for (int j = 0; j < 2; ++j)
+        for (int32_t j = 0; j < 2; ++j)
         {
-            mSPositions[i][j] = static_cast<int>(vmult * (mFPositions[i][j] - vmin[j]));
+            mSPositions[i][j] = static_cast<int32_t>(vmult * (mFPositions[i][j] - vmin[j]));
         }
     }
 
@@ -103,10 +103,10 @@ void MinimalCycleBasisWindow2::OnDisplay()
     {
         for (auto edge : mEdges)
         {
-            int x0 = mSPositions[edge[0]][0];
-            int y0 = mSPositions[edge[0]][1];
-            int x1 = mSPositions[edge[1]][0];
-            int y1 = mSPositions[edge[1]][1];
+            int32_t x0 = mSPositions[edge[0]][0];
+            int32_t y0 = mSPositions[edge[0]][1];
+            int32_t x1 = mSPositions[edge[1]][0];
+            int32_t y1 = mSPositions[edge[1]][1];
             DrawLine(x0, y0, x1, y1, 0xFFFF0000);
         }
     }
@@ -123,8 +123,8 @@ void MinimalCycleBasisWindow2::OnDisplay()
         // Draw the input points.
         for (auto p : mSPositions)
         {
-            int x = p[0];
-            int y = p[1];
+            int32_t x = p[0];
+            int32_t y = p[1];
             DrawThickPixel(x, y, 0, 0xFF000000);
         }
     }
@@ -133,7 +133,7 @@ void MinimalCycleBasisWindow2::OnDisplay()
     Window2::OnDisplay();
 }
 
-bool MinimalCycleBasisWindow2::OnCharPress(unsigned char key, int x, int y)
+bool MinimalCycleBasisWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     if (key == 'c' || key == 'C')
     {
@@ -150,7 +150,7 @@ bool MinimalCycleBasisWindow2::SetEnvironment()
     if (path != "")
     {
         mEnvironment.Insert(path + "/Samples/Geometrics/MinimalCycleBasis/Data/");
-        for (int i = 0; i < 6; ++i)
+        for (int32_t i = 0; i < 6; ++i)
         {
             std::string filename = "SimpleGraph" + std::to_string(i) + ".txt";
             if (mEnvironment.GetPath(filename) == "")
@@ -172,10 +172,10 @@ void MinimalCycleBasisWindow2::DrawTree(std::shared_ptr<MinimalCycleBasis<Ration
     {
         for (size_t i = 0; i + 1 < tree->cycle.size(); ++i)
         {
-            int x0 = mSPositions[tree->cycle[i]][0];
-            int y0 = mSPositions[tree->cycle[i]][1];
-            int x1 = mSPositions[tree->cycle[i + 1]][0];
-            int y1 = mSPositions[tree->cycle[i + 1]][1];
+            int32_t x0 = mSPositions[tree->cycle[i]][0];
+            int32_t y0 = mSPositions[tree->cycle[i]][1];
+            int32_t x1 = mSPositions[tree->cycle[i + 1]][0];
+            int32_t y1 = mSPositions[tree->cycle[i + 1]][1];
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
     }

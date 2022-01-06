@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Applications/Timer.h>
 #include <Graphics/GraphicsEngine.h>
+#include <cstdint>
 
 class VideoStream
 {
@@ -23,17 +24,17 @@ public:
         return mEngine;
     }
 
-    inline gte::DFType GetType() const
+    inline uint32_t GetType() const
     {
         return mType;
     }
 
-    inline unsigned int GetWidth() const
+    inline uint32_t GetWidth() const
     {
         return mWidth;
     }
 
-    inline unsigned int GetHeight() const
+    inline uint32_t GetHeight() const
     {
         return mHeight;
     }
@@ -50,7 +51,7 @@ public:
         {
         }
 
-        unsigned int number;
+        uint32_t number;
         std::shared_ptr<gte::Texture2> image;
         int64_t microseconds;
     };
@@ -72,7 +73,7 @@ public:
     // from a call to ResetPerformanceMeasurements().
     void ResetPerformanceMeasurements();
 
-    inline unsigned int GetPerformanceFrames() const
+    inline uint32_t GetPerformanceFrames() const
     {
         return mPerformanceFrames;
     }
@@ -97,9 +98,9 @@ protected:
     // The engine that is used to upload textures to GPU memory and the
     // texture information.  The derived class must see these four members.
     std::shared_ptr<gte::GraphicsEngine> mEngine;
-    gte::DFType mType;
-    unsigned int mWidth;
-    unsigned int mHeight;
+    uint32_t mType;
+    uint32_t mWidth;
+    uint32_t mHeight;
 
     // The current frame.  The timer is used to compute how long it takes to
     // produce the frame.
@@ -108,6 +109,6 @@ protected:
 
     // Performance measurements.
     gte::Timer mPerformanceTimer;
-    unsigned int mPerformanceFrames;
+    uint32_t mPerformanceFrames;
     int64_t mPerformanceMicroseconds;
 };

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Texture3.h>
@@ -22,18 +22,18 @@ DX11Texture3::DX11Texture3(ID3D11Device* device, Texture3 const* texture)
     desc.Format = static_cast<DXGI_FORMAT>(texture->GetFormat());
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     desc.MiscFlags = D3D11_RESOURCE_MISC_NONE;
-    Resource::Usage usage = texture->GetUsage();
-    if (usage == Resource::IMMUTABLE)
+    uint32_t usage = texture->GetUsage();
+    if (usage == Resource::Usage::IMMUTABLE)
     {
         desc.Usage = D3D11_USAGE_IMMUTABLE;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_NONE;
     }
-    else if (usage == Resource::DYNAMIC_UPDATE)
+    else if (usage == Resource::Usage::DYNAMIC_UPDATE)
     {
         desc.Usage = D3D11_USAGE_DYNAMIC;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     }
-    else  // usage == Resource::SHADER_OUTPUT
+    else  // usage == Resource::Usage::SHADER_OUTPUT
     {
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
@@ -52,9 +52,9 @@ DX11Texture3::DX11Texture3(ID3D11Device* device, Texture3 const* texture)
     ID3D11Texture3D* dxTexture = nullptr;
     if (texture->GetData())
     {
-        unsigned int const numSubresources = texture->GetNumSubresources();
+        uint32_t const numSubresources = texture->GetNumSubresources();
         std::vector<D3D11_SUBRESOURCE_DATA> data(numSubresources);
-        for (unsigned int index = 0; index < numSubresources; ++index)
+        for (uint32_t index = 0; index < numSubresources; ++index)
         {
             auto sr = texture->GetSubresource(index);
             data[index].pSysMem = sr.data;
@@ -71,13 +71,13 @@ DX11Texture3::DX11Texture3(ID3D11Device* device, Texture3 const* texture)
 
     // Create views of the texture.
     CreateSRView(device, desc);
-    if (usage == Resource::SHADER_OUTPUT)
+    if (usage == Resource::Usage::SHADER_OUTPUT)
     {
         CreateUAView(device, desc);
     }
 
     // Create a staging texture if requested.
-    if (texture->GetCopyType() != Resource::COPY_NONE)
+    if (texture->GetCopy() != Resource::Copy::NONE)
     {
         CreateStaging(device, desc);
     }
@@ -113,7 +113,7 @@ void DX11Texture3::CreateStaging(ID3D11Device* device, D3D11_TEXTURE3D_DESC cons
     desc.Format = tx.Format;
     desc.Usage = D3D11_USAGE_STAGING;
     desc.BindFlags = D3D11_BIND_NONE;
-    desc.CPUAccessFlags = msStagingAccess[GetTexture()->GetCopyType()];
+    desc.CPUAccessFlags = msStagingAccess[GetTexture()->GetCopy()];
     desc.MiscFlags = D3D11_RESOURCE_MISC_NONE;
 
     DX11Log(device->CreateTexture3D(&desc, nullptr, reinterpret_cast<ID3D11Texture3D**>(&mStaging)));

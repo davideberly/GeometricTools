@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.08
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -29,7 +29,7 @@
 //   IEEEBinary16:  digits = 11, min_exponent = -13
 //   float:         digits = 27, min_exponent = -125
 //   double:        digits = 53, min_exponent = -1021
-// BSNumber and BSRational use std::numeric_limits<unsigned int>::max(),
+// BSNumber and BSRational use std::numeric_limits<uint32_t>::max(),
 // but maybe these should be set to a large number or be user configurable.
 // The MAX_BISECTIONS_GENERIC is an arbitrary choice for now and is used
 // in template code where Real is the template parameter.
@@ -537,7 +537,7 @@ namespace gte
         return 1.0f / std::sqrt(x);
     }
 
-    inline int isign(float x)
+    inline int32_t isign(float x)
     {
         return (x > 0.0f ? 1 : (x < 0.0f ? -1 : 0));
     }
@@ -598,7 +598,7 @@ namespace gte
         return (x > 0.0 ? 1.0 : (x < 0.0 ? -1.0 : 0.0f));
     }
 
-    inline int isign(double x)
+    inline int32_t isign(double x)
     {
         return (x > 0.0 ? 1 : (x < 0.0 ? -1 : 0));
     }

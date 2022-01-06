@@ -1,17 +1,17 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Mathematics/Image3.h>
 #include <functional>
 
-// Image utilities for Image3<int> objects.  TODO: Extend this to a template
-// class to allow the pixel type to be int*_t and uint*_t for * in
+// Image utilities for Image3<int32_t> objects.  TODO: Extend this to a template
+// class to allow the pixel type to be int32_t*_t and uint*_t for * in
 // {8,16,32,64}.
 //
 // All but the Draw* functions are operations on binary images.  Let the image
@@ -32,10 +32,10 @@ namespace gte
         // image is modified to avoid the cost of making a copy.  On output,
         // the image values are the labels for the components.  The array
         // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents6(Image3<int>& image,
+        static void GetComponents6(Image3<int32_t>& image,
             std::vector<std::vector<size_t>>& components)
         {
-            std::array<int, 6> neighbors;
+            std::array<int32_t, 6> neighbors;
             image.GetNeighborhood(neighbors);
             GetComponents(6, &neighbors[0], image, components);
         }
@@ -44,10 +44,10 @@ namespace gte
         // image is modified to avoid the cost of making a copy.  On output,
         // the image values are the labels for the components.  The array
         // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents18(Image3<int>& image,
+        static void GetComponents18(Image3<int32_t>& image,
             std::vector<std::vector<size_t>>& components)
         {
-            std::array<int, 18> neighbors;
+            std::array<int32_t, 18> neighbors;
             image.GetNeighborhood(neighbors);
             GetComponents(18, &neighbors[0], image, components);
         }
@@ -56,37 +56,37 @@ namespace gte
         // image is modified to avoid the cost of making a copy.  On output,
         // the image values are the labels for the components.  The array
         // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents26(Image3<int>& image,
+        static void GetComponents26(Image3<int32_t>& image,
             std::vector<std::vector<size_t>>& components)
         {
-            std::array<int, 26> neighbors;
+            std::array<int32_t, 26> neighbors;
             image.GetNeighborhood(neighbors);
             GetComponents(26, &neighbors[0], image, components);
         }
 
         // Dilate the image using a structuring element that contains the
         // 6-connected neighbors.
-        static void Dilate6(Image3<int> const& inImage, Image3<int>& outImage)
+        static void Dilate6(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
         {
-            std::array<std::array<int, 3>, 6> neighbors;
+            std::array<std::array<int32_t, 3>, 6> neighbors;
             inImage.GetNeighborhood(neighbors);
             Dilate(6, &neighbors[0], inImage, outImage);
         }
 
         // Dilate the image using a structuring element that contains the
         // 18-connected neighbors.
-        static void Dilate18(Image3<int> const& inImage, Image3<int>& outImage)
+        static void Dilate18(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
         {
-            std::array<std::array<int, 3>, 18> neighbors;
+            std::array<std::array<int32_t, 3>, 18> neighbors;
             inImage.GetNeighborhood(neighbors);
             Dilate(18, &neighbors[0], inImage, outImage);
         }
 
         // Dilate the image using a structuring element that contains the
         // 26-connected neighbors.
-        static void Dilate26(Image3<int> const& inImage, Image3<int>& outImage)
+        static void Dilate26(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
         {
-            std::array<std::array<int, 3>, 26> neighbors;
+            std::array<std::array<int32_t, 3>, 26> neighbors;
             inImage.GetNeighborhood(neighbors);
             Dilate(26, &neighbors[0], inImage, outImage);
         }
@@ -96,19 +96,19 @@ namespace gte
         // on a segment of voxels in that direction.  All voxels from first to
         // last are set to 1.  This is done for all segments in each of the
         // coordinate directions.
-        static void ComputeCDConvex(Image3<int>& image)
+        static void ComputeCDConvex(Image3<int32_t>& image)
         {
-            int const dim0 = image.GetDimension(0);
-            int const dim1 = image.GetDimension(1);
-            int const dim2 = image.GetDimension(2);
+            int32_t const dim0 = image.GetDimension(0);
+            int32_t const dim1 = image.GetDimension(1);
+            int32_t const dim2 = image.GetDimension(2);
 
-            Image3<int> temp = image;
-            int i0, i1, i2;
+            Image3<int32_t> temp = image;
+            int32_t i0, i1, i2;
             for (i1 = 0; i1 < dim1; ++i1)
             {
                 for (i0 = 0; i0 < dim0; ++i0)
                 {
-                    int i2min;
+                    int32_t i2min;
                     for (i2min = 0; i2min < dim2; ++i2min)
                     {
                         if ((temp(i0, i1, i2min) & 1) == 0)
@@ -122,7 +122,7 @@ namespace gte
                     }
                     if (i2min < dim2)
                     {
-                        int i2max;
+                        int32_t i2max;
                         for (i2max = dim2 - 1; i2max >= i2min; --i2max)
                         {
                             if ((temp(i0, i1, i2max) & 1) == 0)
@@ -142,7 +142,7 @@ namespace gte
             {
                 for (i0 = 0; i0 < dim0; ++i0)
                 {
-                    int i1min;
+                    int32_t i1min;
                     for (i1min = 0; i1min < dim1; ++i1min)
                     {
                         if ((temp(i0, i1min, i2) & 1) == 0)
@@ -156,7 +156,7 @@ namespace gte
                     }
                     if (i1min < dim1)
                     {
-                        int i1max;
+                        int32_t i1max;
                         for (i1max = dim1 - 1; i1max >= i1min; --i1max)
                         {
                             if ((temp(i0, i1max, i2) & 1) == 0)
@@ -176,7 +176,7 @@ namespace gte
             {
                 for (i1 = 0; i1 < dim1; ++i1)
                 {
-                    int i0min;
+                    int32_t i0min;
                     for (i0min = 0; i0min < dim0; ++i0min)
                     {
                         if ((temp(i0min, i1, i2) & 1) == 0)
@@ -190,7 +190,7 @@ namespace gte
                     }
                     if (i0min < dim0)
                     {
-                        int i0max;
+                        int32_t i0max;
                         for (i0max = dim0 - 1; i0max >= i0min; --i0max)
                         {
                             if ((temp(i0max, i1, i2) & 1) == 0)
@@ -216,13 +216,13 @@ namespace gte
         // nonrecursive, simulated by using a heap-allocated "stack".  The input
         // (x,y,z) is the seed point that starts the fill.
         template <typename PixelType>
-        static void FloodFill6(Image3<PixelType> & image, int x, int y, int z,
+        static void FloodFill6(Image3<PixelType> & image, int32_t x, int32_t y, int32_t z,
             PixelType foreColor, PixelType backColor)
         {
             // Test for a valid seed.
-            int const dim0 = image.GetDimension(0);
-            int const dim1 = image.GetDimension(1);
-            int const dim2 = image.GetDimension(2);
+            int32_t const dim0 = image.GetDimension(0);
+            int32_t const dim1 = image.GetDimension(1);
+            int32_t const dim2 = image.GetDimension(2);
             if (x < 0 || x >= dim0 || y < 0 || y >= dim1 || z < 0 || z >= dim2)
             {
                 // The seed point is outside the image domain, so there is
@@ -233,11 +233,11 @@ namespace gte
             // Allocate the maximum amount of space needed for the stack.  An
             // empty stack has top == -1.
             size_t const numVoxels = image.GetNumPixels();
-            std::vector<int> xStack(numVoxels), yStack(numVoxels), zStack(numVoxels);
+            std::vector<int32_t> xStack(numVoxels), yStack(numVoxels), zStack(numVoxels);
 
             // Push seed point onto stack if it has the background color.  All
             // points pushed onto stack have background color backColor.
-            int top = 0;
+            int32_t top = 0;
             xStack[top] = x;
             yStack[top] = y;
             zStack[top] = z;
@@ -254,7 +254,7 @@ namespace gte
                 // Fill the pixel.
                 image(x, y, z) = foreColor;
 
-                int xp1 = x + 1;
+                int32_t xp1 = x + 1;
                 if (xp1 < dim0 && image(xp1, y, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -265,7 +265,7 @@ namespace gte
                     continue;
                 }
 
-                int xm1 = x - 1;
+                int32_t xm1 = x - 1;
                 if (0 <= xm1 && image(xm1, y, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -276,7 +276,7 @@ namespace gte
                     continue;
                 }
 
-                int yp1 = y + 1;
+                int32_t yp1 = y + 1;
                 if (yp1 < dim1 && image(x, yp1, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -287,7 +287,7 @@ namespace gte
                     continue;
                 }
 
-                int ym1 = y - 1;
+                int32_t ym1 = y - 1;
                 if (0 <= ym1 && image(x, ym1, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -298,7 +298,7 @@ namespace gte
                     continue;
                 }
 
-                int zp1 = z + 1;
+                int32_t zp1 = z + 1;
                 if (zp1 < dim2 && image(x, y, zp1) == backColor)
                 {
                     // Push pixel with background color.
@@ -309,7 +309,7 @@ namespace gte
                     continue;
                 }
 
-                int zm1 = z - 1;
+                int32_t zm1 = z - 1;
                 if (0 <= zm1 && image(x, y, zm1) == backColor)
                 {
                     // Push pixel with background color.
@@ -328,19 +328,19 @@ namespace gte
 
         // Visit pixels using Bresenham's line drawing algorithm.  The callback
         // represents the action you want applied to each voxel as it is visited.
-        static void DrawLine(int x0, int y0, int z0, int x1, int y1, int z1,
-            std::function<void(int, int, int)> const& callback)
+        static void DrawLine(int32_t x0, int32_t y0, int32_t z0, int32_t x1, int32_t y1, int32_t z1,
+            std::function<void(int32_t, int32_t, int32_t)> const& callback)
         {
             // Starting point of line.
-            int x = x0, y = y0, z = z0;
+            int32_t x = x0, y = y0, z = z0;
 
             // Direction of line.
-            int dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
+            int32_t dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
 
             // Increment or decrement depending on direction of line.
-            int sx = (dx > 0 ? 1 : (dx < 0 ? -1 : 0));
-            int sy = (dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-            int sz = (dz > 0 ? 1 : (dz < 0 ? -1 : 0));
+            int32_t sx = (dx > 0 ? 1 : (dx < 0 ? -1 : 0));
+            int32_t sy = (dy > 0 ? 1 : (dy < 0 ? -1 : 0));
+            int32_t sz = (dz > 0 ? 1 : (dz < 0 ? -1 : 0));
 
             // Decision parameters for voxel selection.
             if (dx < 0)
@@ -355,12 +355,12 @@ namespace gte
             {
                 dz = -dz;
             }
-            int ax = 2 * dx, ay = 2 * dy, az = 2 * dz;
-            int decX, decY, decZ;
+            int32_t ax = 2 * dx, ay = 2 * dy, az = 2 * dz;
+            int32_t decX, decY, decZ;
 
             // Determine largest direction component, single-step related
             // variable.
-            int maxValue = dx, var = 0;
+            int32_t maxValue = dx, var = 0;
             if (dy > maxValue)
             {
                 maxValue = dy;
@@ -454,25 +454,25 @@ namespace gte
 
     private:
         // Dilation using the specified structuring element.
-        static void Dilate(int numNeighbors, std::array<int, 3> const* delta,
-            Image3<int> const& inImage, Image3<int> & outImage)
+        static void Dilate(int32_t numNeighbors, std::array<int32_t, 3> const* delta,
+            Image3<int32_t> const& inImage, Image3<int32_t> & outImage)
         {
-            int const bound0M1 = inImage.GetDimension(0) - 1;
-            int const bound1M1 = inImage.GetDimension(1) - 1;
-            int const bound2M1 = inImage.GetDimension(2) - 1;
-            for (int i2 = 1; i2 < bound2M1; ++i2)
+            int32_t const bound0M1 = inImage.GetDimension(0) - 1;
+            int32_t const bound1M1 = inImage.GetDimension(1) - 1;
+            int32_t const bound2M1 = inImage.GetDimension(2) - 1;
+            for (int32_t i2 = 1; i2 < bound2M1; ++i2)
             {
-                for (int i1 = 1; i1 < bound1M1; ++i1)
+                for (int32_t i1 = 1; i1 < bound1M1; ++i1)
                 {
-                    for (int i0 = 1; i0 < bound0M1; ++i0)
+                    for (int32_t i0 = 1; i0 < bound0M1; ++i0)
                     {
                         if (inImage(i0, i1, i2) == 0)
                         {
-                            for (int n = 0; n < numNeighbors; ++n)
+                            for (int32_t n = 0; n < numNeighbors; ++n)
                             {
-                                int d0 = delta[n][0];
-                                int d1 = delta[n][1];
-                                int d2 = delta[n][2];
+                                int32_t d0 = delta[n][0];
+                                int32_t d1 = delta[n][1];
+                                int32_t d2 = delta[n][2];
                                 if (inImage(i0 + d0, i1 + d1, i2 + d2) == 1)
                                 {
                                     outImage(i0, i1, i2) = 1;
@@ -490,28 +490,28 @@ namespace gte
         }
 
         // Connected component labeling using depth-first search.
-        static void GetComponents(int numNeighbors, int const* delta,
-            Image3<int> & image, std::vector<std::vector<size_t>> & components)
+        static void GetComponents(int32_t numNeighbors, int32_t const* delta,
+            Image3<int32_t> & image, std::vector<std::vector<size_t>> & components)
         {
             size_t const numVoxels = image.GetNumPixels();
-            std::vector<int> numElements(numVoxels);
+            std::vector<int32_t> numElements(numVoxels);
             std::vector<size_t> vstack(numVoxels);
             size_t i, numComponents = 0;
-            int label = 2;
+            int32_t label = 2;
             for (i = 0; i < numVoxels; ++i)
             {
                 if (image[i] == 1)
                 {
-                    int top = -1;
+                    int32_t top = -1;
                     vstack[++top] = i;
 
-                    int& count = numElements[numComponents + 1];
+                    int32_t& count = numElements[numComponents + 1];
                     count = 0;
                     while (top >= 0)
                     {
                         size_t v = vstack[top];
                         image[v] = -1;
-                        int j;
+                        int32_t j;
                         for (j = 0; j < numNeighbors; ++j)
                         {
                             size_t adj = v + delta[j];
@@ -545,7 +545,7 @@ namespace gte
 
                 for (i = 0; i < numVoxels; ++i)
                 {
-                    int value = image[i];
+                    int32_t value = image[i];
                     if (value != 0)
                     {
                         // Labels started at 2 to support the depth-first

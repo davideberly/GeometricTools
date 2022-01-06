@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -47,7 +47,7 @@ namespace gte
     {
     public:
         // Initialize the model parameters to zero.
-        ApprPolynomial4(int xDegree, int yDegree, int zDegree)
+        ApprPolynomial4(int32_t xDegree, int32_t yDegree, int32_t zDegree)
             :
             mXDegree(xDegree),
             mYDegree(yDegree),
@@ -72,17 +72,17 @@ namespace gte
         // functions that you can call.
         virtual bool FitIndexed(
             size_t numObservations, std::array<Real, 4> const* observations,
-            size_t numIndices, int const* indices) override
+            size_t numIndices, int32_t const* indices) override
         {
             if (this->ValidIndices(numObservations, observations, numIndices, indices))
             {
-                int s, i0, j0, k0, n0, i1, j1, k1, n1;
+                int32_t s, i0, j0, k0, n0, i1, j1, k1, n1;
 
                 // Compute the powers of x, y, and z.
-                int numSamples = static_cast<int>(numIndices);
-                int twoXDegree = 2 * mXDegree;
-                int twoYDegree = 2 * mYDegree;
-                int twoZDegree = 2 * mZDegree;
+                int32_t numSamples = static_cast<int32_t>(numIndices);
+                int32_t twoXDegree = 2 * mXDegree;
+                int32_t twoYDegree = 2 * mYDegree;
+                int32_t twoZDegree = 2 * mZDegree;
                 Array2<Real> xPower(static_cast<size_t>(twoXDegree) + 1, numSamples);
                 Array2<Real> yPower(static_cast<size_t>(twoYDegree) + 1, numSamples);
                 Array2<Real> zPower(static_cast<size_t>(twoZDegree) + 1, numSamples);
@@ -161,7 +161,7 @@ namespace gte
                 // Solve for the polynomial coefficients.
                 GVector<Real> coefficients = Inverse(A) * B;
                 bool hasNonzero = false;
-                for (int i = 0; i < mSize; ++i)
+                for (int32_t i = 0; i < mSize; ++i)
                 {
                     mParameters[i] = coefficients[i];
                     if (coefficients[i] != (Real)0)
@@ -227,7 +227,7 @@ namespace gte
 
         Real Evaluate(Real x, Real y, Real z) const
         {
-            int i0, i1, i2;
+            int32_t i0, i1, i2;
             Real w;
 
             for (i2 = 0; i2 <= mZDegree; ++i2)
@@ -266,8 +266,8 @@ namespace gte
         }
 
     private:
-        int mXDegree, mYDegree, mZDegree;
-        int mXDegreeP1, mYDegreeP1, mZDegreeP1, mSize;
+        int32_t mXDegree, mYDegree, mZDegree;
+        int32_t mXDegreeP1, mYDegreeP1, mZDegreeP1, mSize;
         std::array<Real, 2> mXDomain, mYDomain, mZDomain;
         std::vector<Real> mParameters;
 

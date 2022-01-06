@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GeometryShadersWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -26,7 +26,7 @@ GeometryShadersWindow3::GeometryShadersWindow3(Parameters& parameters)
 
 #if defined(SAVE_RENDERING_TO_DISK)
     mTarget = std::make_shared<DrawTarget>(1, DF_R8G8B8A8_UNORM, mXSize, mYSize);
-    mTarget->GetRTTexture(0)->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mTarget->GetRTTexture(0)->SetCopy(Resource::Copy::STAGING_TO_CPU);
 #endif
 }
 
@@ -116,7 +116,7 @@ bool GeometryShadersWindow3::CreateScene()
     std::uniform_real_distribution<float> unir(0.0f, 1.0f);
     std::uniform_real_distribution<float> posr(0.01f, 0.1f);
 
-    int const numParticles = 128;
+    int32_t const numParticles = 128;
     std::vector<Vertex> particles(numParticles);
     for (auto& particle : particles)
     {
@@ -131,8 +131,8 @@ bool GeometryShadersWindow3::CreateScene()
 #if defined(USE_DRAW_DIRECT)
     // Create a mesh for direct drawing.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32A32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numParticles);
     std::memcpy(vbuffer->GetData(), &particles[0], numParticles * sizeof(Vertex));
 #else

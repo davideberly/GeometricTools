@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.13.2021.09.06
+// Version: 6.0.2022.01.06
 
 #include "IntersectCylindersWindow3.h"
 #include <Mathematics/Rotation.h>
@@ -19,10 +19,10 @@ IntersectCylindersWindow3::IntersectCylindersWindow3(Parameters& parameters)
     mCylinderBasis{}
 {
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.001f, 0.001f,
@@ -52,7 +52,7 @@ void IntersectCylindersWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectCylindersWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectCylindersWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const delta = 0.1f;
 
@@ -125,7 +125,7 @@ bool IntersectCylindersWindow3::OnCharPress(unsigned char key, int x, int y)
 void IntersectCylindersWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -139,7 +139,7 @@ void IntersectCylindersWindow3::CreateScene()
     // Create the cylinder meshes.
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::DYNAMIC_UPDATE);
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
 
     mCylinderMesh[0] = mf.CreateCylinderClosed(8, 128, mCylinder[0].radius, mCylinder[0].height);
     mCylinderMesh[0]->SetEffect(mRedEffect);
@@ -223,7 +223,7 @@ void IntersectCylindersWindow3::UpdateCylinderMesh()
     auto const& cylinderMesh = mCylinderMesh[mMotionObject];
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto mesh = mf.CreateCylinderClosed(8, 128, cylinder.radius, cylinder.height);

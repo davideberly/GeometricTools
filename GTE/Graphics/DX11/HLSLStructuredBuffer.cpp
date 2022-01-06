@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLStructuredBuffer.h>
@@ -16,7 +16,7 @@ HLSLStructuredBuffer::HLSLStructuredBuffer(D3D_SHADER_INPUT_BIND_DESC const& des
     Initialize(desc);
 }
 
-HLSLStructuredBuffer::HLSLStructuredBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc, unsigned int index)
+HLSLStructuredBuffer::HLSLStructuredBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc, uint32_t index)
     :
     HLSLResource(desc, index, 0)
 {
@@ -28,23 +28,23 @@ void HLSLStructuredBuffer::Initialize(D3D_SHADER_INPUT_BIND_DESC const& desc)
     if (desc.Type == D3D_SIT_STRUCTURED
     ||  desc.Type == D3D_SIT_UAV_RWSTRUCTURED)
     {
-        mType = SBT_BASIC;
+        mType = Type::SBT_BASIC;
     }
     else if (desc.Type == D3D_SIT_UAV_APPEND_STRUCTURED)
     {
-        mType = SBT_APPEND;
+        mType = Type::SBT_APPEND;
     }
     else if (desc.Type == D3D_SIT_UAV_CONSUME_STRUCTURED)
     {
-        mType = SBT_CONSUME;
+        mType = Type::SBT_CONSUME;
     }
     else if (desc.Type == D3D_SIT_UAV_RWSTRUCTURED_WITH_COUNTER)
     {
-        mType = SBT_COUNTER;
+        mType = Type::SBT_COUNTER;
     }
     else
     {
-        mType = SBT_INVALID;
+        mType = Type::SBT_INVALID;
     }
 
     mGpuWritable =

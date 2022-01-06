@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -14,7 +14,7 @@
 
 // The class implements Hermite cubic interpolation.
 
-template <int N, typename Real>
+template <int32_t N, typename Real>
 class CubicInterpolator
 {
 public:
@@ -42,33 +42,33 @@ public:
         mTangents0.resize(mNumSamples);
         mTangents1.resize(mNumSamples);
 
-        for (int i = 0; i < mNumSamples; ++i)
+        for (int32_t i = 0; i < mNumSamples; ++i)
         {
             inFile >> mInputs[i];
         }
 
-        for (int i = 0; i < mNumSamples; ++i)
+        for (int32_t i = 0; i < mNumSamples; ++i)
         {
             std::array<Real, N>& output = mOutputs[i];
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j)
             {
                 inFile >> output[j];
             }
         }
 
-        for (int i = 0; i < mNumSamples; ++i)
+        for (int32_t i = 0; i < mNumSamples; ++i)
         {
             std::array<Real, N>& tangent0 = mTangents0[i];
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j)
             {
                 inFile >> tangent0[j];
             }
         }
 
-        for (int i = 0; i < mNumSamples; ++i)
+        for (int32_t i = 0; i < mNumSamples; ++i)
         {
             std::array<Real, N>& tangent1 = mTangents1[i];
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j)
             {
                 inFile >> tangent1[j];
             }
@@ -78,13 +78,13 @@ public:
         mC2.resize(mNumSamplesM1);
         mC3.resize(mNumSamplesM1);
 
-        for (int i0 = 0, i1 = 1; i1 < mNumSamples; ++i0, ++i1)
+        for (int32_t i0 = 0, i1 = 1; i1 < mNumSamples; ++i0, ++i1)
         {
             Real delta = mInputs[i1] - mInputs[i0];
             LogAssert(delta > (Real)0, "The inputs must be strictly increasing.");
 
             mInvDeltas[i0] = ((Real)1) / delta;
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j)
             {
                 Real diff0 = mOutputs[i1][j] - mOutputs[i0][j];
                 Real diff1 = mTangents1[i0][j] - mTangents0[i0][j];
@@ -101,11 +101,11 @@ public:
     std::array<Real, N> operator() (Real input) const
     {
         Real u;
-        int k;
+        int32_t k;
         GetKeyInfo(input, u, k);
 
         std::array<Real, N> output;
-        for (int j = 0; j < N; ++j)
+        for (int32_t j = 0; j < N; ++j)
         {
             output[j] = mOutputs[k][j] + u * (mTangents0[k][j] + u * (mC2[k][j] + u * mC3[k][j]));
         }
@@ -114,7 +114,7 @@ public:
 
 private:
     // Lookup on bounding keys.
-    void GetKeyInfo(Real input, Real& normInput, int& key) const
+    void GetKeyInfo(Real input, Real& normInput, int32_t& key) const
     {
         if (input <= mInputs[0])
         {
@@ -132,7 +132,7 @@ private:
             return;
         }
 
-        int nextIndex;
+        int32_t nextIndex;
         if (input > mInputs[mLastIndex])
         {
             nextIndex = mLastIndex + 1;
@@ -165,7 +165,7 @@ private:
     }
 
     // Constructor inputs.  These have 'numSamples' elements.
-    int mNumSamples;
+    int32_t mNumSamples;
     std::vector<Real> mInputs;
     std::vector<std::array<Real, N>> mOutputs;      // mC0
     std::vector<std::array<Real, N>> mTangents0;    // mC1
@@ -173,11 +173,11 @@ private:
 
     // Support for key lookup and evaluation.  These have 'numSamples - 1'
     // elements.
-    int mNumSamplesM1;
+    int32_t mNumSamplesM1;
     std::vector<Real> mInvDeltas;
     std::vector<std::array<Real, N>> mC2;
     std::vector<std::array<Real, N>> mC3;
 
     // For O(1) lookup on bounding keys.
-    mutable int mLastIndex;
+    mutable int32_t mLastIndex;
 };

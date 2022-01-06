@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -28,8 +28,8 @@ namespace gte
     {
     public:
         // Construction.
-        MinimizeN(int dimensions, std::function<Real(Real const*)> const& F,
-            int maxLevel, int maxBracket, int maxIterations, Real epsilon = (Real)1e-06)
+        MinimizeN(int32_t dimensions, std::function<Real(Real const*)> const& F,
+            int32_t maxLevel, int32_t maxBracket, int32_t maxIterations, Real epsilon = (Real)1e-06)
             :
             mDimensions(dimensions),
             mFunction(F),
@@ -74,7 +74,7 @@ namespace gte
             std::memcpy(&mTCurr[0], tInitial, numBytes);
 
             // Initialize the direction set to the standard Euclidean basis.
-            for (int i = 0; i < mDimensions; ++i)
+            for (int32_t i = 0; i < mDimensions; ++i)
             {
                 mDirections[i].MakeUnit(i);
             }
@@ -82,10 +82,10 @@ namespace gte
             Real ell0 = static_cast<Real>(0);
             Real ell1 = static_cast<Real>(0);
             Real ellMin = static_cast<Real>(0);
-            for (int iter = 0; iter < mMaxIterations; ++iter)
+            for (int32_t iter = 0; iter < mMaxIterations; ++iter)
             {
                 // Find minimum in each direction and update current location.
-                for (int i = 0; i < mDimensions; ++i)
+                for (int32_t i = 0; i < mDimensions; ++i)
                 {
                     mDCurrIndex = i;
                     ComputeDomain(t0, t1, ell0, ell1);
@@ -113,7 +113,7 @@ namespace gte
 
                 // Cycle the directions and add conjugate direction to set.
                 mDConjIndex = 0;
-                for (int i = 0, ip1 = 1; i < mDimensions; ++i, ++ip1)
+                for (int32_t i = 0, ip1 = 1; i < mDimensions; ++i, ++ip1)
                 {
                     mDirections[i] = mDirections[ip1];
                 }
@@ -137,7 +137,7 @@ namespace gte
             ell0 = -std::numeric_limits<Real>::max();
             ell1 = +std::numeric_limits<Real>::max();
 
-            for (int i = 0; i < mDimensions; ++i)
+            for (int32_t i = 0; i < mDimensions; ++i)
             {
                 Real value = mDirections[mDCurrIndex][i];
                 if (value != (Real)0)
@@ -187,13 +187,13 @@ namespace gte
             }
         }
 
-        int mDimensions;
+        int32_t mDimensions;
         std::function<Real(Real const*)> mFunction;
-        int mMaxIterations;
+        int32_t mMaxIterations;
         Real mEpsilon;
         std::vector<GVector<Real>> mDirections;
-        int mDConjIndex;
-        int mDCurrIndex;
+        int32_t mDConjIndex;
+        int32_t mDCurrIndex;
         GVector<Real> mTCurr;
         GVector<Real> mTSave;
         Real mFCurr;

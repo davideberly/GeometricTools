@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.7.2020.06.06
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -86,13 +86,13 @@ namespace gte
         // Load from a resource with direct output. The input 'module' is an
         // HMODULE. The use of void* avoids having to expose the windows.h
         // header file to other source files.
-        static void Load(void* module, std::string const& rtype, int resource,
+        static void Load(void* module, std::string const& rtype, int32_t resource,
             uint32_t& outFormat, size_t& outWidth, size_t& outHeight,
             std::vector<uint8_t>& outTexels);
 
         // Load from a resource with indirect output stored in the object
         // created by 'creator'.
-        static void Load(void* module, std::string const& rtype, int resource,
+        static void Load(void* module, std::string const& rtype, int32_t resource,
             TextureCreator const& creator);
 
         // Support for saving to PNG or JPEG.

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // The class object stores a copy of 'points', so be careful about
         // the persistence of 'points' when you have created a
         // PointInPolygon2 object.
-        PointInPolygon2(int numPoints, Vector2<Real> const* points)
+        PointInPolygon2(int32_t numPoints, Vector2<Real> const* points)
             :
             mNumPoints(numPoints),
             mPoints(points)
@@ -34,7 +34,7 @@ namespace gte
         bool Contains(Vector2<Real> const& p) const
         {
             bool inside = false;
-            for (int i = 0, j = mNumPoints - 1; i < mNumPoints; j = i++)
+            for (int32_t i = 0, j = mNumPoints - 1; i < mNumPoints; j = i++)
             {
                 Vector2<Real> const& U0 = mPoints[i];
                 Vector2<Real> const& U1 = mPoints[j];
@@ -71,7 +71,7 @@ namespace gte
         // O(N) algorithm (which-side-of-edge tests)
         bool ContainsConvexOrderN(Vector2<Real> const& p) const
         {
-            for (int i1 = 0, i0 = mNumPoints - 1; i1 < mNumPoints; i0 = i1++)
+            for (int32_t i1 = 0, i0 = mNumPoints - 1; i1 < mNumPoints; i0 = i1++)
             {
                 Real nx = mPoints[i1][1] - mPoints[i0][1];
                 Real ny = mPoints[i0][0] - mPoints[i1][0];
@@ -150,11 +150,11 @@ namespace gte
 
     private:
         // For recursion in ContainsConvexOrderLogN.
-        bool SubContainsPoint(Vector2<Real> const& p, int i0, int i1) const
+        bool SubContainsPoint(Vector2<Real> const& p, int32_t i0, int32_t i1) const
         {
             Real nx, ny, dx, dy;
 
-            int diff = i1 - i0;
+            int32_t diff = i1 - i0;
             if (diff == 1 || (diff < 0 && diff + mNumPoints == 1))
             {
                 nx = mPoints[i1][1] - mPoints[i0][1];
@@ -165,7 +165,7 @@ namespace gte
             }
 
             // Bisect the index range.
-            int mid;
+            int32_t mid;
             if (i0 < i1)
             {
                 mid = (i0 + i1) >> 1;
@@ -196,7 +196,7 @@ namespace gte
             }
         }
 
-        int mNumPoints;
+        int32_t mNumPoints;
         Vector2<Real> const* mPoints;
     };
 }

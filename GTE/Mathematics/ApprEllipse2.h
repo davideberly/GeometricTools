@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.10
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -65,7 +65,7 @@ namespace gte
             if (useEllipseForInitialGuess)
             {
                 C = ellipse.center;
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     auto product = OuterProduct(ellipse.axis[i], ellipse.axis[i]);
                     M += product / (ellipse.extent[i] * ellipse.extent[i]);
@@ -74,9 +74,9 @@ namespace gte
             else
             {
                 OrientedBox2<Real> box;
-                GetContainer(static_cast<int>(points.size()), points.data(), box);
+                GetContainer(static_cast<int32_t>(points.size()), points.data(), box);
                 C = box.center;
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     auto product = OuterProduct(box.axis[i], box.axis[i]);
                     M += product / (box.extent[i] * box.extent[i]);
@@ -98,7 +98,7 @@ namespace gte
 
             Real const one = static_cast<Real>(1);
             ellipse.center = C;
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 ellipse.axis[i] = { evec[i][0], evec[i][1] };
                 ellipse.extent[i] = one / std::sqrt(eval[i]);
@@ -170,7 +170,7 @@ namespace gte
             dq[3] = four * q[4];
 
             // Compute the roots of q'(t).
-            std::map<Real, int> rmMap;
+            std::map<Real, int32_t> rmMap;
             RootsPolynomial<Real>::SolveCubic(dq[0], dq[1], dq[2], dq[3], rmMap);
 
             // Choose the root that leads to the minimum along the gradient descent

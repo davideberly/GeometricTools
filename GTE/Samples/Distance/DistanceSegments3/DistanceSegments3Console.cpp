@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "DistanceSegments3Console.h"
 #include <Applications/Timer.h>
@@ -242,18 +242,18 @@ void DistanceSegments3Console::dist3D_Segment_to_Segment(
     sqrDistance = Dot(diff, diff);
 }
 
-template <int N>
-void DistanceSegments3Console::LoadInput(bool testNonparallel, unsigned int numInputs, Segment<N, double>* segment)
+template <int32_t N>
+void DistanceSegments3Console::LoadInput(bool testNonparallel, uint32_t numInputs, Segment<N, double>* segment)
 {
-    int numChannels = N;
+    int32_t numChannels = N;
 
     if (testNonparallel)
     {
         std::string path = mEnvironment.GetPath("InputNonparallel.binary");
         std::ifstream input(path, std::ios::binary);
-        for (unsigned int i = 0; i < numInputs; ++i)
+        for (uint32_t i = 0; i < numInputs; ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 input.read((char*)& segment[i].p[0][j], sizeof(double));
                 input.read((char*)& segment[i].p[1][j], sizeof(double));
@@ -270,7 +270,7 @@ void DistanceSegments3Console::LoadInput(bool testNonparallel, unsigned int numI
     {
         std::string path = mEnvironment.GetPath("InputParallel.binary");
         std::ifstream input(path, std::ios::binary);
-        for (unsigned int i = 0; i < numInputs; ++i)
+        for (uint32_t i = 0; i < numInputs; ++i)
         {
             input.read((char*)& segment[i].p[0][0], sizeof(double));
             input.read((char*)& segment[i].p[0][1], sizeof(double));
@@ -297,18 +297,18 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
     // order of 1e-4. The pair of segments that generate the maximum error
     // shows that the logic of dist3D_Segment_to_Segment when segments are
     // nearly parallel is not correct.
-    unsigned int const numInputs = (compareUsingExact ? 1024 : 4096);
-    unsigned int const numBlocks = 16;
+    uint32_t const numInputs = (compareUsingExact ? 1024 : 4096);
+    uint32_t const numBlocks = 16;
     std::vector<Segment<3, double>> segment(numInputs);
 
     LoadInput(testNonparallel, numInputs, segment.data());
 
     double maxError01 = 0.0, maxError02 = 0.0, maxError12 = 0.0, error;
-    unsigned int xmax01 = 0, ymax01 = 0;
-    unsigned int xmax02 = 0, ymax02 = 0;
-    unsigned int xmax12 = 0, ymax12 = 0;
+    uint32_t xmax01 = 0, ymax01 = 0;
+    uint32_t xmax02 = 0, ymax02 = 0;
+    uint32_t xmax12 = 0, ymax12 = 0;
 
-    for (unsigned int y = 0; y < numInputs; ++y)
+    for (uint32_t y = 0; y < numInputs; ++y)
     {
         if ((y % numBlocks) == 0)
         {
@@ -318,7 +318,7 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
         Vector3<double> Q0 = segment[y].p[0];
         Vector3<double> Q1 = segment[y].p[1];
 
-        for (unsigned int x = y + 1; x < numInputs; ++x)
+        for (uint32_t x = y + 1; x < numInputs; ++x)
         {
             Vector3<double> P0 = segment[x].p[0];
             Vector3<double> P1 = segment[x].p[1];
@@ -330,7 +330,7 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
             double distance0 = std::sqrt(sqrDistance0);
 
             // robust query
-            RobustQuery query1;
+            RobustQuery query1{};
             auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
             double distance1 = result1.distance;
 
@@ -341,7 +341,7 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
                 Vector3<Rational> RP1{ P1[0], P1[1], P1[2] };
                 Vector3<Rational> RQ0{ Q0[0], Q0[1], Q0[2] };
                 Vector3<Rational> RQ1{ Q1[0], Q1[1], Q1[2] };
-                RationalQuery query2;
+                RationalQuery query2{};
                 auto result2 = query2(RP0, RP1, RQ0, RQ1);
                 double distance2 = std::sqrt((double)result2.sqrDistance);
 
@@ -389,11 +389,11 @@ void DistanceSegments3Console::CPUAccuracyTest(bool compareUsingExact, bool test
     mOutput << "x, y = " << xmax01 << " " << ymax01 << std::endl;
 }
 
-void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparallel)
+void DistanceSegments3Console::CPUPerformanceTest(int32_t select, bool testNonparallel)
 {
-    unsigned int const numInputs = (select == PERF_RATIONAL ? 1024 : 4096);
+    uint32_t const numInputs = (select == PERF_RATIONAL ? 1024 : 4096);
     std::vector<Segment<3, double>> segment(numInputs);
-    unsigned int numQueries;
+    uint32_t numQueries;
 
     LoadInput(testNonparallel, numInputs, segment.data());
 
@@ -404,9 +404,9 @@ void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparall
         double sqrDistance0, s0, t0;
         Vector3<double> closest0[2];
         numQueries = 0;
-        for (unsigned int y = 0; y < numInputs; ++y)
+        for (uint32_t y = 0; y < numInputs; ++y)
         {
-            for (unsigned int x = y + 1; x < numInputs; ++x, ++numQueries)
+            for (uint32_t x = y + 1; x < numInputs; ++x, ++numQueries)
             {
                 dist3D_Segment_to_Segment(
                     segment[x].p[0], segment[x].p[1],
@@ -417,12 +417,12 @@ void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparall
     }
     else if (select == PERF_ROBUST)
     {
-        RobustQuery query;
-        RobustQuery::Result result;
+        RobustQuery query{};
+        RobustQuery::Result result{};
         numQueries = 0;
-        for (unsigned int y = 0; y < numInputs; ++y)
+        for (uint32_t y = 0; y < numInputs; ++y)
         {
-            for (unsigned int x = y + 1; x < numInputs; ++x, ++numQueries)
+            for (uint32_t x = y + 1; x < numInputs; ++x, ++numQueries)
             {
                 result = query.ComputeRobust(segment[x], segment[y]);
             }
@@ -430,20 +430,20 @@ void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparall
     }
     else  // select == PERF_RATIONAL
     {
-        RationalQuery query;
-        RationalQuery::Result result;
+        RationalQuery query{};
+        RationalQuery::Result result{};
         Vector3<Rational> RP0, RP1, RQ0, RQ1;
         numQueries = 0;
-        for (unsigned int y = 0; y < numInputs; ++y)
+        for (uint32_t y = 0; y < numInputs; ++y)
         {
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 RQ0[i] = segment[y].p[0][i];
                 RQ1[i] = segment[y].p[1][i];
             }
-            for (unsigned int x = y + 1; x < numInputs; ++x, ++numQueries)
+            for (uint32_t x = y + 1; x < numInputs; ++x, ++numQueries)
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     RP0[i] = segment[x].p[0][i];
                     RP1[i] = segment[x].p[1][i];
@@ -467,11 +467,11 @@ void DistanceSegments3Console::CPUPerformanceTest(int select, bool testNonparall
 
 void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonparallel)
 {
-    unsigned int const numInputs = 4096;
-    unsigned int const blockSize = 1024;
-    unsigned int const numBlocks = numInputs / blockSize;
-    unsigned int const numThreads = 8;
-    unsigned int const numGroups = blockSize / numThreads;
+    uint32_t const numInputs = 4096;
+    uint32_t const blockSize = 1024;
+    uint32_t const numBlocks = numInputs / blockSize;
+    uint32_t const numThreads = 8;
+    uint32_t const numGroups = blockSize / numThreads;
 
     mProgramFactory->defines.Set("NUM_X_THREADS", numThreads);
     mProgramFactory->defines.Set("NUM_Y_THREADS", numThreads);
@@ -487,13 +487,13 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
 
     auto cprogram = mProgramFactory->CreateFromFile(
         mEnvironment.GetPath(mEngine->GetShaderName("DistanceSeg3Seg3.cs")));
-    auto cshader = cprogram->GetComputeShader();
+    auto const& cshader = cprogram->GetComputeShader();
     auto block = std::make_shared<ConstantBuffer>(2 * sizeof(uint32_t), true);
     cshader->Set("Block", block);
     auto* origin = block->Get<uint32_t>();
 
     auto input = std::make_shared<StructuredBuffer>(numInputs, sizeof(Segment<4, double>));
-    input->SetUsage(Resource::DYNAMIC_UPDATE);
+    input->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     cshader->Set("inSegment", input);
     auto* segment = input->Get<Segment<4, double>>();
 
@@ -501,7 +501,7 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
 
     std::shared_ptr<StructuredBuffer> output;
     double maxError = 0.0;
-    int xmax = 0, ymax = 0;
+    int32_t xmax = 0, ymax = 0;
     if (getClosest)
     {
         // GLSL wants closest[] to be aligned on a dvec4 boundary, so
@@ -514,39 +514,39 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
         };
 
         output = std::make_shared<StructuredBuffer>(blockSize * blockSize, sizeof(Result));
-        output->SetUsage(Resource::SHADER_OUTPUT);
-        output->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+        output->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        output->SetCopy(Resource::Copy::STAGING_TO_CPU);
         Result* gpuResult = output->Get<Result>();
         cshader->Set("outResult", output);
 
-        for (unsigned int y = 0, i = 0; y < numBlocks; ++y)
+        for (uint32_t y = 0, i = 0; y < numBlocks; ++y)
         {
             std::cout << "block = " << y << std::endl;
             origin[1] = y * blockSize;
-            for (unsigned int x = y; x < numBlocks; ++x, ++i)
+            for (uint32_t x = y; x < numBlocks; ++x, ++i)
             {
                 origin[0] = x * blockSize;
                 mEngine->Update(block);
                 mEngine->Execute(cprogram, numGroups, numGroups, 1);
                 mEngine->CopyGpuToCpu(output);
 
-                for (unsigned int r = 0; r < blockSize; ++r)
+                for (uint32_t r = 0; r < blockSize; ++r)
                 {
-                    int sy = origin[1] + r;
+                    int32_t sy = origin[1] + r;
                     Vector3<double> Q0 = HProject(segment[sy].p[0]);
                     Vector3<double> Q1 = HProject(segment[sy].p[1]);
 
-                    unsigned int cmin = (x != y ? 0 : r + 1);
-                    for (unsigned int c = cmin; c < blockSize; ++c)
+                    uint32_t cmin = (x != y ? 0 : r + 1);
+                    for (uint32_t c = cmin; c < blockSize; ++c)
                     {
-                        int sx = origin[0] + c;
+                        int32_t sx = origin[0] + c;
                         Vector3<double> P0 = HProject(segment[sx].p[0]);
                         Vector3<double> P1 = HProject(segment[sx].p[1]);
 
                         Result result0 = gpuResult[c + blockSize * r];
                         double distance0 = std::sqrt(result0.sqrDistance);
 
-                        RobustQuery query1;
+                        RobustQuery query1{};
                         auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
                         double distance1 = result1.distance;
 
@@ -573,39 +573,39 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
         };
 
         output = std::make_shared<StructuredBuffer>(blockSize * blockSize, sizeof(Result));
-        output->SetUsage(Resource::SHADER_OUTPUT);
-        output->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+        output->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        output->SetCopy(Resource::Copy::STAGING_TO_CPU);
         Result* gpuResult = output->Get<Result>();
         cshader->Set("outResult", output);
 
-        for (unsigned int y = 0, i = 0; y < numBlocks; ++y)
+        for (uint32_t y = 0, i = 0; y < numBlocks; ++y)
         {
             std::cout << "block = " << y << std::endl;
             origin[1] = y * blockSize;
-            for (unsigned int x = y; x < numBlocks; ++x, ++i)
+            for (uint32_t x = y; x < numBlocks; ++x, ++i)
             {
                 origin[0] = x * blockSize;
                 mEngine->Update(block);
                 mEngine->Execute(cprogram, numGroups, numGroups, 1);
                 mEngine->CopyGpuToCpu(output);
 
-                for (unsigned int r = 0; r < blockSize; ++r)
+                for (uint32_t r = 0; r < blockSize; ++r)
                 {
-                    int sy = origin[1] + r;
+                    int32_t sy = origin[1] + r;
                     Vector3<double> Q0 = HProject(segment[sy].p[0]);
                     Vector3<double> Q1 = HProject(segment[sy].p[1]);
 
-                    unsigned int cmin = (x != y ? 0 : r + 1);
-                    for (unsigned int c = cmin; c < blockSize; ++c)
+                    uint32_t cmin = (x != y ? 0 : r + 1);
+                    for (uint32_t c = cmin; c < blockSize; ++c)
                     {
-                        int sx = origin[0] + c;
+                        int32_t sx = origin[0] + c;
                         Vector3<double> P0 = HProject(segment[sx].p[0]);
                         Vector3<double> P1 = HProject(segment[sx].p[1]);
 
                         Result result0 = gpuResult[c + blockSize * r];
                         double distance0 = std::sqrt(result0.sqrDistance);
 
-                        RobustQuery query1;
+                        RobustQuery query1{};
                         auto result1 = query1.ComputeRobust(P0, P1, Q0, Q1);
                         double distance1 = result1.distance;
 
@@ -630,13 +630,13 @@ void DistanceSegments3Console::GPUAccuracyTest(bool getClosest, bool testNonpara
 
 void DistanceSegments3Console::GPUPerformanceTest(bool getClosest, bool testNonparallel)
 {
-    unsigned int const numInputs = 4096;
-    unsigned int const blockSize = 1024;
-    unsigned int const numBlocks = numInputs / blockSize;
-    unsigned int const numThreads = 8;
-    unsigned int const numGroups = blockSize / numThreads;
-    unsigned int numQueriesPerCall = numGroups * numGroups * numThreads * numThreads;
-    unsigned int numQueries;
+    uint32_t const numInputs = 4096;
+    uint32_t const blockSize = 1024;
+    uint32_t const numBlocks = numInputs / blockSize;
+    uint32_t const numThreads = 8;
+    uint32_t const numGroups = blockSize / numThreads;
+    uint32_t numQueriesPerCall = numGroups * numGroups * numThreads * numThreads;
+    uint32_t numQueries;
     // The number of queries is:
     //   (sum_{n=1}^{numBlocks} n) * numGroups^2 * numThreads^2
 
@@ -653,14 +653,14 @@ void DistanceSegments3Console::GPUPerformanceTest(bool getClosest, bool testNonp
     mProgramFactory->defines.Set("GET_CLOSEST", (getClosest ? 1 : 0));
     auto cprogram = mProgramFactory->CreateFromFile(
         mEnvironment.GetPath(mEngine->GetShaderName("DistanceSeg3Seg3.cs")));
-    auto cshader = cprogram->GetComputeShader();
+    auto const& cshader = cprogram->GetComputeShader();
 
     auto block = std::make_shared<ConstantBuffer>(2 * sizeof(uint32_t), true);
     cshader->Set("Block", block);
     auto* origin = block->Get<uint32_t>();
 
     auto input = std::make_shared<StructuredBuffer>(numInputs, sizeof(Segment<4, double>));
-    input->SetUsage(Resource::DYNAMIC_UPDATE);
+    input->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     cshader->Set("inSegment", input);
     Segment<4, double>* segment = input->Get<Segment<4, double>>();
 
@@ -680,15 +680,15 @@ void DistanceSegments3Console::GPUPerformanceTest(bool getClosest, bool testNonp
         };
 
         output = std::make_shared<StructuredBuffer>(blockSize * blockSize, sizeof(Result));
-        output->SetUsage(Resource::SHADER_OUTPUT);
-        output->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+        output->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        output->SetCopy(Resource::Copy::STAGING_TO_CPU);
         cshader->Set("outResult", output);
 
         numQueries = 0;
-        for (unsigned int y = 0; y < numBlocks; ++y)
+        for (uint32_t y = 0; y < numBlocks; ++y)
         {
             origin[1] = y * blockSize;
-            for (unsigned int x = y; x < numBlocks; ++x)
+            for (uint32_t x = y; x < numBlocks; ++x)
             {
                 origin[0] = x * blockSize;
                 mEngine->Update(block);
@@ -709,15 +709,15 @@ void DistanceSegments3Console::GPUPerformanceTest(bool getClosest, bool testNonp
         };
 
         output = std::make_shared<StructuredBuffer>(blockSize * blockSize, sizeof(Result));
-        output->SetUsage(Resource::SHADER_OUTPUT);
-        output->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+        output->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        output->SetCopy(Resource::Copy::STAGING_TO_CPU);
         cshader->Set("outResult", output);
 
         numQueries = 0;
-        for (unsigned int y = 0; y < numBlocks; ++y)
+        for (uint32_t y = 0; y < numBlocks; ++y)
         {
             origin[1] = y * blockSize;
-            for (unsigned int x = y; x < numBlocks; ++x)
+            for (uint32_t x = y; x < numBlocks; ++x)
             {
                 origin[0] = x * blockSize;
                 mEngine->Update(block);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -71,13 +71,13 @@ namespace gte
     // or 3, and v[0] through v[numInputs-1] must be initialized.  On output,
     // the vectors v[0] through v[3] form an orthonormal set.
     template <typename Real>
-    Real ComputeOrthogonalComplement(int numInputs, Vector4<Real>* v, bool robust = false)
+    Real ComputeOrthogonalComplement(int32_t numInputs, Vector4<Real>* v, bool robust = false)
     {
         if (numInputs == 1)
         {
-            int maxIndex = 0;
+            int32_t maxIndex = 0;
             Real maxAbsValue = std::fabs(v[0][0]);
-            for (int i = 1; i < 4; ++i)
+            for (int32_t i = 1; i < 4; ++i)
             {
                 Real absValue = std::fabs(v[0][i]);
                 if (absValue > maxAbsValue)
@@ -128,9 +128,9 @@ namespace gte
                 v[0][2] * v[1][3] - v[1][2] * v[0][3]
             };
 
-            int maxIndex = 0;
+            int32_t maxIndex = 0;
             Real maxAbsValue = std::fabs(det[0]);
-            for (int i = 1; i < 6; ++i)
+            for (int32_t i = 1; i < 6; ++i)
             {
                 Real absValue = std::fabs(det[i]);
                 if (absValue > maxAbsValue)

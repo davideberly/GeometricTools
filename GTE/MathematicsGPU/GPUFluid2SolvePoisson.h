@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,8 +21,8 @@ namespace gte
         // Construction.  Solve the Poisson equation where numIterations is the
         // number of Gauss-Seidel steps to use in Execute.
         GPUFluid2SolvePoisson(std::shared_ptr<ProgramFactory> const& factory,
-            int xSize, int ySize, int numXThreads, int numYThreads,
-            std::shared_ptr<ConstantBuffer> const& parameters, int numIterations);
+            int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads,
+            std::shared_ptr<ConstantBuffer> const& parameters, int32_t numIterations);
 
         // Member access.  The texels are (velocity.x, velocity.y, 0, density).
         // The third component is unused in the simulation (a 3D simulation will
@@ -37,14 +37,14 @@ namespace gte
             std::shared_ptr<Texture2> const& divergence);
 
     private:
-        int mNumXGroups, mNumYGroups;
+        int32_t mNumXGroups, mNumYGroups;
         std::shared_ptr<ComputeProgram> mZeroPoisson;
         std::shared_ptr<ComputeProgram> mSolvePoisson;
         std::shared_ptr<ComputeProgram> mWriteXEdge;
         std::shared_ptr<ComputeProgram> mWriteYEdge;
         std::shared_ptr<Texture2> mPoisson0;
         std::shared_ptr<Texture2> mPoisson1;
-        int mNumIterations;
+        int32_t mNumIterations;
 
         // Shader source code as strings.
         static std::string const msGLSLPoissonZeroSource;

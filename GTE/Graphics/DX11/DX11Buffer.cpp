@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Buffer.h>
@@ -19,7 +19,7 @@ DX11Buffer::DX11Buffer(Buffer const* buffer)
 bool DX11Buffer::Update(ID3D11DeviceContext* context)
 {
     Buffer* buffer = GetBuffer();
-    LogAssert(buffer->GetUsage() == Resource::DYNAMIC_UPDATE, "Buffer must be dynamic-update.");
+    LogAssert(buffer->GetUsage() == Resource::Usage::DYNAMIC_UPDATE, "Buffer must be dynamic-update.");
 
     UINT numActiveBytes = buffer->GetNumActiveBytes();
     if (numActiveBytes > 0)
@@ -32,7 +32,7 @@ bool DX11Buffer::Update(ID3D11DeviceContext* context)
         // Copy from CPU memory.
         if (mUpdateMapMode != D3D11_MAP_WRITE_DISCARD)
         {
-            unsigned int offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+            uint32_t offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
             char const* source = buffer->GetData() + offsetInBytes;
             char* target = (char*)sub.pData + offsetInBytes;
             std::memcpy(target, source, numActiveBytes);
@@ -61,7 +61,7 @@ bool DX11Buffer::CopyCpuToGpu(ID3D11DeviceContext* context)
         // Copy from CPU memory to staging buffer.  For buffers, the
         // 'box' members are specified in number of bytes.  The inputs
         // 'DstX', 'DstY', and 'DstZ' are also specified in number of bytes.
-        unsigned int offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+        uint32_t offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
         char const* source = buffer->GetData() + offsetInBytes;
         char* target = reinterpret_cast<char*>(sub.pData) + offsetInBytes;
         std::memcpy(target, source, numActiveBytes);
@@ -84,7 +84,7 @@ bool DX11Buffer::CopyGpuToCpu(ID3D11DeviceContext* context)
     if (numActiveBytes > 0)
     {
         // Copy from GPU memory to staging buffer.
-        unsigned int offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
+        uint32_t offsetInBytes = buffer->GetOffset() * buffer->GetElementSize();
         D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
         context->CopySubresourceRegion(mStaging, 0, offsetInBytes, 0, 0, GetDXBuffer(), 0, &box);
 
@@ -107,7 +107,7 @@ void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* targ
     UINT numActiveBytes = buffer->GetNumActiveBytes();
     if (numActiveBytes > 0)
     {
-        unsigned int offset = buffer->GetOffset();
+        uint32_t offset = buffer->GetOffset();
         if (offset == 0 && numActiveBytes == buffer->GetNumBytes())
         {
             // Copy the entire source to the target.
@@ -116,29 +116,29 @@ void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* targ
         else
         {
             // Copy only a subset of the source to the target.
-            unsigned int offsetInBytes = offset * buffer->GetElementSize();
+            uint32_t offsetInBytes = offset * buffer->GetElementSize();
             D3D11_BOX box = { offsetInBytes, 0, 0, offsetInBytes + numActiveBytes, 1, 1 };
             context->CopySubresourceRegion(target, 0, offsetInBytes, 0, 0, GetDXBuffer(), 0, &box);
         }
     }
 }
 
-bool DX11Buffer::Update(ID3D11DeviceContext*, unsigned int)
+bool DX11Buffer::Update(ID3D11DeviceContext*, uint32_t)
 {
     LogError("Called polymorphically through DX11Resource.");
 }
 
-bool DX11Buffer::CopyCpuToGpu(ID3D11DeviceContext*, unsigned int)
+bool DX11Buffer::CopyCpuToGpu(ID3D11DeviceContext*, uint32_t)
 {
     LogError("Called polymorphically through DX11Resource.");
 }
 
-bool DX11Buffer::CopyGpuToCpu(ID3D11DeviceContext*, unsigned int)
+bool DX11Buffer::CopyGpuToCpu(ID3D11DeviceContext*, uint32_t)
 {
     LogError("Called polymorphically through DX11Resource.");
 }
 
-void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext*, ID3D11Resource*, unsigned int)
+void DX11Buffer::CopyGpuToGpu(ID3D11DeviceContext*, ID3D11Resource*, uint32_t)
 {
     LogError("Called polymorphically through DX11Resource.");
 }
@@ -149,7 +149,7 @@ void DX11Buffer::CreateStaging(ID3D11Device* device, D3D11_BUFFER_DESC const& bf
     desc.ByteWidth = bf.ByteWidth;
     desc.Usage = D3D11_USAGE_STAGING;
     desc.BindFlags = D3D11_BIND_NONE;
-    desc.CPUAccessFlags = msStagingAccess[GetBuffer()->GetCopyType()];
+    desc.CPUAccessFlags = msStagingAccess[GetBuffer()->GetCopy()];
     desc.MiscFlags = D3D11_RESOURCE_MISC_NONE;
     desc.StructureByteStride = 0;
 

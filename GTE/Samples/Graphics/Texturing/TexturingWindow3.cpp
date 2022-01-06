@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "TexturingWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -83,8 +83,8 @@ void TexturingWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
@@ -104,7 +104,7 @@ void TexturingWindow3::CreateScene()
     // bilinearly filtered and the texture coordinates are clamped to [0,1]^2.
     auto myTexture = WICFileIO::Load(mEnvironment.GetPath("StoneWall.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, myTexture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     // Create the geometric object for drawing.  Translate it so that its
     // center of mass is at the origin.  This supports virtual trackball
@@ -118,7 +118,7 @@ void TexturingWindow3::CreateScene()
 #if defined(SAVE_RENDERING_TO_DISK)
     mTarget = std::make_shared<DrawTarget>(1, DF_R8G8B8A8_UNORM, mXSize,
         mYSize);
-    mTarget->GetRTTexture(0)->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mTarget->GetRTTexture(0)->SetCopy(Resource::Copy::STAGING_TO_CPU);
 #endif
 
     mTrackBall.Attach(mSquare);

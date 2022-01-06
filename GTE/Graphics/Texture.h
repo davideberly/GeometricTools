@@ -1,15 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DataFormat.h>
 #include <Graphics/Resource.h>
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <vector>
 
@@ -21,28 +22,28 @@ namespace gte
         // Abstract base class for single textures and for texture arrays.
         // All items in a texture array have the same format, number of
         // dimensions, dimension values and mipmap status.
-        Texture(unsigned int numItems, DFType format, unsigned int numDimensions,
-            unsigned int dim0, unsigned int dim1, unsigned int dim2,
+        Texture(uint32_t numItems, uint32_t format, uint32_t numDimensions,
+            uint32_t dim0, uint32_t dim1, uint32_t dim2,
             bool hasMipmaps, bool createStorage);
 
     public:
         // Member access.
-        inline unsigned int GetNumItems() const
+        inline uint32_t GetNumItems() const
         {
             return mNumItems;
         }
 
-        inline DFType GetFormat() const
+        inline uint32_t GetFormat() const
         {
             return mFormat;
         }
 
-        inline unsigned int GetNumDimensions() const
+        inline uint32_t GetNumDimensions() const
         {
             return mNumDimensions;
         }
 
-        inline unsigned int GetDimension(int i) const
+        inline uint32_t GetDimension(int32_t i) const
         {
             return mLDimension[0][i];
         }
@@ -50,11 +51,11 @@ namespace gte
         // Subresource information.
         struct Subresource
         {
-            unsigned int item;
-            unsigned int level;
+            uint32_t item;
+            uint32_t level;
             char* data;
-            unsigned int rowPitch;
-            unsigned int slicePitch;
+            uint32_t rowPitch;
+            uint32_t slicePitch;
         };
 
         // Mipmap information.
@@ -65,62 +66,62 @@ namespace gte
             return mHasMipmaps;
         }
 
-        inline unsigned int GetNumLevels() const
+        inline uint32_t GetNumLevels() const
         {
             return mNumLevels;
         }
 
-        inline unsigned int GetDimensionFor(unsigned int level, int i) const
+        inline uint32_t GetDimensionFor(uint32_t level, int32_t i) const
         {
             return mLDimension[level][i];
         }
 
-        inline unsigned int GetNumElementsFor(unsigned int level) const
+        inline uint32_t GetNumElementsFor(uint32_t level) const
         {
             return mLNumBytes[level] / mElementSize;
         }
 
-        inline unsigned int GetNumBytesFor(unsigned int level) const
+        inline uint32_t GetNumBytesFor(uint32_t level) const
         {
             return mLNumBytes[level];
         }
 
-        inline unsigned int GetOffsetFor(unsigned int item, unsigned int level) const
+        inline uint32_t GetOffsetFor(uint32_t item, uint32_t level) const
         {
             return mLOffset[item][level];
         }
 
-        inline char const* GetDataFor(unsigned int item, unsigned int level) const
+        inline char const* GetDataFor(uint32_t item, uint32_t level) const
         {
             return mData ? (mData + mLOffset[item][level]) : nullptr;
         }
 
-        inline char* GetDataFor(unsigned int item, unsigned int level)
+        inline char* GetDataFor(uint32_t item, uint32_t level)
         {
             return mData ? (mData + mLOffset[item][level]) : nullptr;
         }
 
         template <typename T>
-        inline T const* GetFor(unsigned int item, unsigned int level) const
+        inline T const* GetFor(uint32_t item, uint32_t level) const
         {
             return reinterpret_cast<T const*>(GetDataFor(item, level));
         }
 
         template <typename T>
-        inline T* GetFor(unsigned int item, unsigned int level)
+        inline T* GetFor(uint32_t item, uint32_t level)
         {
             return reinterpret_cast<T*>(GetDataFor(item, level));
         }
 
         // Subresource indexing:  index = numLevels*item + level
-        inline unsigned int GetNumSubresources() const
+        inline uint32_t GetNumSubresources() const
         {
             return mNumItems * mNumLevels;
         }
 
-        unsigned int GetIndex(unsigned int item, unsigned int level) const;
+        uint32_t GetIndex(uint32_t item, uint32_t level) const;
 
-        Subresource GetSubresource(unsigned int index) const;
+        Subresource GetSubresource(uint32_t index) const;
 
         // Request that the GPU compute mipmap levels when the base-level texture
         // data is modified.  The AutogenerateMipmaps call should be made before
@@ -136,21 +137,21 @@ namespace gte
     protected:
         // Support for computing the numElements parameter for the Resource
         // constructor.  This is necessary when mipmaps are requested.
-        static unsigned int GetTotalElements(unsigned int numItems,
-            unsigned int dim0, unsigned int dim1, unsigned int dim2,
+        static uint32_t GetTotalElements(uint32_t numItems,
+            uint32_t dim0, uint32_t dim1, uint32_t dim2,
             bool hasMipmaps);
 
-        unsigned int mNumItems;
-        DFType mFormat;
-        unsigned int mNumDimensions;
-        unsigned int mNumLevels;
-        std::array<std::array<unsigned int, 3>, MAX_MIPMAP_LEVELS> mLDimension;
-        std::array<unsigned int, MAX_MIPMAP_LEVELS> mLNumBytes;
-        std::vector<std::array<unsigned int, MAX_MIPMAP_LEVELS>> mLOffset;
+        uint32_t mNumItems;
+        uint32_t mFormat;
+        uint32_t mNumDimensions;
+        uint32_t mNumLevels;
+        std::array<std::array<uint32_t, 3>, MAX_MIPMAP_LEVELS> mLDimension;
+        std::array<uint32_t, MAX_MIPMAP_LEVELS> mLNumBytes;
+        std::vector<std::array<uint32_t, MAX_MIPMAP_LEVELS>> mLOffset;
         bool mHasMipmaps;
         bool mAutogenerateMipmaps;
     };
 
     typedef std::function<void(std::shared_ptr<Texture> const&)> TextureUpdater;
-    typedef std::function<void(std::shared_ptr<Texture> const&, unsigned int)> TextureLevelUpdater;
+    typedef std::function<void(std::shared_ptr<Texture> const&, uint32_t)> TextureLevelUpdater;
 }

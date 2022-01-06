@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,8 +21,8 @@ namespace gte
         // Construction and destruction.  The default constructor does not
         // initialize any members.  It exists to support the construction
         // of the const static PickRecord in the Picker class.
-        ~PickRecord() = default;
         PickRecord();
+        ~PickRecord() = default;
 
         // The object for which some primitive satisfies the picking criteria.
         // The vertexIndex[] are relative to the vertex buffer array of the
@@ -32,8 +32,8 @@ namespace gte
         // index is valid.  The invalid indices are set to -1.
         std::shared_ptr<Visual> visual;
         IPType primitiveType;
-        int primitiveIndex;
-        int vertexIndex[3];
+        int32_t primitiveIndex;
+        int32_t vertexIndex[3];
 
         // The linear component is parameterized by P + t*D.  The t-value
         // corresponds to the point of intersection when the primitive is a

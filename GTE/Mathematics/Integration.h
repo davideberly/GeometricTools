@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,12 +19,12 @@ namespace gte
     public:
         // A simple algorithm, but slow to converge as the number of samples
         // is increased.  The 'numSamples' needs to be two or larger.
-        static Real TrapezoidRule(int numSamples, Real a, Real b,
+        static Real TrapezoidRule(int32_t numSamples, Real a, Real b,
             std::function<Real(Real)> const& integrand)
         {
             Real h = (b - a) / ((Real)numSamples - (Real)1);
             Real result = (Real)0.5 * (integrand(a) + integrand(b));
-            for (int i = 1; i <= numSamples - 2; ++i)
+            for (int32_t i = 1; i <= numSamples - 2; ++i)
             {
                 result += integrand(a + i * h);
             }
@@ -35,18 +35,18 @@ namespace gte
         // The trapezoid rule is used to generate initial estimates, but then
         // Richardson extrapolation is used to improve the estimates.  This is
         // preferred over TrapezoidRule.  The 'order' must be positive.
-        static Real Romberg(int order, Real a, Real b,
+        static Real Romberg(int32_t order, Real a, Real b,
             std::function<Real(Real)> const& integrand)
         {
             Real const half = (Real)0.5;
             std::vector<std::array<Real, 2>> rom(order);
             Real h = b - a;
             rom[0][0] = half * h * (integrand(a) + integrand(b));
-            for (int i0 = 2, p0 = 1; i0 <= order; ++i0, p0 *= 2, h *= half)
+            for (int32_t i0 = 2, p0 = 1; i0 <= order; ++i0, p0 *= 2, h *= half)
             {
                 // Approximations via the trapezoid rule.
                 Real sum = (Real)0;
-                int i1;
+                int32_t i1;
                 for (i1 = 1; i1 <= p0; ++i1)
                 {
                     sum += integrand(a + h * (i1 - half));
@@ -54,7 +54,7 @@ namespace gte
 
                 // Richardson extrapolation.
                 rom[0][1] = half * (rom[0][0] + h * sum);
-                for (int i2 = 1, i2m1 = 0, p2 = 4; i2 < i0; ++i2, ++i2m1, p2 *= 4)
+                for (int32_t i2 = 1, i2m1 = 0, p2 = 4; i2 < i0; ++i2, ++i2m1, p2 *= 4)
                 {
                     rom[i2][1] = (p2 * rom[i2m1][1] - rom[i2m1][0]) / (static_cast<size_t>(p2) - 1);
                 }
@@ -86,7 +86,7 @@ namespace gte
         // computing the coefficients c[i] for a specified degree.  The
         // 'degree' must be two or larger.
 
-        static void ComputeQuadratureInfo(int degree, std::vector<Real>& roots,
+        static void ComputeQuadratureInfo(int32_t degree, std::vector<Real>& roots,
             std::vector<Real>& coefficients)
         {
             Real const zero = (Real)0;
@@ -102,14 +102,14 @@ namespace gte
             poly[1][0] = zero;
             poly[1][1] = one;
 
-            for (int n = 2, nm1 = 1, nm2 = 0, np1 = 3; n <= degree; ++n, ++nm1, ++nm2, ++np1)
+            for (int32_t n = 2, nm1 = 1, nm2 = 0, np1 = 3; n <= degree; ++n, ++nm1, ++nm2, ++np1)
             {
                 Real mult0 = (Real)nm1 / (Real)n;
                 Real mult1 = ((Real)2 * (Real)n - (Real)1) / (Real)n;
 
                 poly[n].resize(np1);
                 poly[n][0] = -mult0 * poly[nm2][0];
-                for (int i = 1, im1 = 0; i <= nm2; ++i, ++im1)
+                for (int32_t i = 1, im1 = 0; i <= nm2; ++i, ++im1)
                 {
                     poly[n][i] = mult1 * poly[nm1][im1] - mult0 * poly[nm2][i];
                 }
@@ -154,21 +154,21 @@ namespace gte
 
                 struct Info
                 {
-                    int numBits;
+                    int32_t numBits;
                     std::array<Real, 2> product;
                 };
 
-                int numElements = (1 << static_cast<unsigned int>(n - 1));
+                int32_t numElements = (1 << static_cast<uint32_t>(n - 1));
                 std::vector<Info> info(numElements);
                 info[0].numBits = 0;
                 info[0].product[0] = one;
                 info[0].product[1] = one;
-                for (int ipow = 1, r = 0; ipow < numElements; ipow <<= 1, ++r)
+                for (int32_t ipow = 1, r = 0; ipow < numElements; ipow <<= 1, ++r)
                 {
                     info[ipow].numBits = 1;
                     info[ipow].product[0] = -one - subroots[r];
                     info[ipow].product[1] = +one - subroots[r];
-                    for (int m = 1, j = ipow + 1; m < ipow; ++m, ++j)
+                    for (int32_t m = 1, j = ipow + 1; m < ipow; ++m, ++j)
                     {
                         info[j].numBits = info[m].numBits + 1;
                         info[j].product[0] =

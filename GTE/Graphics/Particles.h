@@ -1,17 +1,18 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Visual.h>
+#include <cstdint>
 
 // Expose this preprocessor symbol if you want Particles::IsValid to throw
 // exceptions when the format is invalid.  The default for an invalid format
-// is to return std::numeric_limits<unsigned int>::max().
+// is to return std::numeric_limits<uint32_t>::max().
 //
 //#define GTE_THROW_ON_PARTICLES_INVALID
 
@@ -31,9 +32,10 @@ namespace gte
         // The positionSize elements are (x,y,z,size), where the first three
         // components are the particle center and the last component
         // determines the particle billboard size.
-        virtual ~Particles() = default;
         Particles(std::vector<Vector4<float>> const& positionSize, float sizeAdjust,
             VertexFormat const& vformat);
+
+        virtual ~Particles() = default;
 
         // Member access.
         inline size_t GetNumParticles() const
@@ -60,9 +62,9 @@ namespace gte
 
         // Allow the application to specify fewer than the maximum number of
         // vertices to draw.
-        void SetNumActive(unsigned int numActive);
+        void SetNumActive(uint32_t numActive);
 
-        inline unsigned int GetNumActive() const
+        inline uint32_t GetNumActive() const
         {
             return mNumActive;
         }
@@ -76,10 +78,10 @@ namespace gte
         void GenerateParticles(std::shared_ptr<Camera> const& camera);
 
     protected:
-        unsigned int IsValid(VertexFormat const& vformat) const;
+        uint32_t IsValid(VertexFormat const& vformat) const;
 
         std::vector<Vector4<float>> mPositionSize;
         float mSizeAdjust;
-        unsigned int mNumActive;
+        uint32_t mNumActive;
     };
 }

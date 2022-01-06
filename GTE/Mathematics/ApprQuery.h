@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -33,20 +33,20 @@ namespace gte
         // indexed fitting function for the specific derived class.
         virtual bool FitIndexed(
             size_t numObservations, ObservationType const* observations,
-            size_t numIndices, int const* indices) = 0;
+            size_t numIndices, int32_t const* indices) = 0;
 
         bool ValidIndices(
             size_t numObservations, ObservationType const* observations,
-            size_t numIndices, int const* indices)
+            size_t numIndices, int32_t const* indices)
         {
 #if defined(GTE_APPR_QUERY_VALIDATE_INDICES)
             if (observations && indices &&
                 GetMinimumRequired() <= numIndices && numIndices <= numObservations)
             {
-                int const* currentIndex = indices;
+                int32_t const* currentIndex = indices;
                 for (size_t i = 0; i < numIndices; ++i)
                 {
-                    if (*currentIndex++ >= static_cast<int>(numObservations))
+                    if (*currentIndex++ >= static_cast<int32_t>(numObservations))
                     {
                         return false;
                     }
@@ -68,7 +68,7 @@ namespace gte
         // raw pointers.
         bool Fit(size_t numObservations, ObservationType const* observations)
         {
-            std::vector<int> indices(numObservations);
+            std::vector<int32_t> indices(numObservations);
             std::iota(indices.begin(), indices.end(), 0);
             return FitIndexed(numObservations, observations, indices.size(), indices.data());
         }
@@ -77,7 +77,7 @@ namespace gte
         // std::vector.
         bool Fit(std::vector<ObservationType> const& observations)
         {
-            std::vector<int> indices(observations.size());
+            std::vector<int32_t> indices(observations.size());
             std::iota(indices.begin(), indices.end(), 0);
             return FitIndexed(observations.size(), observations.data(), indices.size(), indices.data());
         }
@@ -89,8 +89,8 @@ namespace gte
             if (imin <= imax)
             {
                 size_t numIndices = static_cast<size_t>(imax - imin + 1);
-                std::vector<int> indices(numIndices);
-                std::iota(indices.begin(), indices.end(), static_cast<int>(imin));
+                std::vector<int32_t> indices(numIndices);
+                std::iota(indices.begin(), indices.end(), static_cast<int32_t>(imin));
                 return FitIndexed(observations.size(), observations.data(), indices.size(), indices.data());
             }
             else
@@ -101,7 +101,7 @@ namespace gte
 
         // Estimate the model parameters for an indexed subset of observations.
         virtual bool Fit(std::vector<ObservationType> const& observations,
-            std::vector<int> const& indices)
+            std::vector<int32_t> const& indices)
         {
             return FitIndexed(observations.size(), observations.data(), indices.size(), indices.data());
         }
@@ -110,10 +110,10 @@ namespace gte
         // specified by the indices and the number of indices that is possibly
         // smaller than indices.size().
         bool Fit(std::vector<ObservationType> const& observations,
-            std::vector<int> const& indices, size_t numIndices)
+            std::vector<int32_t> const& indices, size_t numIndices)
         {
             size_t imax = std::min(numIndices, indices.size());
-            std::vector<int> localindices(imax);
+            std::vector<int32_t> localindices(imax);
             std::copy(indices.begin(), indices.begin() + imax, localindices.begin());
             return FitIndexed(observations.size(), observations.data(), localindices.size(), localindices.data());
         }
@@ -136,7 +136,7 @@ namespace gte
 
         static bool RANSAC(ApprQuery& candidateModel, std::vector<ObservationType> const& observations,
             size_t numRequiredForGoodFit, Real maxErrorForGoodFit, size_t numIterations,
-            std::vector<int>& bestConsensus, ApprQuery& bestModel)
+            std::vector<int32_t>& bestConsensus, ApprQuery& bestModel)
         {
             size_t const numObservations = observations.size();
             size_t const minRequired = candidateModel.GetMinimumRequired();
@@ -153,7 +153,7 @@ namespace gte
             // model and are added to the consensus set when they fit. All
             // the index manipulation is done in place. Initially, the
             // candidates are the identity permutation.
-            std::vector<int> candidates(numObservations);
+            std::vector<int32_t> candidates(numObservations);
             std::iota(candidates.begin(), candidates.end(), 0);
 
             if (numObservations == minRequired)

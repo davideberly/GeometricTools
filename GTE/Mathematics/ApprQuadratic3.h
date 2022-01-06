@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.07.12
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -48,11 +48,11 @@ namespace gte
     class ApprQuadratic3
     {
     public:
-        Real operator()(int numPoints, Vector3<Real> const* points,
+        Real operator()(int32_t numPoints, Vector3<Real> const* points,
             std::array<Real, 10>& coefficients)
         {
             Matrix<10, 10, Real> M{};  // constructor sets M to zero
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
                 Real y = points[i][1];
@@ -177,17 +177,17 @@ namespace gte
             M(6, 8) = M(5, 9);  // xyz2
             M(8, 8) = M(7, 9);  // y2z2
 
-            for (int row = 0; row < 10; ++row)
+            for (int32_t row = 0; row < 10; ++row)
             {
-                for (int col = 0; col < row; ++col)
+                for (int32_t col = 0; col < row; ++col)
                 {
                     M(row, col) = M(col, row);
                 }
             }
 
-            for (int row = 0; row < 10; ++row)
+            for (int32_t row = 0; row < 10; ++row)
             {
-                for (int col = 0; col < 10; ++col)
+                for (int32_t col = 0; col < 10; ++col)
                 {
                     M(row, col) /= rNumPoints;
                 }
@@ -221,10 +221,10 @@ namespace gte
     class ApprQuadraticSphere3
     {
     public:
-        Real operator()(int numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
+        Real operator()(int32_t numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
         {
             Matrix<5, 5, Real> M{};  // constructor sets M to zero
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Real x = points[i][0];
                 Real y = points[i][1];
@@ -265,17 +265,17 @@ namespace gte
             Real const rNumPoints = static_cast<Real>(numPoints);
             M(0, 0) = rNumPoints;
 
-            for (int row = 0; row < 5; ++row)
+            for (int32_t row = 0; row < 5; ++row)
             {
-                for (int col = 0; col < row; ++col)
+                for (int32_t col = 0; col < row; ++col)
                 {
                     M(row, col) = M(col, row);
                 }
             }
 
-            for (int row = 0; row < 5; ++row)
+            for (int32_t row = 0; row < 5; ++row)
             {
-                for (int col = 0; col < 5; ++col)
+                for (int32_t col = 0; col < 5; ++col)
                 {
                     M(row, col) /= rNumPoints;
                 }
@@ -289,7 +289,7 @@ namespace gte
             es.GetEigenvector(0, &evector[0]);
 
             std::array<Real, 4> coefficients{};
-            for (int row = 0; row < 4; ++row)
+            for (int32_t row = 0; row < 4; ++row)
             {
                 coefficients[row] = evector[row] / evector[4];
             }

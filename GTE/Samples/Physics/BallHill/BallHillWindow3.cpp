@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BallHillWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -30,6 +30,9 @@ BallHillWindow3::BallHillWindow3(Parameters& parameters)
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 100.0f, 0.001f, 0.001f,
         { 4.0f, 0.0f, 2.0f }, { -cs, 0.0f, -sn }, { -sn, 0.0f, cs });
     mPVWMatrices.Update();
+
+    mLastPhysicsTime = mPhysicsTimer.GetSeconds();
+    mCurrPhysicsTime = 0.0;
 }
 
 void BallHillWindow3::OnIdle()
@@ -42,14 +45,21 @@ void BallHillWindow3::OnIdle()
     }
 
 #if !defined(BALL_HILL_SINGLE_STEP)
-    PhysicsTick();
+    // Execute the physics system at 60 frames per second.
+    mCurrPhysicsTime = mPhysicsTimer.GetSeconds();
+    double deltaTime = mCurrPhysicsTime - mLastPhysicsTime;
+    if (deltaTime >= 1.0 / 60.0)
+    {
+        PhysicsTick();
+        mLastPhysicsTime = mCurrPhysicsTime;
+    }
 #endif
     GraphicsTick();
 
     mTimer.UpdateFrameCount();
 }
 
-bool BallHillWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BallHillWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
 #if defined(BALL_HILL_SINGLE_STEP)
     if (key == 'g' || key == 'G')
@@ -109,8 +119,8 @@ void BallHillWindow3::CreateScene()
 {
     InitializeModule();
 
-    mVFormat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    mVFormat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     mMeshFactory.SetVertexFormat(mVFormat);
 
     CreateGround();
@@ -124,10 +134,10 @@ void BallHillWindow3::CreateGround()
 {
     // Create the ground.  Change the texture repeat pattern.
     mGround = mMeshFactory.CreateRectangle(2, 2, 32.0f, 32.0f);
-    auto vbuffer = mGround->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mGround->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].tcoord *= 8.0f;
     }
@@ -137,7 +147,7 @@ void BallHillWindow3::CreateGround()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
     mGround->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mGround->worldTransform, effect->GetPVWMatrixConstant());
@@ -149,10 +159,10 @@ void BallHillWindow3::CreateHill()
     // Create the hill.  Adjust the disk vertices to form an elliptical
     // paraboloid for the hill.  Change the texture repeat pattern.
     mHill = mMeshFactory.CreateDisk(32, 32, 2.0f);
-    auto vbuffer = mHill->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mHill->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].position[2] = mModule.GetHeight(vertices[i].position[0], vertices[i].position[1]);
         vertices[i].tcoord *= 8.0f;
@@ -163,7 +173,7 @@ void BallHillWindow3::CreateHill()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
     mHill->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mHill->worldTransform, effect->GetPVWMatrixConstant());
@@ -186,7 +196,7 @@ void BallHillWindow3::CreateBall()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
     mBall->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mBall->worldTransform, effect->GetPVWMatrixConstant());
@@ -198,10 +208,10 @@ void BallHillWindow3::CreatePath()
     // Create the vertex buffer for the path.  All points are initially at the
     // origin but will be dynamically updated.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    unsigned int const numVertices = 1024;
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    uint32_t const numVertices = 1024;
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     vbuffer->SetNumActiveElements(0);
     std::memset(vbuffer->GetData(), 0, vbuffer->GetNumBytes());
 
@@ -250,9 +260,9 @@ void BallHillWindow3::PhysicsTick()
 
     // Draw only the active quantity of path points for the initial portion
     // of the simulation.  Once all points are activated, then all are drawn.
-    auto vbuffer = mPath->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
-    unsigned int numActive = vbuffer->GetNumActiveElements();
+    auto const& vbuffer = mPath->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
+    uint32_t numActive = vbuffer->GetNumActiveElements();
     if (numActive < numVertices)
     {
         vbuffer->SetNumActiveElements(++numActive);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BSplineCurveReductionWindow3.h"
 #include <Graphics/ConstantColorEffect.h>
@@ -73,10 +73,10 @@ void BSplineCurveReductionWindow3::CreateScene()
     // Load the control points for the B-spline curve.
     std::string path = mEnvironment.GetPath("ControlPoints.txt");
     std::ifstream inFile(path);
-    int numInControls;
+    int32_t numInControls;
     inFile >> numInControls;
     std::vector<Vector3<double>> inControls(numInControls);
-    for (int i = 0; i < numInControls; ++i)
+    for (int32_t i = 0; i < numInControls; ++i)
     {
         inFile >> inControls[i][0];
         inFile >> inControls[i][1];
@@ -86,7 +86,7 @@ void BSplineCurveReductionWindow3::CreateScene()
     inFile.close();
 
     // Create the B-spline curve.
-    int const degree = 3;
+    int32_t const degree = 3;
     BasisFunctionInput<double> inBasis(numInControls, degree);
     BSplineCurve<3, double> original(inBasis, inControls.data());
 
@@ -95,14 +95,15 @@ void BSplineCurveReductionWindow3::CreateScene()
     double fraction = 0.1;
     BSplineReduction<3, double> reducer;
     reducer(inControls, degree, fraction, outControls);
-    int numOutControls = static_cast<int>(outControls.size());
+    int32_t numOutControls = static_cast<int32_t>(outControls.size());
     BasisFunctionInput<double> outBasis(numOutControls, degree);
     BSplineCurve<3, double> reduced(outBasis, outControls.data());
-    for (int i = 0; i < numOutControls; ++i)
+    for (int32_t i = 0; i < numOutControls; ++i)
     {
         daverage += outControls[i];
     }
-    daverage /= static_cast<double>(numInControls + numOutControls);
+    int32_t totalControls = numInControls + numOutControls;
+    daverage /= static_cast<double>(totalControls);
     Vector3<float> average
     {
         static_cast<float>(daverage[0]),
@@ -112,18 +113,18 @@ void BSplineCurveReductionWindow3::CreateScene()
 
     // The vertex format is shared by the Visual objects for both curves.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     // Create the polyline approximation to visualize the original curve.
-    unsigned int numVertices = static_cast<unsigned int>(numInControls);
+    uint32_t numVertices = static_cast<uint32_t>(numInControls);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         double t = i / static_cast<double>(numVertices);
         Vector3<double> pos;
         original.Evaluate(t, 0, &pos);
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[i][j] = static_cast<float>(pos[j]);
         }
@@ -140,15 +141,15 @@ void BSplineCurveReductionWindow3::CreateScene()
     mTrackBall.Attach(mOriginal);
 
     // Create the polyline approximation to visualize the reduced curve.
-    numVertices = static_cast<unsigned int>(outControls.size());
+    numVertices = static_cast<uint32_t>(outControls.size());
     vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         double t = i / static_cast<double>(numVertices);
         Vector3<double> pos;
         reduced.Evaluate(t, 0, &pos);
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[i][j] = static_cast<float>(pos[j]);
         }

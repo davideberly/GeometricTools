@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,7 +21,7 @@ namespace gte
     // length.  The angles are in radians.  The Euler angles are in world
     // coordinates; we have not yet added support for body coordinates.
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class Rotation
     {
     public:
@@ -137,7 +137,7 @@ namespace gte
             return mAxisAngle;
         }
 
-        EulerAngles<Real> const& operator()(int i0, int i1, int i2) const
+        EulerAngles<Real> const& operator()(int32_t i0, int32_t i1, int32_t i2) const
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
 
@@ -533,7 +533,7 @@ namespace gte
 #if defined(GTE_USE_MAT_VEC)
                     // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
                     // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
-                    int parity = (((e.axis[2] | (e.axis[1] << 2)) >> e.axis[0]) & 1);
+                    int32_t parity = (((e.axis[2] | (e.axis[1] << 2)) >> e.axis[0]) & 1);
                     Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
 
                     if (r(e.axis[2], e.axis[0]) < (Real)1)
@@ -567,7 +567,7 @@ namespace gte
 #else
                     // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
                     // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
-                    int parity = (((e.axis[0] | (e.axis[1] << 2)) >> e.axis[2]) & 1);
+                    int32_t parity = (((e.axis[0] | (e.axis[1] << 2)) >> e.axis[2]) & 1);
                     Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
 
                     if (r(e.axis[0], e.axis[2]) < (Real)1)
@@ -605,8 +605,8 @@ namespace gte
 #if defined(GTE_USE_MAT_VEC)
                     // Map (0,2,0), (1,0,1), and (2,1,2) to +1.
                     // Map (0,1,0), (1,2,1), and (2,0,2) to -1.
-                    int b0 = 3 - e.axis[1] - e.axis[2];
-                    int parity = (((b0 | (e.axis[1] << 2)) >> e.axis[2]) & 1);
+                    int32_t b0 = 3 - e.axis[1] - e.axis[2];
+                    int32_t parity = (((b0 | (e.axis[1] << 2)) >> e.axis[2]) & 1);
                     Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
 
                     if (r(e.axis[2], e.axis[2]) < (Real)1)
@@ -640,8 +640,8 @@ namespace gte
 #else
                     // Map (0,2,0), (1,0,1), and (2,1,2) to -1.
                     // Map (0,1,0), (1,2,1), and (2,0,2) to +1.
-                    int b2 = 3 - e.axis[0] - e.axis[1];
-                    int parity = (((b2 | (e.axis[1] << 2)) >> e.axis[0]) & 1);
+                    int32_t b2 = 3 - e.axis[0] - e.axis[1];
+                    int32_t parity = (((b2 | (e.axis[1] << 2)) >> e.axis[0]) & 1);
                     Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
 
                     if (r(e.axis[0], e.axis[0]) < (Real)1)

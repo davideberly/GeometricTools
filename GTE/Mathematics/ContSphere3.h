@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -16,17 +16,17 @@ namespace gte
     // Compute the smallest bounding sphere whose center is the average of
     // the input points.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
+    bool GetContainer(int32_t numPoints, Vector3<Real> const* points, Sphere3<Real>& sphere)
     {
         sphere.center = points[0];
-        for (int i = 1; i < numPoints; ++i)
+        for (int32_t i = 1; i < numPoints; ++i)
         {
             sphere.center += points[i];
         }
         sphere.center /= (Real)numPoints;
 
         sphere.radius = (Real)0;
-        for (int i = 0; i < numPoints; ++i)
+        for (int32_t i = 0; i < numPoints; ++i)
         {
             Vector3<Real> diff = points[i] - sphere.center;
             Real radiusSqr = Dot(diff, diff);
@@ -43,7 +43,7 @@ namespace gte
     template <typename Real>
     bool GetContainer(std::vector<Vector3<Real>> const& points, Sphere3<Real>& sphere)
     {
-        return GetContainer(static_cast<int>(points.size()), points.data(), sphere);
+        return GetContainer(static_cast<int32_t>(points.size()), points.data(), sphere);
     }
 
     // Test for containment of a point inside a sphere.

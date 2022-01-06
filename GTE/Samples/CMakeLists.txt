@@ -3,8 +3,8 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-set(GTE_VERSION_MAJOR 5)
-set(GTE_VERSION_MINOR 15)
+set(GTE_VERSION_MAJOR 6)
+set(GTE_VERSION_MINOR 0)
 
 project(Samples VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 

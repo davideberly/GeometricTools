@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace gte
     {
     public:
         // Initialize the model parameters to zero.
-        ApprPolynomial2(int degree)
+        ApprPolynomial2(int32_t degree)
             :
             mDegree(degree),
             mSize(degree + 1),
@@ -54,15 +54,15 @@ namespace gte
         // functions that you can call.
         virtual bool FitIndexed(
             size_t numObservations, std::array<Real, 2> const* observations,
-            size_t numIndices, int const* indices) override
+            size_t numIndices, int32_t const* indices) override
         {
             if (this->ValidIndices(numObservations, observations, numIndices, indices))
             {
-                int s, i0, i1;
+                int32_t s, i0, i1;
 
                 // Compute the powers of x.
-                int numSamples = static_cast<int>(numIndices);
-                int twoDegree = 2 * mDegree;
+                int32_t numSamples = static_cast<int32_t>(numIndices);
+                int32_t twoDegree = 2 * mDegree;
                 Array2<Real> xPower(static_cast<size_t>(twoDegree) + 1, numSamples);
                 for (s = 0; s < numSamples; ++s)
                 {
@@ -107,7 +107,7 @@ namespace gte
                 // Solve for the polynomial coefficients.
                 GVector<Real> coefficients = Inverse(A) * B;
                 bool hasNonzero = false;
-                for (int i = 0; i < mSize; ++i)
+                for (int32_t i = 0; i < mSize; ++i)
                 {
                     mParameters[i] = coefficients[i];
                     if (coefficients[i] != (Real)0)
@@ -161,7 +161,7 @@ namespace gte
 
         Real Evaluate(Real x) const
         {
-            int i = mDegree;
+            int32_t i = mDegree;
             Real w = mParameters[i];
             while (--i >= 0)
             {
@@ -171,7 +171,7 @@ namespace gte
         }
 
     private:
-        int mDegree, mSize;
+        int32_t mDegree, mSize;
         std::array<Real, 2> mXDomain;
         std::vector<Real> mParameters;
     };

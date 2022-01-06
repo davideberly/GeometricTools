@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.7.2021.12.20
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/WICFileIONative.h>
@@ -136,7 +136,7 @@ void WICFileIONative::Load(std::string const& filename, TextureCreator const& cr
 }
 
 void WICFileIONative::Load(void* module, std::string const& rtype,
-    int resource, uint32_t& outFormat, size_t& outWidth, size_t& outHeight,
+    int32_t resource, uint32_t& outFormat, size_t& outWidth, size_t& outHeight,
     std::vector<uint8_t>& outTexels)
 {
     auto const* bytesPerTexel = msBytesPerTexel.data();
@@ -155,7 +155,7 @@ void WICFileIONative::Load(void* module, std::string const& rtype,
 }
 
 void WICFileIONative::Load(void* module, std::string const& rtype,
-    int resource, TextureCreator const& creator)
+    int32_t resource, TextureCreator const& creator)
 {
     // Start COM and create WIC.
     ComInitializer comInitializer;

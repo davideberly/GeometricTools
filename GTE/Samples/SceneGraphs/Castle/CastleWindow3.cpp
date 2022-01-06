@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CastleWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -24,13 +24,13 @@ CastleWindow3::CastleWindow3(Parameters& parameters)
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     // Create the scene and camera rig.
     CreateScene();
@@ -82,7 +82,7 @@ void CastleWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool CastleWindow3::OnCharPress(unsigned char key, int x, int y)
+bool CastleWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -129,30 +129,31 @@ bool CastleWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool CastleWindow3::OnKeyDown(int key, int, int)
+bool CastleWindow3::OnKeyDown(int32_t key, int32_t, int32_t)
 {
     return mFixedHeightRig.PushMotion(key);
 }
 
-bool CastleWindow3::OnKeyUp(int key, int, int)
+bool CastleWindow3::OnKeyUp(int32_t key, int32_t, int32_t)
 {
     return mFixedHeightRig.PopMotion(key);
 }
 
-bool CastleWindow3::OnMouseClick(MouseButton button, MouseState state, int x, int y, unsigned int)
+bool CastleWindow3::OnMouseClick(MouseButton button, MouseState state, int32_t x, int32_t y, uint32_t)
 {
     if (button == MOUSE_LEFT && state == MOUSE_DOWN)
     {
         // Do a picking operation.  Reflect y to obtain right-handed window
         // coordinates.
         y = mYSize - 1 - y;
-        int viewX, viewY, viewW, viewH;
+        int32_t viewX, viewY, viewW, viewH;
         mEngine->GetViewport(viewX, viewY, viewW, viewH);
         Vector4<float> origin, direction;
         if (mCamera->GetPickLine(viewX, viewY, viewW, viewH, x, y, origin, direction))
         {
             // Use a ray for picking.
-            float tmin = 0.0f, tmax = std::numeric_limits<float>::max();
+            float tmin = 0.0f;
+            float constexpr tmax = std::numeric_limits<float>::max();
 
             // We care only about intersecting a mesh, so request model-space
             // coordinates to avoid computing world-space information.
@@ -210,14 +211,14 @@ bool CastleWindow3::SetEnvironment()
 void CastleWindow3::CreateScene()
 {
     // Common vertex formats for the triangle meshes.
-    mPNT1Format.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    mPNT1Format.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    mPNT1Format.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    mPNT1Format.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    mPNT1Format.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    mPNT1Format.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
-    mPNT2Format.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    mPNT2Format.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    mPNT2Format.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
-    mPNT2Format.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 1);
+    mPNT2Format.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    mPNT2Format.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    mPNT2Format.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
+    mPNT2Format.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 1);
 
     // Create the scene graph.  The translation is based on a priori knowledge
     // of the data set.
@@ -249,7 +250,7 @@ void CastleWindow3::CreateScene()
     CreateRope(1);
     CreateRope(2);
 
-    int i;
+    int32_t i;
     for (i = 1; i <= 7; ++i)
     {
         CreateWoodShield(i);
@@ -832,9 +833,9 @@ void CastleWindow3::UpdateVisualModelSpace(Spatial* object)
     Node* node = dynamic_cast<Node*>(object);
     if (node)
     {
-        for (int i = 0; i < node->GetNumChildren(); ++i)
+        for (int32_t i = 0; i < node->GetNumChildren(); ++i)
         {
-            Spatial* child = node->GetChild(i).get();
+            Spatial* child = node->GetChildPtr(i);
             if (child)
             {
                 UpdateVisualModelSpace(child);
@@ -859,7 +860,7 @@ void CastleWindow3::UpdateCameraLightModelPositions(Spatial* object)
         if (ltEffect)
         {
             Matrix4x4<float> invWMatrix = visual->worldTransform.GetHInverse();
-            auto geometry = ltEffect->GetGeometry();
+            auto const& geometry = ltEffect->GetGeometry();
 #if defined(GTE_USE_MAT_VEC)
             geometry->lightModelPosition = invWMatrix * mDLight->GetPosition();
             geometry->lightModelDirection = invWMatrix * mDLight->GetDVector();
@@ -878,9 +879,9 @@ void CastleWindow3::UpdateCameraLightModelPositions(Spatial* object)
     Node* node = dynamic_cast<Node*>(object);
     if (node)
     {
-        for (int i = 0; i < node->GetNumChildren(); ++i)
+        for (int32_t i = 0; i < node->GetNumChildren(); ++i)
         {
-            Spatial* child = node->GetChild(i).get();
+            Spatial* child = node->GetChildPtr(i);
             if (child)
             {
                 UpdateCameraLightModelPositions(child);
@@ -896,10 +897,10 @@ void CastleWindow3::FixedHeightRig::SetPicker(std::shared_ptr<Node> const& scene
     mVerticalDistance = 5.0f;
 
     // Generate pick-ray information.
-    double const multiplier = 1.0 / static_cast<float>(NUM_RAYS / 2);
-    for (int i = 0; i < NUM_RAYS; ++i)
+    double const multiplier = 1.0 / static_cast<double>(NUM_RAYS / 2);
+    for (int32_t i = 0; i < NUM_RAYS; ++i)
     {
-        double unit = multiplier * i - 1.0;  // in [-1,1]
+        double unit = multiplier * static_cast<double>(i) - 1.0;  // in [-1,1]
         float angle = static_cast<float>(GTE_C_HALF_PI + unit * GTE_C_QUARTER_PI);
         mCos[i] = std::cos(angle);
         mSin[i] = std::sin(angle);
@@ -938,7 +939,7 @@ bool CastleWindow3::FixedHeightRig::AllowMotion(float sign)
     Vector4<float> pos = mCamera->GetPosition() + sign * mTranslationSpeed * mWorldAxis[0]
         - 0.5f * mVerticalDistance * mWorldAxis[1];
 
-    for (int i = 0; i < NUM_RAYS; ++i)
+    for (int32_t i = 0; i < NUM_RAYS; ++i)
     {
         Vector4<float> dir = mCos[i] * mWorldAxis[2] + sign * mSin[i] * mWorldAxis[0];
         (*mPicker)(mScene, pos, dir, 0.0f, std::numeric_limits<float>::max());

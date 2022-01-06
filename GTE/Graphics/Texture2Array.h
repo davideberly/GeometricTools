@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/TextureArray.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -15,16 +16,16 @@ namespace gte
     {
     public:
         // Construction.
-        Texture2Array(unsigned int numItems, DFType format, unsigned int width,
-            unsigned int height, bool hasMipmaps = false, bool createStorage = true);
+        Texture2Array(uint32_t numItems, uint32_t format, uint32_t width,
+            uint32_t height, bool hasMipmaps = false, bool createStorage = true);
 
         // Texture dimensions.
-        inline unsigned int GetWidth() const
+        inline uint32_t GetWidth() const
         {
             return TextureArray::GetDimension(0);
         }
 
-        inline unsigned int GetHeight() const
+        inline uint32_t GetHeight() const
         {
             return TextureArray::GetDimension(1);
         }

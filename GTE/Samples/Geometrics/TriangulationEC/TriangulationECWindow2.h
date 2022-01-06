@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.10.26
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,7 +18,7 @@ public:
     TriangulationECWindow2(Parameters& parameters);
 
     virtual void OnDisplay() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     void ClearAll();
@@ -31,15 +31,15 @@ private:
     // The inputs (i0,i1,i2) are a permutation of (0,1,2).  The goal is to
     // trap algorithm errors due to order of inner polygons.
     // mExample = 5, 6, 7, 8, 9, 10
-    void FourBoxesThreeNested(int i0, int i1, int i2);
+    void FourBoxesThreeNested(int32_t i0, int32_t i1, int32_t i2);
 
     typedef BSRational<UIntegerAP32> Rational;
     typedef TriangulateEC<float, Rational> Triangulator;
 
     std::vector<Vector2<float>> mPositions;
-    std::vector<int> mOuter, mInner0, mInner1, mInner2;
+    std::vector<int32_t> mOuter, mInner0, mInner1, mInner2;
     std::shared_ptr<PolygonTree> mTree;
     std::vector<Vector2<float>> mFillSeeds;
-    std::vector<std::array<int, 3>> mTriangles;
-    int mExample;
+    std::vector<std::array<int32_t, 3>> mTriangles;
+    int32_t mExample;
 };

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11StructuredBuffer.h>
@@ -29,18 +29,18 @@ DX11StructuredBuffer::DX11StructuredBuffer(ID3D11Device* device, StructuredBuffe
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     desc.StructureByteStride = sbuffer->GetElementSize();
-    Resource::Usage usage = sbuffer->GetUsage();
-    if (usage == Resource::IMMUTABLE)
+    uint32_t usage = sbuffer->GetUsage();
+    if (usage == Resource::Usage::IMMUTABLE)
     {
         desc.Usage = D3D11_USAGE_IMMUTABLE;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_NONE;
     }
-    else if (usage == Resource::DYNAMIC_UPDATE)
+    else if (usage == Resource::Usage::DYNAMIC_UPDATE)
     {
         desc.Usage = D3D11_USAGE_DYNAMIC;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     }
-    else  // usage == Resource::SHADER_OUTPUT
+    else  // usage == Resource::Usage::SHADER_OUTPUT
     {
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
@@ -65,19 +65,19 @@ DX11StructuredBuffer::DX11StructuredBuffer(ID3D11Device* device, StructuredBuffe
 
     // Create views of the buffer.
     CreateSRView(device);
-    if (usage == Resource::SHADER_OUTPUT)
+    if (usage == Resource::Usage::SHADER_OUTPUT)
     {
         CreateUAView(device);
     }
 
     // Create a staging buffer if requested.
-    if (sbuffer->GetCopyType() != Resource::COPY_NONE)
+    if (sbuffer->GetCopy() != Resource::Copy::NONE)
     {
         CreateStaging(device, desc);
     }
 
     // Create a staging buffer for the internal counter.
-    if (sbuffer->GetCounterType() != StructuredBuffer::CT_NONE)
+    if (sbuffer->GetCounterType() != StructuredBuffer::CounterType::NONE)
     {
         CreateCounterStaging(device);
     }
@@ -121,7 +121,7 @@ bool DX11StructuredBuffer::GetNumActiveElements(
     // appears to increment even when the buffer is full, so it needs to be
     // clamped to the maximum value.  The clamping occurs in the call to
     // SetNumActiveElements().
-    unsigned int numActive = *static_cast<unsigned int*>(sub.pData);
+    uint32_t numActive = *static_cast<uint32_t*>(sub.pData);
     context->Unmap(mCounterStaging, 0);
 
     // Copy the number to the CPU.
@@ -174,7 +174,7 @@ void DX11StructuredBuffer::CreateCounterStaging(ID3D11Device* device)
     // This allows us to read the internal counter of the buffer (if it
     // has one).
     D3D11_BUFFER_DESC desc;
-    desc.ByteWidth = 4;  // sizeof(unsigned int)
+    desc.ByteWidth = 4;  // sizeof(uint32_t)
     desc.Usage = D3D11_USAGE_STAGING;
     desc.BindFlags = D3D11_BIND_NONE;
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
@@ -184,7 +184,7 @@ void DX11StructuredBuffer::CreateCounterStaging(ID3D11Device* device)
 }
 
 
-unsigned int const DX11StructuredBuffer::msUAVFlag[] =
+uint32_t const DX11StructuredBuffer::msUAVFlag[] =
 {
     D3D11_BUFFER_UAV_FLAG_BASIC,
     D3D11_BUFFER_UAV_FLAG_APPEND,

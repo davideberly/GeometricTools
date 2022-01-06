@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Visual.h>
 #include <Mathematics/Logger.h>
+#include <cstdint>
 using namespace gte;
 
 Visual::Visual(
@@ -25,14 +26,14 @@ bool Visual::UpdateModelBound()
 {
     LogAssert(mVBuffer != nullptr, "Buffer not attached.");
 
-    std::set<DFType> required;
+    std::set<uint32_t> required;
     required.insert(DF_R32G32B32_FLOAT);
     required.insert(DF_R32G32B32A32_FLOAT);
-    char const* positions = mVBuffer->GetChannel(VA_POSITION, 0, required);
+    char const* positions = mVBuffer->GetChannel(VASemantic::POSITION, 0, required);
     if (positions)
     {
-        int const numElements = mVBuffer->GetNumElements();
-        int const vertexSize = (int)mVBuffer->GetElementSize();
+        int32_t const numElements = mVBuffer->GetNumElements();
+        int32_t const vertexSize = (int32_t)mVBuffer->GetElementSize();
         modelBound.ComputeFromData(numElements, vertexSize, positions);
         return true;
     }
@@ -45,45 +46,45 @@ bool Visual::UpdateModelNormals()
     LogAssert(mVBuffer != nullptr && mIBuffer != nullptr, "Buffer not attached.");
 
     // Get vertex positions.
-    std::set<DFType> required;
+    std::set<uint32_t> required;
     required.insert(DF_R32G32B32_FLOAT);
     required.insert(DF_R32G32B32A32_FLOAT);
-    char const* positions = mVBuffer->GetChannel(VA_POSITION, 0, required);
+    char const* positions = mVBuffer->GetChannel(VASemantic::POSITION, 0, required);
     if (!positions)
     {
         return false;
     }
 
     // Get vertex normals.
-    char* normals = mVBuffer->GetChannel(VA_NORMAL, 0, required);
+    char* normals = mVBuffer->GetChannel(VASemantic::NORMAL, 0, required);
     if (!normals)
     {
         return false;
     }
 
     // Get triangle primitives.
-    IPType primitiveType = mIBuffer->GetPrimitiveType();
+    uint32_t primitiveType = mIBuffer->GetPrimitiveType();
     if ((primitiveType & IP_HAS_TRIANGLES) == 0)
     {
         // Normal vectors are not defined for point or segment primitives.
         return false;
     }
 
-    unsigned int const numVertices = mVBuffer->GetNumElements();
-    unsigned int const stride = (int)mVBuffer->GetElementSize();
-    unsigned int i;
+    uint32_t const numVertices = mVBuffer->GetNumElements();
+    uint32_t const stride = (int32_t)mVBuffer->GetElementSize();
+    uint32_t i;
     for (i = 0; i < numVertices; ++i)
     {
-        Vector3<float>& normal = *(Vector3<float>*)(normals + i * stride);
+        Vector3<float>& normal = *(Vector3<float>*)(normals + static_cast<size_t>(i) * stride);
         normal = { 0.0f, 0.0f, 0.0f };
     }
 
-    unsigned int const numTriangles = mIBuffer->GetNumPrimitives();
+    uint32_t const numTriangles = mIBuffer->GetNumPrimitives();
     bool isIndexed = mIBuffer->IsIndexed();
     for (i = 0; i < numTriangles; ++i)
     {
         // Get the vertex indices for the triangle.
-        unsigned int v0, v1, v2;
+        uint32_t v0, v1, v2;
         if (isIndexed)
         {
             mIBuffer->GetTriangle(i, v0, v1, v2);
@@ -96,16 +97,16 @@ bool Visual::UpdateModelNormals()
         }
         else  // primitiveType == IP_TRISTRIP
         {
-            int offset = (i & 1);
+            int32_t offset = (i & 1);
             v0 = i + offset;
             v1 = i + 1 + offset;
             v2 = i + 2 - offset;
         }
 
         // Get the vertex positions.
-        Vector3<float> pos0 = *(Vector3<float>*)(positions + v0 * stride);
-        Vector3<float> pos1 = *(Vector3<float>*)(positions + v1 * stride);
-        Vector3<float> pos2 = *(Vector3<float>*)(positions + v2 * stride);
+        Vector3<float> pos0 = *(Vector3<float>*)(positions + static_cast<size_t>(v0) * stride);
+        Vector3<float> pos1 = *(Vector3<float>*)(positions + static_cast<size_t>(v1) * stride);
+        Vector3<float> pos2 = *(Vector3<float>*)(positions + static_cast<size_t>(v2) * stride);
 
         // Compute the triangle normal.  The length of this normal is used
         // in the weighted sum of normals.
@@ -114,9 +115,9 @@ bool Visual::UpdateModelNormals()
         Vector3<float> normal = Cross(edge1, edge2);
 
         // Add the triangle normal to the vertices' normal sums.
-        Vector3<float>& nor0 = *(Vector3<float>*)(normals + v0 * stride);
-        Vector3<float>& nor1 = *(Vector3<float>*)(normals + v1 * stride);
-        Vector3<float>& nor2 = *(Vector3<float>*)(normals + v2 * stride);
+        Vector3<float>& nor0 = *(Vector3<float>*)(normals + static_cast<size_t>(v0) * stride);
+        Vector3<float>& nor1 = *(Vector3<float>*)(normals + static_cast<size_t>(v1) * stride);
+        Vector3<float>& nor2 = *(Vector3<float>*)(normals + static_cast<size_t>(v2) * stride);
         nor0 += normal;
         nor1 += normal;
         nor2 += normal;
@@ -125,7 +126,7 @@ bool Visual::UpdateModelNormals()
     // The vertex normals must be unit-length vectors.
     for (i = 0; i < numVertices; ++i)
     {
-        Vector3<float>& normal = *(Vector3<float>*)(normals + i * stride);
+        Vector3<float>& normal = *(Vector3<float>*)(normals + static_cast<size_t>(i) * stride);
         if (normal != Vector3<float>::Zero())
         {
             Normalize(normal);

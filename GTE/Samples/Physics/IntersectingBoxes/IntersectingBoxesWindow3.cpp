@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "IntersectingBoxesWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -17,7 +17,7 @@ IntersectingBoxesWindow3::IntersectingBoxesWindow3(Parameters& parameters)
     mPerturb(-4.0f, 4.0f)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 10000.0f, 0.5f, 0.001f,
@@ -42,7 +42,7 @@ void IntersectingBoxesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectingBoxesWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectingBoxesWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -71,7 +71,7 @@ void IntersectingBoxesWindow3::CreateScene()
 {
     // Create some axis-aligned boxes for intersection testing.
     std::uniform_real_distribution<float> rnd(16.0f, 64.0f), symr(-1.0f, 1.0f);
-    for (int i = 0; i < NUM_BOXES; ++i)
+    for (int32_t i = 0; i < NUM_BOXES; ++i)
     {
         Vector3<float> min =
         {
@@ -120,20 +120,20 @@ void IntersectingBoxesWindow3::CreateScene()
 
     // Create visual representations of the boxes.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    for (int i = 0; i < NUM_BOXES; ++i)
+    for (int32_t i = 0; i < NUM_BOXES; ++i)
     {
         Vector3<float> extent = 0.5f * (mBoxes[i].max - mBoxes[i].min);
         Vector3<float> center = 0.5f * (mBoxes[i].max + mBoxes[i].min);
         mBoxMesh[i] = mf.CreateBox(extent[0], extent[1], extent[2]);
-        mBoxMesh[i]->GetVertexBuffer()->SetUsage(Resource::DYNAMIC_UPDATE);
-        auto vbuffer = mBoxMesh[i]->GetVertexBuffer();
-        unsigned int const numVertices = vbuffer->GetNumElements();
+        mBoxMesh[i]->GetVertexBuffer()->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+        auto const& vbuffer = mBoxMesh[i]->GetVertexBuffer();
+        uint32_t const numVertices = vbuffer->GetNumElements();
         auto vertices = vbuffer->Get<Vertex>();
-        for (unsigned int j = 0; j < numVertices; ++j)
+        for (uint32_t j = 0; j < numVertices; ++j)
         {
             vertices[j].position += center;
         }
@@ -157,11 +157,11 @@ void IntersectingBoxesWindow3::CreateScene()
 
 void IntersectingBoxesWindow3::ModifyBoxes()
 {
-    for (int i = 0; i < NUM_BOXES; ++i)
+    for (int32_t i = 0; i < NUM_BOXES; ++i)
     {
         AlignedBox3<float> box = mBoxes[i];
 
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             float delta = mPerturb(mMTE);
             if (-mSize <= box.min[j] + delta && box.max[j] + delta <= mSize)
@@ -179,7 +179,7 @@ void IntersectingBoxesWindow3::ModifyBoxes()
     mScene->Update();
 
     // Switch material to red for any box that overlaps another.
-    for (int i = 0; i < NUM_BOXES; ++i)
+    for (int32_t i = 0; i < NUM_BOXES; ++i)
     {
         // Reset all boxes to blue.
         mPVWMatrices.Unsubscribe(mBoxMesh[i]->worldTransform);
@@ -191,9 +191,9 @@ void IntersectingBoxesWindow3::ModifyBoxes()
     for (auto const& overlap : mManager->GetOverlap())
     {
         // Set intersecting boxes to red.
-        for (int j = 0; j < 2; ++j)
+        for (int32_t j = 0; j < 2; ++j)
         {
-            int v = overlap.V[j];
+            int32_t v = overlap.V[j];
             mPVWMatrices.Unsubscribe(mBoxMesh[v]->worldTransform);
             mBoxMesh[v]->SetEffect(mIntersectEffect[v]);
             mPVWMatrices.Subscribe(mBoxMesh[v]->worldTransform,
@@ -204,7 +204,7 @@ void IntersectingBoxesWindow3::ModifyBoxes()
     mPVWMatrices.Update();
 }
 
-void IntersectingBoxesWindow3::ModifyMesh(int i)
+void IntersectingBoxesWindow3::ModifyMesh(int32_t i)
 {
     Vector3<float> extent = 0.5f * (mBoxes[i].max - mBoxes[i].min);
     Vector3<float> center = 0.5f * (mBoxes[i].max + mBoxes[i].min);
@@ -212,7 +212,7 @@ void IntersectingBoxesWindow3::ModifyMesh(int i)
     Vector3<float> yTerm = { 0.0f, extent[1], 0.0f };
     Vector3<float> zTerm = { 0.0f, 0.0f, extent[2] };
 
-    auto vbuffer = mBoxMesh[i]->GetVertexBuffer();
+    auto const& vbuffer = mBoxMesh[i]->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vertex>();
     vertices[0].position = center - xTerm - yTerm - zTerm;
     vertices[1].position = center + xTerm - yTerm - zTerm;
@@ -243,7 +243,7 @@ void IntersectingBoxesWindow3::PhysicsTick()
 void IntersectingBoxesWindow3::GraphicsTick()
 {
     mEngine->ClearBuffers();
-    for (int i = 0; i < NUM_BOXES; ++i)
+    for (int32_t i = 0; i < NUM_BOXES; ++i)
     {
         mEngine->Draw(mBoxMesh[i]);
     }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -37,7 +37,7 @@ namespace gte
         Result operator()(AlignedBox3<T> const& box0, AlignedBox3<T> const& box1)
         {
             Result result{};
-            for (int i = 0; i < 3; i++)
+            for (int32_t i = 0; i < 3; i++)
             {
                 if (box0.max[i] < box1.min[i] || box0.min[i] > box1.max[i])
                 {
@@ -70,7 +70,7 @@ namespace gte
         Result operator()(AlignedBox3<T> const& box0, AlignedBox3<T> const& box1)
         {
             Result result{};
-            for (int i = 0; i < 3; i++)
+            for (int32_t i = 0; i < 3; i++)
             {
                 if (box0.max[i] < box1.min[i] || box0.min[i] > box1.max[i])
                 {
@@ -79,7 +79,7 @@ namespace gte
                 }
             }
 
-            for (int i = 0; i < 3; i++)
+            for (int32_t i = 0; i < 3; i++)
             {
                 if (box0.max[i] <= box1.max[i])
                 {

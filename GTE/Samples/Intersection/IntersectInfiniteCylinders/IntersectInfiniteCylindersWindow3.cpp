@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "IntersectInfiniteCylindersWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -22,7 +22,7 @@ IntersectInfiniteCylindersWindow3::IntersectInfiniteCylindersWindow3(Parameters&
 {
     mEngine->SetClearColor({ 0.75f, 0.75f, 0.75f, 1.0f});
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.01f, 0.001f,
         { 0.0f, -16.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
@@ -41,12 +41,12 @@ void IntersectInfiniteCylindersWindow3::OnIdle()
 
     mEngine->ClearBuffers();
 
-    if (mCylinder0->culling == CullingMode::CULL_NEVER)
+    if (mCylinder0->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mCylinder0);
     }
 
-    if (mCylinder1->culling == CullingMode::CULL_NEVER)
+    if (mCylinder1->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mCylinder1);
     }
@@ -60,7 +60,7 @@ void IntersectInfiniteCylindersWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectInfiniteCylindersWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectInfiniteCylindersWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -77,24 +77,24 @@ bool IntersectInfiniteCylindersWindow3::OnCharPress(unsigned char key, int x, in
         return true;
 
     case '0':
-        if (mCylinder0->culling == CullingMode::CULL_NEVER)
+        if (mCylinder0->culling == CullingMode::NEVER)
         {
-            mCylinder0->culling = CullingMode::CULL_ALWAYS;
+            mCylinder0->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mCylinder0->culling = CullingMode::CULL_NEVER;
+            mCylinder0->culling = CullingMode::NEVER;
         }
         return true;
 
     case '1':
-        if (mCylinder1->culling == CullingMode::CULL_NEVER)
+        if (mCylinder1->culling == CullingMode::NEVER)
         {
-            mCylinder1->culling = CullingMode::CULL_ALWAYS;
+            mCylinder1->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mCylinder1->culling = CullingMode::CULL_NEVER;
+            mCylinder1->culling = CullingMode::NEVER;
         }
         return true;
     }
@@ -105,13 +105,13 @@ bool IntersectInfiniteCylindersWindow3::OnCharPress(unsigned char key, int x, in
 void IntersectInfiniteCylindersWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     // Create the canonical cylinder.
     mCylinder0 = mf.CreateCylinderOpen(32, 128, mRadius0, mHeight);
-    mCylinder0->culling = CullingMode::CULL_NEVER;
+    mCylinder0->culling = CullingMode::NEVER;
     Vector4<float> red{ 0.5f, 0.0f, 0.0f, 1.0f };
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, red);
     mCylinder0->SetEffect(effect);
@@ -119,7 +119,7 @@ void IntersectInfiniteCylindersWindow3::CreateScene()
 
     // Create the other cylinder.
     mCylinder1 = mf.CreateCylinderOpen(32, 128, mRadius1, mHeight);
-    mCylinder1->culling = CullingMode::CULL_NEVER;
+    mCylinder1->culling = CullingMode::NEVER;
     mCylinder1->localTransform.SetRotation(
         AxisAngle<4, float>(Vector4<float>::Unit(0), -mAngle));
     mCylinder1->localTransform.SetTranslation(mC0, 0.0f, 0.0f);
@@ -129,7 +129,7 @@ void IntersectInfiniteCylindersWindow3::CreateScene()
     mPVWMatrices.Subscribe(mCylinder1->worldTransform, effect->GetPVWMatrixConstant());
 
     // Create the intersection curve.
-    unsigned int numVertices = 1024;
+    uint32_t numVertices = 1024;
     float const minTheta = static_cast<float>(2.0 * GTE_C_PI / 3.0f);
     float const maxTheta = static_cast<float>(4.0 * GTE_C_PI / 3.0f);
     float multiplier = (maxTheta - minTheta) / static_cast<float>(numVertices - 1);
@@ -138,7 +138,7 @@ void IntersectInfiniteCylindersWindow3::CreateScene()
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         float theta = minTheta + multiplier * i;
         float cs = std::cos(theta);
@@ -156,7 +156,7 @@ void IntersectInfiniteCylindersWindow3::CreateScene()
 
     vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         float theta = minTheta + multiplier * i;
         float cs = std::cos(theta);

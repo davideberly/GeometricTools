@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "PlaneMeshIntersectionWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -25,16 +25,16 @@ PlaneMeshIntersectionWindow3::PlaneMeshIntersectionWindow3(
     mPSPlaneConstant = mPSTarget->GetRTTexture(1);
 
     mScreen = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, mXSize, mYSize);
-    mScreen->SetUsage(Resource::SHADER_OUTPUT);
-    mScreen->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mScreen->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mScreen->SetCopy(Resource::Copy::STAGING_TO_CPU);
 
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, mXSize, mYSize,
-        SamplerState::MIN_P_MAG_P_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP, true);
+        SamplerState::Filter::MIN_P_MAG_P_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay->SetTexture(mScreen);
 
     mEngine->SetClearColor({ 1.0f, 1.0f, 1.0f, std::numeric_limits<float>::max() });
 
-    auto cshader = mDrawIntersections->GetComputeShader();
+    auto const& cshader = mDrawIntersections->GetComputeShader();
     cshader->Set("colorImage", mPSColor);
     cshader->Set("planeConstantImage", mPSPlaneConstant);
     cshader->Set("outputImage", mScreen);
@@ -123,7 +123,7 @@ bool PlaneMeshIntersectionWindow3::CreateScene()
     auto effect = std::make_shared<VisualEffect>(program);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mMesh = mf.CreateSphere(16, 16, 1.0f);

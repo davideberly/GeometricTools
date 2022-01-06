@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -114,10 +114,10 @@ namespace gte
 
             DCPQuery<Real, Vector2<Real>, Segment2<Real>> psQuery;
             typename DCPQuery<Real, Vector2<Real>, Segment2<Real>>::Result psResult;
-            int const numVertices = static_cast<int>(polygon.size());
+            int32_t const numVertices = static_cast<int32_t>(polygon.size());
             if (numVertices >= 2)
             {
-                for (int i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
+                for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
                 {
                     Segment2<Real> segment(polygon[i0], polygon[i1]);
                     psResult = psQuery(sector.vertex, segment);

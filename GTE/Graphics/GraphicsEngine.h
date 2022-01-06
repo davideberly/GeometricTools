@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -14,8 +14,9 @@
 #include <Graphics/DrawTarget.h>
 #include <Graphics/FontArialW400H18.h>
 #include <Graphics/Visual.h>
-#include <Mathematics/ThreadSafeMap.h>
 #include <array>
+#include <map>
+#include <mutex>
 
 // TODO: It appears that BaseEngine was separated out from GraphicsEngine
 // in order for the listener system of GraphicsEngine to function properly
@@ -59,7 +60,7 @@ namespace gte
         uint64_t Draw(std::vector<std::shared_ptr<Visual>> const& visuals);
 
         // Draw 2D text.
-        uint64_t Draw(int x, int y, std::array<float, 4> const& color, std::string const& message);
+        uint64_t Draw(int32_t x, int32_t y, std::array<float, 4> const& color, std::string const& message);
 
         // Draw a 2D rectangular overlay.  This is useful for adding buttons,
         // controls, thumbnails, and other GUI objects to an application
@@ -108,23 +109,23 @@ namespace gte
         // Support for copying from CPU to GPU via mapped memory.
         virtual bool Update(std::shared_ptr<Buffer> const& buffer) override = 0;
         virtual bool Update(std::shared_ptr<TextureSingle> const& texture) override = 0;
-        virtual bool Update(std::shared_ptr<TextureSingle> const& texture, unsigned int level) = 0;
+        virtual bool Update(std::shared_ptr<TextureSingle> const& texture, uint32_t level) = 0;
         virtual bool Update(std::shared_ptr<TextureArray> const& textureArray) = 0;
-        virtual bool Update(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) = 0;
+        virtual bool Update(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) = 0;
 
         // Support for copying from CPU to GPU via staging memory.
         virtual bool CopyCpuToGpu(std::shared_ptr<Buffer> const& buffer) = 0;
         virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture) = 0;
-        virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level) = 0;
+        virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level) = 0;
         virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray) = 0;
-        virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) = 0;
+        virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) = 0;
 
         // Support for copying from GPU to CPU via staging memory.
         virtual bool CopyGpuToCpu(std::shared_ptr<Buffer> const& buffer) = 0;
         virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture) = 0;
-        virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level) = 0;
+        virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level) = 0;
         virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray) = 0;
-        virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) = 0;
+        virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) = 0;
 
         // Support for copying from GPU to GPU directly.  TODO: We will
         // improve on the feature set for such copies later.  For now, the
@@ -142,7 +143,7 @@ namespace gte
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureSingle> const& texture0,
             std::shared_ptr<TextureSingle> const& texture1,
-            unsigned int level) = 0;
+            uint32_t level) = 0;
 
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureArray> const& textureArray0,
@@ -151,7 +152,7 @@ namespace gte
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureArray> const& textureArray0,
             std::shared_ptr<TextureArray> const& textureArray1,
-            unsigned int item, unsigned int level) = 0;
+            uint32_t item, uint32_t level) = 0;
 
         // Counted buffer management.  GetNumActiveElements stores the result
         // in 'buffer'.
@@ -163,7 +164,7 @@ namespace gte
         // calling WaitForFinish() at some later time, the goal being not to
         // stall the CPU before obtaining the GPU results.
         virtual void Execute(std::shared_ptr<ComputeProgram> const& program,
-            unsigned int numXGroups, unsigned int numYGroups, unsigned int numZGroups) = 0;
+            uint32_t numXGroups, uint32_t numYGroups, uint32_t numZGroups) = 0;
 
         // Have the CPU wait until the GPU finishes its current command
         // buffer.
@@ -206,8 +207,10 @@ namespace gte
         // Bridge pattern to create graphics API-specific objects that
         // correspond to front-end objects.  The Bind, Get, and Unbind
         // operations act on these maps.
-        ThreadSafeMap<GraphicsObject const*, std::shared_ptr<GEObject>> mGOMap;
-        ThreadSafeMap<DrawTarget const*, std::shared_ptr<GEDrawTarget>> mDTMap;
+        std::map<GraphicsObject const*, std::shared_ptr<GEObject>> mGOMap;
+        mutable std::mutex mGOMapMutex;
+        std::map<DrawTarget const*, std::shared_ptr<GEDrawTarget>> mDTMap;
+        mutable std::mutex mDTMapMutex;
         std::unique_ptr<GEInputLayoutManager> mILMap;
 
         // Creation functions for adding objects to the bridges.  The

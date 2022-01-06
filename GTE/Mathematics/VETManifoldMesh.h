@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,8 +20,8 @@ namespace gte
     public:
         // Vertex data types.
         class Vertex;
-        typedef std::unique_ptr<Vertex>(*VCreator)(int);
-        using VMap = std::unordered_map<int, std::unique_ptr<Vertex>>;
+        typedef std::unique_ptr<Vertex>(*VCreator)(int32_t);
+        using VMap = std::unordered_map<int32_t, std::unique_ptr<Vertex>>;
 
         // Vertex object.
         class Vertex
@@ -29,17 +29,17 @@ namespace gte
         public:
             virtual ~Vertex() = default;
 
-            Vertex(int vIndex)
+            Vertex(int32_t vIndex)
                 :
                 V(vIndex)
             {
             }
 
             // The index into the vertex pool of the mesh.
-            int V;
+            int32_t V;
 
             // Adjacent objects.
-            std::unordered_set<int> VAdjacent;
+            std::unordered_set<int32_t> VAdjacent;
             std::unordered_set<Edge*> EAdjacent;
             std::unordered_set<Triangle*> TAdjacent;
         };
@@ -83,7 +83,7 @@ namespace gte
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
         // returned.  If the insertion leads to a nonmanifold mesh, the call
         // fails with a nullptr returned.
-        virtual Triangle* Insert(int v0, int v1, int v2) override
+        virtual Triangle* Insert(int32_t v0, int32_t v1, int32_t v2) override
         {
             Triangle* tri = ETManifoldMesh::Insert(v0, v1, v2);
             if (!tri)
@@ -91,9 +91,9 @@ namespace gte
                 return nullptr;
             }
 
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
-                int vIndex = tri->V[i];
+                int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
                 Vertex* vertex;
                 if (vItem == mVMap.end())
@@ -109,7 +109,7 @@ namespace gte
 
                 vertex->TAdjacent.insert(tri);
 
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j];
                     LogAssert(edge != nullptr, "Malformed mesh.");
@@ -131,7 +131,7 @@ namespace gte
 
         // If <v0,v1,v2> is in the mesh, it is removed and 'true' is returned;
         // otherwise, <v0,v1,v2> is not in the mesh and 'false' is returned.
-        virtual bool Remove(int v0, int v1, int v2) override
+        virtual bool Remove(int32_t v0, int32_t v1, int32_t v2) override
         {
             auto tItem = mTMap.find(TriangleKey<true>(v0, v1, v2));
             if (tItem == mTMap.end())
@@ -140,13 +140,13 @@ namespace gte
             }
 
             Triangle* tri = tItem->second.get();
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
-                int vIndex = tri->V[i];
+                int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
                 LogAssert(vItem != mVMap.end(), "Malformed mesh.");
                 Vertex* vertex = vItem->second.get();
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j];
                     LogAssert(edge != nullptr, "Malformed mesh.");
@@ -188,7 +188,7 @@ namespace gte
 
     protected:
         // The vertex data and default vertex creation.
-        static std::unique_ptr<Vertex> CreateVertex(int vIndex)
+        static std::unique_ptr<Vertex> CreateVertex(int32_t vIndex)
         {
             return std::make_unique<Vertex>(vIndex);
         }

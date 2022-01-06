@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ExtractRidgesConsole.h"
 #include <Applications/WICFileIO.h>
@@ -24,7 +24,7 @@ void ExtractRidgesConsole::Execute()
 {
     // Load the 10-bit-per-pixel image.
     std::string path = mEnvironment.GetPath("Head_U16_X256_Y256.binary");
-    int const xBound = 256, yBound = 256;
+    int32_t const xBound = 256, yBound = 256;
     std::vector<int16_t> original(xBound * yBound);
     std::ifstream input(path, std::ios::binary);
     input.read((char*)original.data(), original.size() * sizeof(int16_t));
@@ -49,16 +49,16 @@ void ExtractRidgesConsole::Execute()
     // Use first-order centered finite differences to estimate the image
     // derivatives.  The gradient is DF = (df/dx, df/dy) and the Hessian
     // is D^2F = {{d^2f/dx^2, d^2f/dxdy}, {d^2f/dydx, d^2f/dy^2}}.
-    int xBoundM1 = xBound - 1;
-    int yBoundM1 = yBound - 1;
+    int32_t xBoundM1 = xBound - 1;
+    int32_t yBoundM1 = yBound - 1;
     Image2<double> dx(xBound, yBound);
     Image2<double> dy(xBound, yBound);
     Image2<double> dxx(xBound, yBound);
     Image2<double> dxy(xBound, yBound);
     Image2<double> dyy(xBound, yBound);
-    for (int y = 1; y < yBoundM1; ++y)
+    for (int32_t y = 1; y < yBoundM1; ++y)
     {
-        for (int x = 1; x < xBoundM1; ++x)
+        for (int32_t x = 1; x < xBoundM1; ++x)
         {
             dx(x, y) = 0.5 * (image(x + 1, y) - image(x - 1, y));
             dy(x, y) = 0.5 * (image(x, y + 1) - image(x, y - 1));
@@ -84,9 +84,9 @@ void ExtractRidgesConsole::Execute()
     Image2<double> bImage(xBound, yBound);
     Image2<double> pImage(xBound, yBound);
     Image2<double> qImage(xBound, yBound);
-    for (int y = 1; y < yBoundM1; ++y)
+    for (int32_t y = 1; y < yBoundM1; ++y)
     {
-        for (int x = 1; x < xBoundM1; ++x)
+        for (int32_t x = 1; x < xBoundM1; ++x)
         {
             Vector2<double> gradient{ dx(x, y), dy(x, y) };
 
@@ -112,9 +112,9 @@ void ExtractRidgesConsole::Execute()
     // Use a cheap classification of the pixels by testing for sign changes
     // between neighboring pixels.
     Image2<uint32_t> result(xBound, yBound);
-    for (int y = 1; y < yBoundM1; ++y)
+    for (int32_t y = 1; y < yBoundM1; ++y)
     {
-        for (int x = 1; x < xBoundM1; ++x)
+        for (int32_t x = 1; x < xBoundM1; ++x)
         {
             uint32_t gray = static_cast<uint32_t>(255.0 * image(x, y));
 

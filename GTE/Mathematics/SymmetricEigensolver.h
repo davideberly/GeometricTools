@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -98,7 +98,7 @@
 // eigenvectors, evec[N] is N calls to get the eigenvectors separately, and
 // comperr is the computation E = Q^T*A*Q - D.  The construction of the full
 // eigenvector matrix is, of course, quite expensive.  If you need only a
-// small number of eigenvectors, use function GetEigenvector(int,Real*).
+// small number of eigenvectors, use function GetEigenvector(int32_t,Real*).
 
 namespace gte
 {
@@ -112,7 +112,7 @@ namespace gte
         // reduction of a tridiagonal matrix to a diagonal matrix.  The goal
         // is to compute NxN orthogonal Q and NxN diagonal D for which
         // Q^T*A*Q = D.
-        SymmetricEigensolver(int size, unsigned int maxIterations)
+        SymmetricEigensolver(int32_t size, uint32_t maxIterations)
             :
             mSize(0),
             mMaxIterations(0),
@@ -141,7 +141,7 @@ namespace gte
         // ordered accordingly.  The return value is the number of iterations
         // consumed when convergence occurred, 0xFFFFFFFF when convergence did
         // not occur, or 0 when N <= 1 was passed to the constructor.
-        unsigned int Solve(Real const* input, int sortType)
+        uint32_t Solve(Real const* input, int32_t sortType)
         {
             mEigenvectorMatrixType = -1;
 
@@ -151,10 +151,10 @@ namespace gte
                 Tridiagonalize();
 
                 mGivens.clear();
-                for (unsigned int j = 0; j < mMaxIterations; ++j)
+                for (uint32_t j = 0; j < mMaxIterations; ++j)
                 {
-                    int imin = -1, imax = -1;
-                    for (int i = mSize - 2; i >= 0; --i)
+                    int32_t imin = -1, imax = -1;
+                    for (int32_t i = mSize - 2; i >= 0; --i)
                     {
                         // When a01 is much smaller than its diagonal
                         // neighbors, it is effectively zero.
@@ -209,9 +209,9 @@ namespace gte
                 if (mPermutation[0] >= 0)
                 {
                     // Sorting was requested.
-                    for (int i = 0; i < mSize; ++i)
+                    for (int32_t i = 0; i < mSize; ++i)
                     {
-                        int p = mPermutation[i];
+                        int32_t p = mPermutation[i];
                         eigenvalues[i] = mDiagonal[p];
                     }
                 }
@@ -240,15 +240,15 @@ namespace gte
             {
                 // Start with the identity matrix.
                 std::fill(eigenvectors, eigenvectors + static_cast<size_t>(mSize) * static_cast<size_t>(mSize), (Real)0);
-                for (int d = 0; d < mSize; ++d)
+                for (int32_t d = 0; d < mSize; ++d)
                 {
                     eigenvectors[d + mSize * d] = (Real)1;
                 }
 
                 // Multiply the Householder reflections using backward
                 // accumulation.
-                int r, c;
-                for (int i = mSize - 3, rmin = i + 1; i >= 0; --i, --rmin)
+                int32_t r, c;
+                for (int32_t i = mSize - 3, rmin = i + 1; i >= 0; --i, --rmin)
                 {
                     // Copy the v vector and 2/Dot(v,v) from the matrix.
                     Real const* column = &mMatrix[i];
@@ -289,7 +289,7 @@ namespace gte
                 {
                     for (r = 0; r < mSize; ++r)
                     {
-                        int j = givens.index + mSize * r;
+                        int32_t j = givens.index + mSize * r;
                         Real& q0 = eigenvectors[j];
                         Real& q1 = eigenvectors[j + 1];
                         Real prd0 = givens.cs * q0 - givens.sn * q1;
@@ -311,13 +311,13 @@ namespace gte
                 {
                     // Sorting was requested.
                     std::fill(mVisited.begin(), mVisited.end(), 0);
-                    for (int i = 0; i < mSize; ++i)
+                    for (int32_t i = 0; i < mSize; ++i)
                     {
                         if (mVisited[i] == 0 && mPermutation[i] != i)
                         {
                             // The item starts a cycle with 2 or more
                             // elements.
-                            int start = i, current = i, j, next;
+                            int32_t start = i, current = i, j, next;
                             for (j = 0; j < mSize; ++j)
                             {
                                 mPVector[j] = eigenvectors[i + mSize * j];
@@ -348,7 +348,7 @@ namespace gte
         // (return 0).  If the input 'size' to the constructor is 0 or the
         // input 'eigenvectors' to GetEigenvectors is null, the returned value
         // is -1.
-        inline int GetEigenvectorMatrixType() const
+        inline int32_t GetEigenvectorMatrixType() const
         {
             return mEigenvectorMatrixType;
         }
@@ -357,7 +357,7 @@ namespace gte
         // of matrix Q.  The reflections and rotations are applied
         // incrementally.  This is useful when you want only a small number of
         // the eigenvectors.
-        void GetEigenvector(int c, Real* eigenvector) const
+        void GetEigenvector(int32_t c, Real* eigenvector) const
         {
             if (0 <= c && c < mSize)
             {
@@ -389,13 +389,13 @@ namespace gte
                 }
 
                 // Apply the Householder reflections.
-                for (int i = mSize - 3; i >= 0; --i)
+                for (int32_t i = mSize - 3; i >= 0; --i)
                 {
                     // Get the Householder vector v.
                     Real const* column = &mMatrix[i];
                     Real twoinvvdv = column[mSize * (i + 1)];
-                    int r;
-                    for (r = 0; r < i + 1; ++r)
+                    int32_t r;
+                    for (r = 0; r <= i; ++r)
                     {
                         y[r] = x[r];
                     }
@@ -410,12 +410,15 @@ namespace gte
                     // code, r = i + 1. On i-loop entry, r = mSize-2. On
                     // i-loop exit, r = 1. This keeps r in the valid range
                     // for x[].
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 6385)
+#endif
                     Real s = x[r];  // r = i+1, v[i+1] = 1
 
                     // Note that on i-loop entry, r = mSize-2 in which
                     // case r+1 = mSize-1. This keeps index j in the valid
                     // range for x[].
-                    for (int j = r + 1; j < mSize; ++j)
+                    for (int32_t j = r + 1; j < mSize; ++j)
                     {
                         s += x[j] * column[mSize * j];
                     }
@@ -430,6 +433,9 @@ namespace gte
                     }
 
                     std::swap(x, y);
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 6385)
+#endif
                 }
 
                 // The final product is stored in x.
@@ -441,7 +447,7 @@ namespace gte
             }
         }
 
-        Real GetEigenvalue(int c) const
+        Real GetEigenvalue(int32_t c) const
         {
             if (mSize > 0)
             {
@@ -472,8 +478,8 @@ namespace gte
         // v after the leading 1-valued component).
         void Tridiagonalize()
         {
-            int r, c;
-            for (int i = 0, ip1 = 1; i < mSize - 2; ++i, ++ip1)
+            int32_t r, c;
+            for (int32_t i = 0, ip1 = 1; i < mSize - 2; ++i, ++ip1)
             {
                 // Compute the Householder vector.  Read the initial vector
                 // from the row of the matrix.
@@ -558,7 +564,7 @@ namespace gte
 
             // Copy the diagonal and subdiagonal entries for cache coherence
             // in the QR iterations.
-            int k, ksup = mSize - 1, index = 0, delta = mSize + 1;
+            int32_t k, ksup = mSize - 1, index = 0, delta = mSize + 1;
             for (k = 0; k < ksup; ++k, index += delta)
             {
                 mDiagonal[k] = mMatrix[index];
@@ -603,7 +609,7 @@ namespace gte
         // imax identify the subblock of T to be processed.   That block has
         // upper-left element T(imin,imin) and lower-right element
         // T(imax,imax).
-        void DoQRImplicitShift(int imin, int imax)
+        void DoQRImplicitShift(int32_t imin, int32_t imax)
         {
             // The implicit shift.  Compute the eigenvalue u of the
             // lower-right 2x2 block that is closer to a11.
@@ -619,7 +625,7 @@ namespace gte
 
             Real a12, a22, a23, tmp11, tmp12, tmp21, tmp22, cs, sn;
             Real a02 = (Real)0;
-            int i0 = imin - 1, i1 = imin, i2 = imin + 1;
+            int32_t i0 = imin - 1, i1 = imin, i2 = imin + 1;
             for (/**/; i1 <= imax; ++i0, ++i1, ++i2)
             {
                 // Compute the Givens rotation and save it for use in
@@ -673,7 +679,7 @@ namespace gte
         // the indices of the array storing the eigenvalues.  The permutation
         // is used for reordering the eigenvalues and eigenvectors in the
         // calls to GetEigenvalues(...) and GetEigenvectors(...).
-        void ComputePermutation(int sortType)
+        void ComputePermutation(int32_t sortType)
         {
             // The number of Householder reflections is H = mSize - 2.  If H
             // is even, the product of Householder reflections is a rotation;
@@ -702,11 +708,11 @@ namespace gte
                 }
 
                 Real eigenvalue;
-                int index;
+                int32_t index;
             };
 
             std::vector<SortItem> items(mSize);
-            int i;
+            int32_t i;
             for (i = 0; i < mSize; ++i)
             {
                 items[i].eigenvalue = mDiagonal[i];
@@ -757,11 +763,11 @@ namespace gte
         }
 
         // The number N of rows and columns of the matrices to be processed.
-        int mSize;
+        int32_t mSize;
 
         // The maximum number of iterations for reducing the tridiagonal
         // matrix to a diagonal matrix.
-        unsigned int mMaxIterations;
+        uint32_t mMaxIterations;
 
         // The internal copy of a matrix passed to the solver.  See the
         // comments about function Tridiagonalize() about what is stored in
@@ -789,7 +795,7 @@ namespace gte
             // of objects of this type.
             GivensRotation() = default;
 
-            GivensRotation(int inIndex, Real inCs, Real inSn)
+            GivensRotation(int32_t inIndex, Real inCs, Real inSn)
                 :
                 index(inIndex),
                 cs(inCs),
@@ -797,7 +803,7 @@ namespace gte
             {
             }
 
-            int index;
+            int32_t index;
             Real cs, sn;
         };
 
@@ -810,9 +816,9 @@ namespace gte
         // returns a rotation matrix, 0 if GetEigenvectors returns a
         // reflection matrix or -1 if an input to the constructor or to
         // GetEigenvectors is invalid.
-        std::vector<int> mPermutation;  // N elements
-        mutable std::vector<int> mVisited;  // N elements
-        mutable int mEigenvectorMatrixType;
+        std::vector<int32_t> mPermutation;  // N elements
+        mutable std::vector<int32_t> mVisited;  // N elements
+        mutable int32_t mEigenvectorMatrixType;
 
         // Temporary storage to compute Householder reflections and to
         // support sorting of eigenvectors.

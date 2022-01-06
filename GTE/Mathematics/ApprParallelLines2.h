@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.3.2019.12.27
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -29,7 +29,7 @@ namespace gte
             // which avoids construction costs for those types.
         }
 
-        void Fit(std::vector<Vector2<Real>> const& P, unsigned int maxIterations,
+        void Fit(std::vector<Vector2<Real>> const& P, uint32_t maxIterations,
             Vector2<Real>& C, Vector2<Real>& V, Real& radius)
         {
             // Compute the average of the samples.
@@ -57,11 +57,11 @@ namespace gte
             Polynomial1<Real> f0, f1;
             ComputeF(data, f0, f1);
             Polynomial1<Real> freduced0(4), freduced1(3);
-            for (int i = 0; i <= 4; ++i)
+            for (int32_t i = 0; i <= 4; ++i)
             {
                 freduced0[i] = f0[2 * i];
             }
-            for (int i = 0; i <= 3; ++i)
+            for (int32_t i = 0; i <= 3; ++i)
             {
                 freduced1[i] = f1[2 * i + 1];
             }
@@ -80,15 +80,15 @@ namespace gte
                 Polynomial1<Real> f0Sqr = f0 * f0, f1Sqr = f1 * f1;
                 Polynomial1<Real> h = sigmaSqrPoly * f1Sqr + (f0Sqr - f1Sqr);
                 Polynomial1<Real> hreduced(8);
-                for (int i = 0; i <= 8; ++i)
+                for (int32_t i = 0; i <= 8; ++i)
                 {
                     hreduced[i] = h[2 * i];
                 }
 
                 std::array<Real, 8> roots;
-                int numRoots = RootsPolynomial<Real>::Find(8, &hreduced[0],
+                int32_t numRoots = RootsPolynomial<Real>::Find(8, &hreduced[0],
                     maxIterations, roots.data());
-                for (int i = 0; i < numRoots; ++i)
+                for (int32_t i = 0; i < numRoots; ++i)
                 {
                     Real sigmaSqr = roots[i];
                     if (sigmaSqr > mR0)
@@ -103,15 +103,15 @@ namespace gte
             else
             {
                 Polynomial1<Real> hreduced(4);
-                for (int i = 0; i <= 4; ++i)
+                for (int32_t i = 0; i <= 4; ++i)
                 {
                     hreduced[i] = f0[2 * i];
                 }
 
                 std::array<Real, 4> roots;
-                int numRoots = RootsPolynomial<Real>::Find(4, &hreduced[0],
+                int32_t numRoots = RootsPolynomial<Real>::Find(4, &hreduced[0],
                     maxIterations, roots.data());
-                for (int i = 0; i < numRoots; ++i)
+                for (int32_t i = 0; i < numRoots; ++i)
                 {
                     Real sigmaSqr = roots[i];
                     if (sigmaSqr > mR0)

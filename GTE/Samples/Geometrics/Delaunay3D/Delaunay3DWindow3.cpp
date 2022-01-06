@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.15
+// Version: 6.0.2022.01.06
 
 #include "Delaunay3DWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -20,18 +20,18 @@ Delaunay3DWindow3::Delaunay3DWindow3(Parameters& parameters)
     }
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 5000.0f, 0.1f, 0.01f,
         { 0.0f, 0.0f, -4.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
@@ -78,7 +78,7 @@ void Delaunay3DWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool Delaunay3DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool Delaunay3DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -115,7 +115,7 @@ bool Delaunay3DWindow3::CreateScene()
     mVertices.resize(128);
     for (auto& v : mVertices)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             v[j] = rnd(mte);
         }
@@ -126,13 +126,13 @@ bool Delaunay3DWindow3::CreateScene()
 #if 0
     // A cube with 3x3x3 points.
     mVertices.resize(27);
-    for (int z = 0, i = 0; z < 3; ++z)
+    for (int32_t z = 0, i = 0; z < 3; ++z)
     {
         float fz = z - 1.0f;
-        for (int y = 0; y < 3; ++y)
+        for (int32_t y = 0; y < 3; ++y)
         {
             float fy = y - 1.0f;
-            for (int x = 0; x < 3; ++x, ++i)
+            for (int32_t x = 0; x < 3; ++x, ++i)
             {
                 float fx = x - 1.0f;
                 mVertices[i] = Vector3<float>(fx, fy, fz);
@@ -155,12 +155,12 @@ bool Delaunay3DWindow3::CreateScene()
     }
 
     std::ifstream input(path);
-    int numVertices;
+    int32_t numVertices;
     input >> numVertices;
     mVertices.resize(numVertices);
-    for (int i = 0; i < numVertices; ++i)
+    for (int32_t i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             input >> mVertices[i][j];
         }
@@ -168,14 +168,14 @@ bool Delaunay3DWindow3::CreateScene()
 #endif
 
     Vector3<float> vmin, vmax;
-    ComputeExtremes((int)mVertices.size(), &mVertices[0], vmin, vmax);
-    for (int j = 0; j < 3; ++j)
+    ComputeExtremes((int32_t)mVertices.size(), &mVertices[0], vmin, vmax);
+    for (int32_t j = 0; j < 3; ++j)
     {
         mRandom[j] = std::uniform_real_distribution<float>(vmin[j], vmax[j]);
     }
 
-    mDelaunay(static_cast<int>(mVertices.size()), &mVertices[0], 0.001f);
-    mInfo.initialTetrahedron = -1;
+    mDelaunay(mVertices);
+    mInfo.initialTetrahedron = std::numeric_limits<size_t>::max();
     mInfo.finalTetrahedron = 0;
 
     mWireTetra.resize(mDelaunay.GetNumTetrahedra());
@@ -193,7 +193,7 @@ bool Delaunay3DWindow3::CreateScene()
 
     mVCEffect = std::make_shared<VertexColorEffect>(mProgramFactory);
 
-    for (int j = 0; j < mDelaunay.GetNumTetrahedra(); ++j)
+    for (size_t j = 0; j < mDelaunay.GetNumTetrahedra(); ++j)
     {
         CreateTetra(j);
     }
@@ -207,8 +207,8 @@ bool Delaunay3DWindow3::CreateScene()
 void Delaunay3DWindow3::CreateSphere()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -225,18 +225,18 @@ void Delaunay3DWindow3::CreateSphere()
     mScene->AttachChild(mSphere);
 }
 
-void Delaunay3DWindow3::CreateTetra(int index)
+void Delaunay3DWindow3::CreateTetra(size_t index)
 {
-    std::vector<int> const& dindices = mDelaunay.GetIndices();
+    std::vector<int32_t> const& dindices = mDelaunay.GetIndices();
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
 
     std::shared_ptr<VertexBuffer> vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (int j = 0; j < 4; ++j)
+    for (size_t j = 0; j < 4; ++j)
     {
         vertex[j].position = mVertices[dindices[4 * index + j]];
         vertex[j].color = mLightGray;
@@ -256,9 +256,9 @@ void Delaunay3DWindow3::SetAllTetraWire()
             mSolidTetra[i] = nullptr;
         }
 
-        auto vbuffer = mWireTetra[i]->GetVertexBuffer();
+        auto const& vbuffer = mWireTetra[i]->GetVertexBuffer();
         Vertex* vertex = vbuffer->Get<Vertex>();
-        for (int j = 0; j < 4; ++j)
+        for (int32_t j = 0; j < 4; ++j)
         {
             vertex[j].color = mLightGray;
         }
@@ -266,7 +266,7 @@ void Delaunay3DWindow3::SetAllTetraWire()
     }
 }
 
-void Delaunay3DWindow3::SetTetraSolid(int index, Vector4<float> const& color)
+void Delaunay3DWindow3::SetTetraSolid(size_t index, Vector4<float> const& color)
 {
     if (mWireTetra[index])
     {
@@ -274,9 +274,9 @@ void Delaunay3DWindow3::SetTetraSolid(int index, Vector4<float> const& color)
         mWireTetra[index] = nullptr;
     }
 
-    auto vbuffer = mSolidTetra[index]->GetVertexBuffer();
+    auto const& vbuffer = mSolidTetra[index]->GetVertexBuffer();
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (int j = 0; j < 4; ++j)
+    for (int32_t j = 0; j < 4; ++j)
     {
         vertex[j].color = color;
     }
@@ -286,8 +286,8 @@ void Delaunay3DWindow3::SetTetraSolid(int index, Vector4<float> const& color)
 void Delaunay3DWindow3::SetLastTetraSolid(Vector4<float> const& color,
     Vector4<float> const& oppositeColor)
 {
-    int index = mInfo.finalTetrahedron;
-    int vOpposite = mInfo.finalV[3];
+    size_t index = mInfo.finalTetrahedron;
+    int32_t vOpposite = mInfo.finalV[3];
 
     if (mWireTetra[index])
     {
@@ -295,9 +295,9 @@ void Delaunay3DWindow3::SetLastTetraSolid(Vector4<float> const& color,
         mWireTetra[index] = nullptr;
     }
 
-    auto vbuffer = mSolidTetra[index]->GetVertexBuffer();
+    auto const& vbuffer = mSolidTetra[index]->GetVertexBuffer();
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (int j = 0; j < 4; ++j)
+    for (int32_t j = 0; j < 4; ++j)
     {
         if (j != vOpposite)
         {
@@ -316,8 +316,8 @@ void Delaunay3DWindow3::DoSearch()
     SetAllTetraWire();
 
     // Generate random point in AABB of data set.
-    Vector3<float> point;
-    for (int j = 0; j < 3; ++j)
+    Vector3<float> point{};
+    for (int32_t j = 0; j < 3; ++j)
     {
         point[j] = mRandom[j](mRandomGenerator);
     }
@@ -328,15 +328,15 @@ void Delaunay3DWindow3::DoSearch()
     mPVWMatrices.Update();
 
     mInfo.initialTetrahedron = mInfo.finalTetrahedron;
-    int found = mDelaunay.GetContainingTetrahedron(point, mInfo);
-    if (found >= 0)
+    size_t found = mDelaunay.GetContainingTetrahedron(point, mInfo);
+    if (found != std::numeric_limits<size_t>::max())
     {
         mInfo.initialTetrahedron = mInfo.finalTetrahedron;
 
         // Make all tetra on the path solid.
-        for (int i = 0; i < mInfo.numPath; ++i)
+        for (size_t i = 0; i < mInfo.numPath; ++i)
         {
-            int index = mInfo.path[i];
+            size_t index = mInfo.path[i];
             float red, blue;
             if (mInfo.numPath > 1)
             {

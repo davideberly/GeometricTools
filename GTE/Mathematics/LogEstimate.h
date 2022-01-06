@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.23
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // The input constraint is x in [1,2].  For example,
         //   float x; // in [1,2]
         //   float result = LogEstimate<float>::Degree<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real Degree(Real x)
         {
             return Log2Estimate<Real>::Degree<D>(x) * (Real)GTE_C_LN_2;
@@ -35,7 +35,7 @@ namespace gte
         // example,
         //   float x;  // x > 0
         //   float result = LogEstimate<float>::DegreeRR<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real DegreeRR(Real x)
         {
             return Log2Estimate<Real>::DegreeRR<D>(x) * (Real)GTE_C_LN_2;

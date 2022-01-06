@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -34,7 +34,7 @@ namespace gte
     public:
         // The angle between q0 and q1 is in [0,pi).  There are no angle
         // restrictions and nothing is precomputed.
-        template <int N>
+        template <int32_t N>
         inline static Quaternion<Real> Estimate(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1)
         {
             static_assert(1 <= N && N <= 16, "Invalid degree.");
@@ -68,7 +68,7 @@ namespace gte
         //           q[i1] = -q[i1];  // now Dot(q[i0], q[i]1) >= 0
         //       }
         //   }
-        template <int N>
+        template <int32_t N>
         inline static Quaternion<Real> EstimateR(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1)
         {
             static_assert(1 <= N && N <= 16, "Invalid degree.");
@@ -98,7 +98,7 @@ namespace gte
         //       // for SLERP<T>::EstimateRP
         //       omcosA[i0] = 1 - cs;
         //   }
-        template <int N>
+        template <int32_t N>
         inline static Quaternion<Real> EstimateRP(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1,
             Real omcosA)
         {
@@ -128,7 +128,7 @@ namespace gte
         //       qh[i0] = (q0 + q1) / (2 * cosAH[i0]);
         //       omcosAH[i0] = 1 - cosAH;
         //   }
-        template <int N>
+        template <int32_t N>
         inline static Quaternion<Real> EstimateRPH(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1,
             Quaternion<Real> const& qh, Real omcosAH)
         {

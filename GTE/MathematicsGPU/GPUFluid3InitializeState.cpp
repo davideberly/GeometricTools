@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid3InitializeState.h>
@@ -12,7 +12,7 @@ using namespace gte;
 
 GPUFluid3InitializeState::GPUFluid3InitializeState(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int zSize, int numXThreads, int numYThreads, int numZThreads)
+    int32_t xSize, int32_t ySize, int32_t zSize, int32_t numXThreads, int32_t numYThreads, int32_t numZThreads)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads),
@@ -25,24 +25,24 @@ GPUFluid3InitializeState::GPUFluid3InitializeState(
     // Initial density values are randomly generated.
     mDensity = std::make_shared<Texture3>(DF_R32_FLOAT, xSize, ySize, zSize);
     float* data = mDensity->Get<float>();
-    for (unsigned int i = 0; i < mDensity->GetNumElements(); ++i, ++data)
+    for (uint32_t i = 0; i < mDensity->GetNumElements(); ++i, ++data)
     {
         *data = unirnd(mte);
     }
 
     // Initial velocity values are zero.
     mVelocity = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mVelocity->SetUsage(Resource::SHADER_OUTPUT);
+    mVelocity->SetUsage(Resource::Usage::SHADER_OUTPUT);
     std::memset(mVelocity->GetData(), 0, mVelocity->GetNumBytes());
 
     mStateTm1 = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mStateTm1->SetUsage(Resource::SHADER_OUTPUT);
+    mStateTm1->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
     mStateT = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mStateT->SetUsage(Resource::SHADER_OUTPUT);
+    mStateT->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
     // Create the shader for generating velocity from vortices.
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("NUM_X_THREADS", numXThreads);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -50,7 +50,7 @@ GPUFluid3InitializeState::GPUFluid3InitializeState(
     mInitializeState = factory->CreateFromSource(*msSource[api]);
     if (mInitializeState)
     {
-        auto cshader = mInitializeState->GetComputeShader();
+        auto const& cshader = mInitializeState->GetComputeShader();
         cshader->Set("density", mDensity);
         cshader->Set("velocity", mVelocity);
         cshader->Set("stateTm1", mStateTm1);

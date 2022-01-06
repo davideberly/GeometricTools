@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "TerrainWindow3.h"
 #include "TerrainEffect.h"
@@ -81,12 +81,12 @@ void TerrainWindow3::OnIdle()
     }
 }
 
-bool TerrainWindow3::OnKeyDown(int key, int, int)
+bool TerrainWindow3::OnKeyDown(int32_t key, int32_t, int32_t)
 {
     return mTerrainCameraRig.PushMotion(key);
 }
 
-bool TerrainWindow3::OnKeyUp(int key, int, int)
+bool TerrainWindow3::OnKeyUp(int32_t key, int32_t, int32_t)
 {
     return mTerrainCameraRig.PopMotion(key);
 }
@@ -122,9 +122,9 @@ bool TerrainWindow3::SetEnvironment()
         }
     }
 
-    for (int row = 0; row < 8; ++row)
+    for (int32_t row = 0; row < 8; ++row)
     {
-        for (int col = 0; col < 8; ++col)
+        for (int32_t col = 0; col < 8; ++col)
         {
             std::string suffix = "." + std::to_string(row) + "." + std::to_string(col);
             std::string name = "color" + suffix + ".png";
@@ -169,15 +169,15 @@ void TerrainWindow3::CreateTerrain()
 
     // Create the terrain.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 1);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 1);
     mTerrain = std::make_shared<Terrain>(numRows, numCols, size, minElevation,
         maxElevation, spacing, vformat, mCamera);
     mScene->AttachChild(mTerrain);
 
     // Load the terrain page heights.
-    std::vector<unsigned short> heights(size * size);
+    std::vector<uint16_t> heights(size * size);
     for (size_t row = 0; row < numRows; ++row)
     {
         for (size_t col = 0; col < numCols; ++col)
@@ -185,7 +185,7 @@ void TerrainWindow3::CreateTerrain()
             std::string suffix = "." + std::to_string(row) + "." + std::to_string(col);
             path = mEnvironment.GetPath("height" + suffix + ".binary");
             input.open(path, std::ios::binary);
-            input.read((char*)heights.data(), heights.size() * sizeof(unsigned short));
+            input.read((char*)heights.data(), heights.size() * sizeof(uint16_t));
             input.close();
 
             mTerrain->SetHeights(row, col, heights);
@@ -241,13 +241,13 @@ void TerrainWindow3::CreateSkyDome()
     std::string path = mEnvironment.GetPath("SkyDome.txt");
     std::ifstream inFile(path);
 
-    unsigned int numVertices, numIndices, i;
+    uint32_t numVertices, numIndices, i;
     inFile >> numVertices;
     inFile >> numIndices;
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     SkyDomeVertex* vertex = vbuffer->Get<SkyDomeVertex>();
@@ -260,9 +260,9 @@ void TerrainWindow3::CreateSkyDome()
         inFile >> vertex[i].tcoord[1];
     }
 
-    int const numTriangles = numIndices / 3;
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    auto* indices = ibuffer->Get<unsigned int>();
+    int32_t const numTriangles = numIndices / 3;
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    auto* indices = ibuffer->Get<uint32_t>();
     for (i = 0; i < numIndices; ++i, ++indices)
     {
         inFile >> *indices;
@@ -275,7 +275,8 @@ void TerrainWindow3::CreateSkyDome()
     auto skyTexture = WICFileIO::Load(path, true);
     skyTexture->AutogenerateMipmaps();
     auto skyEffect = std::make_shared<Texture2Effect>(mProgramFactory, skyTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     // Create the sky dome object, positioning and scaling it to be centered
     // on the terrain and large enough to encompass the terrain.

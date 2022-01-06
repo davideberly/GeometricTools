@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -70,10 +70,10 @@ namespace gte
 
             // The number of intersections is 0 (no intersection), 1 (linear
             // component and plane intersect in a point), or
-            // std::numeric_limits<int>::max() (linear component is on the
+            // std::numeric_limits<int32_t>::max() (linear component is on the
             // plane).  If the linear component is on the plane, 'point'
             // component's origin and 'parameter' is zero.
-            int numIntersections;
+            int32_t numIntersections;
             T parameter;
             Vector3<T> point;
         };
@@ -115,7 +115,7 @@ namespace gte
                     // The line is coincident with the plane, so choose t = 0
                     // for the parameter.
                     result.intersect = true;
-                    result.numIntersections = std::numeric_limits<int>::max();
+                    result.numIntersections = std::numeric_limits<int32_t>::max();
                     result.parameter = (T)0;
                 }
                 else

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -53,14 +53,14 @@
 // GetContainingTriangle.  If it fails by returning -1, then perform an
 // exhaustive search over the triangles.  For example,
 //
-//    int triangle = pmesh->GetContainingTriangle(P,startTriangle,visited);
+//    int32_t triangle = pmesh->GetContainingTriangle(P,startTriangle,visited);
 //    if (triangle >= 0)
 //    {
 //        <take action; for example, compute barycenteric coordinates>;
 //    }
 //    else
 //    {
-//        int numTriangles = pmesh->GetNumTriangles();
+//        int32_t numTriangles = pmesh->GetNumTriangles();
 //        for (triangle = 0; triangle < numTriangles; ++triangle)
 //        {
 //            if (pmesh->Contains(triangle, P))
@@ -88,7 +88,7 @@ namespace gte
         // triangles in the plane.  The index array must have 3*numTriangles
         // elements, each triple of indices representing a triangle in the
         // mesh.  Each index is into the 'vertices' array.
-        PlanarMesh(int numVertices, Vector2<InputType> const* vertices, int numTriangles, int const* indices)
+        PlanarMesh(int32_t numVertices, Vector2<InputType> const* vertices, int32_t numTriangles, int32_t const* indices)
             :
             mNumVertices(0),
             mVertices(nullptr),
@@ -98,12 +98,12 @@ namespace gte
                 && indices != nullptr, "Invalid input.");
 
             // Create a mesh in order to get adjacency information.
-            int const* current = indices;
-            for (int t = 0; t < numTriangles; ++t)
+            int32_t const* current = indices;
+            for (int32_t t = 0; t < numTriangles; ++t)
             {
-                int v0 = *current++;
-                int v1 = *current++;
-                int v2 = *current++;
+                int32_t v0 = *current++;
+                int32_t v1 = *current++;
+                int32_t v2 = *current++;
                 if (!mMesh.Insert(v0, v1, v2))
                 {
                     // TODO: Fix this comment once the exception handling is
@@ -121,29 +121,29 @@ namespace gte
             // by the indices, not the mesh triangle map, to preserve the
             // triangle ordering of the input indices.
             mNumTriangles = numTriangles;
-            int const numIndices = 3 * numTriangles;
+            int32_t const numIndices = 3 * numTriangles;
             mIndices.resize(numIndices);
 
             std::copy(indices, indices + numIndices, mIndices.begin());
-            for (int t = 0, vIndex = 0; t < numTriangles; ++t)
+            for (int32_t t = 0, vIndex = 0; t < numTriangles; ++t)
             {
-                int v0 = indices[vIndex++];
-                int v1 = indices[vIndex++];
-                int v2 = indices[vIndex++];
+                int32_t v0 = indices[vIndex++];
+                int32_t v1 = indices[vIndex++];
+                int32_t v2 = indices[vIndex++];
                 TriangleKey<true> key(v0, v1, v2);
                 mTriIndexMap.insert(std::make_pair(key, t));
             }
 
             mAdjacencies.resize(numIndices);
             auto const& tmap = mMesh.GetTriangles();
-            for (int t = 0, base = 0; t < numTriangles; ++t, base += 3)
+            for (int32_t t = 0, base = 0; t < numTriangles; ++t, base += 3)
             {
-                int v0 = indices[base];
-                int v1 = indices[base + 1];
-                int v2 = indices[base + 2];
+                int32_t v0 = indices[base];
+                int32_t v1 = indices[base + 1];
+                int32_t v2 = indices[base + 2];
                 TriangleKey<true> key(v0, v1, v2);
                 auto element = tmap.find(key);
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     auto adj = element->second->T[i];
                     if (adj)
@@ -159,7 +159,7 @@ namespace gte
             }
         }
 
-        PlanarMesh(int numVertices, Vector2<InputType> const* vertices, ETManifoldMesh const& mesh)
+        PlanarMesh(int32_t numVertices, Vector2<InputType> const* vertices, ETManifoldMesh const& mesh)
             :
             mNumVertices(0),
             mVertices(nullptr),
@@ -176,14 +176,14 @@ namespace gte
             // Build the adjacency graph using the triangle ordering implied
             // by the mesh triangle map.
             auto const& tmap = mesh.GetTriangles();
-            mNumTriangles = static_cast<int>(tmap.size());
+            mNumTriangles = static_cast<int32_t>(tmap.size());
             mIndices.resize(3 * static_cast<size_t>(mNumTriangles));
 
-            int tIndex = 0, vIndex = 0;
+            int32_t tIndex = 0, vIndex = 0;
             for (auto const& element : tmap)
             {
                 mTriIndexMap.insert(std::make_pair(element.first, tIndex++));
-                for (int i = 0; i < 3; ++i, ++vIndex)
+                for (int32_t i = 0; i < 3; ++i, ++vIndex)
                 {
                     mIndices[vIndex] = element.second->V[i];
                 }
@@ -193,7 +193,7 @@ namespace gte
             vIndex = 0;
             for (auto const& element : tmap)
             {
-                for (int i = 0; i < 3; ++i, ++vIndex)
+                for (int32_t i = 0; i < 3; ++i, ++vIndex)
                 {
                     auto adj = element.second->T[i];
                     if (adj)
@@ -210,12 +210,12 @@ namespace gte
         }
 
         // Mesh information.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
 
-        inline int GetNumTriangles() const
+        inline int32_t GetNumTriangles() const
         {
             return mNumTriangles;
         }
@@ -225,12 +225,12 @@ namespace gte
             return mVertices;
         }
 
-        inline int const* GetIndices() const
+        inline int32_t const* GetIndices() const
         {
             return mIndices.data();
         }
 
-        inline int const* GetAdjacencies() const
+        inline int32_t const* GetAdjacencies() const
         {
             return mAdjacencies.data();
         }
@@ -245,16 +245,16 @@ namespace gte
         // top branch.  If your mesh is not convex and you want a correct
         // containment query, you will have to append "outside" triangles to
         // your mesh to form a convex set.
-        int GetContainingTriangle(Vector2<InputType> const& P, int startTriangle = 0) const
+        int32_t GetContainingTriangle(Vector2<InputType> const& P, int32_t startTriangle = 0) const
         {
             Vector2<ComputeType> test{ P[0], P[1] };
 
             // Use triangle edges as binary separating lines.
-            int triangle = startTriangle;
-            for (int i = 0; i < mNumTriangles; ++i)
+            int32_t triangle = startTriangle;
+            for (int32_t i = 0; i < mNumTriangles; ++i)
             {
-                int ibase = 3 * triangle;
-                int const* v = &mIndices[ibase];
+                int32_t ibase = 3 * triangle;
+                int32_t const* v = &mIndices[ibase];
 
                 if (mQuery.ToLine(test, v[0], v[1]) > 0)
                 {
@@ -292,18 +292,18 @@ namespace gte
             return -1;
         }
 
-        int GetContainingTriangle(Vector2<InputType> const& P, int startTriangle, std::set<int>& visited) const
+        int32_t GetContainingTriangle(Vector2<InputType> const& P, int32_t startTriangle, std::set<int32_t>& visited) const
         {
             Vector2<ComputeType> test{ P[0], P[1] };
             visited.clear();
 
             // Use triangle edges as binary separating lines.
-            int triangle = startTriangle;
-            for (int i = 0; i < mNumTriangles; ++i)
+            int32_t triangle = startTriangle;
+            for (int32_t i = 0; i < mNumTriangles; ++i)
             {
                 visited.insert(triangle);
-                int ibase = 3 * triangle;
-                int const* v = &mIndices[ibase];
+                int32_t ibase = 3 * triangle;
+                int32_t const* v = &mIndices[ibase];
 
                 if (mQuery.ToLine(test, v[0], v[1]) > 0)
                 {
@@ -341,11 +341,11 @@ namespace gte
             return -1;
         }
 
-        bool GetVertices(int t, std::array<Vector2<InputType>, 3>& vertices) const
+        bool GetVertices(int32_t t, std::array<Vector2<InputType>, 3>& vertices) const
         {
             if (0 <= t && t < mNumTriangles)
             {
-                for (int i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
+                for (int32_t i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
                 {
                     vertices[i] = mVertices[mIndices[vIndex]];
                 }
@@ -354,11 +354,11 @@ namespace gte
             return false;
         }
 
-        bool GetIndices(int t, std::array<int, 3>& indices) const
+        bool GetIndices(int32_t t, std::array<int32_t, 3>& indices) const
         {
             if (0 <= t && t < mNumTriangles)
             {
-                for (int i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
+                for (int32_t i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
                 {
                     indices[i] = mIndices[vIndex];
                 }
@@ -367,11 +367,11 @@ namespace gte
             return false;
         }
 
-        bool GetAdjacencies(int t, std::array<int, 3>& adjacencies) const
+        bool GetAdjacencies(int32_t t, std::array<int32_t, 3>& adjacencies) const
         {
             if (0 <= t && t < mNumTriangles)
             {
-                for (int i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
+                for (int32_t i = 0, vIndex = 3 * t; i < 3; ++i, ++vIndex)
                 {
                     adjacencies[i] = mAdjacencies[vIndex];
                 }
@@ -380,17 +380,17 @@ namespace gte
             return false;
         }
 
-        bool GetBarycentrics(int t, Vector2<InputType> const& P, std::array<InputType, 3>& bary) const
+        bool GetBarycentrics(int32_t t, Vector2<InputType> const& P, std::array<InputType, 3>& bary) const
         {
-            std::array<int, 3> indices;
+            std::array<int32_t, 3> indices;
             if (GetIndices(t, indices))
             {
                 Vector2<RationalType> rtP{ P[0], P[1] };
                 std::array<Vector2<RationalType>, 3> rtV;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     Vector2<ComputeType> const& V = mComputeVertices[indices[i]];
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         rtV[i][j] = (RationalType)V[j];
                     }
@@ -399,7 +399,7 @@ namespace gte
                 RationalType rtBary[3];
                 if (ComputeBarycentrics(rtP, rtV[0], rtV[1], rtV[2], rtBary))
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         bary[i] = (InputType)rtBary[i];
                     }
@@ -409,7 +409,7 @@ namespace gte
             return false;
         }
 
-        bool Contains(int triangle, Vector2<InputType> const& P) const
+        bool Contains(int32_t triangle, Vector2<InputType> const& P) const
         {
             Vector2<ComputeType> test{ P[0], P[1] };
             Vector2<ComputeType> v[3];
@@ -422,14 +422,14 @@ namespace gte
         }
 
     public:
-        void CreateVertices(int numVertices, Vector2<InputType> const* vertices)
+        void CreateVertices(int32_t numVertices, Vector2<InputType> const* vertices)
         {
             mNumVertices = numVertices;
             mVertices = vertices;
             mComputeVertices.resize(mNumVertices);
-            for (int i = 0; i < mNumVertices; ++i)
+            for (int32_t i = 0; i < mNumVertices; ++i)
             {
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     mComputeVertices[i][j] = (ComputeType)mVertices[i][j];
                 }
@@ -437,13 +437,13 @@ namespace gte
             mQuery.Set(mNumVertices, &mComputeVertices[0]);
         }
 
-        int mNumVertices;
+        int32_t mNumVertices;
         Vector2<InputType> const* mVertices;
-        int mNumTriangles;
-        std::vector<int> mIndices;
+        int32_t mNumTriangles;
+        std::vector<int32_t> mIndices;
         ETManifoldMesh mMesh;
-        std::map<TriangleKey<true>, int> mTriIndexMap;
-        std::vector<int> mAdjacencies;
+        std::map<TriangleKey<true>, int32_t> mTriIndexMap;
+        std::vector<int32_t> mAdjacencies;
         std::vector<Vector2<ComputeType>> mComputeVertices;
         PrimalQuery2<ComputeType> mQuery;
     };

@@ -1,14 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/VertexBuffer.h>
 #include <Graphics/GL45/GL45.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {
@@ -24,11 +26,20 @@ namespace gte
         void Disable();
 
     private:
-        GLuint mVBufferHandle;
-        GLuint mVArrayHandle;
-
         struct Attribute
         {
+            Attribute()
+                :
+                semantic(VASemantic::NONE),
+                numChannels(0),
+                channelType(0),
+                normalize(0),
+                location(0),
+                offset(0),
+                stride(0)
+            {
+            }
+
             VASemantic semantic;
             GLint numChannels;
             GLint channelType;
@@ -38,8 +49,10 @@ namespace gte
             GLsizei stride;
         };
 
-        int mNumAttributes;
-        Attribute mAttributes[VA_MAX_ATTRIBUTES];
+        GLuint mVBufferHandle;
+        GLuint mVArrayHandle;
+        int32_t mNumAttributes;
+        std::array<Attribute, VAConstant::MAX_ATTRIBUTES> mAttributes;
 
         // Conversions from GTEngine values to GL45 values.
         static GLenum const msChannelType[];

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "IKControllersWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -15,7 +15,7 @@ IKControllersWindow3::IKControllersWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.1f, 0.01f,
         { 0.0f, -2.0f, 0.5f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
@@ -48,7 +48,7 @@ void IKControllersWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IKControllersWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IKControllersWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     if (Transform(key))
     {
@@ -73,7 +73,7 @@ bool IKControllersWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool IKControllersWindow3::OnMouseMotion(MouseButton button, int x, int y, unsigned int modifiers)
+bool IKControllersWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (Window3::OnMouseMotion(button, x, y, modifiers))
     {
@@ -154,14 +154,14 @@ void IKControllersWindow3::CreateScene()
 std::shared_ptr<Visual> IKControllersWindow3::CreateCube()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     float const extent = 0.1f;
     auto cube = mf.CreateBox(extent, extent, extent);
-    auto vbuffer = cube->GetVertexBuffer();
+    auto const& vbuffer = cube->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vertex>();
     vertices[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
     vertices[1].color = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -181,11 +181,11 @@ std::shared_ptr<Visual> IKControllersWindow3::CreateCube()
 std::shared_ptr<Visual> IKControllersWindow3::CreateRod()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
 
     vertices[0].position = { 0.0f, 0.0f, 0.0f };
@@ -205,14 +205,14 @@ std::shared_ptr<Visual> IKControllersWindow3::CreateRod()
 std::shared_ptr<Visual> IKControllersWindow3::CreateGround()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     float const extent = 16.0f;
     auto plane = mf.CreateRectangle(2, 2, extent, extent);
-    auto vbuffer = plane->GetVertexBuffer();
+    auto const& vbuffer = plane->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vertex>();
     float const z = -0.1f;
     vertices[0].position[2] = z;
@@ -235,13 +235,13 @@ void IKControllersWindow3::UpdateRod()
     // The vertex[0] never moves.  The rod mesh is in the coordinate system
     // of joint0, so use the local translation of joint1 for the rod mesh's
     // moving end point.
-    auto vbuffer = mRod->GetVertexBuffer();
+    auto const& vbuffer = mRod->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vertex>();
     vertices[1].position = mJoint1->localTransform.GetTranslation();
     mEngine->Update(vbuffer);
 }
 
-bool IKControllersWindow3::Transform(unsigned char key)
+bool IKControllersWindow3::Transform(uint8_t key)
 {
     Matrix4x4<float> rot, incr;
     Vector3<float> trn;

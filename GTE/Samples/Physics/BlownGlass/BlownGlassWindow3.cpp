@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BlownGlassWindow3.h"
 
@@ -20,10 +20,10 @@ BlownGlassWindow3::BlownGlassWindow3(Parameters& parameters)
     // Use blending for the visualization.
     mMeshBlendState = std::make_shared<BlendState>();
     mMeshBlendState->target[0].enable = true;
-    mMeshBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mMeshBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mMeshBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mMeshBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mMeshBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mMeshBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mMeshBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mMeshBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     // The alpha channel must be zero for the blending of density to work
     // correctly through the fluid region.
@@ -31,11 +31,11 @@ BlownGlassWindow3::BlownGlassWindow3(Parameters& parameters)
 
     // Disable face culling.
     mMeshRasterizerState = std::make_shared<RasterizerState>();
-    mMeshRasterizerState->cullMode = RasterizerState::CULL_NONE;
+    mMeshRasterizerState->cull = RasterizerState::Cull::NONE;
 
     // Read the depth buffer but do not write to it.
     mMeshDepthStencilState = std::make_shared<DepthStencilState>();
-    mMeshDepthStencilState->writeMask = DepthStencilState::MASK_ZERO;
+    mMeshDepthStencilState->writeMask = DepthStencilState::WriteMask::ZERO;
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.001f,
         { 2.5f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
@@ -125,26 +125,26 @@ bool BlownGlassWindow3::CreateScene()
 
     // Create the pixel shader for visualization.
     auto sampler = std::make_shared<SamplerState>();
-    sampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    sampler->mode[0] = SamplerState::CLAMP;
-    sampler->mode[1] = SamplerState::CLAMP;
-    sampler->mode[2] = SamplerState::CLAMP;
+    sampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    sampler->mode[0] = SamplerState::Mode::CLAMP;
+    sampler->mode[1] = SamplerState::Mode::CLAMP;
+    sampler->mode[2] = SamplerState::Mode::CLAMP;
     program->GetPixelShader()->Set("volumeTexture", mFluid->GetState(), "volumeSampler", sampler);
 
     auto effect = std::make_shared<VisualEffect>(program);
 
     // Load the level-surface mesh obtained from the SurfaceExtraction sample.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    unsigned int numVertices = 82832;
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    uint32_t numVertices = 82832;
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     path = mEnvironment.GetPath("Vertices82832.raw");
     std::ifstream input(path, std::ios::binary);
     input.read(vbuffer->GetData(), vbuffer->GetNumBytes());
     input.close();
 
-    unsigned int numTriangles = 41388;
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
+    uint32_t numTriangles = 41388;
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
     path = mEnvironment.GetPath("Indices41388.raw");
     input.open(path, std::ios::in | std::ios::binary);
     input.read(ibuffer->GetData(), ibuffer->GetNumBytes());

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid3InitializeSource.h>
@@ -12,8 +12,8 @@ using namespace gte;
 
 GPUFluid3InitializeSource::GPUFluid3InitializeSource(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int zSize, int numXThreads, int numYThreads,
-    int numZThreads, std::shared_ptr<ConstantBuffer> const& parameters)
+    int32_t xSize, int32_t ySize, int32_t zSize, int32_t numXThreads, int32_t numYThreads,
+    int32_t numZThreads, std::shared_ptr<ConstantBuffer> const& parameters)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads),
@@ -22,9 +22,9 @@ GPUFluid3InitializeSource::GPUFluid3InitializeSource(
     // Create the resources for generating velocity from vortices.
     mVortex = std::make_shared<ConstantBuffer>(sizeof(Vortex), true);
     mVelocity0 = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mVelocity0->SetUsage(Resource::SHADER_OUTPUT);
+    mVelocity0->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mVelocity1 = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mVelocity1->SetUsage(Resource::SHADER_OUTPUT);
+    mVelocity1->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
     // Create the resources for generating velocity from wind and gravity.
     mExternal = std::make_shared<ConstantBuffer>(sizeof(External), false);
@@ -36,10 +36,10 @@ GPUFluid3InitializeSource::GPUFluid3InitializeSource(
     e.gravity = { 0.0f, 0.0f, 0.0f, 0.0f };
     e.windData = { 0.001f, 0.0f, 0.0f, 0.0f };
     mSource = std::make_shared<Texture3>(DF_R32G32B32A32_FLOAT, xSize, ySize, zSize);
-    mSource->SetUsage(Resource::SHADER_OUTPUT);
+    mSource->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
     // Create the shader for generating velocity from vortices.
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("NUM_X_THREADS", numXThreads);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -48,7 +48,7 @@ GPUFluid3InitializeSource::GPUFluid3InitializeSource(
     mGenerateVortex = factory->CreateFromSource(*msGenerateVortexSource[api]);
     if (mGenerateVortex)
     {
-        auto cshader = mGenerateVortex->GetComputeShader();
+        auto const& cshader = mGenerateVortex->GetComputeShader();
         cshader->Set("Parameters", parameters);
         cshader->Set("Vortex", mVortex);
         cshader->Set("inVelocity", mVelocity0);
@@ -59,7 +59,7 @@ GPUFluid3InitializeSource::GPUFluid3InitializeSource(
     mInitializeSource = factory->CreateFromSource(*msInitializeSourceSource[api]);
     if (mInitializeSource)
     {
-        auto cshader = mInitializeSource->GetComputeShader();
+        auto const& cshader = mInitializeSource->GetComputeShader();
         cshader->Set("Parameters", parameters);
         cshader->Set("External", mExternal);
         cshader->Set("source", mSource);
@@ -80,10 +80,10 @@ void GPUFluid3InitializeSource::Execute(
 
     // Compute the velocity one vortex at a time.  After the loop terminates,
     // the final velocity is stored in mVelocity0.
-    auto cshader = mGenerateVortex->GetComputeShader();
+    std::shared_ptr<Shader> cshader = mGenerateVortex->GetComputeShader();
     std::memset(mVelocity0->GetData(), 0, mVelocity0->GetNumBytes());
     Vortex& v = *mVortex->Get<Vortex>();
-    for (int i = 0; i < NUM_VORTICES; ++i)
+    for (int32_t i = 0; i < NUM_VORTICES; ++i)
     {
         v.position[0] = unirnd(mte);
         v.position[1] = unirnd(mte);

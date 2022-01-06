@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -37,7 +37,7 @@ namespace gte
             // When the number is 2, the segment is either interior to the
             // triangle or is an edge of the triangle, the distinction stored
             // in 'isInterior'.
-            int numIntersections;
+            int32_t numIntersections;
             bool isInterior;
         };
 
@@ -63,8 +63,8 @@ namespace gte
             //   3 0 0  none
 
             std::array<Real, 3> s{ (Real)0, (Real)0, (Real)0 };
-            int numPositive = 0, numNegative = 0, numZero = 0;
-            for (int i = 0; i < 3; ++i)
+            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            for (int32_t i = 0; i < 3; ++i)
             {
                 s[i] = Dot(plane.normal, triangle.v[i]) - plane.constant;
                 if (s[i] > (Real)0)
@@ -92,7 +92,7 @@ namespace gte
             if (numZero == 1)
             {
                 result.intersect = true;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     if (s[i] == (Real)0)
                     {
@@ -157,7 +157,7 @@ namespace gte
             // When the number is 2, the segment is either interior to the
             // triangle or is an edge of the triangle, the distinction stored
             // in 'isInterior'.
-            int numIntersections;
+            int32_t numIntersections;
             bool isInterior;
             std::array<Vector3<Real>, 3> point;
         };
@@ -184,8 +184,8 @@ namespace gte
             //   3 0 0  none
 
             Real s[3];
-            int numPositive = 0, numNegative = 0, numZero = 0;
-            for (int i = 0; i < 3; ++i)
+            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            for (int32_t i = 0; i < 3; ++i)
             {
                 s[i] = Dot(plane.normal, triangle.v[i]) - plane.constant;
                 if (s[i] > (Real)0)
@@ -208,11 +208,11 @@ namespace gte
                 result.numIntersections = 2;
                 result.isInterior = true;
                 Real sign = (Real)3 - numPositive * (Real)2;
-                for (int i0 = 0; i0 < 3; ++i0)
+                for (int32_t i0 = 0; i0 < 3; ++i0)
                 {
                     if (sign * s[i0] > (Real)0)
                     {
-                        int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                        int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                         Real t1 = s[i1] / (s[i1] - s[i0]);
                         Real t2 = s[i2] / (s[i2] - s[i0]);
                         result.point[0] = triangle.v[i1] + t1 *
@@ -228,11 +228,11 @@ namespace gte
             if (numZero == 1)
             {
                 result.intersect = true;
-                for (int i0 = 0; i0 < 3; ++i0)
+                for (int32_t i0 = 0; i0 < 3; ++i0)
                 {
                     if (s[i0] == (Real)0)
                     {
-                        int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                        int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                         result.point[0] = triangle.v[i0];
                         if (numPositive == 2 || numNegative == 2)
                         {
@@ -257,11 +257,11 @@ namespace gte
                 result.intersect = true;
                 result.numIntersections = 2;
                 result.isInterior = false;
-                for (int i0 = 0; i0 < 3; ++i0)
+                for (int32_t i0 = 0; i0 < 3; ++i0)
                 {
                     if (s[i0] != (Real)0)
                     {
-                        int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                        int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                         result.point[0] = triangle.v[i1];
                         result.point[1] = triangle.v[i2];
                         break;

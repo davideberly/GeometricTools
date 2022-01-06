@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BouncingBallWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -26,7 +26,7 @@ BouncingBallWindow3::BouncingBallWindow3(Parameters& parameters)
 
     mEngine->SetClearColor({ 0.5f, 0.0f, 1.0f, 1.0f });
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
 
@@ -56,7 +56,7 @@ void BouncingBallWindow3::OnIdle()
     GraphicsTick();
 }
 
-bool BouncingBallWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BouncingBallWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -138,11 +138,12 @@ void BouncingBallWindow3::CreateBall()
     std::string path = mEnvironment.GetPath("BallTexture.png");
     auto texture = WICFileIO::Load(path, false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mBall = std::make_unique<DeformableBall>(1.0f, 2.0f, effect);
     mBallNode = std::make_shared<Node>();
-    auto mesh = mBall->GetMesh();
+    auto const& mesh = mBall->GetMesh();
     mBallNode->AttachChild(mesh);
     mPVWMatrices.Subscribe(mesh->worldTransform, effect->GetPVWMatrixConstant());
 }
@@ -150,8 +151,8 @@ void BouncingBallWindow3::CreateBall()
 void BouncingBallWindow3::CreateFloor()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto vertices = vbuffer->Get<Vertex>();
@@ -165,15 +166,16 @@ void BouncingBallWindow3::CreateFloor()
     vertices[2].tcoord = { 1.0f, 1.0f };
     vertices[3].tcoord = { 0.0f, 1.0f };
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
-    auto indices = ibuffer->Get<unsigned int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
+    auto indices = ibuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 1;  indices[2] = 2;
     indices[3] = 0;  indices[4] = 2;  indices[5] = 3;
 
     std::string path = mEnvironment.GetPath("Floor.png");
     auto texture = WICFileIO::Load(path, false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mFloor = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mFloor->worldTransform, effect->GetPVWMatrixConstant());
@@ -182,8 +184,8 @@ void BouncingBallWindow3::CreateFloor()
 void BouncingBallWindow3::CreateWall()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto vertices = vbuffer->Get<Vertex>();
@@ -198,15 +200,16 @@ void BouncingBallWindow3::CreateWall()
     vertices[2].tcoord = { maxTCoord, maxTCoord };
     vertices[3].tcoord = { 0.0f, maxTCoord };
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
-    auto indices = ibuffer->Get<unsigned int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
+    auto indices = ibuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 1;  indices[2] = 2;
     indices[3] = 0;  indices[4] = 2;  indices[5] = 3;
 
     std::string path = mEnvironment.GetPath("Wall1.png");
     auto texture = WICFileIO::Load(path, false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mWall = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mWall->worldTransform, effect->GetPVWMatrixConstant());

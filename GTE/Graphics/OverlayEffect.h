@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -13,6 +13,7 @@
 #include <Graphics/Texture2.h>
 #include <Graphics/VertexBuffer.h>
 #include <Mathematics/Vector2.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -22,13 +23,13 @@ namespace gte
         // Allow derived classes for OverlayEffect.
         virtual ~OverlayEffect() = default;
     protected:
-        OverlayEffect(int windowWidth, int windowHeight);
+        OverlayEffect(int32_t windowWidth, int32_t windowHeight);
 
     public:
         // Create an overlay that allows you to use a simple color shader or a
         // simple gray-scale shader.
         OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
-            int windowWidth, int windowHeight, int textureWidth, int textureHeight,
+            int32_t windowWidth, int32_t windowHeight, int32_t textureWidth, int32_t textureHeight,
             SamplerState::Filter filter, SamplerState::Mode mode0, SamplerState::Mode mode1,
             bool useColorPShader);
 
@@ -36,7 +37,7 @@ namespace gte
         // gray default shaders.  The caller is responsible for creating a
         // sampler for the pixel shader.
         OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
-            int windowWidth, int windowHeight, int textureWidth, int textureHeight,
+            int32_t windowWidth, int32_t windowHeight, int32_t textureWidth, int32_t textureHeight,
             std::string const& psSource);
 
         // Access to the overlay rectangle (px,py,pw,ph), which is in client
@@ -45,9 +46,9 @@ namespace gte
         // respectively.  The width and height must be positive.  The corner
         // (px,py) may be chosen outside the client window, allowing you to
         // clip overlays against the window boundaries.
-        void SetOverlayRectangle(std::array<int, 4> const& rectangle);
+        void SetOverlayRectangle(std::array<int32_t, 4> const& rectangle);
 
-        inline std::array<int, 4> GetOverlayRectangle() const
+        inline std::array<int32_t, 4> GetOverlayRectangle() const
         {
             return mOverlayRectangle;
         }
@@ -58,21 +59,21 @@ namespace gte
         // respectively.  The width and height must be positive.  The corner
         // (tx,ty) may be chosen outside the texture image, but be aware that
         // the colors drawn outside will depend on the sampler state mode.
-        void SetTextureRectangle(std::array<int, 4> const& rectangle);
+        void SetTextureRectangle(std::array<int32_t, 4> const& rectangle);
 
-        inline std::array<int, 4> GetTextureRectangle() const
+        inline std::array<int32_t, 4> GetTextureRectangle() const
         {
             return mTextureRectangle;
         }
 
         // Joint setting of rectangles (rare case), allowing for a single
         // vertex buffer update.
-        void SetRectangles(std::array<int, 4> const& overlayRectangle,
-            std::array<int, 4> const& textureRectangle);
+        void SetRectangles(std::array<int32_t, 4> const& overlayRectangle,
+            std::array<int32_t, 4> const& textureRectangle);
 
         // Test whether the input (x,y) is contained by the overlay rectangle.
         // This is useful for hit testing in user interfaces.
-        bool Contains(int x, int y) const;
+        bool Contains(int32_t x, int32_t y) const;
 
         // For DX11Engine::Draw(VertexBuffer*,IndexBuffer*,VisualEffect*). The
         // vertex buffer is also needed for CPU-to-GPU copies when the overlay
@@ -113,7 +114,7 @@ namespace gte
         void SetNormalizedZ(float z);
 
     protected:
-        virtual void Initialize(int windowWidth, int windowHeight, int textureWidth, int textureHeight);
+        virtual void Initialize(int32_t windowWidth, int32_t windowHeight, int32_t textureWidth, int32_t textureHeight);
 
         struct Vertex
         {
@@ -125,9 +126,9 @@ namespace gte
 
         float mWindowWidth, mWindowHeight;
         float mInvTextureWidth, mInvTextureHeight;
-        int mFactoryAPI;
-        std::array<int, 4> mOverlayRectangle;
-        std::array<int, 4> mTextureRectangle;
+        int32_t mFactoryAPI;
+        std::array<int32_t, 4> mOverlayRectangle;
+        std::array<int32_t, 4> mTextureRectangle;
         std::shared_ptr<VertexBuffer> mVBuffer;
         std::shared_ptr<IndexBuffer> mIBuffer;
         std::shared_ptr<VisualProgram> mProgram;

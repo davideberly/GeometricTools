@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45TextureArray.h>
@@ -11,7 +11,7 @@ using namespace gte;
 
 GL45TextureArray::~GL45TextureArray()
 {
-    for (int level = 0; level < mNumLevels; ++level)
+    for (int32_t level = 0; level < mNumLevels; ++level)
     {
         glDeleteBuffers(1, &mLevelPixelUnpackBuffer[level]);
         glDeleteBuffers(1, &mLevelPixelPackBuffer[level]);
@@ -54,7 +54,7 @@ void GL45TextureArray::Initialize()
         {
             // Initialize with the first mipmap level and then generate
             // the remaining mipmaps.
-            for (unsigned int item = 0; item < numItems; ++item)
+            for (uint32_t item = 0; item < numItems; ++item)
             {
                 auto data = texture->GetDataFor(item, 0);
                 if (data)
@@ -67,9 +67,9 @@ void GL45TextureArray::Initialize()
         else
         {
             // Initialize with each mipmap level.
-            for (unsigned int item = 0; item < numItems; ++item)
+            for (uint32_t item = 0; item < numItems; ++item)
             {
-                for (int level = 0; level < mNumLevels; ++level)
+                for (int32_t level = 0; level < mNumLevels; ++level)
                 {
                     auto data = texture->GetDataFor(item, level);
                     if (data)
@@ -93,7 +93,7 @@ bool GL45TextureArray::Update()
     {
         // Only update the level 0 texture and then generate the remaining
         // mipmaps from it.
-        for (unsigned int item = 0; item < numItems; ++item)
+        for (uint32_t item = 0; item < numItems; ++item)
         {
             if (!Update(item, 0))
             {
@@ -107,9 +107,9 @@ bool GL45TextureArray::Update()
         // Automatic generation of mipmaps is not enabled, so all mipmap
         // levels must be copied to the GPU.
         auto const numLevels = texture->GetNumLevels();
-        for (unsigned int item = 0; item < numItems; ++item)
+        for (uint32_t item = 0; item < numItems; ++item)
         {
-            for (unsigned int level = 0; level < numLevels; ++level)
+            for (uint32_t level = 0; level < numLevels; ++level)
             {
                 if (!Update(item, level))
                 {
@@ -131,7 +131,7 @@ bool GL45TextureArray::CopyCpuToGpu()
     {
         // Only update the level 0 texture and then generate the remaining
         // mipmaps from it.
-        for (unsigned int item = 0; item < numItems; ++item)
+        for (uint32_t item = 0; item < numItems; ++item)
         {
             if (!CopyCpuToGpu(item, 0))
             {
@@ -145,9 +145,9 @@ bool GL45TextureArray::CopyCpuToGpu()
         // Automatic generation of mipmaps is not enabled, so all mipmap
         // levels must be copied to the GPU.
         auto const numLevels = texture->GetNumLevels();
-        for (unsigned int item = 0; item < numItems; ++item)
+        for (uint32_t item = 0; item < numItems; ++item)
         {
-            for (unsigned int level = 0; level < numLevels; ++level)
+            for (uint32_t level = 0; level < numLevels; ++level)
             {
                 if (!CopyCpuToGpu(item, level))
                 {
@@ -165,9 +165,9 @@ bool GL45TextureArray::CopyGpuToCpu()
     auto texture = GetTexture();
     auto const numItems = texture->GetNumItems();
     auto const numLevels = texture->GetNumLevels();
-    for (unsigned int item = 0; item < numItems; ++item)
+    for (uint32_t item = 0; item < numItems; ++item)
     {
-        for (unsigned int level = 0; level < numLevels; ++level)
+        for (uint32_t level = 0; level < numLevels; ++level)
         {
             if (!CopyGpuToCpu(item, level))
             {
@@ -179,15 +179,15 @@ bool GL45TextureArray::CopyGpuToCpu()
     return true;
 }
 
-bool GL45TextureArray::Update(unsigned int item, unsigned int level)
+bool GL45TextureArray::Update(uint32_t item, uint32_t level)
 {
     auto texture = GetTexture();
-    LogAssert(texture->GetUsage() != Resource::DYNAMIC_UPDATE,
+    LogAssert(texture->GetUsage() != Resource::Usage::DYNAMIC_UPDATE,
         "Texture usage must be DYNAMIC_UPDATE.");
     return DoCopyCpuToGpu(item, level);
 }
 
-bool GL45TextureArray::CopyCpuToGpu(unsigned int item, unsigned int level)
+bool GL45TextureArray::CopyCpuToGpu(uint32_t item, uint32_t level)
 {
     if (!PreparedForCopy(GL_WRITE_ONLY))
     {
@@ -197,7 +197,7 @@ bool GL45TextureArray::CopyCpuToGpu(unsigned int item, unsigned int level)
     return DoCopyCpuToGpu(item, level);
 }
 
-bool GL45TextureArray::CopyGpuToCpu(unsigned int item, unsigned int level)
+bool GL45TextureArray::CopyGpuToCpu(uint32_t item, uint32_t level)
 {
     if (!PreparedForCopy(GL_READ_ONLY))
     {
@@ -269,7 +269,7 @@ bool GL45TextureArray::GenerateMipmaps()
     return false;
 }
 
-bool GL45TextureArray::DoCopyCpuToGpu(unsigned int item, unsigned int level)
+bool GL45TextureArray::DoCopyCpuToGpu(uint32_t item, uint32_t level)
 {
     auto texture = GetTexture();
 
@@ -325,15 +325,15 @@ bool GL45TextureArray::DoCopyCpuToGpu(unsigned int item, unsigned int level)
 void GL45TextureArray::CreateStaging()
 {
     auto texture = GetTexture();
-    auto const copyType = texture->GetCopyType();
+    auto const copyType = texture->GetCopy();
 
     auto const createPixelUnpackBuffers = 
-        (copyType == Resource::COPY_CPU_TO_STAGING) ||
-        (copyType == Resource::COPY_BIDIRECTIONAL);
+        (copyType == Resource::Copy::CPU_TO_STAGING) ||
+        (copyType == Resource::Copy::BIDIRECTIONAL);
 
     auto const createPixelPackBuffers =
-        (copyType == Resource::COPY_STAGING_TO_CPU) ||
-        (copyType == Resource::COPY_BIDIRECTIONAL);
+        (copyType == Resource::Copy::STAGING_TO_CPU) ||
+        (copyType == Resource::Copy::BIDIRECTIONAL);
 
     // TODO:  Determine frequency and nature of usage for this staging buffer
     // when created by calling glBufferData.
@@ -341,7 +341,7 @@ void GL45TextureArray::CreateStaging()
 
     if (createPixelUnpackBuffers)
     {
-        for (int level = 0; level < mNumLevels; ++level)
+        for (int32_t level = 0; level < mNumLevels; ++level)
         {
             auto& pixBuffer = mLevelPixelUnpackBuffer[level];
             if (0 == pixBuffer)
@@ -359,7 +359,7 @@ void GL45TextureArray::CreateStaging()
 
     if (createPixelPackBuffers)
     {
-        for (int level = 0; level < mNumLevels; ++level)
+        for (int32_t level = 0; level < mNumLevels; ++level)
         {
             auto& pixBuffer = mLevelPixelPackBuffer[level];
             if (0 == pixBuffer)

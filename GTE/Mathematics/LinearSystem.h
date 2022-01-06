@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -80,7 +80,7 @@ namespace gte
         }
 
         // Solve A*X = B, where B is Nx1 and the solution X is Nx1.
-        static bool Solve(int N, Real const* A, Real const* B, Real* X)
+        static bool Solve(int32_t N, Real const* A, Real const* B, Real* X)
         {
             Real determinant = static_cast<Real>(0);
             return GaussianElimination<Real>()(N, A, nullptr, determinant, B, X,
@@ -88,7 +88,7 @@ namespace gte
         }
 
         // Solve A*X = B, where B is NxM and the solution X is NxM.
-        static bool Solve(int N, int M, Real const* A, Real const* B, Real* X)
+        static bool Solve(int32_t N, int32_t M, Real const* A, Real const* B, Real* X)
         {
             Real determinant = static_cast<Real>(0);
             return GaussianElimination<Real>()(N, A, nullptr, determinant, nullptr,
@@ -99,7 +99,7 @@ namespace gte
         // subdiagonal, diagonal, and superdiagonal of A.  The diagonal input
         // must have N elements.  The subdiagonal and superdiagonal inputs
         // must have N-1 elements.
-        static bool SolveTridiagonal(int N, Real const* subdiagonal,
+        static bool SolveTridiagonal(int32_t N, Real const* subdiagonal,
             Real const* diagonal, Real const* superdiagonal, Real const* B, Real* X)
         {
             if (diagonal[0] == (Real)0)
@@ -112,7 +112,7 @@ namespace gte
             Real invExpr = ((Real)1) / expr;
             X[0] = B[0] * invExpr;
 
-            int i0, i1;
+            int32_t i0, i1;
             for (i0 = 0, i1 = 1; i1 < N; ++i0, ++i1)
             {
                 tmp[i0] = superdiagonal[i0] * invExpr;
@@ -136,7 +136,7 @@ namespace gte
         // subdiagonal, diagonal, and superdiagonal of A.  Moreover, the
         // subdiagonal elements are a constant, the diagonal elements are a
         // constant, and the superdiagonal elements are a constant.
-        static bool SolveConstantTridiagonal(int N, Real subdiagonal,
+        static bool SolveConstantTridiagonal(int32_t N, Real subdiagonal,
             Real diagonal, Real superdiagonal, Real const* B, Real* X)
         {
             if (diagonal == (Real)0)
@@ -149,7 +149,7 @@ namespace gte
             Real invExpr = ((Real)1) / expr;
             X[0] = B[0] * invExpr;
 
-            int i0, i1;
+            int32_t i0, i1;
             for (i0 = 0, i1 = 1; i1 < N; ++i0, ++i1)
             {
                 tmp[i0] = superdiagonal * invExpr;
@@ -173,8 +173,8 @@ namespace gte
         // symmetric.  You must specify the maximum number of iterations and a
         // tolerance for terminating the iterations.  Reasonable choices for
         // tolerance are 1e-06f for 'float' or 1e-08 for 'double'.
-        static unsigned int SolveSymmetricCG(int N, Real const* A, Real const* B,
-            Real* X, unsigned int maxIterations, Real tolerance)
+        static uint32_t SolveSymmetricCG(int32_t N, Real const* A, Real const* B,
+            Real* X, uint32_t maxIterations, Real tolerance)
         {
             // The first iteration.
             std::vector<Real> tmpR(N), tmpP(N), tmpW(N);
@@ -193,7 +193,7 @@ namespace gte
             Real rho1 = Dot(N, R, R);
 
             // The remaining iterations.
-            unsigned int iteration;
+            uint32_t iteration;
             for (iteration = 1; iteration <= maxIterations; ++iteration)
             {
                 Real root0 = std::sqrt(rho1);
@@ -225,9 +225,9 @@ namespace gte
         // values.  You must specify the maximum number of iterations and a
         // tolerance for terminating the iterations.  Reasonable choices for
         // tolerance are 1e-06f for 'float' or 1e-08 for 'double'.
-        typedef std::map<std::array<int, 2>, Real> SparseMatrix;
-        static unsigned int SolveSymmetricCG(int N, SparseMatrix const& A,
-            Real const* B, Real* X, unsigned int maxIterations, Real tolerance)
+        typedef std::map<std::array<int32_t, 2>, Real> SparseMatrix;
+        static uint32_t SolveSymmetricCG(int32_t N, SparseMatrix const& A,
+            Real const* B, Real* X, uint32_t maxIterations, Real tolerance)
         {
             // The first iteration.
             std::vector<Real> tmpR(N), tmpP(N), tmpW(N);
@@ -246,7 +246,7 @@ namespace gte
             Real rho1 = Dot(N, R, R);
 
             // The remaining iterations.
-            unsigned int iteration;
+            uint32_t iteration;
             for (iteration = 1; iteration <= maxIterations; ++iteration)
             {
                 Real root0 = std::sqrt(rho1);
@@ -271,17 +271,17 @@ namespace gte
 
     private:
         // Support for the conjugate gradient method.
-        static Real Dot(int N, Real const* U, Real const* V)
+        static Real Dot(int32_t N, Real const* U, Real const* V)
         {
             Real dot = (Real)0;
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 dot += U[i] * V[i];
             }
             return dot;
         }
 
-        static void Mul(int N, Real const* A, Real const* X, Real* P)
+        static void Mul(int32_t N, Real const* A, Real const* X, Real* P)
         {
 #if defined(GTE_USE_ROW_MAJOR)
             LexicoArray2<true, Real> matA(N, N, const_cast<Real*>(A));
@@ -290,22 +290,22 @@ namespace gte
 #endif
 
             std::memset(P, 0, N * sizeof(Real));
-            for (int row = 0; row < N; ++row)
+            for (int32_t row = 0; row < N; ++row)
             {
-                for (int col = 0; col < N; ++col)
+                for (int32_t col = 0; col < N; ++col)
                 {
                     P[row] += matA(row, col) * X[col];
                 }
             }
         }
 
-        static void Mul(int N, SparseMatrix const& A, Real const* X, Real* P)
+        static void Mul(int32_t N, SparseMatrix const& A, Real const* X, Real* P)
         {
             std::memset(P, 0, N * sizeof(Real));
             for (auto const& element : A)
             {
-                int i = element.first[0];
-                int j = element.first[1];
+                int32_t i = element.first[0];
+                int32_t j = element.first[1];
                 Real value = element.second;
                 P[i] += value * X[j];
                 if (i != j)
@@ -315,25 +315,25 @@ namespace gte
             }
         }
 
-        static void UpdateX(int N, Real* X, Real alpha, Real const* P)
+        static void UpdateX(int32_t N, Real* X, Real alpha, Real const* P)
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 X[i] += alpha * P[i];
             }
         }
 
-        static void UpdateR(int N, Real* R, Real alpha, Real const* W)
+        static void UpdateR(int32_t N, Real* R, Real alpha, Real const* W)
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 R[i] -= alpha * W[i];
             }
         }
 
-        static void UpdateP(int N, Real* P, Real beta, Real const* R)
+        static void UpdateP(int32_t N, Real* P, Real beta, Real const* R)
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 P[i] = R[i] + beta * P[i];
             }

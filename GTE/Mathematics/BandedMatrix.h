@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,7 +18,7 @@ namespace gte
     {
     public:
         // Construction and destruction.
-        BandedMatrix(int size, int numLBands, int numUBands)
+        BandedMatrix(int32_t size, int32_t numLBands, int32_t numUBands)
             :
             mSize(size),
             mDBand{},
@@ -36,7 +36,7 @@ namespace gte
                 if (numLBands > 0)
                 {
                     mLBands.resize(numLBands);
-                    int numElements = size - 1;
+                    int32_t numElements = size - 1;
                     for (auto& band : mLBands)
                     {
                         band.resize(numElements--);
@@ -47,7 +47,7 @@ namespace gte
                 if (numUBands > 0)
                 {
                     mUBands.resize(numUBands);
-                    int numElements = size - 1;
+                    int32_t numElements = size - 1;
                     for (auto& band : mUBands)
                     {
                         band.resize(numElements--);
@@ -67,7 +67,7 @@ namespace gte
         }
 
         // Member access.
-        inline int GetSize() const
+        inline int32_t GetSize() const
         {
             return mSize;
         }
@@ -102,14 +102,14 @@ namespace gte
             return mUBands;
         }
 
-        Real& operator()(int r, int c)
+        Real& operator()(int32_t r, int32_t c)
         {
             if (0 <= r && r < mSize && 0 <= c && c < mSize)
             {
-                int band = c - r;
+                int32_t band = c - r;
                 if (band > 0)
                 {
-                    int const numUBands = static_cast<int>(mUBands.size());
+                    int32_t const numUBands = static_cast<int32_t>(mUBands.size());
                     if (--band < numUBands && r < mSize - 1 - band)
                     {
                         return mUBands[band][r];
@@ -118,7 +118,7 @@ namespace gte
                 else if (band < 0)
                 {
                     band = -band;
-                    int const numLBands = static_cast<int>(mLBands.size());
+                    int32_t const numLBands = static_cast<int32_t>(mLBands.size());
                     if (--band < numLBands && c < mSize - 1 - band)
                     {
                         return mLBands[band][c];
@@ -133,19 +133,19 @@ namespace gte
 
 
             // Set the value to zero in case someone unknowingly modified mZero on a
-            // previous call to operator(int,int).
+            // previous call to operator(int32_t,int32_t).
             mZero = (Real)0;
             return mZero;
         }
 
-        Real const& operator()(int r, int c) const
+        Real const& operator()(int32_t r, int32_t c) const
         {
             if (0 <= r && r < mSize && 0 <= c && c < mSize)
             {
-                int band = c - r;
+                int32_t band = c - r;
                 if (band > 0)
                 {
-                    int const numUBands = static_cast<int>(mUBands.size());
+                    int32_t const numUBands = static_cast<int32_t>(mUBands.size());
                     if (--band < numUBands && r < mSize - 1 - band)
                     {
                         return mUBands[band][r];
@@ -154,7 +154,7 @@ namespace gte
                 else if (band < 0)
                 {
                     band = -band;
-                    int const numLBands = static_cast<int>(mLBands.size());
+                    int32_t const numLBands = static_cast<int32_t>(mLBands.size());
                     if (--band < numLBands && c < mSize - 1 - band)
                     {
                         return mLBands[band][c];
@@ -169,7 +169,7 @@ namespace gte
 
 
             // Set the value to zero in case someone unknowingly modified
-            // mZero on a previous call to operator(int,int).
+            // mZero on a previous call to operator(int32_t,int32_t).
             mZero = (Real)0;
             return mZero;
         }
@@ -189,19 +189,19 @@ namespace gte
                 return false;
             }
 
-            int const sizeM1 = mSize - 1;
-            int const numBands = static_cast<int>(mLBands.size());
+            int32_t const sizeM1 = mSize - 1;
+            int32_t const numBands = static_cast<int32_t>(mLBands.size());
 
-            int k, kMax;
-            for (int i = 0; i < mSize; ++i)
+            int32_t k, kMax;
+            for (int32_t i = 0; i < mSize; ++i)
             {
-                int jMin = i - numBands;
+                int32_t jMin = i - numBands;
                 if (jMin < 0)
                 {
                     jMin = 0;
                 }
 
-                int j;
+                int32_t j;
                 for (j = jMin; j < i; ++j)
                 {
                     kMax = j + numBands;
@@ -269,7 +269,7 @@ namespace gte
         // 'bMatrix' must have the storage order specified by the template
         // parameter.
         template <bool RowMajor>
-        bool SolveSystem(Real* bMatrix, int numBColumns)
+        bool SolveSystem(Real* bMatrix, int32_t numBColumns)
         {
             return CholeskyFactor()
                 && SolveLower<RowMajor>(bMatrix, numBColumns)
@@ -291,9 +291,9 @@ namespace gte
             LexicoArray2<RowMajor, Real> invA(mSize, mSize, inverse);
 
             BandedMatrix<Real> tmpA = *this;
-            for (int row = 0; row < mSize; ++row)
+            for (int32_t row = 0; row < mSize; ++row)
             {
-                for (int col = 0; col < mSize; ++col)
+                for (int32_t col = 0; col < mSize; ++col)
                 {
                     if (row != col)
                     {
@@ -307,7 +307,7 @@ namespace gte
             }
 
             // Forward elimination.
-            for (int row = 0; row < mSize; ++row)
+            for (int32_t row = 0; row < mSize; ++row)
             {
                 // The pivot must be nonzero in order to proceed.
                 Real diag = tmpA(row, row);
@@ -320,14 +320,14 @@ namespace gte
                 tmpA(row, row) = (Real)1;
 
                 // Multiply the row to be consistent with diagonal term of 1.
-                int colMin = row + 1;
-                int colMax = colMin + static_cast<int>(mUBands.size());
+                int32_t colMin = row + 1;
+                int32_t colMax = colMin + static_cast<int32_t>(mUBands.size());
                 if (colMax > mSize)
                 {
                     colMax = mSize;
                 }
 
-                int c;
+                int32_t c;
                 for (c = colMin; c < colMax; ++c)
                 {
                     tmpA(row, c) *= invDiag;
@@ -338,14 +338,14 @@ namespace gte
                 }
 
                 // Reduce the remaining rows.
-                int rowMin = row + 1;
-                int rowMax = rowMin + static_cast<int>(mLBands.size());
+                int32_t rowMin = row + 1;
+                int32_t rowMax = rowMin + static_cast<int32_t>(mLBands.size());
                 if (rowMax > mSize)
                 {
                     rowMax = mSize;
                 }
 
-                for (int r = rowMin; r < rowMax; ++r)
+                for (int32_t r = rowMin; r < rowMax; ++r)
                 {
                     Real mult = tmpA(r, row);
                     tmpA(r, row) = (Real)0;
@@ -361,20 +361,20 @@ namespace gte
             }
 
             // Backward elimination.
-            for (int row = mSize - 1; row >= 1; --row)
+            for (int32_t row = mSize - 1; row >= 1; --row)
             {
-                int rowMax = row - 1;
-                int rowMin = row - static_cast<int>(mUBands.size());
+                int32_t rowMax = row - 1;
+                int32_t rowMin = row - static_cast<int32_t>(mUBands.size());
                 if (rowMin < 0)
                 {
                     rowMin = 0;
                 }
 
-                for (int r = rowMax; r >= rowMin; --r)
+                for (int32_t r = rowMax; r >= rowMin; --r)
                 {
                     Real mult = tmpA(r, row);
                     tmpA(r, row) = (Real)0;
-                    for (int c = 0; c < mSize; ++c)
+                    for (int32_t c = 0; c < mSize; ++c)
                     {
                         invA(r, c) -= mult * invA(row, c);
                     }
@@ -390,13 +390,13 @@ namespace gte
         // operation is successful.
         bool SolveLower(Real* dataVector) const
         {
-            int const size = static_cast<int>(mDBand.size());
-            for (int r = 0; r < size; ++r)
+            int32_t const size = static_cast<int32_t>(mDBand.size());
+            for (int32_t r = 0; r < size; ++r)
             {
                 Real lowerRR = operator()(r, r);
                 if (lowerRR > (Real)0)
                 {
-                    for (int c = 0; c < r; ++c)
+                    for (int32_t c = 0; c < r; ++c)
                     {
                         Real lowerRC = operator()(r, c);
                         dataVector[r] -= lowerRC * dataVector[c];
@@ -416,13 +416,13 @@ namespace gte
         // is successful.
         bool SolveUpper(Real* dataVector) const
         {
-            int const size = static_cast<int>(mDBand.size());
-            for (int r = size - 1; r >= 0; --r)
+            int32_t const size = static_cast<int32_t>(mDBand.size());
+            for (int32_t r = size - 1; r >= 0; --r)
             {
                 Real upperRR = operator()(r, r);
                 if (upperRR > (Real)0)
                 {
-                    for (int c = r + 1; c < size; ++c)
+                    for (int32_t c = r + 1; c < size; ++c)
                     {
                         Real upperRC = operator()(r, c);
                         dataVector[r] -= upperRC * dataVector[c];
@@ -441,28 +441,28 @@ namespace gte
         // The linear system is L*U*X = B, where A = L*U and U = L^T,  Reduce
         // this to U*X = L^{-1}*B.  The return value is 'true' iff the
         // operation is successful.  See the comments for
-        // SolveSystem(Real*,int) about the storage for dataMatrix.
+        // SolveSystem(Real*,int32_t) about the storage for dataMatrix.
         template <bool RowMajor>
-        bool SolveLower(Real* dataMatrix, int numColumns) const
+        bool SolveLower(Real* dataMatrix, int32_t numColumns) const
         {
             LexicoArray2<RowMajor, Real> data(mSize, numColumns, dataMatrix);
 
-            for (int r = 0; r < mSize; ++r)
+            for (int32_t r = 0; r < mSize; ++r)
             {
                 Real lowerRR = operator()(r, r);
                 if (lowerRR > (Real)0)
                 {
-                    for (int c = 0; c < r; ++c)
+                    for (int32_t c = 0; c < r; ++c)
                     {
                         Real lowerRC = operator()(r, c);
-                        for (int bCol = 0; bCol < numColumns; ++bCol)
+                        for (int32_t bCol = 0; bCol < numColumns; ++bCol)
                         {
                             data(r, bCol) -= lowerRC * data(c, bCol);
                         }
                     }
 
                     Real inverse = ((Real)1) / lowerRR;
-                    for (int bCol = 0; bCol < numColumns; ++bCol)
+                    for (int32_t bCol = 0; bCol < numColumns; ++bCol)
                     {
                         data(r, bCol) *= inverse;
                     }
@@ -477,29 +477,29 @@ namespace gte
 
         // The linear system is U*X = L^{-1}*B.  Reduce this to
         // X = U^{-1}*L^{-1}*B.  The return value is 'true' iff the operation
-        // is successful.  See the comments for SolveSystem(Real*,int) about
+        // is successful.  See the comments for SolveSystem(Real*,int32_t) about
         // the storage for dataMatrix.
         template <bool RowMajor>
-        bool SolveUpper(Real* dataMatrix, int numColumns) const
+        bool SolveUpper(Real* dataMatrix, int32_t numColumns) const
         {
             LexicoArray2<RowMajor, Real> data(mSize, numColumns, dataMatrix);
 
-            for (int r = mSize - 1; r >= 0; --r)
+            for (int32_t r = mSize - 1; r >= 0; --r)
             {
                 Real upperRR = operator()(r, r);
                 if (upperRR > (Real)0)
                 {
-                    for (int c = r + 1; c < mSize; ++c)
+                    for (int32_t c = r + 1; c < mSize; ++c)
                     {
                         Real upperRC = operator()(r, c);
-                        for (int bCol = 0; bCol < numColumns; ++bCol)
+                        for (int32_t bCol = 0; bCol < numColumns; ++bCol)
                         {
                             data(r, bCol) -= upperRC * data(c, bCol);
                         }
                     }
 
                     Real inverse = ((Real)1) / upperRR;
-                    for (int bCol = 0; bCol < numColumns; ++bCol)
+                    for (int32_t bCol = 0; bCol < numColumns; ++bCol)
                     {
                         data(r, bCol) *= inverse;
                     }
@@ -512,11 +512,11 @@ namespace gte
             return true;
         }
 
-        int mSize;
+        int32_t mSize;
         std::vector<Real> mDBand;
         std::vector<std::vector<Real>> mLBands, mUBands;
 
-        // For return by operator()(int,int) for valid indices not in the
+        // For return by operator()(int32_t,int32_t) for valid indices not in the
         // bands, in which case the matrix entries are zero,
         mutable Real mZero;
     };

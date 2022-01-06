@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,8 +24,8 @@ public:
     // "edge" mass has 4 neighbors, and a "corner" mass has 3 neighbors.
     ~GpuMassSpringVolume() = default;
     GpuMassSpringVolume(std::shared_ptr<GraphicsEngine> const& engine,
-        std::shared_ptr<ProgramFactory> const& factory, int numColumns,
-        int numRows, int numSlices, float step, float viscosity,
+        std::shared_ptr<ProgramFactory> const& factory, int32_t numColumns,
+        int32_t numRows, int32_t numSlices, float step, float viscosity,
         Environment& environment, bool& created);
 
     // Deferred construction.  The physical parameters must be set before
@@ -33,9 +33,9 @@ public:
 
     // Basic physical parameters.  The indices must satisfy 0 <= c < C,
     // 0 <= r < R, and 0 <= s < S.
-    void SetMass(int c, int r, int s, float mass);
-    void SetPosition(int c, int r, int s, Vector3<float> const& position);
-    void SetVelocity(int c, int r, int s, Vector3<float> const& velocity);
+    void SetMass(int32_t c, int32_t r, int32_t s, float mass);
+    void SetPosition(int32_t c, int32_t r, int32_t s, Vector3<float> const& position);
+    void SetVelocity(int32_t c, int32_t r, int32_t s, Vector3<float> const& velocity);
 
     // Each interior mass at (c,r,s) has 6 adjacent springs.  Face masses
     // have only 5 neighbors, edge masses have only 4 neighbors, and corner
@@ -46,15 +46,15 @@ public:
     //   ConstantC/LengthC:  0 <= c < C-1, 0 <= r < R,   0 <= s < S
     //   ConstantR/LengthR:  0 <= c < C,   0 <= r < R-1, 0 <= s < S
     //   ConstantS/LengthS:  0 <= c < C,   0 <= r < R,   0 <= s < S-1
-    void SetConstantC(int c, int r, int s, float v);  // spring to (c+1,r,s)
-    void SetLengthC(int c, int r, int s, float v);    // spring to (c+1,r,s)
-    void SetConstantR(int c, int r, int s, float v);  // spring to (c,r+1,s)
-    void SetLengthR(int c, int r, int s, float v);    // spring to (c,r+1,s)
-    void SetConstantS(int c, int r, int s, float v);  // spring to (c,r,s+1)
-    void SetLengthS(int c, int r, int s, float v);    // spring to (c,r,s+1)
+    void SetConstantC(int32_t c, int32_t r, int32_t s, float v);  // spring to (c+1,r,s)
+    void SetLengthC(int32_t c, int32_t r, int32_t s, float v);    // spring to (c+1,r,s)
+    void SetConstantR(int32_t c, int32_t r, int32_t s, float v);  // spring to (c,r+1,s)
+    void SetLengthR(int32_t c, int32_t r, int32_t s, float v);    // spring to (c,r+1,s)
+    void SetConstantS(int32_t c, int32_t r, int32_t s, float v);  // spring to (c,r,s+1)
+    void SetLengthS(int32_t c, int32_t r, int32_t s, float v);    // spring to (c,r,s+1)
 
     // Member access.
-    Vector3<float> GetPosition(int c, int r, int s) const;
+    Vector3<float> GetPosition(int32_t c, int32_t r, int32_t s) const;
     std::shared_ptr<StructuredBuffer>& GetPosition();
 
     // Update the particle positions and velocities based on current time and
@@ -62,14 +62,14 @@ public:
     void Update(float time, std::shared_ptr<GraphicsEngine> const& engine);
 
 private:
-    inline int GetIndex(int c, int r, int s) const
+    inline int32_t GetIndex(int32_t c, int32_t r, int32_t s) const
     {
         return c + mNumColumns * (r + mNumRows * s);
     }
 
     struct SimulationParameters
     {
-        int dimensions[4];
+        int32_t dimensions[4];
         float viscosity;
         float time;
         float delta;
@@ -80,7 +80,7 @@ private:
     };
     std::shared_ptr<ConstantBuffer> mParameters;
 
-    int mNumColumns, mNumRows, mNumSlices;
+    int32_t mNumColumns, mNumRows;
     std::shared_ptr<StructuredBuffer> mMass, mInvMass;
     std::shared_ptr<StructuredBuffer> mPosition, mVelocity;
     std::shared_ptr<StructuredBuffer> mConstantC, mLengthC;
@@ -89,6 +89,6 @@ private:
     std::shared_ptr<StructuredBuffer> mPTmp, mPAllTmp;
     std::shared_ptr<StructuredBuffer> mVTmp, mVAllTmp;
 
-    unsigned int mNumXGroups, mNumYGroups, mNumZGroups;
+    uint32_t mNumXGroups, mNumYGroups, mNumZGroups;
     std::shared_ptr<ComputeProgram> mRK4Shader[8];
 };

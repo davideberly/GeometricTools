@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.03
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,7 +19,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class TIQuery<Real, std::vector<Vector<N, Real>>, Hyperplane<N, Real>>
     {
     public:
@@ -133,7 +133,7 @@ namespace gte
         }
     };
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class FIQuery<Real, std::vector<Vector<N, Real>>, Hyperplane<N, Real>>
     {
     public:

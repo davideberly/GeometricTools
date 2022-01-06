@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -48,8 +48,8 @@ namespace gte
         // The returned 'bool' value is 'true' whenever the conjugate gradient
         // algorithm converged.  Even if it did not, the results might still
         // be acceptable.
-        bool operator()(int numPositions, Vector3<Real> const* positions,
-            int numTriangles, int const* indices, int punctureTriangle)
+        bool operator()(int32_t numPositions, Vector3<Real> const* positions,
+            int32_t numTriangles, int32_t const* indices, int32_t punctureTriangle)
         {
             bool converged = true;
             mPlaneCoordinates.resize(numPositions);
@@ -57,20 +57,20 @@ namespace gte
 
             // Construct a triangle-edge representation of mesh.
             ETManifoldMesh graph;
-            int const* currentIndex = indices;
-            int t;
+            int32_t const* currentIndex = indices;
+            int32_t t;
             for (t = 0; t < numTriangles; ++t)
             {
-                int v0 = *currentIndex++;
-                int v1 = *currentIndex++;
-                int v2 = *currentIndex++;
+                int32_t v0 = *currentIndex++;
+                int32_t v1 = *currentIndex++;
+                int32_t v2 = *currentIndex++;
                 graph.Insert(v0, v1, v2);
             }
             auto const& emap = graph.GetEdges();
 
             // Construct the nondiagonal entries of the sparse matrix A.
             typename LinearSystem<Real>::SparseMatrix A;
-            int v0, v1, v2, i;
+            int32_t v0, v1, v2, i;
             Vector3<Real> E0, E1;
             Real value;
             for (auto const& element : emap)
@@ -79,7 +79,7 @@ namespace gte
                 v1 = element.first.V[1];
 
                 value = (Real)0;
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     auto triangle = element.second->T[j];
                     for (i = 0; i < 3; ++i)
@@ -96,7 +96,7 @@ namespace gte
 
                 value *= -(Real)0.5;
 
-                std::array<int, 2> lookup = { v0, v1 };
+                std::array<int32_t, 2> lookup = { v0, v1 };
                 A[lookup] = value;
             }
 
@@ -109,7 +109,7 @@ namespace gte
             }
             for (i = 0; i < numPositions; ++i)
             {
-                std::array<int, 2> lookup = { i, i };
+                std::array<int32_t, 2> lookup = { i, i };
                 A[lookup] = tmp[i];
             }
             LogAssert(static_cast<size_t>(numPositions) + emap.size() == A.size(), "Mismatched sizes.");
@@ -139,14 +139,14 @@ namespace gte
             Real im2 = -len10 * invLenNormal;
 
             // Solve the sparse system for the real parts.
-            unsigned int const maxIterations = 1024;
+            uint32_t const maxIterations = 1024;
             Real const tolerance = 1e-06f;
             std::fill(tmp.begin(), tmp.end(), (Real)0);
             tmp[v0] = re0;
             tmp[v1] = re1;
             tmp[v2] = re2;
             std::vector<Real> result(numPositions);
-            unsigned int iterations = LinearSystem<Real>().SolveSymmetricCG(
+            uint32_t iterations = LinearSystem<Real>().SolveSymmetricCG(
                 numPositions, A, tmp.data(), result.data(), maxIterations, tolerance);
             if (iterations >= maxIterations)
             {
@@ -309,7 +309,7 @@ namespace gte
         }
 
     private:
-        void ComputeSphereRadius(int v0, int v1, int v2, Real areaFraction)
+        void ComputeSphereRadius(int32_t v0, int32_t v1, int32_t v2, Real areaFraction)
         {
             Vector2<Real> V0 = mPlaneCoordinates[v0];
             Vector2<Real> V1 = mPlaneCoordinates[v1];
@@ -375,13 +375,13 @@ namespace gte
             LogAssert(fmin > (Real)0 && fmax < (Real)0, "Expecting opposite-signed extremes.");
 
             // Determine the number of iterations to get 'digits' of accuracy.
-            int const digits = 6;
+            int32_t const digits = 6;
             Real tmp0 = std::log(tmax - tmin);
             Real tmp1 = (Real)digits * static_cast<Real>(GTE_C_LN_10);
             Real arg = (tmp0 + tmp1) * static_cast<Real>(GTE_C_INV_LN_2);
-            int maxIterations = static_cast<int>(arg + (Real)0.5);
+            int32_t maxIterations = static_cast<int32_t>(arg + (Real)0.5);
             Real tmid = (Real)0, fmid;
-            for (int i = 0; i < maxIterations; ++i)
+            for (int32_t i = 0; i < maxIterations; ++i)
             {
                 tmid = (Real)0.5 * (tmin + tmax);
                 fmid = poly2(tmid);

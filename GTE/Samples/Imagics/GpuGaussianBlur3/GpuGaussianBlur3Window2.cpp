@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GpuGaussianBlur3Window2.h"
 #include <Applications/Command.h>
@@ -32,10 +32,10 @@ GpuGaussianBlur3Window2::GpuGaussianBlur3Window2(Parameters& parameters)
         mYSize, mXSize, mYSize, psSource);
 
     auto nearestSampler = std::make_shared<SamplerState>();
-    nearestSampler->filter = SamplerState::MIN_P_MAG_P_MIP_P;
-    nearestSampler->mode[0] = SamplerState::CLAMP;
-    nearestSampler->mode[1] = SamplerState::CLAMP;
-    auto pshader = mOverlay->GetProgram()->GetPixelShader();
+    nearestSampler->filter = SamplerState::Filter::MIN_P_MAG_P_MIP_P;
+    nearestSampler->mode[0] = SamplerState::Mode::CLAMP;
+    nearestSampler->mode[1] = SamplerState::Mode::CLAMP;
+    auto const& pshader = mOverlay->GetProgram()->GetPixelShader();
     pshader->Set("inImage", mImage[0], "imageSampler", nearestSampler);
     pshader->Set("inMask", mMaskTexture, "maskSampler", nearestSampler);
 }
@@ -95,10 +95,10 @@ bool GpuGaussianBlur3Window2::SetEnvironment()
 
 bool GpuGaussianBlur3Window2::CreateImages()
 {
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mImage[i] = std::make_shared<Texture2>(DF_R32_FLOAT, mXSize, mYSize);
-        mImage[i]->SetUsage(Resource::SHADER_OUTPUT);
+        mImage[i]->SetUsage(Resource::Usage::SHADER_OUTPUT);
     }
 
     // The head image is known to store 12 bits per pixel with values in
@@ -109,28 +109,30 @@ bool GpuGaussianBlur3Window2::CreateImages()
     {
         return false;
     }
-    std::vector<uint16_t> original(mXSize * mYSize);
+    size_t numOriginal = static_cast<size_t>(mXSize) * static_cast<size_t>(mYSize);
+    std::vector<uint16_t> original(numOriginal);
     std::ifstream input(path, std::ios::binary);
     input.read((char*)original.data(), original.size() * sizeof(uint16_t));
     input.close();
 
     // Scale the 3D image to have values in [0,1).
     float const divisor = 3366.0f;
-    std::vector<float> scaled(mXSize * mYSize);
-    for (int i = 0; i < mXSize * mYSize; ++i)
+    std::vector<float> scaled(numOriginal);
+    for (int32_t i = 0; i < mXSize * mYSize; ++i)
     {
         scaled[i] = static_cast<float>(original[i]) / divisor;
     }
 
     // Map the 3D image to a 2D 8x8 tiled image where each tile is 128x128.
     float* texels = mImage[0]->Get<float>();
-    for (int v = 0; v < mYSize; ++v)
+    for (int32_t v = 0; v < mYSize; ++v)
     {
-        for (int u = 0; u < mXSize; ++u)
+        for (int32_t u = 0; u < mXSize; ++u)
         {
-            int x, y, z;
+            int32_t x, y, z;
             Map2Dto3D(u, v, x, y, z);
-            texels[Map2Dto1D(u, v)] = scaled[x + 128 * (y + 128 * z)];
+            int32_t index = x + 128 * (y + 128 * z);
+            texels[Map2Dto1D(u, v)] = scaled[static_cast<size_t>(index)];
         }
     }
 
@@ -139,10 +141,10 @@ bool GpuGaussianBlur3Window2::CreateImages()
     mMaskTexture = std::make_shared<Texture2>(DF_R32_FLOAT, mXSize, mYSize);
     auto* mask = mMaskTexture->Get<float>();
     mNeumannOffsetTexture = std::make_shared<Texture2>(DF_R32G32_SINT, mXSize, mYSize);
-    auto* offset = mNeumannOffsetTexture->Get<std::array<int, 2>>();
-    int const xBound = 128, yBound = 128, zBound = 64;
-    int xBoundM1 = xBound - 1, yBoundM1 = yBound - 1, zBoundM1 = zBound - 1;
-    int x, y, z, index;
+    auto* offset = mNeumannOffsetTexture->Get<std::array<int32_t, 2>>();
+    int32_t const xBound = 128, yBound = 128, zBound = 64;
+    int32_t xBoundM1 = xBound - 1, yBoundM1 = yBound - 1, zBoundM1 = zBound - 1;
+    int32_t x, y, z, index;
 
     // Interior.
     for (z = 1; z < zBoundM1; ++z)
@@ -279,7 +281,7 @@ bool GpuGaussianBlur3Window2::CreateImages()
 
     // Create the offset texture for GaussianBlur.
     mZNeighborTexture = std::make_shared<Texture2>(DF_R32G32B32A32_SINT, mXSize, mYSize);
-    auto* zneighbor = mZNeighborTexture->Get<std::array<int, 4>>();
+    auto* zneighbor = mZNeighborTexture->Get<std::array<int32_t, 4>>();
     std::memset(mZNeighborTexture->GetData(), 0, mZNeighborTexture->GetNumBytes());
 
     // Interior voxels.  The offsets at the boundary are all zero, so the
@@ -293,15 +295,15 @@ bool GpuGaussianBlur3Window2::CreateImages()
             for (x = 1; x < xBoundM1; ++x)
             {
                 // Get the 2D location of(x,y,z).
-                int u, v;
+                int32_t u, v;
                 Map3Dto2D(x, y, z, u, v);
 
                 // Get the 2D location of the +z neighbor of (x,y,z).
-                int upos, vpos;
+                int32_t upos, vpos;
                 Map3Dto2D(x, y, z + 1, upos, vpos);
 
                 // Get the 2D location of the -z neighbor of (x,y,z).
-                int uneg, vneg;
+                int32_t uneg, vneg;
                 Map3Dto2D(x, y, z - 1, uneg, vneg);
 
                 zneighbor[Map2Dto1D(u, v)] = { upos - u, vpos - v, uneg - u, vneg - v };
@@ -344,7 +346,7 @@ bool GpuGaussianBlur3Window2::CreateShaders()
         return false;
     }
 
-    auto cshader = mGaussianBlurProgram->GetComputeShader();
+    std::shared_ptr<Shader> cshader = mGaussianBlurProgram->GetComputeShader();
     cshader->Set("inImage", mImage[0]);
     cshader->Set("inZNeighbor", mZNeighborTexture);
     cshader->Set("outImage", mImage[1]);

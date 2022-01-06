@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -27,8 +27,8 @@ namespace gte
         // the comment in GteGL4Engine.h for 'MeetsRequirements()'.
         virtual ~GLXEngine();
         GLXEngine(_XDisplay* display, unsigned long window, __GLXcontextRec* context,
-            int xSize, int ySize, bool useDepth24Stencil8, bool saveDriverInfo, int requiredMajor = 4, int requiredMinor = 3);
-        GLXEngine(bool useDepth24Stencil8 = true, bool saveDriverInfo = false, int requiredMajor = 4, int requiredMinor = 3);
+            int32_t xSize, int32_t ySize, bool useDepth24Stencil8, bool saveDriverInfo, int32_t requiredMajor = 4, int32_t requiredMinor = 3);
+        GLXEngine(bool useDepth24Stencil8 = true, bool saveDriverInfo = false, int32_t requiredMajor = 4, int32_t requiredMinor = 3);
 
         // Member access.
         inline _XDisplay* GetDisplay() const
@@ -52,11 +52,11 @@ namespace gte
         virtual void MakeActive() override;
 
         // Support for clearing the color, depth, and stencil back buffers.
-        virtual void DisplayColorBuffer(unsigned int syncInterval) override;
+        virtual void DisplayColorBuffer(uint32_t syncInterval) override;
 
     private:
         // Helpers for construction and destruction.
-        virtual bool Initialize(int requiredMajor, int requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo) override;
+        virtual bool Initialize(int32_t requiredMajor, int32_t requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo) override;
         void Terminate();
 
         _XDisplay* mDisplay;

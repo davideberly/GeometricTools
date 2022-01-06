@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ namespace gte
     public:
         // Construction and destruction.  The input dimension must be two or
         // larger.
-        RiemannianGeodesic(int dimension)
+        RiemannianGeodesic(int32_t dimension)
             :
             integralSamples(16),
             searchSamples(32),
@@ -49,7 +49,7 @@ namespace gte
             mDerivativeFactor((Real)0.5 / derivativeStep)
         {
             LogAssert(dimension >= 2, "Dimension must be at least 2.");
-            for (int i = 0; i < mDimension; ++i)
+            for (int32_t i = 0; i < mDimension; ++i)
             {
                 mChristoffel1[i].SetSize(mDimension, mDimension);
                 mChristoffel2[i].SetSize(mDimension, mDimension);
@@ -81,15 +81,15 @@ namespace gte
         //    direction is the estimated gradient.  The default of 1 means the
         //    search interval is [-L,L], where L is the length of the gradient.
         //    If the search radius is r, then the interval is [-r*L,r*L].
-        int integralSamples;  // default = 16
-        int searchSamples;    // default = 32
+        int32_t integralSamples;  // default = 16
+        int32_t searchSamples;    // default = 32
         Real derivativeStep;  // default = 0.0001
-        int subdivisions;     // default = 7
-        int refinements;      // default = 8
+        int32_t subdivisions;     // default = 7
+        int32_t refinements;      // default = 8
         Real searchRadius;    // default = 1.0
 
         // The dimension of the manifold.
-        inline int GetDimension() const
+        inline int32_t GetDimension() const
         {
             return mDimension;
         }
@@ -117,8 +117,8 @@ namespace gte
             length += std::sqrt(qForm);
             length *= (Real)0.5;
 
-            int imax = integralSamples - 2;
-            for (int i = 1; i <= imax; ++i)
+            int32_t imax = integralSamples - 2;
+            for (int32_t i = 1; i <= imax; ++i)
             {
                 // Evaluate the integrand at point0+t*(point1-point0).
                 Real t = mIntegralStep * static_cast<Real>(i);
@@ -134,11 +134,11 @@ namespace gte
 
         // Compute the total length of the polyline.  The lengths of the
         // segments are computed relative to the metric tensor.
-        Real ComputeTotalLength(int quantity, std::vector<GVector<Real>> const& path)
+        Real ComputeTotalLength(int32_t quantity, std::vector<GVector<Real>> const& path)
         {
             LogAssert(quantity >= 2, "Path must have at least two points.");
             Real length = ComputeSegmentLength(path[0], path[1]);
-            for (int i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
+            for (int32_t i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
             {
                 length += ComputeSegmentLength(path[i], path[ip1]);
             }
@@ -148,12 +148,12 @@ namespace gte
         // Returns a polyline approximation to a geodesic curve connecting the
         // points.
         void ComputeGeodesic(GVector<Real> const& end0, GVector<Real> const& end1,
-            int& quantity, std::vector<GVector<Real>>& path)
+            int32_t& quantity, std::vector<GVector<Real>>& path)
         {
             LogAssert(subdivisions < 32, "Exceeds maximum iterations.");
             quantity = (1 << subdivisions) + 1;
             path.resize(quantity);
-            for (int i = 0; i < quantity; ++i)
+            for (int32_t i = 0; i < quantity; ++i)
             {
                 path[i].SetSize(mDimension);
             }
@@ -165,20 +165,20 @@ namespace gte
             for (mSubdivide = 1; mSubdivide <= subdivisions; ++mSubdivide)
             {
                 // A subdivision essentially doubles the number of points.
-                int newQuantity = 2 * mCurrentQuantity - 1;
+                int32_t newQuantity = 2 * mCurrentQuantity - 1;
                 LogAssert(newQuantity <= quantity, "Unexpected condition.");
 
                 // Copy the old points so that there are slots for the
                 // midpoints during the subdivision, the slots interleaved
                 // between the old points.
-                for (int i = mCurrentQuantity - 1; i > 0; --i)
+                for (int32_t i = mCurrentQuantity - 1; i > 0; --i)
                 {
                     size_t twoI = 2 * static_cast<size_t>(i);
                     path[twoI] = path[i];
                 }
 
                 // Subdivide the polyline.
-                for (int i = 0; i <= mCurrentQuantity - 2; ++i)
+                for (int32_t i = 0; i <= mCurrentQuantity - 2; ++i)
                 {
                     size_t twoI = 2 * static_cast<size_t>(i);
                     Subdivide(path[twoI], path[twoI + 1], path[twoI + 2]);
@@ -189,7 +189,7 @@ namespace gte
                 // Refine the current polyline vertices.
                 for (mRefine = 1; mRefine <= refinements; ++mRefine)
                 {
-                    for (int i = 1, im1 = 0, ip1 = 2; i <= mCurrentQuantity - 2; ++i, ++im1, ++ip1)
+                    for (int32_t i = 1, im1 = 0, ip1 = 2; i <= mCurrentQuantity - 2; ++i, ++im1, ++ip1)
                     {
                         Refine(path[im1], path[i], path[ip1]);
                     }
@@ -228,7 +228,7 @@ namespace gte
             // F(m) = Length(e0,m) + Length(m,e1).
             GVector<Real> temp = mid;
             GVector<Real> gradient(mDimension);
-            for (int i = 0; i < mDimension; ++i)
+            for (int32_t i = 0; i < mDimension; ++i)
             {
                 temp[i] = mid[i] + derivativeStep;
                 gradient[i] = ComputeSegmentLength(end0, temp);
@@ -253,7 +253,7 @@ namespace gte
             Real multiplier = mSearchStep * searchRadius;
             Real minLength = oldLength;
             GVector<Real> minPoint = mid;
-            for (int i = -searchSamples; i <= searchSamples; ++i)
+            for (int32_t i = -searchSamples; i <= searchSamples; ++i)
             {
                 tRay = multiplier * static_cast<Real>(i);
                 pRay = mid - tRay * gradient;
@@ -276,17 +276,17 @@ namespace gte
         std::function<void(void)> refineCallback;
 
         // Information to be used during the callback.
-        inline int GetSubdivisionStep() const
+        inline int32_t GetSubdivisionStep() const
         {
             return mSubdivide;
         }
 
-        inline int GetRefinementStep() const
+        inline int32_t GetRefinementStep() const
         {
             return mRefine;
         }
 
-        inline int GetCurrentQuantity() const
+        inline int32_t GetCurrentQuantity() const
         {
             return mCurrentQuantity;
         }
@@ -312,8 +312,8 @@ namespace gte
             curvature += ComputeIntegrand(point1, diff);
             curvature *= (Real)0.5;
 
-            int imax = integralSamples - 2;
-            for (int i = 1; i <= imax; ++i)
+            int32_t imax = integralSamples - 2;
+            for (int32_t i = 1; i <= imax; ++i)
             {
                 // Evaluate the integrand at point0+t*(point1-point0).
                 Real t = mIntegralStep * static_cast<Real>(i);
@@ -326,11 +326,11 @@ namespace gte
 
         // Compute the total curvature of the polyline.  The curvatures of the
         // segments are computed relative to the metric tensor.
-        Real ComputeTotalCurvature(int quantity, std::vector<GVector<Real>> const& path)
+        Real ComputeTotalCurvature(int32_t quantity, std::vector<GVector<Real>> const& path)
         {
             LogAssert(quantity >= 2, "Path must have at least two points.");
             Real curvature = ComputeSegmentCurvature(path[0], path[1]);
-            for (int i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
+            for (int32_t i = 1, ip1 = 2; ip1 < quantity; ++i, ++ip1)
             {
                 curvature += ComputeSegmentCurvature(path[i], path[ip1]);
             }
@@ -352,7 +352,7 @@ namespace gte
 
             // gamma_{kij}*der_{k}*der_{i}*der_{j}
             GMatrix<Real> mat(mDimension, mDimension);
-            for (int k = 0; k < mDimension; ++k)
+            for (int32_t k = 0; k < mDimension; ++k)
             {
                 mat += der[k] * mChristoffel1[k];
             }
@@ -364,7 +364,7 @@ namespace gte
 
             // Compute the acceleration.
             GVector<Real> acc = ratio * der;
-            for (int k = 0; k < mDimension; ++k)
+            for (int32_t k = 0; k < mDimension; ++k)
             {
                 acc[k] += Dot(der, mChristoffel2[k] * der);
             }
@@ -396,11 +396,11 @@ namespace gte
         // Christoffel symbols of the first kind.
         void ComputeMetricDerivative()
         {
-            for (int derivative = 0; derivative < mDimension; ++derivative)
+            for (int32_t derivative = 0; derivative < mDimension; ++derivative)
             {
-                for (int i0 = 0; i0 < mDimension; ++i0)
+                for (int32_t i0 = 0; i0 < mDimension; ++i0)
                 {
-                    for (int i1 = 0; i1 < mDimension; ++i1)
+                    for (int32_t i1 = 0; i1 < mDimension; ++i1)
                     {
                         mMetricDerivative[derivative](i0, i1) =
                             mChristoffel1[derivative](i0, i1) +
@@ -416,14 +416,14 @@ namespace gte
         // returns 'true' whenever the inverse metric tensor exists.
         bool ComputeChristoffel2()
         {
-            for (int i2 = 0; i2 < mDimension; ++i2)
+            for (int32_t i2 = 0; i2 < mDimension; ++i2)
             {
-                for (int i0 = 0; i0 < mDimension; ++i0)
+                for (int32_t i0 = 0; i0 < mDimension; ++i0)
                 {
-                    for (int i1 = 0; i1 < mDimension; ++i1)
+                    for (int32_t i1 = 0; i1 < mDimension; ++i1)
                     {
                         Real fValue = (Real)0;
-                        for (int j = 0; j < mDimension; ++j)
+                        for (int32_t j = 0; j < mDimension; ++j)
                         {
                             fValue += mMetricInverse(i2, j) * mChristoffel1[j](i0, i1);
                         }
@@ -434,7 +434,7 @@ namespace gte
             return mMetricInverseExists;
         }
 
-        int mDimension;
+        int32_t mDimension;
         GMatrix<Real> mMetric;
         GMatrix<Real> mMetricInverse;
         std::vector<GMatrix<Real>> mChristoffel1;
@@ -443,7 +443,7 @@ namespace gte
         bool mMetricInverseExists;
 
         // Progress parameters that are useful to mRefineCallback.
-        int mSubdivide, mRefine, mCurrentQuantity;
+        int32_t mSubdivide, mRefine, mCurrentQuantity;
 
         // Derived tweaking parameters.
         Real mIntegralStep;      // = 1/(mIntegralQuantity-1)

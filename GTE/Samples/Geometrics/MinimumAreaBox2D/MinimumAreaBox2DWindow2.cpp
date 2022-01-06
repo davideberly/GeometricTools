@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.05
+// Version: 6.0.2022.01.06
 
 #include "MinimumAreaBox2DWindow2.h"
 #include <Mathematics/ArbitraryPrecision.h>
@@ -34,7 +34,7 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     Vector2<float> axis[2] = { { 1.0f, 1.0f }, { -1.0f, 1.0f } };
     Normalize(axis[0]);
     Normalize(axis[1]);
-    int const numVertices = 256;
+    int32_t const numVertices = 256;
     mVertices.resize(numVertices);
     for (auto& v : mVertices)
     {
@@ -54,11 +54,11 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
 #if 0
     std::string path = mEnvironment.GetPath("convexpolygon.txt");
     std::ifstream input(path);
-    int numVertices;
+    int32_t numVertices;
     input >> numVertices;
     mVertices.resize(numVertices);
-    std::vector<int> indices(numVertices);
-    for (int i = 0; i < numVertices; ++i)
+    std::vector<int32_t> indices(numVertices);
+    for (int32_t i = 0; i < numVertices; ++i)
     {
         input >> mVertices[i][0];
         input >> mVertices[i][1];
@@ -86,7 +86,7 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     mVertices.resize(9);
     input.read((char*)&temp[0], 9 * 2 * sizeof(double));
     input.close();
-    for (int k = 0; k < 9; ++k)
+    for (int32_t k = 0; k < 9; ++k)
     {
         mVertices[k][0] = 256.0f + 4096.0f * (float)temp[k][0];
         mVertices[k][1] = 256.0f + 4096.0f * (float)temp[k][1];
@@ -103,35 +103,35 @@ void MinimumAreaBox2DWindow2::OnDisplay()
     ClearScreen(0xFFFFFFFF);
 
     // Draw the convex hull.
-    int i0, i1, x0, y0, x1, y1;
-    int numHull = static_cast<int>(mHull.size());
+    int32_t i0, i1, x0, y0, x1, y1;
+    int32_t numHull = static_cast<int32_t>(mHull.size());
     for (i0 = numHull - 1, i1 = 0; i1 < numHull; i0 = i1++)
     {
-        x0 = static_cast<int>(std::lrint(mVertices[mHull[i0]][0]));
-        y0 = static_cast<int>(std::lrint(mVertices[mHull[i0]][1]));
-        x1 = static_cast<int>(std::lrint(mVertices[mHull[i1]][0]));
-        y1 = static_cast<int>(std::lrint(mVertices[mHull[i1]][1]));
+        x0 = static_cast<int32_t>(std::lrint(mVertices[mHull[i0]][0]));
+        y0 = static_cast<int32_t>(std::lrint(mVertices[mHull[i0]][1]));
+        x1 = static_cast<int32_t>(std::lrint(mVertices[mHull[i1]][0]));
+        y1 = static_cast<int32_t>(std::lrint(mVertices[mHull[i1]][1]));
         DrawLine(x0, y0, x1, y1, 0xFF0000FF);
     }
 
     // Draw the minimum area box.
-    int const lookup[4][2] = { { 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 } };
+    int32_t const lookup[4][2] = { { 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 } };
     std::array<Vector2<float>, 4> vertex;
     mMinimalBox.GetVertices(vertex);
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
-        x0 = static_cast<int>(std::lrint(vertex[lookup[i][0]][0]));
-        y0 = static_cast<int>(std::lrint(vertex[lookup[i][0]][1]));
-        x1 = static_cast<int>(std::lrint(vertex[lookup[i][1]][0]));
-        y1 = static_cast<int>(std::lrint(vertex[lookup[i][1]][1]));
+        x0 = static_cast<int32_t>(std::lrint(vertex[lookup[i][0]][0]));
+        y0 = static_cast<int32_t>(std::lrint(vertex[lookup[i][0]][1]));
+        x1 = static_cast<int32_t>(std::lrint(vertex[lookup[i][1]][0]));
+        y1 = static_cast<int32_t>(std::lrint(vertex[lookup[i][1]][1]));
         DrawLine(x0, y0, x1, y1, 0xFFFF0000);
     }
 
     // Draw the input points.
     for (auto const& v : mVertices)
     {
-        int x = static_cast<int>(std::lrint(v[0]));
-        int y = static_cast<int>(std::lrint(v[1]));
+        int32_t x = static_cast<int32_t>(std::lrint(v[0]));
+        int32_t y = static_cast<int32_t>(std::lrint(v[1]));
         DrawThickPixel(x, y, 1, 0xFF808080);
     }
 

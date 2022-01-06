@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 // The functions were written based on the example source code
 // https://dev.w3.org/Amaya/libpng/example.c
@@ -87,7 +87,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
     png_read_png(helper.png_ptr, helper.info_ptr, 0, nullptr);
 
     png_uint_32 width, height;
-    int bit_depth, color_type, interlace_method, compression_method, filter_method;
+    int32_t bit_depth, color_type, interlace_method, compression_method, filter_method;
     png_get_IHDR(helper.png_ptr, helper.info_ptr, &width, &height, &bit_depth,
         &color_type, &interlace_method, &compression_method, &filter_method);
 
@@ -125,7 +125,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint8_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 4; ++i)
+                    for (int32_t i = 0; i < 4; ++i)
                     {
                         *trg++ = src[4 * x + i];
                     }
@@ -141,7 +141,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint8_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         *trg++ = src[3 * x + i];
                     }
@@ -171,7 +171,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint8_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 2; ++i)
+                    for (int32_t i = 0; i < 2; ++i)
                     {
                         *trg++ = src[2 * x + i];
                     }
@@ -192,7 +192,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint16_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 4; ++i)
+                    for (int32_t i = 0; i < 4; ++i)
                     {
                         *trg++ = src[4 * x + i];
                     }
@@ -208,7 +208,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint16_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         *trg++ = src[3 * x + i];
                     }
@@ -238,7 +238,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
                 src = reinterpret_cast<uint16_t const*>(rows[y]);
                 for (png_uint_32 x = 0; x < width; ++x)
                 {
-                    for (int i = 0; i < 2; ++i)
+                    for (int32_t i = 0; i < 2; ++i)
                     {
                         *trg++ = src[2 * x + i];
                     }
@@ -257,8 +257,8 @@ bool WICFileIO::SaveToPNG(std::string const& filename, std::shared_ptr<Texture2>
         return false;
     }
 
-    int bit_depth = 0;
-    int color_type = 0;
+    int32_t bit_depth = 0;
+    int32_t color_type = 0;
     png_uint_32 bytes_per_pixel = 0;
     switch (texture->GetFormat())
     {
@@ -327,9 +327,9 @@ bool WICFileIO::SaveToPNG(std::string const& filename, std::shared_ptr<Texture2>
 
     png_uint_32 width = texture->GetWidth();
     png_uint_32 height = texture->GetHeight();
-    int interlace_method = PNG_INTERLACE_NONE;
-    int compression_method = PNG_COMPRESSION_TYPE_BASE;
-    int filter_method = PNG_FILTER_TYPE_BASE;
+    int32_t interlace_method = PNG_INTERLACE_NONE;
+    int32_t compression_method = PNG_COMPRESSION_TYPE_BASE;
+    int32_t filter_method = PNG_FILTER_TYPE_BASE;
 
     png_set_IHDR(helper.png_ptr, helper.info_ptr, width, height, bit_depth,
         color_type, interlace_method, compression_method, filter_method);

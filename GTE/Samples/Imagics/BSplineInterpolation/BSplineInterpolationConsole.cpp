@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 //#define GTE_INTP_BSPLINE_UNIFORM_NO_SPECIALIZATION
 #if defined(GTE_INTP_BSPLINE_UNIFORM_NO_SPECIALIZATION)
@@ -70,18 +70,18 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform1()
         // The type of the control points.
         typedef double Type;
 
-        int GetSize(int) const
+        int32_t GetSize(int32_t) const
         {
-            return static_cast<int>(signal.size());
+            return static_cast<int32_t>(signal.size());
         }
 
-        Type operator() (int const* tuple) const
+        Type operator() (int32_t const* tuple) const
         {
             return signal[tuple[0]];
         }
 
 #if !defined(GTE_INTP_BSPLINE_UNIFORM_NO_SPECIALIZATION)
-        Type operator() (int x) const
+        Type operator() (int32_t x) const
         {
             return signal[x];
         }
@@ -102,7 +102,7 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform1()
 #if defined(USE_RUNTIME_TEMPLATE)
     IntpBSplineUniform<double, Controls> interp({ 2 }, controls, 0.0, mCacheMode);
 #else
-    IntpBSplineUniform<double, Controls, 1> interp({ 2 }, controls, 0.0, mCacheMode);
+    IntpBSplineUniform<double, Controls, 1> interp(2, controls, 0.0, mCacheMode);
 #endif
 
     // Draw the graph as a sequence of points to see that it looks similar
@@ -202,22 +202,29 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform2()
 
     // The Controls structure wraps the 2D image container, in this case
     // as a texture object.  It provides the operator()(x,y) accessor to
-    // convert a 32-bit unsigned int color to a 4-tuple float color.
+    // convert a 32-bit uint32_t color to a 4-tuple float color.
     struct Controls
     {
+        Controls()
+            :
+            size{ 0, 0 },
+            image{}
+        {
+        }
+
         typedef ColorType Type;
 
-        int GetSize(int i) const
+        int32_t GetSize(int32_t i) const
         {
             return size[i];
         }
 
-        Type operator() (int const* tuple) const
+        Type operator() (int32_t const* tuple) const
         {
             uint32_t const* texels = image->Get<uint32_t>();
-            int index = tuple[0] + size[0] * tuple[1];
+            int32_t index = tuple[0] + size[0] * tuple[1];
             uint32_t texel = texels[index];
-            Vector<4, float> color;
+            Vector<4, float> color{};
             color[0] = (float)(texel & 0x000000FF);
             color[1] = (float)((texel & 0x0000FF00) >> 8);
             color[2] = (float)((texel & 0x00FF0000) >> 16);
@@ -226,11 +233,11 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform2()
         }
 
 #if !defined(GTE_INTP_BSPLINE_UNIFORM_NO_SPECIALIZATION)
-        Type operator() (int x, int y) const
+        Type operator() (int32_t x, int32_t y) const
         {
             uint32_t const* texels = image->Get<uint32_t>();
             uint32_t texel = texels[x + size[0] * y];
-            Vector<4, float> color;
+            Vector<4, float> color{};
             color[0] = (float)(texel & 0x000000FF);
             color[1] = (float)((texel & 0x0000FF00) >> 8);
             color[2] = (float)((texel & 0x00FF0000) >> 16);
@@ -239,7 +246,7 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform2()
         }
 #endif
 
-        std::array<int, 2> size;
+        std::array<int32_t, 2> size;
         std::shared_ptr<Texture2> image;
     };
 
@@ -258,10 +265,10 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform2()
     auto texture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, controls.size[0], controls.size[1]);
     auto* texels = texture->Get<uint32_t>();
     std::memset(texels, 0xFF, texture->GetNumBytes());
-    for (int y = 0; y < controls.size[1]; ++y)
+    for (int32_t y = 0; y < controls.size[1]; ++y)
     {
         float t1 = static_cast<float>(y);
-        for (int x = 0; x < controls.size[0]; ++x)
+        for (int32_t x = 0; x < controls.size[0]; ++x)
         {
             float t0 = static_cast<float>(x);
             ColorType result = interp.Evaluate({ 0, 0 }, { t0, t1 });
@@ -295,29 +302,37 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform3()
     // can perform its arithmetic.
     struct Controls
     {
+        Controls()
+            :
+            size{ 0, 0, 0 },
+            image{}
+        {
+        }
+
         typedef float Type;
 
-        int GetSize(int i) const
+        int32_t GetSize(int32_t i) const
         {
             return size[i];
         }
 
-        Type operator() (int const* tuple) const
+        Type operator() (int32_t const* tuple) const
         {
-            int index = tuple[0] + size[0] * (tuple[1] + size[1] * tuple[2]);
-            uint8_t value = image[index];
+            int32_t index = tuple[0] + size[0] * (tuple[1] + size[1] * tuple[2]);
+            uint8_t value = image[static_cast<size_t>(index)];
             return static_cast<Type>(value);
         }
 
 #if !defined(GTE_INTP_BSPLINE_UNIFORM_NO_SPECIALIZATION)
-        Type operator() (int x, int y, int z) const
+        Type operator() (int32_t x, int32_t y, int32_t z) const
         {
-            uint8_t value = image[x + size[0] * (y + size[1] * z)];
+            int32_t index = x + size[0] * (y + size[1] * z);
+            uint8_t value = image[static_cast<size_t>(index)];
             return static_cast<Type>(value);
         }
 #endif
 
-        std::array<int, 3> size;
+        std::array<int32_t, 3> size;
         std::vector<uint8_t> image;
     };
 
@@ -336,20 +351,23 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform3()
     controls.size[0] = 100;
     controls.size[1] = 100;
     controls.size[2] = 120;
-    controls.image.resize(controls.size[0] * controls.size[1] * controls.size[2]);
-    int const numXTiles = 12, numYTiles = 10;
-    for (int yTile = 0, z = 0; yTile < numYTiles; ++yTile)
+    controls.image.resize(
+        static_cast<size_t>(controls.size[0]) *
+        static_cast<size_t>(controls.size[1]) *
+        static_cast<size_t>(controls.size[2]));
+    int32_t const numXTiles = 12, numYTiles = 10;
+    for (int32_t yTile = 0, z = 0; yTile < numYTiles; ++yTile)
     {
-        int yMin = yTile * controls.size[1];
-        for (int xTile = 0; xTile < numXTiles; ++xTile)
+        int32_t yMin = yTile * controls.size[1];
+        for (int32_t xTile = 0; xTile < numXTiles; ++xTile)
         {
-            int xMin = xTile * controls.size[0];
-            for (int y = 0; y < controls.size[1]; ++y)
+            int32_t xMin = xTile * controls.size[0];
+            for (int32_t y = 0; y < controls.size[1]; ++y)
             {
-                for (int x = 0; x < controls.size[0]; ++x)
+                for (int32_t x = 0; x < controls.size[0]; ++x)
                 {
-                    int src = (xMin + x) + texture->GetWidth() * (yMin + y);
-                    int trg = x + controls.size[0] * (y + controls.size[1] * z);
+                    int32_t src = (xMin + x) + texture->GetWidth() * (yMin + y);
+                    int32_t trg = x + controls.size[0] * (y + controls.size[1] * z);
                     controls.image[trg] = texels[src];
                 }
             }
@@ -373,13 +391,13 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform3()
 #endif
 
     std::vector<uint8_t> output(controls.image.size());
-    for (int z = 0, i = 0; z < controls.size[2]; ++z)
+    for (int32_t z = 0, i = 0; z < controls.size[2]; ++z)
     {
         float t2 = static_cast<float>(z);
-        for (int y = 0; y < controls.size[1]; ++y)
+        for (int32_t y = 0; y < controls.size[1]; ++y)
         {
             float t1 = -0.5f + static_cast<float>(y);
-            for (int x = 0; x < controls.size[0]; ++x, ++i)
+            for (int32_t x = 0; x < controls.size[0]; ++x, ++i)
             {
                 float t0 = -0.5f + static_cast<float>(x);
                 output[i] = static_cast<uint8_t>(interp.Evaluate({ 0, 0, 0 }, { t0, t1, t2 }));
@@ -389,18 +407,18 @@ void BSplineInterpolationConsole::DoIntpBSplineUniform3()
 
     // Write the output 3D image as an array of 2D slices.
     std::memset(texels, 0, texture->GetNumBytes());
-    for (int yTile = 0, z = 0; yTile < numYTiles; ++yTile)
+    for (int32_t yTile = 0, z = 0; yTile < numYTiles; ++yTile)
     {
-        int yMin = yTile * controls.size[1];
-        for (int xTile = 0; xTile < numXTiles; ++xTile)
+        int32_t yMin = yTile * controls.size[1];
+        for (int32_t xTile = 0; xTile < numXTiles; ++xTile)
         {
-            int xMin = xTile * controls.size[0];
-            for (int y = 0; y < controls.size[1]; ++y)
+            int32_t xMin = xTile * controls.size[0];
+            for (int32_t y = 0; y < controls.size[1]; ++y)
             {
-                for (int x = 0; x < controls.size[0]; ++x)
+                for (int32_t x = 0; x < controls.size[0]; ++x)
                 {
-                    int src = x + controls.size[0] * (y + controls.size[1] * z);
-                    int trg = (xMin + x) + texture->GetWidth() * (yMin + y);
+                    int32_t src = x + controls.size[0] * (y + controls.size[1] * z);
+                    int32_t trg = (xMin + x) + texture->GetWidth() * (yMin + y);
                     texels[trg] = output[src];
                 }
             }

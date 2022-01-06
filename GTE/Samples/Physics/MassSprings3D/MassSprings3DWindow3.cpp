@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MassSprings3DWindow3.h"
 #include <random>
@@ -25,7 +25,7 @@ MassSprings3DWindow3::MassSprings3DWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.01f,
         { 4.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
@@ -44,7 +44,7 @@ void MassSprings3DWindow3::OnIdle()
     UpdateMassSpringSystem();
 
     mEngine->ClearBuffers();
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         mEngine->Draw(mBoxFace[i]);
     }
@@ -54,7 +54,7 @@ void MassSprings3DWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MassSprings3DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MassSprings3DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -142,7 +142,7 @@ bool MassSprings3DWindow3::CreateMassSpringSystem()
     float cFactor = 2.0f / (mDimension[0] - 1.0f);
     float rFactor = 2.0f / (mDimension[1] - 1.0f);
     float sFactor = 2.0f / (mDimension[2] - 1.0f);
-    int s, r, c;
+    int32_t s, r, c;
     for (s = 0; s < mDimension[2]; ++s)
     {
         float z = -1.0f + s*sFactor;
@@ -227,18 +227,18 @@ bool MassSprings3DWindow3::CreateBoxFaces()
     // CPU data.
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 #if defined(DO_CPU_MASS_SPRING)
-    int const numVertices = mDimension[0] * mDimension[1] * mDimension[2];
+    int32_t const numVertices = mDimension[0] * mDimension[1] * mDimension[2];
     mVBuffer = std::make_shared<VertexBuffer>(vformat, numVertices, false);
-    mVBuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    mVBuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
 #else
     mVBuffer = std::make_shared<VertexBuffer>(vformat, mMassSprings->GetPosition());
 #endif
     
-    size_t const idxsize = sizeof(unsigned int);
+    size_t const idxsize = sizeof(uint32_t);
     std::shared_ptr<IndexBuffer> ibuffer;
-    int numTriangles, t, x, y, z, v0, v1, v2, v3;
+    int32_t numTriangles, t, x, y, z, v0, v1, v2, v3;
 
     // box face z = 1
     numTriangles = 2 * (mDimension[0] - 1) * (mDimension[1] - 1);
@@ -353,7 +353,7 @@ bool MassSprings3DWindow3::CreateBoxFaces()
     };
 
 #if defined(DO_CPU_MASS_SPRING)
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         mEffect[i] = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
         mBoxFace[i]->SetEffect(mEffect[i]);
@@ -365,7 +365,7 @@ bool MassSprings3DWindow3::CreateBoxFaces()
     std::shared_ptr<ConstantBuffer> colorBuffer;
     std::shared_ptr<VisualProgram> program;
     std::shared_ptr<Shader> vshader;
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         pvwMatrixBuffer = std::make_shared<ConstantBuffer>(sizeof(Matrix4x4<float>), true);
         colorBuffer = std::make_shared<ConstantBuffer>(sizeof(Vector4<float>), false);
@@ -391,7 +391,7 @@ void MassSprings3DWindow3::UpdateTransforms()
     Matrix4x4<float> pvMatrix = mCamera->GetProjectionViewMatrix();
     Matrix4x4<float> wMatrix = mTrackBall.GetOrientation();
     Matrix4x4<float> pvwMatrix = DoTransform(pvMatrix, wMatrix);
-    for (int i = 0; i < 6; ++i)
+    for (int32_t i = 0; i < 6; ++i)
     {
         auto cbuffer = mEffect[i]->GetVertexShader()->Get<ConstantBuffer>("PVWMatrix");
         *cbuffer->Get<Matrix4x4<float>>() = pvwMatrix;

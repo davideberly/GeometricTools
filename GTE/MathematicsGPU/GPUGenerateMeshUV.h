@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.25
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -38,7 +38,7 @@ namespace gte
     protected:
         virtual void SolveSystemInternal(uint32_t numIterations) override
         {
-            int api = mFactory->GetAPI();
+            int32_t api = mFactory->GetAPI();
             mFactory->defines.Set("NUM_X_THREADS", 8);
             mFactory->defines.Set("NUM_Y_THREADS", 8);
             if (std::numeric_limits<Real>::max() == std::numeric_limits<float>::max())
@@ -69,20 +69,20 @@ namespace gte
             // TODO: Test mSolveSystem for null and respond accordingly.
             auto solveSystem = mFactory->CreateFromSource(ShaderSource(api));
             LogAssert(solveSystem, "Failed to compile shader.");
-            auto cshader = solveSystem->GetComputeShader();
+            auto const& cshader = solveSystem->GetComputeShader();
 
             // Compute the number of thread groups.
-            int numInputs = this->mNumVertices - this->mNumBoundaryEdges;
+            int32_t numInputs = this->mNumVertices - this->mNumBoundaryEdges;
             Real factor0 = std::ceil(std::sqrt((Real)numInputs));
             Real factor1 = std::ceil((Real)numInputs / factor0);
-            int xElements = static_cast<int>(factor0);
-            int yElements = static_cast<int>(factor1);
-            int xRem = (xElements % 8);
+            int32_t xElements = static_cast<int32_t>(factor0);
+            int32_t yElements = static_cast<int32_t>(factor1);
+            int32_t xRem = (xElements % 8);
             if (xRem > 0)
             {
                 xElements += 8 - xRem;
             }
-            int yRem = (yElements % 8);
+            int32_t yRem = (yElements % 8);
             if (yRem > 0)
             {
                 yElements += 8 - yRem;
@@ -90,8 +90,8 @@ namespace gte
             uint32_t numXGroups = xElements / 8;
             uint32_t numYGroups = yElements / 8;
 
-            auto boundBuffer = std::make_shared<ConstantBuffer>(4 * sizeof(int), false);
-            auto data = boundBuffer->Get<int>();
+            auto boundBuffer = std::make_shared<ConstantBuffer>(4 * sizeof(int32_t), false);
+            auto data = boundBuffer->Get<int32_t>();
             data[0] = xElements;
             data[1] = yElements;
             data[2] = this->mNumBoundaryEdges;
@@ -104,12 +104,12 @@ namespace gte
             cshader->Set("vertexGraph", vgBuffer);
 
             uint32_t const vgdSize = static_cast<uint32_t>(this->mVertexGraphData.size());
-            auto vgdBuffer = std::make_shared<StructuredBuffer>(vgdSize, sizeof(std::pair<int, Real>));
+            auto vgdBuffer = std::make_shared<StructuredBuffer>(vgdSize, sizeof(std::pair<int32_t, Real>));
             std::memcpy(vgdBuffer->GetData(), &this->mVertexGraphData[0], vgdBuffer->GetNumBytes());
             cshader->Set("vertexGraphData", vgdBuffer);
 
             uint32_t const ovSize = static_cast<uint32_t>(this->mOrderedVertices.size());
-            auto ovBuffer = std::make_shared<StructuredBuffer>(ovSize, sizeof(int));
+            auto ovBuffer = std::make_shared<StructuredBuffer>(ovSize, sizeof(int32_t));
             std::memcpy(ovBuffer->GetData(), &this->mOrderedVertices[0], ovBuffer->GetNumBytes());
             cshader->Set("orderedVertices", ovBuffer);
 
@@ -117,10 +117,10 @@ namespace gte
             for (size_t j = 0; j < 2; ++j)
             {
                 tcoordsBuffer[j] = std::make_shared<StructuredBuffer>(this->mNumVertices, sizeof(Vector2<Real>));
-                tcoordsBuffer[j]->SetUsage(Resource::SHADER_OUTPUT);
+                tcoordsBuffer[j]->SetUsage(Resource::Usage::SHADER_OUTPUT);
                 std::memcpy(tcoordsBuffer[j]->GetData(), this->mTCoords, tcoordsBuffer[j]->GetNumBytes());
             }
-            tcoordsBuffer[0]->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+            tcoordsBuffer[0]->SetCopy(Resource::Copy::STAGING_TO_CPU);
 
             // The value numIterations is even, so we always swap an even
             // number of times.  This ensures that on exit from the loop,
@@ -146,7 +146,7 @@ namespace gte
         std::shared_ptr<GraphicsEngine> mEngine;
         std::shared_ptr<ProgramFactory> mFactory;
 
-        static std::string const& ShaderSource(int api)
+        static std::string const& ShaderSource(int32_t api)
         {
             static std::array<std::string, 2> source =
             {
@@ -155,19 +155,19 @@ namespace gte
                     uniform Bounds
                     {
                         ivec2 bound;
-                        int numBoundaryEdges;
-                        int numInputs;
+                        int32_t numBoundaryEdges;
+                        int32_t numInputs;
                     };
 
                     struct VertexGraphData
                     {
-                        int adjacent;
+                        int32_t adjacent;
                         Real weight;
                     };
 
                     buffer vertexGraph { ivec4 data[]; } vertexGraphSB;
                     buffer vertexGraphData { VertexGraphData data[]; } vertexGraphDataSB;
-                    buffer orderedVertices { int data[]; } orderedVerticesSB;
+                    buffer orderedVertices { int32_t data[]; } orderedVerticesSB;
                     buffer inTCoords { Real2 data[]; } inTCoordsSB;
                     buffer outTCoords { Real2 data[]; } outTCoordsSB;
 
@@ -175,14 +175,14 @@ namespace gte
                     void main()
                     {
                         ivec2 t = ivec2(gl_GlobalInvocationID.xy);
-                        int index = t.x + bound.x * t.y;
+                        int32_t index = t.x + bound.x * t.y;
                         if (step(index, numInputs-1) == 1)
                         {
-                            int v = orderedVerticesSB.data[numBoundaryEdges + index];
+                            int32_t v = orderedVerticesSB.data[numBoundaryEdges + index];
                             ivec2 range = vertexGraphSB.data[v].yz;
                             Real2 tcoord = Real2(0, 0);
                             Real weightSum = 0;
-                            for (int j = 0; j < range.y; ++j)
+                            for (int32_t j = 0; j < range.y; ++j)
                             {
                                 VertexGraphData vgd = vertexGraphDataSB.data[range.x + j];
                                 weightSum += vgd.weight;
@@ -199,33 +199,33 @@ namespace gte
                     cbuffer Bounds
                     {
                         int2 bound;
-                        int numBoundaryEdges;
-                        int numInputs;
+                        int32_t numBoundaryEdges;
+                        int32_t numInputs;
                     };
 
                     struct VertexGraphData
                     {
-                        int adjacent;
+                        int32_t adjacent;
                         Real weight;
                     };
 
                     StructuredBuffer<int4> vertexGraph;
                     StructuredBuffer<VertexGraphData> vertexGraphData;
-                    StructuredBuffer<int> orderedVertices;
+                    StructuredBuffer<int32_t> orderedVertices;
                     StructuredBuffer<Real2> inTCoords;
                     RWStructuredBuffer<Real2> outTCoords;
 
                     [numthreads(NUM_X_THREADS, NUM_Y_THREADS, 1)]
                     void CSMain(int2 t : SV_DispatchThreadID)
                     {
-                        int index = t.x + bound.x * t.y;
+                        int32_t index = t.x + bound.x * t.y;
                         if (step(index, numInputs-1))
                         {
-                            int v = orderedVertices[numBoundaryEdges + index];
+                            int32_t v = orderedVertices[numBoundaryEdges + index];
                             int2 range = vertexGraph[v].yz;
                             Real2 tcoord = Real2(0, 0);
                             Real weightSum = 0;
-                            for (int j = 0; j < range.y; ++j)
+                            for (int32_t j = 0; j < range.y; ++j)
                             {
                                 VertexGraphData vgd = vertexGraphData[range.x + j];
                                 weightSum += vgd.weight;

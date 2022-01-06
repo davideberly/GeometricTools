@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 
 // This is an implementation of Brent's Method for computing a root of a
@@ -51,7 +52,7 @@ namespace gte
         // cannot know that.  The function also returns 'false' if t0 >= t1.
 
         static bool Find(std::function<Real(Real)> const& F, Real t0, Real t1,
-            unsigned int maxIterations, Real negFTolerance, Real posFTolerance,
+            uint32_t maxIterations, Real negFTolerance, Real posFTolerance,
             Real stepTTolerance, Real convTTolerance, Real& root)
         {
             // Parameter validation.
@@ -103,7 +104,7 @@ namespace gte
             bool prevBisected = true;
 
             // The root search.
-            for (unsigned int i = 0; i < maxIterations; ++i)
+            for (uint32_t i = 0; i < maxIterations; ++i)
             {
                 Real fDiff01 = f0 - f1, fDiff02 = f0 - f2, fDiff12 = f1 - f2;
                 Real invFDiff01 = ((Real)1) / fDiff01;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #include "DistancePointHyperellipsoidConsole.h"
 #include <Mathematics/DistPointHyperellipsoid.h>
@@ -44,15 +44,15 @@ void DistancePointHyperellipsoidConsole::TestDistancePointEllipse()
 
     double xExtreme = 2.0f;
     double yExtreme = 1.0f;
-    int const numXSamples = 32;
-    int const numYSamples = 16;
+    int32_t const numXSamples = 32;
+    int32_t const numYSamples = 16;
     Vector2<double> point, K, grad, diff;
     double dot, angle;
     DCPQuery<double, Vector2<double>, Ellipse2<double>> query;
-    for (int y = 0; y < numYSamples; ++y)
+    for (int32_t y = 0; y < numYSamples; ++y)
     {
         point[1] = -yExtreme + 2.0 * yExtreme * y / (numYSamples - 1.0);
-        for (int x = 0; x < numXSamples; ++x)
+        for (int32_t x = 0; x < numXSamples; ++x)
         {
             point[0] = -xExtreme + 2.0 * xExtreme * x / (numXSamples - 1.0);
 
@@ -113,19 +113,19 @@ void DistancePointHyperellipsoidConsole::TestDistancePointEllipsoid()
     double xExtreme = 2.0f;
     double yExtreme = 4.0f;
     double zExtreme = 3.0f;
-    int const numXSamples = 32;
-    int const numYSamples = 64;
-    int const numZSamples = 48;
+    int32_t const numXSamples = 32;
+    int32_t const numYSamples = 64;
+    int32_t const numZSamples = 48;
     Vector3<double> point, K, grad, diff;
     double dot, angle;
     DCPQuery<double, Vector3<double>, Ellipsoid3<double>> query;
-    for (int z = 0; z < numZSamples; ++z)
+    for (int32_t z = 0; z < numZSamples; ++z)
     {
         point[2] = -zExtreme + 2.0 * zExtreme * z / (numZSamples - 1.0);
-        for (int y = 0; y < numYSamples; ++y)
+        for (int32_t y = 0; y < numYSamples; ++y)
         {
             point[1] = -yExtreme + 2.0 * yExtreme * y / (numYSamples - 1.0);
-            for (int x = 0; x < numXSamples; ++x)
+            for (int32_t x = 0; x < numXSamples; ++x)
             {
                 point[0] = -xExtreme + 2.0 * xExtreme * x / (numXSamples - 1.0);
 

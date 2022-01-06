@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BSplineCurveFitterWindow3.h"
 #include <Graphics/VertexColorEffect.h>
@@ -49,7 +49,7 @@ void BSplineCurveFitterWindow3::OnIdle()
     mEngine->DisplayColorBuffer(0);
 }
 
-bool BSplineCurveFitterWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BSplineCurveFitterWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -129,9 +129,9 @@ bool BSplineCurveFitterWindow3::OnCharPress(unsigned char key, int x, int y)
 void BSplineCurveFitterWindow3::CreateScene()
 {
     // Generate samples on a helix.
-    unsigned int numSamples = (unsigned int)mSamples.size();
+    uint32_t numSamples = (uint32_t)mSamples.size();
     float multiplier = 2.0f / (numSamples - 1.0f);
-    for (unsigned int i = 0; i < numSamples; ++i)
+    for (uint32_t i = 0; i < numSamples; ++i)
     {
         float t = -1.0f + multiplier * i;
         float angle = 2.0f * (float)GTE_C_TWO_PI * t;
@@ -148,11 +148,11 @@ void BSplineCurveFitterWindow3::CreateScene()
     std::uniform_real_distribution<float> rnd(0.25f, 0.75f);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numSamples);
     auto* vertex = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numSamples; ++i)
+    for (uint32_t i = 0; i < numSamples; ++i)
     {
         vertex[i].position = mSamples[i];
         vertex[i].color = { rnd(mte), rnd(mte), rnd(mte), 1.0f };
@@ -180,19 +180,19 @@ void BSplineCurveFitterWindow3::CreateBSplinePolyline()
     }
 
     // Create the curve from the current parameters.
-    mSpline = std::make_unique<BSplineCurveFit<float>>(3, static_cast<int>(mSamples.size()),
+    mSpline = std::make_unique<BSplineCurveFit<float>>(3, static_cast<int32_t>(mSamples.size()),
         reinterpret_cast<float const*>(&mSamples[0]), mDegree, mNumControls);
 
     // Sample it the same number of times as the original data.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
 
-    unsigned int numSamples = (unsigned int)mSamples.size();
+    uint32_t numSamples = (uint32_t)mSamples.size();
     float multiplier = 1.0f / (numSamples - 1.0f);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numSamples);
     auto* vertex = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numSamples; ++i)
+    for (uint32_t i = 0; i < numSamples; ++i)
     {
         float t = multiplier * i;
         mSpline->GetPosition(t, reinterpret_cast<float*>(&vertex[i].position[0]));
@@ -209,7 +209,7 @@ void BSplineCurveFitterWindow3::CreateBSplinePolyline()
     // Compute error measurements.
     mAvrError = 0.0f;
     mRmsError = 0.0f;
-    for (unsigned int i = 0; i < numSamples; ++i)
+    for (uint32_t i = 0; i < numSamples; ++i)
     {
         Vector3<float> diff = mSamples[i] - vertex[i].position;
         float sqrLength = Dot(diff, diff);

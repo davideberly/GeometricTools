@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -49,12 +49,12 @@ private:
         Vector3<double> const& Q0, Vector3<double> const& Q1,
         double& sqrDistance, double& s, double& t, Vector3<double> closest[2]);
 
-    template <int N>
-    void LoadInput(bool testNonparallel, unsigned int numInputs,
+    template <int32_t N>
+    void LoadInput(bool testNonparallel, uint32_t numInputs,
         Segment<N, double>* segment);
 
     void CPUAccuracyTest(bool compareUsingExact, bool testNonparallel);
-    void CPUPerformanceTest(int select, bool testNonparallel);
+    void CPUPerformanceTest(int32_t select, bool testNonparallel);
     void GPUAccuracyTest(bool getClosest, bool testNonparallel);
     void GPUPerformanceTest(bool getClosest, bool testNonparallel);
 

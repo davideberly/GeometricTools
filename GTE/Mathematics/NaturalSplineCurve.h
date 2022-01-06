@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class NaturalSplineCurve : public ParametricCurve<N, Real>
     {
     public:
@@ -27,7 +27,7 @@ namespace gte
         // object as shown:
         //     NaturalSplineCurve<N, Real> curve(parameters);
         //     if (!curve) { <constructor failed, handle accordingly>; }
-        NaturalSplineCurve(bool isFree, int numPoints,
+        NaturalSplineCurve(bool isFree, int32_t numPoints,
             Vector<N, Real> const* points, Real const* times)
             :
             ParametricCurve<N, Real>(numPoints - 1, times)
@@ -44,7 +44,7 @@ namespace gte
             mB = mA + numPoints;
             mC = mB + numSegments;
             mD = mC + numSegments + 1;
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 mA[i] = points[i];
             }
@@ -61,7 +61,7 @@ namespace gte
             this->mConstructed = true;
         }
 
-        NaturalSplineCurve(int numPoints, Vector<N, Real> const* points,
+        NaturalSplineCurve(int32_t numPoints, Vector<N, Real> const* points,
             Real const* times, Vector<N, Real> const& derivative0,
             Vector<N, Real> const& derivative1)
             :
@@ -79,7 +79,7 @@ namespace gte
             mB = mA + numPoints;
             mC = mB + numSegments;
             mD = mC + numSegments + 1;
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 mA[i] = points[i];
             }
@@ -91,9 +91,9 @@ namespace gte
         virtual ~NaturalSplineCurve() = default;
 
         // Member access.
-        inline int GetNumPoints() const
+        inline int32_t GetNumPoints() const
         {
-            return static_cast<int>((mCoefficients.size() - 1) / 4);
+            return static_cast<int32_t>((mCoefficients.size() - 1) / 4);
         }
 
         inline Vector<N, Real> const* GetPoints() const
@@ -108,20 +108,20 @@ namespace gte
         // output array 'jet' must have enough storage to support the maximum
         // order.  The values are ordered as: position, first derivative,
         // second derivative, third derivative.
-        virtual void Evaluate(Real t, unsigned int order, Vector<N, Real>* jet) const override
+        virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            unsigned int const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
+            uint32_t const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
             if (!this->mConstructed || order >= supOrder)
             {
                 // Return a zero-valued jet for invalid state.
-                for (unsigned int i = 0; i < supOrder; ++i)
+                for (uint32_t i = 0; i < supOrder; ++i)
                 {
                     jet[i].MakeZero();
                 }
                 return;
             }
 
-            int key = 0;
+            int32_t key = 0;
             Real dt = (Real)0;
             GetKeyInfo(t, key, dt);
 
@@ -147,21 +147,21 @@ namespace gte
         // Support for construction.
         void CreateFree()
         {
-            int numSegments = GetNumPoints() - 1;
+            int32_t numSegments = GetNumPoints() - 1;
             WorkingData wd(numSegments);
-            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
                 wd.dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             std::vector<Real> d2t(numSegments);
-            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
                 wd.d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
 
             std::vector<Vector<N, Real>> alpha(numSegments);
-            for (int i = 1; i < numSegments; ++i)
+            for (int32_t i = 1; i < numSegments; ++i)
             {
                 Vector<N, Real> numer = (Real)3 * (wd.dt[i - 1] * mA[i + 1] - wd.d2t[i] * mA[i] + wd.dt[i] * mA[i - 1]);
                 Real invDenom = (Real)1 / (wd.dt[i - 1] * wd.dt[i]);
@@ -176,7 +176,7 @@ namespace gte
             wd.ell[0] = (Real)1;
             wd.mu[0] = (Real)0;
             wd.z[0].MakeZero();
-            for (int i = 1; i < numSegments; ++i)
+            for (int32_t i = 1; i < numSegments; ++i)
             {
                 wd.ell[i] = (Real)2 * wd.d2t[i] - wd.dt[i - 1] * wd.mu[i - 1];
                 inv = (Real)1 / wd.ell[i];
@@ -188,7 +188,7 @@ namespace gte
 
             Real const oneThird = (Real)1 / (Real)3;
             mC[numSegments].MakeZero();
-            for (int i = numSegments - 1; i >= 0; --i)
+            for (int32_t i = numSegments - 1; i >= 0; --i)
             {
                 mC[i] = wd.z[i] - wd.mu[i] * mC[i + 1];
                 inv = (Real)1 / wd.dt[i];
@@ -204,9 +204,9 @@ namespace gte
             // faster linear solver can be used.  The current linear system
             // code does not have such a solver.
 
-            int numSegments = GetNumPoints() - 1;
+            int32_t numSegments = GetNumPoints() - 1;
             std::vector<Real> dt(numSegments);
-            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
                 dt[i] = this->mTime[ip1] - this->mTime[i];
             }
@@ -215,7 +215,7 @@ namespace gte
             GMatrix<Real> mat(numSegments + 1, numSegments + 1);
             mat(0, 0) = (Real)1;
             mat(0, numSegments) = (Real)-1;
-            for (int i = 1, im1 = 0, ip1 = 2; i <= numSegments - 1; ++i, ++im1, ++ip1)
+            for (int32_t i = 1, im1 = 0, ip1 = 2; i <= numSegments - 1; ++i, ++im1, ++ip1)
             {
                 mat(i, im1) = dt[im1];
                 mat(i, i) = (Real)2 * (dt[im1] + dt[i]);
@@ -228,7 +228,7 @@ namespace gte
             // Construct right-hand side of system.
             mC[0].MakeZero();
             Real inv0, inv1;
-            for (int i = 1, im1 = 0, ip1 = 2; ip1 <= numSegments; ++i, ++im1, ++ip1)
+            for (int32_t i = 1, im1 = 0, ip1 = 2; ip1 <= numSegments; ++i, ++im1, ++ip1)
             {
                 inv0 = (Real)1 / dt[i];
                 inv1 = (Real)1 / dt[im1];
@@ -242,21 +242,21 @@ namespace gte
             GMatrix<Real> invMat = Inverse(mat);
             GVector<Real> input(numSegments + 1);
             GVector<Real> output(numSegments + 1);
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j)
             {
-                for (int i = 0; i <= numSegments; ++i)
+                for (int32_t i = 0; i <= numSegments; ++i)
                 {
                     input[i] = mC[i][j];
                 }
                 output = invMat * input;
-                for (int i = 0; i <= numSegments; ++i)
+                for (int32_t i = 0; i <= numSegments; ++i)
                 {
                     mC[i][j] = output[i];
                 }
             }
 
             Real const oneThird = (Real)1 / (Real)3;
-            for (int i = 0; i < numSegments; ++i)
+            for (int32_t i = 0; i < numSegments; ++i)
             {
                 inv0 = (Real)1 / dt[i];
                 mB[i] = inv0 * (mA[i + 1] - mA[i]) - oneThird * (mC[i + 1] + (Real)2 * mC[i]) * dt[i];
@@ -266,15 +266,15 @@ namespace gte
 
         void CreateClamped(Vector<N, Real> const& derivative0, Vector<N, Real> const& derivative1)
         {
-            int numSegments = GetNumPoints() - 1;
+            int32_t numSegments = GetNumPoints() - 1;
             std::vector<Real> dt(numSegments);
-            for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
             {
                 dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             std::vector<Real> d2t(numSegments);
-            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
                 d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
@@ -285,7 +285,7 @@ namespace gte
             inv = (Real)1 / dt[static_cast<size_t>(numSegments) - 1];
             alpha[numSegments] = (Real)3 * (derivative1 -
                 inv * (mA[numSegments] - mA[numSegments - 1]));
-            for (int i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
             {
                 Vector<N, Real> numer = (Real)3 * (dt[im1] * mA[ip1] - d2t[i] * mA[i] + dt[i] * mA[im1]);
                 Real invDenom = (Real)1 / (dt[im1] * dt[i]);
@@ -301,7 +301,7 @@ namespace gte
             inv = (Real)1 / ell[0];
             z[0] = inv * alpha[0];
 
-            for (int i = 1, im1 = 0; i < numSegments; ++i, ++im1)
+            for (int32_t i = 1, im1 = 0; i < numSegments; ++i, ++im1)
             {
                 ell[i] = (Real)2 * d2t[i] - dt[im1] * mu[im1];
                 inv = (Real)1 / ell[i];
@@ -314,7 +314,7 @@ namespace gte
 
             Real const oneThird = (Real)1 / (Real)3;
             mC[numSegments] = z[numSegments];
-            for (int i = numSegments - 1; i >= 0; --i)
+            for (int32_t i = numSegments - 1; i >= 0; --i)
             {
                 mC[i] = z[i] - mu[i] * mC[i + 1];
                 inv = (Real)1 / dt[i];
@@ -325,9 +325,9 @@ namespace gte
         }
 
         // Determine the index i for which times[i] <= t < times[i+1].
-        void GetKeyInfo(Real t, int& key, Real& dt) const
+        void GetKeyInfo(Real t, int32_t& key, Real& dt) const
         {
-            int numSegments = GetNumPoints() - 1;
+            int32_t numSegments = GetNumPoints() - 1;
             if (t <= this->mTime[0])
             {
                 key = 0;
@@ -340,7 +340,7 @@ namespace gte
             }
             else
             {
-                for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+                for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
                 {
                     if (t < this->mTime[ip1])
                     {
@@ -365,7 +365,7 @@ namespace gte
 
         struct WorkingData
         {
-            WorkingData(int numSegments)
+            WorkingData(int32_t numSegments)
             {
                 data.resize(4 * static_cast<size_t>(numSegments) + 1 + N * (2 * static_cast<size_t>(numSegments) + 1));
                 dt = &data[0];

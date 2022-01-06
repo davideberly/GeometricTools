@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -35,7 +35,7 @@ namespace gte
         // there is at least one image cube to process.  The inputVoxels must
         // be nonnull and point to contiguous storage that contains at least
         // xBound * yBound * zBound elements.
-        SurfaceExtractorTetrahedra(int xBound, int yBound, int zBound, T const* inputVoxels)
+        SurfaceExtractorTetrahedra(int32_t xBound, int32_t yBound, int32_t zBound, T const* inputVoxels)
             :
             SurfaceExtractor<T, Real>(xBound, yBound, zBound, inputVoxels),
             mNextVertex(0)
@@ -61,24 +61,24 @@ namespace gte
             mNextVertex = 0;
             vertices.clear();
             triangles.clear();
-            for (int z = 0, zp = 1; zp < this->mZBound; ++z, ++zp)
+            for (int32_t z = 0, zp = 1; zp < this->mZBound; ++z, ++zp)
             {
-                int zParity = (z & 1);
-                for (int y = 0, yp = 1; yp < this->mYBound; ++y, ++yp)
+                int32_t zParity = (z & 1);
+                for (int32_t y = 0, yp = 1; yp < this->mYBound; ++y, ++yp)
                 {
-                    int yParity = (y & 1);
-                    for (int x = 0, xp = 1; xp < this->mXBound; ++x, ++xp)
+                    int32_t yParity = (y & 1);
+                    for (int32_t x = 0, xp = 1; xp < this->mXBound; ++x, ++xp)
                     {
-                        int xParity = (x & 1);
+                        int32_t xParity = (x & 1);
 
-                        int i000 = x + this->mXBound * (y + this->mYBound * z);
-                        int i100 = i000 + 1;
-                        int i010 = i000 + this->mXBound;
-                        int i110 = i010 + 1;
-                        int i001 = i000 + this->mXYBound;
-                        int i101 = i001 + 1;
-                        int i011 = i001 + this->mXBound;
-                        int i111 = i011 + 1;
+                        int32_t i000 = x + this->mXBound * (y + this->mYBound * z);
+                        int32_t i100 = i000 + 1;
+                        int32_t i010 = i000 + this->mXBound;
+                        int32_t i110 = i010 + 1;
+                        int32_t i001 = i000 + this->mXYBound;
+                        int32_t i101 = i001 + 1;
+                        int32_t i011 = i001 + this->mXBound;
+                        int32_t i111 = i011 + 1;
                         int64_t f000 = static_cast<int64_t>(this->mVoxels[i000]);
                         int64_t f100 = static_cast<int64_t>(this->mVoxels[i100]);
                         int64_t f010 = static_cast<int64_t>(this->mVoxels[i010]);
@@ -196,7 +196,7 @@ namespace gte
         {
             Edge() = default;
 
-            Edge(int v0, int v1)
+            Edge(int32_t v0, int32_t v1)
             {
                 if (v0 < v1)
                 {
@@ -217,7 +217,7 @@ namespace gte
 
             bool operator<(Edge const& other) const
             {
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     if (v[i] < other.v[i])
                     {
@@ -231,40 +231,40 @@ namespace gte
                 return false;
             }
 
-            std::array<int, 2> v;
+            std::array<int32_t, 2> v;
         };
 
         virtual std::array<Real, 3> GetGradient(std::array<Real, 3> const& pos) override
         {
             std::array<Real, 3> const zero{ (Real)0, (Real)0, (Real)0 };
 
-            int x = static_cast<int>(pos[0]);
+            int32_t x = static_cast<int32_t>(pos[0]);
             if (x < 0 || x + 1 >= this->mXBound)
             {
                 return zero;
             }
 
-            int y = static_cast<int>(pos[1]);
+            int32_t y = static_cast<int32_t>(pos[1]);
             if (y < 0 || y + 1 >= this->mYBound)
             {
                 return zero;
             }
 
-            int z = static_cast<int>(pos[2]);
+            int32_t z = static_cast<int32_t>(pos[2]);
             if (z < 0 || z + 1 >= this->mZBound)
             {
                 return zero;
             }
 
             // Get image values at corners of voxel.
-            int i000 = x + this->mXBound * (y + this->mYBound * z);
-            int i100 = i000 + 1;
-            int i010 = i000 + this->mXBound;
-            int i110 = i010 + 1;
-            int i001 = i000 + this->mXYBound;
-            int i101 = i001 + 1;
-            int i011 = i001 + this->mXBound;
-            int i111 = i011 + 1;
+            int32_t i000 = x + this->mXBound * (y + this->mYBound * z);
+            int32_t i100 = i000 + 1;
+            int32_t i010 = i000 + this->mXBound;
+            int32_t i110 = i010 + 1;
+            int32_t i001 = i000 + this->mXYBound;
+            int32_t i101 = i001 + 1;
+            int32_t i011 = i001 + this->mXBound;
+            int32_t i111 = i011 + 1;
             Real f000 = static_cast<Real>(this->mVoxels[i000]);
             Real f100 = static_cast<Real>(this->mVoxels[i100]);
             Real f010 = static_cast<Real>(this->mVoxels[i010]);
@@ -360,7 +360,7 @@ namespace gte
             return grad;
         }
 
-        int AddVertex(Vertex const& v)
+        int32_t AddVertex(Vertex const& v)
         {
             auto iter = mVMap.find(v);
             if (iter != mVMap.end())
@@ -371,7 +371,7 @@ namespace gte
             else
             {
                 // Vertex not in map, insert it and assign it a unique index.
-                int i = mNextVertex++;
+                int32_t i = mNextVertex++;
                 mVMap.insert(std::make_pair(v, i));
                 return i;
             }
@@ -379,16 +379,16 @@ namespace gte
 
         void AddEdge(Vertex const& v0, Vertex const& v1)
         {
-            int i0 = AddVertex(v0);
-            int i1 = AddVertex(v1);
+            int32_t i0 = AddVertex(v0);
+            int32_t i1 = AddVertex(v1);
             mESet.insert(Edge(i0, i1));
         }
 
         void AddTriangle(Vertex const& v0, Vertex const& v1, Vertex const& v2)
         {
-            int i0 = AddVertex(v0);
-            int i1 = AddVertex(v1);
-            int i2 = AddVertex(v2);
+            int32_t i0 = AddVertex(v0);
+            int32_t i1 = AddVertex(v1);
+            int32_t i2 = AddVertex(v2);
 
             // Nothing to do if triangle already exists.
             Triangle triangle(i0, i1, i2);
@@ -987,9 +987,9 @@ namespace gte
             }
         }
 
-        std::map<Vertex, int> mVMap;
+        std::map<Vertex, int32_t> mVMap;
         std::set<Edge> mESet;
         std::set<Triangle> mTSet;
-        int mNextVertex;
+        int32_t mNextVertex;
     };
 }

@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace gte
@@ -65,17 +66,17 @@ namespace gte
         }
 
         // The number of intervals in the set.
-        inline int GetNumIntervals() const
+        inline int32_t GetNumIntervals() const
         {
-            return static_cast<int>(mEndpoints.size() / 2);
+            return static_cast<int32_t>(mEndpoints.size() / 2);
         }
 
         // The i-th interval is [xmin,xmax).  The values xmin and xmax are
         // valid only when 0 <= i < GetNumIntervals().
-        bool GetInterval(int i, Scalar& xmin, Scalar& xmax) const
+        bool GetInterval(int32_t i, Scalar& xmin, Scalar& xmax) const
         {
-            int index = 2 * i;
-            if (0 <= index && index < static_cast<int>(mEndpoints.size()))
+            int32_t index = 2 * i;
+            if (0 <= index && index < static_cast<int32_t>(mEndpoints.size()))
             {
                 xmin = mEndpoints[index];
                 xmax = mEndpoints[++index];
@@ -128,7 +129,7 @@ namespace gte
             size_t const numEndpoints0 = input0.mEndpoints.size();
             size_t const numEndpoints1 = input1.mEndpoints.size();
             size_t i0 = 0, i1 = 0;
-            int parity0 = 0, parity1 = 0;
+            int32_t parity0 = 0, parity1 = 0;
             while (i0 < numEndpoints0 && i1 < numEndpoints1)
             {
                 Scalar const& value0 = input0.mEndpoints[i0];
@@ -210,7 +211,7 @@ namespace gte
             size_t const numEndpoints0 = input0.mEndpoints.size();
             size_t const numEndpoints1 = input1.mEndpoints.size();
             size_t i0 = 0, i1 = 0;
-            int parity0 = 0, parity1 = 0;
+            int32_t parity0 = 0, parity1 = 0;
             while (i0 < numEndpoints0 && i1 < numEndpoints1)
             {
                 Scalar const& value0 = input0.mEndpoints[i0];
@@ -280,7 +281,7 @@ namespace gte
             size_t const numEndpoints0 = input0.mEndpoints.size();
             size_t const numEndpoints1 = input1.mEndpoints.size();
             size_t i0 = 0, i1 = 0;
-            int parity0 = 0, parity1 = 1;
+            int32_t parity0 = 0, parity1 = 1;
             while (i0 < numEndpoints0 && i1 < numEndpoints1)
             {
                 Scalar const& value0 = input0.mEndpoints[i0];

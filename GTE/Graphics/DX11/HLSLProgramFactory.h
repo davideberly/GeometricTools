@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,7 +22,7 @@ namespace gte
         static std::string defaultPSEntry;  // "PSMain"
         static std::string defaultGSEntry;  // "GSMain"
         static std::string defaultCSEntry;  // "CSMain"
-        static unsigned int defaultFlags;
+        static uint32_t defaultFlags;
         // enable strictness, ieee strictness, optimization level 3
 
         // Construction.  The 'version' member is set to 'defaultVersion'.
@@ -32,17 +32,17 @@ namespace gte
 
         // The returned value is used as a lookup index into arrays of strings
         // corresponding to shader programs.
-        virtual int GetAPI() const;
+        virtual int32_t GetAPI() const;
 
         // Create a program for GPU display.
         std::shared_ptr<VisualProgram> CreateFromBytecode(
-            std::vector<unsigned char> const& vsBytecode,
-            std::vector<unsigned char> const& psBytecode,
-            std::vector<unsigned char> const& gsBytecode);
+            std::vector<uint8_t> const& vsBytecode,
+            std::vector<uint8_t> const& psBytecode,
+            std::vector<uint8_t> const& gsBytecode);
 
         // Create a program for GPU computing.
         std::shared_ptr<ComputeProgram> CreateFromBytecode(
-            std::vector<unsigned char> const& csBytecode);
+            std::vector<uint8_t> const& csBytecode);
 
     private:
         // Create a program for GPU display.  The files are loaded, converted

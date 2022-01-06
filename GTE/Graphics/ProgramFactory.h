@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -32,7 +32,7 @@ namespace gte
         std::string version;
         std::string vsEntry, psEntry, gsEntry, csEntry;
         ProgramDefines defines;
-        unsigned int flags;
+        uint32_t flags;
 
         // The returned value is used as a lookup index into arrays of strings
         // corresponding to shader programs.  Currently, GLSLProgramFactory
@@ -44,7 +44,7 @@ namespace gte
             PF_NUM_API
         };
 
-        virtual int GetAPI() const = 0;
+        virtual int32_t GetAPI() const = 0;
 
         // Create a program for GPU display.  The files are loaded, converted
         // to strings, and passed to CreateFromNamedSources.  The filenames
@@ -92,7 +92,7 @@ namespace gte
 
     private:
         std::stack<ProgramDefines> mDefinesStack;
-        std::stack<unsigned int> mFlagsStack;
+        std::stack<uint32_t> mFlagsStack;
     };
 
     typedef std::array<std::string const*, ProgramFactory::PF_NUM_API> ProgramSources;

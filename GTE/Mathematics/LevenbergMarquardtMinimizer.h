@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -31,7 +31,7 @@ namespace gte
         typedef std::function<void(DVector const&, JTJMatrix&, JTFVector&)> JPlusFunction;
 
         // Create the minimizer that computes F(p) and J(p) directly.
-        LevenbergMarquardtMinimizer(int numPDimensions, int numFDimensions,
+        LevenbergMarquardtMinimizer(int32_t numPDimensions, int32_t numFDimensions,
             FFunction const& inFFunction, JFunction const& inJFunction)
             :
             mNumPDimensions(numPDimensions),
@@ -49,7 +49,7 @@ namespace gte
         }
 
         // Create the minimizer that computes J^T(p)*J(p) and -J(p)*F(p).
-        LevenbergMarquardtMinimizer(int numPDimensions, int numFDimensions,
+        LevenbergMarquardtMinimizer(int32_t numPDimensions, int32_t numFDimensions,
             FFunction const& inFFunction, JPlusFunction const& inJPlusFunction)
             :
             mNumPDimensions(numPDimensions),
@@ -72,8 +72,8 @@ namespace gte
         LevenbergMarquardtMinimizer(LevenbergMarquardtMinimizer&&) = delete;
         LevenbergMarquardtMinimizer& operator=(LevenbergMarquardtMinimizer&&) = delete;
 
-        inline int GetNumPDimensions() const { return mNumPDimensions; }
-        inline int GetNumFDimensions() const { return mNumFDimensions; }
+        inline int32_t GetNumPDimensions() const { return mNumPDimensions; }
+        inline int32_t GetNumFDimensions() const { return mNumFDimensions; }
 
         // The lambda is positive, the multiplier is positive, and the initial
         // guess for the p-parameter is p0.  Typical choices are lambda =
@@ -212,13 +212,13 @@ namespace gte
             }
 
             T diagonalSum(0);
-            for (int i = 0; i < mNumPDimensions; ++i)
+            for (int32_t i = 0; i < mNumPDimensions; ++i)
             {
                 diagonalSum += mJTJ(i, i);
             }
 
             T diagonalAdjust = lambda * diagonalSum / static_cast<T>(mNumPDimensions);
-            for (int i = 0; i < mNumPDimensions; ++i)
+            for (int32_t i = 0; i < mNumPDimensions; ++i)
             {
                 mJTJ(i, i) += diagonalAdjust;
             }
@@ -272,7 +272,7 @@ namespace gte
             }
         }
 
-        int mNumPDimensions, mNumFDimensions;
+        int32_t mNumPDimensions, mNumFDimensions;
         FFunction mFFunction;
         JFunction mJFunction;
         JPlusFunction mJPlusFunction;

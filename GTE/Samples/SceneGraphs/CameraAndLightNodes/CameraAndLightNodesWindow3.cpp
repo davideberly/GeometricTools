@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CameraAndLightNodesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -23,22 +23,22 @@ CameraAndLightNodesWindow3::CameraAndLightNodesWindow3(Parameters& parameters)
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mNoDepthStencilState = std::make_shared<DepthStencilState>();
     mNoDepthStencilState->depthEnable = false;
     mNoDepthStencilState->stencilEnable = false;
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     std::string path = mEnvironment.GetPath("RedSky.png");
     auto skyTexture = WICFileIO::Load(path, false);
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, mXSize, mYSize,
-        SamplerState::MIN_P_MAG_P_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP, true);
+        SamplerState::Filter::MIN_P_MAG_P_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay->SetTexture(skyTexture);
 
     // The order of these calls is important.  The camera and camera node must
@@ -82,7 +82,7 @@ void CameraAndLightNodesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool CameraAndLightNodesWindow3::OnCharPress(unsigned char key, int x, int y)
+bool CameraAndLightNodesWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -100,9 +100,9 @@ bool CameraAndLightNodesWindow3::OnCharPress(unsigned char key, int x, int y)
 
     case '+':  // increase light intensity
     case '=':
-        for (int i = 0; i < 2; ++i)
+        for (int32_t i = 0; i < 2; ++i)
         {
-            auto lighting = mEffect[i]->GetLighting();
+            auto const& lighting = mEffect[i]->GetLighting();
             lighting->attenuation[3] += 0.1f;
             mEffect[i]->UpdateLightingConstant();
         }
@@ -112,9 +112,9 @@ bool CameraAndLightNodesWindow3::OnCharPress(unsigned char key, int x, int y)
     case '_':
         if (mEffect[0]->GetLighting()->attenuation[3] >= 0.1f)
         {
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
-                auto lighting = mEffect[i]->GetLighting();
+                auto const& lighting = mEffect[i]->GetLighting();
                 lighting->attenuation[3] -= 0.1f;
                 mEffect[i]->UpdateLightingConstant();
             }
@@ -125,12 +125,12 @@ bool CameraAndLightNodesWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool CameraAndLightNodesWindow3::OnKeyDown(int key, int, int)
+bool CameraAndLightNodesWindow3::OnKeyDown(int32_t key, int32_t, int32_t)
 {
     return mCameraNodeRig.PushMotion(key);
 }
 
-bool CameraAndLightNodesWindow3::OnKeyUp(int key, int, int)
+bool CameraAndLightNodesWindow3::OnKeyUp(int32_t key, int32_t, int32_t)
 {
     return mCameraNodeRig.PopMotion(key);
 }
@@ -224,8 +224,8 @@ std::shared_ptr<Visual> CameraAndLightNodesWindow3::CreateGround()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
@@ -238,7 +238,7 @@ std::shared_ptr<Visual> CameraAndLightNodesWindow3::CreateGround()
     vertices[2].tcoord = { 8.0f, 8.0f };
     vertices[3].tcoord = { 0.0f, 8.0f };
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
     ibuffer->SetTriangle(0, 0, 1, 2);
     ibuffer->SetTriangle(1, 0, 2, 3);
 
@@ -247,24 +247,25 @@ std::shared_ptr<Visual> CameraAndLightNodesWindow3::CreateGround()
     gravelTexture->AutogenerateMipmaps();
 
     // Darken the gravel.
-    auto* texels = gravelTexture->Get<unsigned int>();
-    for (unsigned int i = 0; i < gravelTexture->GetNumElements(); ++i)
+    auto* texels = gravelTexture->Get<uint32_t>();
+    for (uint32_t i = 0; i < gravelTexture->GetNumElements(); ++i)
     {
-        unsigned int r = static_cast<unsigned int>(0.2f * (texels[i] & 0x000000FF));
-        unsigned int g = static_cast<unsigned int>(0.2f * ((texels[i] & 0x0000FF00) >> 8));
-        unsigned int b = static_cast<unsigned int>(0.2f * ((texels[i] & 0x00FF0000) >> 16));
+        uint32_t r = static_cast<uint32_t>(0.2f * (texels[i] & 0x000000FF));
+        uint32_t g = static_cast<uint32_t>(0.2f * ((texels[i] & 0x0000FF00) >> 8));
+        uint32_t b = static_cast<uint32_t>(0.2f * ((texels[i] & 0x00FF0000) >> 16));
         texels[i] = r | (g << 8) | (b << 16) | 0xFF000000;
     }
 
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, gravelTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mGround = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mGround->worldTransform, effect->GetPVWMatrixConstant());
     return mGround;
 }
 
-std::shared_ptr<Node> CameraAndLightNodesWindow3::CreateLightFixture(int i)
+std::shared_ptr<Node> CameraAndLightNodesWindow3::CreateLightFixture(int32_t i)
 {
     auto lightFixture = std::make_shared<Node>();
 
@@ -302,7 +303,7 @@ std::shared_ptr<Node> CameraAndLightNodesWindow3::CreateLightFixture(int i)
         // The camera model position must be updated for the light targets to
         // move.  The light model position is not updated because the point
         // lights must move with their corresponding light targets.
-        auto geometry = mEffect[i]->GetGeometry();
+        auto const& geometry = mEffect[i]->GetGeometry();
         geometry->cameraModelPosition = mCameraModelPosition;
         mEffect[i]->UpdateGeometryConstant();
     });
@@ -325,8 +326,8 @@ std::shared_ptr<Visual> CameraAndLightNodesWindow3::CreateLightTarget()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
 
     // Create a flat surface.
     MeshFactory mf;
@@ -334,10 +335,10 @@ std::shared_ptr<Visual> CameraAndLightNodesWindow3::CreateLightTarget()
     auto mesh = mf.CreateRectangle(64, 64, 8.0f, 8.0f);
 
     // Adjust the heights to form a paraboloid.
-    auto vbuffer = mesh->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumActiveElements();
+    auto const& vbuffer = mesh->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumActiveElements();
     auto* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& pos = vertices[i].position;
         pos[2] = 1.0f - (pos[0] * pos[0] + pos[1] * pos[1]) / 128.0f;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Controller.h>
@@ -12,7 +12,7 @@ using namespace gte;
 
 Controller::Controller()
     :
-    repeat(RT_CLAMP),
+    repeat(RepeatType::CLAMP),
     minTime(0.0),
     maxTime(0.0),
     phase(0.0),
@@ -47,7 +47,7 @@ double Controller::GetControlTime(double applicationTime)
 {
     double controlTime = frequency * applicationTime + phase;
 
-    if (repeat == RT_CLAMP)
+    if (repeat == RepeatType::CLAMP)
     {
         // Clamp the time to the [min,max] interval.
         if (controlTime < minTime)
@@ -67,13 +67,13 @@ double Controller::GetControlTime(double applicationTime)
         double multiples = (controlTime - minTime) / timeRange;
         double integerTime = std::floor(multiples);
         double fractionTime = multiples - integerTime;
-        if (repeat == RT_WRAP)
+        if (repeat == RepeatType::WRAP)
         {
             return minTime + fractionTime*timeRange;
         }
 
-        // repeat == RT_CYCLE
-        if (static_cast<int>(integerTime) & 1)
+        // repeat == RepeatType::CYCLE
+        if (static_cast<int32_t>(integerTime) & 1)
         {
             // Go backward in time.
             return maxTime - fractionTime * timeRange;

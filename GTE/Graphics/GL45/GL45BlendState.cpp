@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45BlendState.h>
@@ -11,11 +11,14 @@ using namespace gte;
 
 GL45BlendState::GL45BlendState(BlendState const* blendState)
     :
-    GL45DrawingState(blendState)
+    GL45DrawingState(blendState),
+    mEnableAlphaToCoverage(blendState->enableAlphaToCoverage),
+    mEnableIndependentBlend(blendState->enableIndependentBlend),
+    mTarget{},
+    mBlendColor(blendState->blendColor),
+    mSampleMask(blendState->sampleMask)
 {
-    mEnableAlphaToCoverage = blendState->enableAlphaToCoverage;
-    mEnableIndependentBlend = blendState->enableIndependentBlend;
-    for (unsigned int i = 0; i < BlendState::NUM_TARGETS; ++i)
+    for (uint32_t i = 0; i < BlendState::NUM_TARGETS; ++i)
     {
         BlendState::Target const& in = blendState->target[i];
         Target& out = mTarget[i];
@@ -31,8 +34,6 @@ GL45BlendState::GL45BlendState(BlendState const* blendState)
         out.bMask = (in.mask & 4 ? GL_TRUE : GL_FALSE);
         out.aMask = (in.mask & 8 ? GL_TRUE : GL_FALSE);
     }
-    mBlendColor = blendState->blendColor;
-    mSampleMask = blendState->sampleMask;
 }
 
 std::shared_ptr<GEObject> GL45BlendState::Create(void*, GraphicsObject const* object)
@@ -59,7 +60,7 @@ void GL45BlendState::Enable()
 
     if (mEnableIndependentBlend)
     {
-        for (unsigned int i = 0; i < BlendState::NUM_TARGETS; ++i)
+        for (uint32_t i = 0; i < BlendState::NUM_TARGETS; ++i)
         {
             Target const& target = mTarget[i];
             if (target.enable)
@@ -99,7 +100,7 @@ void GL45BlendState::Enable()
 }
 
 
-GLenum const GL45BlendState::msMode[] =
+std::array<GLenum const, 17> GL45BlendState::msMode =
 {
     GL_ZERO,
     GL_ONE,
@@ -120,7 +121,7 @@ GLenum const GL45BlendState::msMode[] =
     GL_ONE_MINUS_SRC1_ALPHA
 };
 
-GLenum const GL45BlendState::msOperation[] =
+std::array<GLenum const, 5> GL45BlendState::msOperation =
 {
     GL_FUNC_ADD,
     GL_FUNC_SUBTRACT,

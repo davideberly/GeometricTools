@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -71,7 +71,7 @@ namespace gte
                 return result;
             }
 
-            if (ccResult.numIntersections == std::numeric_limits<int>::max())
+            if (ccResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 // The arcs are cocircular.  Determine whether they overlap.
                 // Let arc0 be <A0,A1> and arc1 be <B0,B1>.  The points are
@@ -196,8 +196,8 @@ namespace gte
             }
 
             // Test whether circle-circle intersection points are on the arcs.
-            int numIntersections = 0;
-            for (int i = 0; i < ccResult.numIntersections; ++i)
+            int32_t numIntersections = 0;
+            for (int32_t i = 0; i < ccResult.numIntersections; ++i)
             {
                 if (arc0.Contains(ccResult.point[i]) && arc1.Contains(ccResult.point[i]))
                 {

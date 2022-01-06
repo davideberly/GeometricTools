@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -28,10 +28,10 @@ namespace gte
             // The number is 0 (no intersection), 1 (rays intersect in a
             // single point), 2 (rays are collinear and intersect in a 
             // segment; ray directions are opposite of each other), or
-            // std::numeric_limits<int>::max() (intersection is a ray; ray
+            // std::numeric_limits<int32_t>::max() (intersection is a ray; ray
             // directions are the same).
             bool intersect;
-            int numIntersections;
+            int32_t numIntersections;
         };
 
         Result operator()(Ray2<T> const& ray0, Ray2<T> const& ray1)
@@ -56,14 +56,14 @@ namespace gte
                     result.numIntersections = 0;
                 }
             }
-            else if (llResult.numIntersections == std::numeric_limits<int>::max())
+            else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 if (Dot(ray0.direction, ray1.direction) > (T)0)
                 {
                     // The rays are collinear and in the same direction, so
                     // they must overlap.
                     result.intersect = true;
-                    result.numIntersections = std::numeric_limits<int>::max();
+                    result.numIntersections = std::numeric_limits<int32_t>::max();
                 }
                 else
                 {
@@ -119,10 +119,10 @@ namespace gte
             // The number is 0 (no intersection), 1 (rays intersect in a
             // single point), 2 (rays are collinear and intersect in a 
             // segment; ray directions are opposite of each other), or
-            // std::numeric_limits<int>::max() (intersection is a ray; ray
+            // std::numeric_limits<int32_t>::max() (intersection is a ray; ray
             // directions are the same).
             bool intersect;
-            int numIntersections;
+            int32_t numIntersections;
 
             // If numIntersections is 1, the intersection is
             //   point[0] = ray0.origin + ray0Parameter[0] * ray0.direction
@@ -170,7 +170,7 @@ namespace gte
                     result.numIntersections = 0;
                 }
             }
-            else if (llResult.numIntersections == std::numeric_limits<int>::max())
+            else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 // Compute t for which ray1.origin =
                 // ray0.origin + t*ray0.direction.
@@ -182,7 +182,7 @@ namespace gte
                     // The rays are collinear and in the same direction, so
                     // they must overlap.
                     result.intersect = true;
-                    result.numIntersections = std::numeric_limits<int>::max();
+                    result.numIntersections = std::numeric_limits<int32_t>::max();
                     if (t >= (T)0)
                     {
                         result.ray0Parameter[0] = t;

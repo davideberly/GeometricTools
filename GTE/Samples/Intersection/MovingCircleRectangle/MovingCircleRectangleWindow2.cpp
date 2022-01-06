@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.12
+// Version: 6.0.2022.01.06
 
 #include "MovingCircleRectangleWindow2.h"
 
@@ -43,86 +43,86 @@ void MovingCircleRectangleWindow2::OnDisplay()
     uint32_t const blue = 0xFFFF0000;
     uint32_t const orange = 0xFF0080FF;
 
-    int bx0 = static_cast<int>(mBox.center[0]);
-    int bx1 = static_cast<int>(mBox.center[1]);
+    int32_t bx0 = static_cast<int32_t>(mBox.center[0]);
+    int32_t bx1 = static_cast<int32_t>(mBox.center[1]);
 
     // K = { C-e0*U0-e1*U1, C+e0*U0-e1*U1, C-e0*U0+e1*U1, C+e0*U0+e1*U1 }
     std::array<Vector2<double>, 4> K;
     mBox.GetVertices(K);
 
-    int cx0 = static_cast<int>(mCircle.center[0]);
-    int cy0 = static_cast<int>(mCircle.center[1]);
-    int r = static_cast<int>(mCircle.radius);
+    int32_t cx0 = static_cast<int32_t>(mCircle.center[0]);
+    int32_t cy0 = static_cast<int32_t>(mCircle.center[1]);
+    int32_t r = static_cast<int32_t>(mCircle.radius);
 
     ClearScreen(white);
 
     // Draw the rounded rectangle.
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
-        DrawCircle(static_cast<int>(K[i][0]), static_cast<int>(K[i][1]), r, gray, true);
+        DrawCircle(static_cast<int32_t>(K[i][0]), static_cast<int32_t>(K[i][1]), r, gray, true);
     }
 
     Vector2<double> T0 = K[0] - mCircle.radius * mBox.axis[1];
     Vector2<double> T1 = K[1] - mCircle.radius * mBox.axis[1];
-    DrawLine(static_cast<int>(T0[0]), static_cast<int>(T0[1]),
-        static_cast<int>(T1[0]), static_cast<int>(T1[1]), gray);
+    DrawLine(static_cast<int32_t>(T0[0]), static_cast<int32_t>(T0[1]),
+        static_cast<int32_t>(T1[0]), static_cast<int32_t>(T1[1]), gray);
     T0 = K[2] + mCircle.radius * mBox.axis[1];
     T1 = K[3] + mCircle.radius * mBox.axis[1];
-    DrawLine(static_cast<int>(T0[0]), static_cast<int>(T0[1]),
-        static_cast<int>(T1[0]), static_cast<int>(T1[1]), gray);
+    DrawLine(static_cast<int32_t>(T0[0]), static_cast<int32_t>(T0[1]),
+        static_cast<int32_t>(T1[0]), static_cast<int32_t>(T1[1]), gray);
     T0 = K[0] - mCircle.radius * mBox.axis[0];
     T1 = K[2] - mCircle.radius * mBox.axis[0];
-    DrawLine(static_cast<int>(T0[0]), static_cast<int>(T0[1]),
-        static_cast<int>(T1[0]), static_cast<int>(T1[1]), gray);
+    DrawLine(static_cast<int32_t>(T0[0]), static_cast<int32_t>(T0[1]),
+        static_cast<int32_t>(T1[0]), static_cast<int32_t>(T1[1]), gray);
     T0 = K[1] + mCircle.radius * mBox.axis[0];
     T1 = K[3] +mCircle.radius * mBox.axis[0];
-    DrawLine(static_cast<int>(T0[0]), static_cast<int>(T0[1]),
-        static_cast<int>(T1[0]), static_cast<int>(T1[1]), gray);
+    DrawLine(static_cast<int32_t>(T0[0]), static_cast<int32_t>(T0[1]),
+        static_cast<int32_t>(T1[0]), static_cast<int32_t>(T1[1]), gray);
     DrawFloodFill4(bx0, bx1, gray, white);
 
     // Draw the rectangle.
-    DrawLine(static_cast<int>(K[0][0]), static_cast<int>(K[0][1]),
-        static_cast<int>(K[1][0]), static_cast<int>(K[1][1]), blue);
-    DrawLine(static_cast<int>(K[1][0]), static_cast<int>(K[1][1]),
-        static_cast<int>(K[3][0]), static_cast<int>(K[3][1]), blue);
-    DrawLine(static_cast<int>(K[3][0]), static_cast<int>(K[3][1]),
-        static_cast<int>(K[2][0]), static_cast<int>(K[2][1]), blue);
-    DrawLine(static_cast<int>(K[2][0]), static_cast<int>(K[2][1]),
-        static_cast<int>(K[0][0]), static_cast<int>(K[0][1]), blue);
+    DrawLine(static_cast<int32_t>(K[0][0]), static_cast<int32_t>(K[0][1]),
+        static_cast<int32_t>(K[1][0]), static_cast<int32_t>(K[1][1]), blue);
+    DrawLine(static_cast<int32_t>(K[1][0]), static_cast<int32_t>(K[1][1]),
+        static_cast<int32_t>(K[3][0]), static_cast<int32_t>(K[3][1]), blue);
+    DrawLine(static_cast<int32_t>(K[3][0]), static_cast<int32_t>(K[3][1]),
+        static_cast<int32_t>(K[2][0]), static_cast<int32_t>(K[2][1]), blue);
+    DrawLine(static_cast<int32_t>(K[2][0]), static_cast<int32_t>(K[2][1]),
+        static_cast<int32_t>(K[0][0]), static_cast<int32_t>(K[0][1]), blue);
 
     // Draw the initial circle.
     DrawCircle(cx0, cy0, r, red, false);
 
     // Draw velocity ray with origin at the circle center.
-    int cx1 = cx0 + static_cast<int>((2 * mXSize) * mCircleVelocity[0]);
-    int cy1 = cy0 + static_cast<int>((2 * mXSize) * mCircleVelocity[1]);
+    int32_t cx1 = cx0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[0]);
+    int32_t cy1 = cy0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[1]);
     DrawLine(cx0, cy0, cx1, cy1, green);
 
     // Draw parallel velocity rays that are tangent to the circle.
     Vector2<double> vPerp = UnitPerp(mCircleVelocity);
     Vector2<double> origin = mCircle.center + mCircle.radius * vPerp;
-    cx0 = static_cast<int>(origin[0]);
-    cy0 = static_cast<int>(origin[1]);
-    cx1 = cx0 + static_cast<int>((2 * mXSize) * mCircleVelocity[0]);
-    cy1 = cy0 + static_cast<int>((2 * mXSize) * mCircleVelocity[1]);
+    cx0 = static_cast<int32_t>(origin[0]);
+    cy0 = static_cast<int32_t>(origin[1]);
+    cx1 = cx0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[0]);
+    cy1 = cy0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[1]);
     DrawLine(cx0, cy0, cx1, cy1, orange);
 
     origin = mCircle.center - mCircle.radius * vPerp;
-    cx0 = static_cast<int>(origin[0]);
-    cy0 = static_cast<int>(origin[1]);
-    cx1 = cx0 + static_cast<int>((2 * mXSize) * mCircleVelocity[0]);
-    cy1 = cy0 + static_cast<int>((2 * mXSize) * mCircleVelocity[1]);
+    cx0 = static_cast<int32_t>(origin[0]);
+    cy0 = static_cast<int32_t>(origin[1]);
+    cx1 = cx0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[0]);
+    cy1 = cy0 + static_cast<int32_t>((2 * mXSize) * mCircleVelocity[1]);
     DrawLine(cx0, cy0, cx1, cy1, orange);
 
     if (mHasIntersection)
     {
         // Draw the circle at time of contact.
-        cx0 = static_cast<int>(mCircle.center[0] + mContactTime * mCircleVelocity[0]);
-        cy0 = static_cast<int>(mCircle.center[1] + mContactTime * mCircleVelocity[1]);
+        cx0 = static_cast<int32_t>(mCircle.center[0] + mContactTime * mCircleVelocity[0]);
+        cy0 = static_cast<int32_t>(mCircle.center[1] + mContactTime * mCircleVelocity[1]);
         DrawCircle(cx0, cy0, r, black, false);
 
-        int px = static_cast<int>(mContactPoint[0]);
-        int py = static_cast<int>(mContactPoint[1]);
+        int32_t px = static_cast<int32_t>(mContactPoint[0]);
+        int32_t py = static_cast<int32_t>(mContactPoint[1]);
         DrawThickPixel(px, py, 1, black);
     }
 
@@ -130,7 +130,7 @@ void MovingCircleRectangleWindow2::OnDisplay()
     Window2::OnDisplay();
 }
 
-bool MovingCircleRectangleWindow2::OnMouseClick(int button, int state, int x, int y, unsigned int modifiers)
+bool MovingCircleRectangleWindow2::OnMouseClick(int32_t button, int32_t state, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (button == MOUSE_LEFT)
     {
@@ -149,7 +149,7 @@ bool MovingCircleRectangleWindow2::OnMouseClick(int button, int state, int x, in
     return Window2::OnMouseClick(button, state, x, y, modifiers);
 }
 
-bool MovingCircleRectangleWindow2::OnMouseMotion(int button, int x, int y, unsigned int modifiers)
+bool MovingCircleRectangleWindow2::OnMouseMotion(int32_t button, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (button == MOUSE_LEFT)
     {
@@ -172,7 +172,7 @@ bool MovingCircleRectangleWindow2::OnMouseMotion(int button, int x, int y, unsig
     return Window2::OnMouseMotion(button, x, y, modifiers);
 }
 
-bool MovingCircleRectangleWindow2::OnCharPress(unsigned char key, int x, int y)
+bool MovingCircleRectangleWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     if (key == '-' || key == '_')
     {
@@ -213,17 +213,17 @@ void MovingCircleRectangleWindow2::DoQuery()
     OnDisplay();
 }
 
-void MovingCircleRectangleWindow2::ModifyVelocity(int x, int y)
+void MovingCircleRectangleWindow2::ModifyVelocity(int32_t x, int32_t y)
 {
-    int cx = static_cast<int>(mCircle.center[0]);
-    int cy = static_cast<int>(mCircle.center[1]);
+    int32_t cx = static_cast<int32_t>(mCircle.center[0]);
+    int32_t cy = static_cast<int32_t>(mCircle.center[1]);
     mCircleVelocity[0] = static_cast<double>(x) - static_cast<double>(cx);
     mCircleVelocity[1] = static_cast<double>(y) - static_cast<double>(cy);
     Normalize(mCircleVelocity);
     DoQuery();
 }
 
-void MovingCircleRectangleWindow2::ModifyCircle(int x, int y)
+void MovingCircleRectangleWindow2::ModifyCircle(int32_t x, int32_t y)
 {
     mCircle.center[0] = static_cast<double>(x);
     mCircle.center[1] = static_cast<double>(y);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/VertexFormat.h>
@@ -13,7 +13,8 @@ using namespace gte;
 VertexFormat::VertexFormat()
     :
     mNumAttributes(0),
-    mVertexSize(0)
+    mVertexSize(0),
+    mAttributes{}
 {
 }
 
@@ -21,23 +22,23 @@ void VertexFormat::Reset()
 {
     mNumAttributes = 0;
     mVertexSize = 0;
-    for (int i = 0; i < VA_MAX_ATTRIBUTES; ++i)
+    for (int32_t i = 0; i < VAConstant::MAX_ATTRIBUTES; ++i)
     {
         mAttributes[i] = Attribute();
     }
 }
 
-void VertexFormat::Bind(VASemantic semantic, DFType type, unsigned int unit)
+void VertexFormat::Bind(VASemantic semantic, DFType type, uint32_t unit)
 {
     // Validate the inputs.
-    LogAssert(0 <= mNumAttributes && mNumAttributes < VA_MAX_ATTRIBUTES, "Exceeded maximum attributes.");
-    if (semantic == VA_COLOR)
+    LogAssert(0 <= mNumAttributes && mNumAttributes < VAConstant::MAX_ATTRIBUTES, "Exceeded maximum attributes.");
+    if (semantic == VASemantic::COLOR)
     {
-        LogAssert(unit < VA_MAX_COLOR_UNITS, "Invalid color unit.");
+        LogAssert(unit < VAConstant::MAX_COLOR_UNITS, "Invalid color unit.");
     }
-    else if (semantic == VA_TEXCOORD)
+    else if (semantic == VASemantic::TEXCOORD)
     {
-        LogAssert(unit < VA_MAX_TCOORD_UNITS, "Invalid texture unit.");
+        LogAssert(unit < VAConstant::MAX_TCOORD_UNITS, "Invalid texture unit.");
     }
     else
     {
@@ -56,10 +57,13 @@ void VertexFormat::Bind(VASemantic semantic, DFType type, unsigned int unit)
     mVertexSize += DataFormat::GetNumBytesPerStruct(type);
 }
 
-void VertexFormat::GetAttribute(int i, VASemantic& semantic, DFType& type,
-    unsigned int& unit, unsigned int& offset) const
+void VertexFormat::GetAttribute(int32_t i, VASemantic& semantic, DFType& type,
+    uint32_t& unit, uint32_t& offset) const
 {
-    LogAssert(0 <= i && i < mNumAttributes, "Invalid index " + std::to_string(i) + ".");
+    LogAssert(
+        0 <= i && i < mNumAttributes,
+        "Invalid index " + std::to_string(i) + ".");
+
     Attribute const& attribute = mAttributes[i];
     semantic = attribute.semantic;
     type = attribute.type;
@@ -67,9 +71,9 @@ void VertexFormat::GetAttribute(int i, VASemantic& semantic, DFType& type,
     offset = attribute.offset;
 }
 
-int VertexFormat::GetIndex(VASemantic semantic, unsigned int unit) const
+int32_t VertexFormat::GetIndex(VASemantic semantic, uint32_t unit) const
 {
-    for (int i = 0; i < mNumAttributes; ++i)
+    for (int32_t i = 0; i < mNumAttributes; ++i)
     {
         Attribute const& attribute = mAttributes[i];
         if (attribute.semantic == semantic && attribute.unit == unit)
@@ -81,14 +85,20 @@ int VertexFormat::GetIndex(VASemantic semantic, unsigned int unit) const
     return -1;
 }
 
-DFType VertexFormat::GetType(int i) const
+DFType VertexFormat::GetType(int32_t i) const
 {
-    LogAssert(0 <= i && i < mNumAttributes, "Invalid index " + std::to_string(i) + ".");
+    LogAssert(
+        0 <= i && i < mNumAttributes,
+        "Invalid index " + std::to_string(i) + ".");
+
     return mAttributes[i].type;
 }
 
-unsigned int VertexFormat::GetOffset(int i) const
+uint32_t VertexFormat::GetOffset(int32_t i) const
 {
-    LogAssert(0 <= i && i < mNumAttributes, "Invalid index " + std::to_string(i) + ".");
+    LogAssert(
+        0 <= i && i < mNumAttributes,
+        "Invalid index " + std::to_string(i) + ".");
+
     return mAttributes[i].offset;
 }

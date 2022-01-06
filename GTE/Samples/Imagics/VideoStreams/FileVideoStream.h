@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -15,11 +15,11 @@ class FileVideoStream : public VideoStream
 public:
     // Construction and destruction.  The input file is binary with the
     // following structure:
-    //   unsigned int numImages;
+    //   uint32_t numImages;
     //   DFType type;
-    //   unsigned int width;
-    //   unsigned int height;
-    //   struct { unsigned int frameNumber; char data[N]; } image[numImages];
+    //   uint32_t width;
+    //   uint32_t height;
+    //   struct { uint32_t frameNumber; char data[N]; } image[numImages];
     // where N = width*height*TextureFormat::GetNumBytesPerTexel(type).  The
     // engine that stores the file images in GPU memory must be provided to the
     // constructor.  NOTE: No error checking is performed in the constructor.
@@ -35,7 +35,7 @@ public:
         return mFilename;
     }
 
-    inline unsigned int GetNumImages() const
+    inline uint32_t GetNumImages() const
     {
         return mNumImages;
     }
@@ -49,7 +49,7 @@ private:
     // it is wrapped around to zero.
     std::string mFilename;
     std::ifstream mInput;
-    unsigned int mNumImages, mCurrentImage;
+    uint32_t mNumImages, mCurrentImage;
 
     // A temporary buffer for reading images from disk.
     std::vector<char> mBuffer;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.15
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,15 +20,15 @@ public:
     Delaunay3DWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
     bool CreateScene();
     void CreateSphere();
-    void CreateTetra(int index);
+    void CreateTetra(size_t index);
     void SetAllTetraWire();
-    void SetTetraSolid(int index, Vector4<float> const& color);
+    void SetTetraSolid(size_t index, Vector4<float> const& color);
     void SetLastTetraSolid(Vector4<float> const& color, Vector4<float> const& oppositeColor);
     void DoSearch();
 
@@ -56,6 +56,9 @@ private:
 
     // The choice of 12 is empirical.  All the data sets tested in this
     // sample require at most 11 elements in the UIntegerFP32 array.
-    Delaunay3<float, BSNumber<UIntegerFP32<12>>> mDelaunay;
-    Delaunay3<float, BSNumber<UIntegerFP32<12>>>::SearchInfo mInfo;
+    //Delaunay3<float, BSNumber<UIntegerFP32<12>>> mDelaunay;
+    //Delaunay3<float, BSNumber<UIntegerFP32<12>>>::SearchInfo mInfo;
+
+    Delaunay3<float> mDelaunay;
+    Delaunay3<float>::SearchInfo mInfo;
 };

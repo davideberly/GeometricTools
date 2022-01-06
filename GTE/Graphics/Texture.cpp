@@ -1,17 +1,17 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Mathematics/BitHacks.h>
 #include <Graphics/Texture.h>
 using namespace gte;
 
-Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimensions,
-    unsigned int dim0, unsigned int dim1, unsigned int dim2, bool hasMipmaps,
+Texture::Texture(uint32_t numItems, uint32_t format, uint32_t numDimensions,
+    uint32_t dim0, uint32_t dim1, uint32_t dim2, bool hasMipmaps,
     bool createStorage)
     :
     Resource(GetTotalElements(numItems, dim0, dim1, dim2, hasMipmaps),
@@ -28,7 +28,7 @@ Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimension
     mType = GT_TEXTURE;
 
     // Zero-out all the level information.
-    for (unsigned int level = 0; level < MAX_MIPMAP_LEVELS; ++level)
+    for (uint32_t level = 0; level < MAX_MIPMAP_LEVELS; ++level)
     {
         mLDimension[level][0] = 0;
         mLDimension[level][1] = 0;
@@ -36,9 +36,9 @@ Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimension
         mLNumBytes[level] = 0;
     }
 
-    for (unsigned int item = 0; item < mNumItems; ++item)
+    for (uint32_t item = 0; item < mNumItems; ++item)
     {
-        for (unsigned int level = 0; level < MAX_MIPMAP_LEVELS; ++level)
+        for (uint32_t level = 0; level < MAX_MIPMAP_LEVELS; ++level)
         {
             mLOffset[item][level] = 0;
         }
@@ -52,11 +52,11 @@ Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimension
 
     if (mHasMipmaps)
     {
-        unsigned int log0 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim0));
-        unsigned int log1 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim1));
-        unsigned int log2 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim2));
+        uint32_t log0 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim0));
+        uint32_t log1 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim1));
+        uint32_t log2 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim2));
         mNumLevels = 1 + std::max(log0, std::max(log1, log2));
-        for (unsigned int level = 1; level < mNumLevels; ++level)
+        for (uint32_t level = 1; level < mNumLevels; ++level)
         {
             if (dim0 > 1)
             {
@@ -79,10 +79,10 @@ Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimension
             mLDimension[level][2] = dim2;
         }
 
-        unsigned int numBytes = 0;
-        for (unsigned int item = 0; item < mNumItems; ++item)
+        uint32_t numBytes = 0;
+        for (uint32_t item = 0; item < mNumItems; ++item)
         {
-            for (unsigned int level = 0; level < mNumLevels; ++level)
+            for (uint32_t level = 0; level < mNumLevels; ++level)
             {
                 mLOffset[item][level] = numBytes;
                 numBytes += mLNumBytes[level];
@@ -91,23 +91,23 @@ Texture::Texture(unsigned int numItems, DFType format, unsigned int numDimension
     }
     else
     {
-        for (unsigned int item = 1; item < mNumItems; ++item)
+        for (uint32_t item = 1; item < mNumItems; ++item)
         {
             mLOffset[item][0] = item * mLNumBytes[0];
         }
     }
 }
 
-unsigned int Texture::GetIndex(unsigned int item, unsigned int level) const
+uint32_t Texture::GetIndex(uint32_t item, uint32_t level) const
 {
     LogAssert(item < mNumItems && level < mNumLevels, "Invalid input.");
     return mNumLevels * item + level;
 }
 
-Texture::Subresource Texture::GetSubresource(unsigned int index) const
+Texture::Subresource Texture::GetSubresource(uint32_t index) const
 {
     LogAssert(index < GetNumSubresources(), "Invalid input.");
-    Subresource sr;
+    Subresource sr{};
     sr.item = index / mNumLevels;
     sr.level = index % mNumLevels;
     sr.data = const_cast<char*>(GetDataFor(sr.item, sr.level));
@@ -126,17 +126,17 @@ void Texture::AutogenerateMipmaps()
     }
 }
 
-unsigned int Texture::GetTotalElements(unsigned int numItems,
-    unsigned int dim0, unsigned int dim1, unsigned int dim2, bool hasMipmaps)
+uint32_t Texture::GetTotalElements(uint32_t numItems,
+    uint32_t dim0, uint32_t dim1, uint32_t dim2, bool hasMipmaps)
 {
-    unsigned int numElementsPerItem = dim0 * dim1 * dim2;
+    uint32_t numElementsPerItem = dim0 * dim1 * dim2;
     if (hasMipmaps)
     {
-        unsigned int log0 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim0));
-        unsigned int log1 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim1));
-        unsigned int log2 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim2));
-        unsigned int numLevels = 1 + std::max(log0, std::max(log1, log2));
-        for (unsigned int level = 1; level < numLevels; ++level)
+        uint32_t log0 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim0));
+        uint32_t log1 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim1));
+        uint32_t log2 = BitHacks::Log2OfPowerOfTwo(BitHacks::RoundDownToPowerOfTwo(dim2));
+        uint32_t numLevels = 1 + std::max(log0, std::max(log1, log2));
+        for (uint32_t level = 1; level < numLevels; ++level)
         {
             if (dim0 > 1)
             {
@@ -157,6 +157,6 @@ unsigned int Texture::GetTotalElements(unsigned int numItems,
         }
     }
 
-    unsigned int totalElements = numItems * numElementsPerItem;
+    uint32_t totalElements = numItems * numElementsPerItem;
     return totalElements;
 }

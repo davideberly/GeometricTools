@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/WindowSystem.h>
@@ -38,7 +38,7 @@ WindowSystem::WindowSystem()
     }
 
     // Make sure the X server has OpenGL GLX extensions.
-    int errorBase, eventBase;
+    int32_t errorBase, eventBase;
     Bool success = glXQueryExtension(mDisplay, &errorBase, &eventBase);
     if (!success)
     {
@@ -58,10 +58,10 @@ bool WindowSystem::Create(_XDisplay*& display, __GLXcontextRec*& context, unsign
     window = 0;
 
     // Select the attributes for the frame buffer.
-    int attributes[256];
+    int32_t attributes[256];
 
     // Create a 32-bit RGBA buffer.
-    int i = 0;
+    int32_t i = 0;
     attributes[i++] = GLX_RGBA;
     attributes[i++] = GLX_RED_SIZE;
     attributes[i++] = 8;
@@ -96,7 +96,7 @@ bool WindowSystem::Create(_XDisplay*& display, __GLXcontextRec*& context, unsign
     attributes[i] = 0;
 
     // Get an OpenGL-capable visual.
-    int screen = DefaultScreen(mDisplay);
+    int32_t screen = DefaultScreen(mDisplay);
     XVisualInfo* visualInfo = glXChooseVisual(mDisplay, screen, attributes);
     if (!visualInfo)
     {
@@ -137,8 +137,8 @@ bool WindowSystem::Create(_XDisplay*& display, __GLXcontextRec*& context, unsign
         ExposureMask |
         StructureNotifyMask;
 
-    unsigned int xOrigin = 0, yOrigin = 0, xSize = 16, ySize = 16;
-    unsigned int borderWidth = 0;
+    uint32_t xOrigin = 0, yOrigin = 0, xSize = 16, ySize = 16;
+    uint32_t borderWidth = 0;
     unsigned long valueMask = CWBorderPixel | CWColormap | CWEventMask;
     window = XCreateWindow(mDisplay, rootWindow, xOrigin,
         yOrigin, xSize, ySize, borderWidth,
@@ -154,7 +154,7 @@ bool WindowSystem::Create(_XDisplay*& display, __GLXcontextRec*& context, unsign
 
     std::string title = "GL4ComputeWindowClass";
     Pixmap iconPixmap = None;
-    int numArguments = 0;
+    int32_t numArguments = 0;
     char** arguments = nullptr;
     XSetStandardProperties(mDisplay, window, title.c_str(),
         title.c_str(), iconPixmap, arguments, numArguments, &hints);
@@ -169,10 +169,10 @@ bool WindowSystem::Create(_XDisplay*& display, __GLXcontextRec*& context, unsign
 void WindowSystem::CreateFrom(Window::Parameters& parameters)
 {
     // Select the attributes for the frame buffer.
-    int attributes[256];
+    int32_t attributes[256];
 
     // Create a 32-bit RGBA buffer.
-    int i = 0;
+    int32_t i = 0;
     attributes[i++] = GLX_RGBA;
     attributes[i++] = GLX_RED_SIZE;
     attributes[i++] = 8;
@@ -207,7 +207,7 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
     attributes[i] = 0;
 
     // Get an OpenGL-capable visual.
-    int screen = DefaultScreen(mDisplay);
+    int32_t screen = DefaultScreen(mDisplay);
     XVisualInfo* visualInfo = glXChooseVisual(mDisplay, screen, attributes);
     if (!visualInfo)
     {
@@ -250,7 +250,7 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
         ExposureMask |
         StructureNotifyMask;
 
-    unsigned int borderWidth = 0;
+    uint32_t borderWidth = 0;
     unsigned long valueMask = CWBorderPixel | CWColormap | CWEventMask;
     parameters.window = XCreateWindow(mDisplay, rootWindow, parameters.xOrigin,
         parameters.yOrigin, parameters.xSize, parameters.ySize, borderWidth,
@@ -266,7 +266,7 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
 
     std::string title(parameters.title.begin(), parameters.title.end());
     Pixmap iconPixmap = None;
-    int numArguments = 0;
+    int32_t numArguments = 0;
     char** arguments = nullptr;
     XSetStandardProperties(mDisplay, parameters.window, title.c_str(),
         title.c_str(), iconPixmap, arguments, numArguments, &hints);

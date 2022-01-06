@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -15,7 +15,7 @@ namespace gte
     // average of the points.  The box axes are the eigenvectors of the
     // covariance matrix.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector2<Real> const* points, OrientedBox2<Real>& box)
+    bool GetContainer(int32_t numPoints, Vector2<Real> const* points, OrientedBox2<Real>& box)
     {
         // Fit the points with a Gaussian distribution.
         ApprGaussian2<Real> fitter;
@@ -32,10 +32,10 @@ namespace gte
             Vector2<Real> diff = points[0] - box.center;
             Vector2<Real> pmin{ Dot(diff, box.axis[0]), Dot(diff, box.axis[1]) };
             Vector2<Real> pmax = pmin;
-            for (int i = 1; i < numPoints; ++i)
+            for (int32_t i = 1; i < numPoints; ++i)
             {
                 diff = points[i] - box.center;
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     Real dot = Dot(diff, box.axis[j]);
                     if (dot < pmin[j])
@@ -49,7 +49,7 @@ namespace gte
                 }
             }
 
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 box.center += ((Real)0.5 * (pmin[j] + pmax[j])) * box.axis[j];
                 box.extent[j] = (Real)0.5 * (pmax[j] - pmin[j]);
@@ -63,7 +63,7 @@ namespace gte
     template <typename Real>
     bool GetContainer(std::vector<Vector2<Real>> const& points, OrientedBox2<Real>& box)
     {
-        return GetContainer(static_cast<int>(points.size()), points.data(), box);
+        return GetContainer(static_cast<int32_t>(points.size()), points.data(), box);
     }
 
     // Test for containment.  Let X = C + y0*U0 + y1*U1 where C is the box
@@ -73,7 +73,7 @@ namespace gte
     bool InContainer(Vector2<Real> const& point, OrientedBox2<Real> const& box)
     {
         Vector2<Real> diff = point - box.center;
-        for (int i = 0; i < 2; ++i)
+        for (int32_t i = 0; i < 2; ++i)
         {
             Real coeff = Dot(diff, box.axis[i]);
             if (std::fabs(coeff) > box.extent[i])
@@ -126,10 +126,10 @@ namespace gte
         Vector2<Real> pmax{ (Real)0, (Real)0 };
 
         box0.GetVertices(vertex);
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             Vector2<Real> diff = vertex[i] - merge.center;
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 Real dot = Dot(diff, merge.axis[j]);
                 if (dot > pmax[j])
@@ -144,10 +144,10 @@ namespace gte
         }
 
         box1.GetVertices(vertex);
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             Vector2<Real> diff = vertex[i] - merge.center;
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 Real dot = Dot(diff, merge.axis[j]);
                 if (dot > pmax[j])
@@ -165,7 +165,7 @@ namespace gte
         // merged box axes.  Update the current box center to be the center of
         // the new box.  Compute the extents based on the new center.
         Real const half = (Real)0.5;
-        for (int j = 0; j < 2; ++j)
+        for (int32_t j = 0; j < 2; ++j)
         {
             merge.center += half * (pmax[j] + pmin[j]) * merge.axis[j];
             merge.extent[j] = half * (pmax[j] - pmin[j]);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,7 +19,7 @@ namespace gte
     // two planes.  The half-cylinder and quarter-cylinder side pieces are
     // chosen using a method similar to that used for fitting by capsules.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector3<Real> const* points, Lozenge3<Real>& lozenge)
+    bool GetContainer(int32_t numPoints, Vector3<Real> const* points, Lozenge3<Real>& lozenge)
     {
         ApprGaussian3<Real> fitter;
         fitter.Fit(numPoints, points);
@@ -29,7 +29,7 @@ namespace gte
         Real wMin = Dot(box.axis[0], diff);
         Real wMax = wMin;
         Real w;
-        for (int i = 1; i < numPoints; ++i)
+        for (int32_t i = 1; i < numPoints; ++i)
         {
             diff = points[i] - box.center;
             w = Dot(box.axis[0], diff);
@@ -52,7 +52,7 @@ namespace gte
         Real bMin = std::numeric_limits<Real>::max();
         Real bMax = -bMin;
         Real discr, radical, u, v, test;
-        for (int i = 0; i < numPoints; ++i)
+        for (int32_t i = 0; i < numPoints; ++i)
         {
             diff = points[i] - box.center;
             u = Dot(box.axis[2], diff);
@@ -102,7 +102,7 @@ namespace gte
 
         // Make correction for points inside mitered corner but outside quarter
         // sphere.
-        for (int i = 0; i < numPoints; ++i)
+        for (int32_t i = 0; i < numPoints; ++i)
         {
             diff = points[i] - box.center;
             u = Dot(box.axis[2], diff);

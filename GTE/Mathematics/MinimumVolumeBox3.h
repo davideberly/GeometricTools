@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.9.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -50,7 +50,7 @@ namespace gte
     {
     public:
         // Supporting constants and types for numerical computing.
-        static int constexpr NumWords = std::is_same<InputType, float>::value ? 342 : 2561;
+        static int32_t constexpr NumWords = std::is_same<InputType, float>::value ? 342 : 2561;
         using UIntegerType = UIntegerFP32<NumWords>;
         using ComputeType = typename std::conditional<computeDouble, double, BSNumber<UIntegerType>>::type;
         using RationalType = typename std::conditional<computeDouble, double, BSRational<UIntegerType>>::type;
@@ -210,8 +210,8 @@ namespace gte
         // If the dimension is 0, 1 or 2, the objects returned by the
         // GetMinimumVolumeObject() and GetRationalBox() are invalid for this
         // operator()(*).
-        int operator()(
-            int numPoints,
+        int32_t operator()(
+            int32_t numPoints,
             Vector3<InputType> const* points,
             size_t lgMaxSample,
             OrientedBox3<InputType>& box,
@@ -278,7 +278,7 @@ namespace gte
 
                 // Project the input points onto the plane.
                 std::vector<Vector2<InputType>> projection(numPoints);
-                for (int i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector3<InputType> diff = points[i] - origin;
                     projection[i][0] = Dot(basis[1], diff);
@@ -306,21 +306,21 @@ namespace gte
             std::vector<Vector3<InputType>> inVertices(numPoints);
             std::memcpy(inVertices.data(), points, inVertices.size() * sizeof(Vector3<InputType>));
             auto const& triangles = ch3.GetHull();
-            std::vector<int> inIndices(triangles.size());
+            std::vector<int32_t> inIndices(triangles.size());
             size_t current = 0;
             for (auto index : triangles)
             {
-                inIndices[current++] = static_cast<int>(index);
+                inIndices[current++] = static_cast<int32_t>(index);
             }
 
-            UniqueVerticesSimplices<Vector3<InputType>, int, 3> uvt;
+            UniqueVerticesSimplices<Vector3<InputType>, int32_t, 3> uvt;
             std::vector<Vector3<InputType>> outVertices;
-            std::vector<int> outIndices;
+            std::vector<int32_t> outIndices;
             uvt.RemoveDuplicateAndUnusedVertices(inVertices, inIndices,
                 outVertices, outIndices);
 
-            operator()(static_cast<int>(outVertices.size()), outVertices.data(),
-                static_cast<int>(outIndices.size()), outIndices.data(),
+            operator()(static_cast<int32_t>(outVertices.size()), outVertices.data(),
+                static_cast<int32_t>(outIndices.size()), outIndices.data(),
                 lgMaxSample, box, volume);
 
             return 3;
@@ -338,10 +338,10 @@ namespace gte
         // functions to use your own minimization algorithm; see the comments
         // before MinimizerConstantT.
         void operator()(
-            int numVertices,
+            int32_t numVertices,
             Vector3<InputType> const* inVertices,
-            int numIndices,
-            int const* inIndices,
+            int32_t numIndices,
+            int32_t const* inIndices,
             size_t lgMaxSample,
             OrientedBox3<InputType>& box,
             InputType& volume)
@@ -351,7 +351,7 @@ namespace gte
                 numIndices > 0 && inIndices != nullptr &&
                 (numIndices % 3) == 0 && lgMaxSample >= 2,
                 "Invalid argument.");
-                for (int i = 0; i < numIndices; ++i)
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
                     LogAssert(0 <= inIndices[i] && inIndices[i] < numVertices,
                         "Invalid index.");
@@ -360,9 +360,9 @@ namespace gte
                 std::vector<Vector3<InputType>> vertices(numVertices);
                 std::memcpy(vertices.data(), inVertices,
                     vertices.size() * sizeof(Vector3<InputType>));
-                std::vector<int> indices(numIndices);
+                std::vector<int32_t> indices(numIndices);
                 std::memcpy(indices.data(), inIndices,
-                    indices.size() * sizeof(int));
+                    indices.size() * sizeof(int32_t));
 
                 GenerateSubdivision(lgMaxSample);
                 CreateCompactMesh(vertices, indices);
@@ -417,18 +417,18 @@ namespace gte
         // mAdjacentPool[mVertexAdjacent[v] + i] is a[i].
         void CreateCompactMesh(
             std::vector<Vector3<InputType>> const& vertices,
-            std::vector<int> const& indices)
+            std::vector<int32_t> const& indices)
         {
             mNumVertices = vertices.size();
             mNumTriangles = indices.size() / 3;
 
             VETManifoldMesh mesh;
-            int const* current = indices.data();
+            int32_t const* current = indices.data();
             for (size_t t = 0; t < mNumTriangles; ++t)
             {
-                int v0 = *current++;
-                int v1 = *current++;
-                int v2 = *current++;
+                int32_t v0 = *current++;
+                int32_t v1 = *current++;
+                int32_t v2 = *current++;
                 mesh.Insert(v0, v1, v2);
             }
 
@@ -443,7 +443,7 @@ namespace gte
             // is a std::unordered_map. The vertices must be sorted here to
             // satisfy condition2.
             auto const& vmap = mesh.GetVertices();
-            std::map<int, VETManifoldMesh::Vertex*> sortedVMap;
+            std::map<int32_t, VETManifoldMesh::Vertex*> sortedVMap;
             for (auto const& element : vmap)
             {
                 sortedVMap.emplace(element.first, element.second.get());

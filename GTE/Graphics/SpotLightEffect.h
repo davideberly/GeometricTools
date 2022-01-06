@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,7 +17,7 @@ namespace gte
         // Construction.  Set 'select' to 0 for per-vertex effects or to 1 for
         // per-pixel effects.
         SpotLightEffect(std::shared_ptr<ProgramFactory> const& factory,
-            BufferUpdater const& updater, int select,
+            BufferUpdater const& updater, int32_t select,
             std::shared_ptr<Material> const& material,
             std::shared_ptr<Lighting> const& lighting,
             std::shared_ptr<LightCameraGeometry> const& geometry);

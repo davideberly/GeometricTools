@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
@@ -11,7 +11,7 @@ using namespace gte;
 
 HLSLReflection HLSLShaderFactory::CreateFromFile(std::string const& filename,
     std::string const& entry, std::string const& target,
-    ProgramDefines const& defines, unsigned int compileFlags)
+    ProgramDefines const& defines, uint32_t compileFlags)
 {
     std::ifstream input(filename);
     if (!input)
@@ -33,7 +33,7 @@ HLSLReflection HLSLShaderFactory::CreateFromFile(std::string const& filename,
 
 HLSLReflection HLSLShaderFactory::CreateFromString(std::string const& name,
     std::string const& source, std::string const& entry, std::string const& target,
-    ProgramDefines const& defines, unsigned int compileFlags)
+    ProgramDefines const& defines, uint32_t compileFlags)
 {
     return CompileAndReflect(name, source, entry, target, defines, compileFlags);
 }
@@ -43,7 +43,7 @@ HLSLReflection HLSLShaderFactory::CreateFromBytecode(
     std::string const& entry,
     std::string const& target,
     size_t numBytes,
-    unsigned char const* bytecode)
+    uint8_t const* bytecode)
 {
     ID3DBlob* compiledCode = nullptr;
     DX11Log(D3DCreateBlob(numBytes, &compiledCode));
@@ -63,7 +63,7 @@ HLSLReflection HLSLShaderFactory::CreateFromBytecode(
 HLSLReflection HLSLShaderFactory::CompileAndReflect(std::string const& name,
     std::string const& source, std::string const& entry,
     std::string const& target, ProgramDefines const& defines,
-    unsigned int compileFlags)
+    uint32_t compileFlags)
 {
     std::string type = target.substr(0, 3);
     if (type == "vs_" || type == "gs_" || type == "ps_" || type == "cs_")
@@ -93,7 +93,7 @@ HLSLReflection HLSLShaderFactory::CompileAndReflect(std::string const& name,
 
 ID3DBlob* HLSLShaderFactory::CompileShader(std::string const& name,
     std::string const& source, std::string const& entry,
-    std::string const& target, unsigned int compileFlags,
+    std::string const& target, uint32_t compileFlags,
     ProgramDefines const& defines)
 {
     ID3DInclude* include = D3D_COMPILE_STANDARD_FILE_INCLUDE;
@@ -454,7 +454,7 @@ bool HLSLShaderFactory::GetBoundResources(ID3DShaderReflection* reflector, HLSLR
 
 bool HLSLShaderFactory::GetVariables(
     ID3DShaderReflectionConstantBuffer* cbuffer,
-    unsigned int numVariables,
+    uint32_t numVariables,
     std::vector<HLSLBaseBuffer::Member>& members)
 {
     for (UINT i = 0; i < numVariables; ++i)
@@ -488,7 +488,7 @@ bool HLSLShaderFactory::GetVariables(
 }
 
 bool HLSLShaderFactory::GetTypes(ID3DShaderReflectionType* rtype,
-    unsigned int numMembers, HLSLShaderType& stype)
+    uint32_t numMembers, HLSLShaderType& stype)
 {
     for (UINT i = 0; i < numMembers; ++i)
     {

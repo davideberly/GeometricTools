@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -34,7 +34,7 @@ namespace gte
         // there is at least one image cube to process.  The inputVoxels must
         // be nonnull and point to contiguous storage that contains at least
         // xBound * yBound * zBound elements.
-        SurfaceExtractorCubes(int xBound, int yBound, int zBound, T const* inputVoxels)
+        SurfaceExtractorCubes(int32_t xBound, int32_t yBound, int32_t zBound, T const* inputVoxels)
             :
             SurfaceExtractor<T, Real>(xBound, yBound, zBound, inputVoxels)
         {
@@ -61,15 +61,15 @@ namespace gte
 
             vertices.clear();
             triangles.clear();
-            for (int z = 0; z < this->mZBound - 1; ++z)
+            for (int32_t z = 0; z < this->mZBound - 1; ++z)
             {
-                for (int y = 0; y < this->mYBound - 1; ++y)
+                for (int32_t y = 0; y < this->mYBound - 1; ++y)
                 {
-                    for (int x = 0; x < this->mXBound - 1; ++x)
+                    for (int32_t x = 0; x < this->mXBound - 1; ++x)
                     {
                         // Get vertices on edges of box (if any).
                         VETable table;
-                        int type = GetVertices(x, y, z, table);
+                        int32_t type = GetVertices(x, y, z, table);
                         if (type != 0)
                         {
                             // Get edges on faces of box.
@@ -140,49 +140,49 @@ namespace gte
             {
             }
 
-            inline bool IsValidVertex(int i) const
+            inline bool IsValidVertex(int32_t i) const
             {
                 return mVertex[i].valid;
             }
 
-            inline int64_t GetXN(int i) const
+            inline int64_t GetXN(int32_t i) const
             {
                 return mVertex[i].pos.xNumer;
             }
 
-            inline int64_t GetXD(int i) const
+            inline int64_t GetXD(int32_t i) const
             {
                 return mVertex[i].pos.xDenom;
             }
 
-            inline int64_t GetYN(int i) const
+            inline int64_t GetYN(int32_t i) const
             {
                 return mVertex[i].pos.yNumer;
             }
 
-            inline int64_t GetYD(int i) const
+            inline int64_t GetYD(int32_t i) const
             {
                 return mVertex[i].pos.yDenom;
             }
 
-            inline int64_t GetZN(int i) const
+            inline int64_t GetZN(int32_t i) const
             {
                 return mVertex[i].pos.zNumer;
             }
 
-            inline int64_t GetZD(int i) const
+            inline int64_t GetZD(int32_t i) const
             {
                 return mVertex[i].pos.zDenom;
             }
 
-            void Insert(int i, Vertex const& pos)
+            void Insert(int32_t i, Vertex const& pos)
             {
                 TVertex& vertex = mVertex[i];
                 vertex.pos = pos;
                 vertex.valid = true;
             }
 
-            void Insert(int i0, int i1)
+            void Insert(int32_t i0, int32_t i1)
             {
                 TVertex& vertex0 = mVertex[i0];
                 TVertex& vertex1 = mVertex[i1];
@@ -196,9 +196,9 @@ namespace gte
                 Triangle triangle;
                 while (Remove(triangle))
                 {
-                    int v0 = static_cast<int>(vertices.size());
-                    int v1 = v0 + 1;
-                    int v2 = v1 + 1;
+                    int32_t v0 = static_cast<int32_t>(vertices.size());
+                    int32_t v1 = v0 + 1;
+                    int32_t v2 = v1 + 1;
                     triangles.push_back(Triangle(v0, v1, v2));
                     vertices.push_back(mVertex[triangle.v[0]].pos);
                     vertices.push_back(mVertex[triangle.v[1]].pos);
@@ -207,16 +207,16 @@ namespace gte
             }
 
         protected:
-            void RemoveVertex(int i)
+            void RemoveVertex(int32_t i)
             {
                 TVertex& vertex0 = mVertex[i];
                 // assert:  vertex0.numAdjacents == 2
-                int a0 = vertex0.adj[0];
-                int a1 = vertex0.adj[1];
+                int32_t a0 = vertex0.adj[0];
+                int32_t a1 = vertex0.adj[1];
                 TVertex& adjVertex0 = mVertex[a0];
                 TVertex& adjVertex1 = mVertex[a1];
 
-                int j;
+                int32_t j;
                 for (j = 0; j < adjVertex0.numAdjacents; ++j)
                 {
                     if (adjVertex0.adj[j] == i)
@@ -258,7 +258,7 @@ namespace gte
 
             bool Remove(Triangle& triangle)
             {
-                for (int i = 0; i < 18; ++i)
+                for (int32_t i = 0; i < 18; ++i)
                 {
                     TVertex& vertex = mVertex[i];
                     if (vertex.valid && vertex.numAdjacents == 2)
@@ -286,8 +286,8 @@ namespace gte
                 }
 
                 Vertex pos;
-                int numAdjacents;
-                std::array<int, 4> adj;
+                int32_t numAdjacents;
+                std::array<int32_t, 4> adj;
                 bool valid;
             };
 
@@ -298,33 +298,33 @@ namespace gte
         {
             std::array<Real, 3> const zero{ (Real)0, (Real)0, (Real)0 };
 
-            int x = static_cast<int>(pos[0]);
+            int32_t x = static_cast<int32_t>(pos[0]);
             if (x < 0 || x + 1 >= this->mXBound)
             {
                 return zero;
             }
 
-            int y = static_cast<int>(pos[1]);
+            int32_t y = static_cast<int32_t>(pos[1]);
             if (y < 0 || y + 1 >= this->mYBound)
             {
                 return zero;
             }
 
-            int z = static_cast<int>(pos[2]);
+            int32_t z = static_cast<int32_t>(pos[2]);
             if (z < 0 || z + 1 >= this->mZBound)
             {
                 return zero;
             }
 
             // Get image values at corners of voxel.
-            int i000 = x + this->mXBound * (y + this->mYBound * z);
-            int i100 = i000 + 1;
-            int i010 = i000 + this->mXBound;
-            int i110 = i010 + 1;
-            int i001 = i000 + this->mXYBound;
-            int i101 = i001 + 1;
-            int i011 = i001 + this->mXBound;
-            int i111 = i011 + 1;
+            int32_t i000 = x + this->mXBound * (y + this->mYBound * z);
+            int32_t i100 = i000 + 1;
+            int32_t i010 = i000 + this->mXBound;
+            int32_t i110 = i010 + 1;
+            int32_t i001 = i000 + this->mXYBound;
+            int32_t i101 = i001 + 1;
+            int32_t i011 = i001 + this->mXBound;
+            int32_t i111 = i011 + 1;
             Real f000 = static_cast<Real>(this->mVoxels[i000]);
             Real f100 = static_cast<Real>(this->mVoxels[i100]);
             Real f010 = static_cast<Real>(this->mVoxels[i010]);
@@ -359,19 +359,19 @@ namespace gte
             return grad;
         }
 
-        int GetVertices(int x, int y, int z, VETable& table)
+        int32_t GetVertices(int32_t x, int32_t y, int32_t z, VETable& table)
         {
-            int type = 0;
+            int32_t type = 0;
 
             // Get the image values at the corners of the voxel.
-            int i000 = x + this->mXBound * (y + this->mYBound * z);
-            int i100 = i000 + 1;
-            int i010 = i000 + this->mXBound;
-            int i110 = i010 + 1;
-            int i001 = i000 + this->mXYBound;
-            int i101 = i001 + 1;
-            int i011 = i001 + this->mXBound;
-            int i111 = i011 + 1;
+            int32_t i000 = x + this->mXBound * (y + this->mYBound * z);
+            int32_t i100 = i000 + 1;
+            int32_t i010 = i000 + this->mXBound;
+            int32_t i110 = i010 + 1;
+            int32_t i001 = i000 + this->mXYBound;
+            int32_t i101 = i001 + 1;
+            int32_t i011 = i001 + this->mXBound;
+            int32_t i111 = i011 + 1;
             int64_t f000 = this->mVoxels[i000];
             int64_t f100 = this->mVoxels[i100];
             int64_t f010 = this->mVoxels[i010];
@@ -488,9 +488,9 @@ namespace gte
             return type;
         }
 
-        void GetXMinEdges(int x, int y, int z, int type, VETable& table)
+        void GetXMinEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -533,7 +533,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = x + this->mXBound * (y + this->mYBound * z);
+                int32_t i = x + this->mXBound * (y + this->mYBound * z);
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 i += this->mXBound;
@@ -580,9 +580,9 @@ namespace gte
             }
         }
 
-        void GetXMaxEdges(int x, int y, int z, int type, VETable& table)
+        void GetXMaxEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMAX_YMIN)
             {
                 faceType |= 0x01;
@@ -625,7 +625,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = (x + 1) + this->mXBound * (y + this->mYBound * z);
+                int32_t i = (x + 1) + this->mXBound * (y + this->mYBound * z);
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 i += this->mXBound;
@@ -672,9 +672,9 @@ namespace gte
             }
         }
 
-        void GetYMinEdges(int x, int y, int z, int type, VETable& table)
+        void GetYMinEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -717,7 +717,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = x + this->mXBound * (y + this->mYBound * z);
+                int32_t i = x + this->mXBound * (y + this->mYBound * z);
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 ++i;
@@ -764,9 +764,9 @@ namespace gte
             }
         }
 
-        void GetYMaxEdges(int x, int y, int z, int type, VETable& table)
+        void GetYMaxEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMIN_YMAX)
             {
                 faceType |= 0x01;
@@ -809,7 +809,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = x + this->mXBound * ((y + 1) + this->mYBound * z);
+                int32_t i = x + this->mXBound * ((y + 1) + this->mYBound * z);
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 ++i;
@@ -856,9 +856,9 @@ namespace gte
             }
         }
 
-        void GetZMinEdges(int x, int y, int z, int type, VETable& table)
+        void GetZMinEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMIN_ZMIN)
             {
                 faceType |= 0x01;
@@ -901,7 +901,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = x + this->mXBound * (y + this->mYBound * z);
+                int32_t i = x + this->mXBound * (y + this->mYBound * z);
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 ++i;
@@ -948,9 +948,9 @@ namespace gte
             }
         }
 
-        void GetZMaxEdges(int x, int y, int z, int type, VETable& table)
+        void GetZMaxEdges(int32_t x, int32_t y, int32_t z, int32_t type, VETable& table)
         {
-            int faceType = 0;
+            int32_t faceType = 0;
             if (type & EB_XMIN_ZMAX)
             {
                 faceType |= 0x01;
@@ -993,7 +993,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = x + this->mXBound * (y + this->mYBound * (z + 1));
+                int32_t i = x + this->mXBound * (y + this->mYBound * (z + 1));
                 // F(x,y,z)
                 int64_t f00 = this->mVoxels[i];
                 ++i;

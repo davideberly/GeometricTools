@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BlendTransformController.h>
@@ -76,7 +76,7 @@ bool BlendTransformController::Update(double applicationTime)
     Vector3<float> blendSca;
     if (mGeometricScale)
     {
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
             float s0 = sca0[i], s1 = sca1[i];
             if (s0 != 0.0f && s1 != 0.0f)

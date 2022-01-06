@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.07
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -48,7 +48,7 @@ namespace gte
             {
                 Vector<3, Real> V = { P[0], P[1], P[2] };
                 Vector<3, Real> W = { P[3], P[4], P[5] };
-                for (int i = 0; i < mNumPoints; ++i)
+                for (int32_t i = 0; i < mNumPoints; ++i)
                 {
                     Vector<3, Real> delta = V - mPoints[i];
                     Real deltaDotW = Dot(delta, W);
@@ -62,13 +62,13 @@ namespace gte
             {
                 Vector<3, Real> V = { P[0], P[1], P[2] };
                 Vector<3, Real> W = { P[3], P[4], P[5] };
-                for (int row = 0; row < mNumPoints; ++row)
+                for (int32_t row = 0; row < mNumPoints; ++row)
                 {
                     Vector<3, Real> delta = V - mPoints[row];
                     Real deltaDotW = Dot(delta, W);
                     Vector<3, Real> temp0 = delta - deltaDotW * W;
                     Vector<3, Real> temp1 = deltaDotW * delta;
-                    for (int col = 0; col < 3; ++col)
+                    for (int32_t col = 0; col < 3; ++col)
                     {
                         J(row, col) = (Real)2 * temp0[col];
                         J(row, col + 3) = (Real)-2 * temp1[col];
@@ -87,7 +87,7 @@ namespace gte
         // description of the least-squares algorithm and the parameters
         // that it requires.
         typename GaussNewtonMinimizer<Real>::Result
-        operator()(int numPoints, Vector<3, Real> const* points,
+        operator()(int32_t numPoints, Vector<3, Real> const* points,
             size_t maxIterations, Real updateLengthTolerance, Real errorDifferenceTolerance,
             bool useConeInputAsInitialGuess,
             Vector<3, Real>& coneVertex, Vector<3, Real>& coneAxis, Real& coneAngle)
@@ -124,7 +124,7 @@ namespace gte
             // No test is made for result.converged so that we return some
             // estimates of the cone.  The caller can decide how to respond
             // when result.converged is false.
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 coneVertex[i] = result.minLocation[i];
                 coneAxis[i] = result.minLocation[i + 3];
@@ -148,7 +148,7 @@ namespace gte
         // GteGaussNewtonMinimizer.h for a description of the least-squares
         // algorithm and the parameters that it requires.
         typename LevenbergMarquardtMinimizer<Real>::Result
-        operator()(int numPoints, Vector<3, Real> const* points,
+        operator()(int32_t numPoints, Vector<3, Real> const* points,
             size_t maxIterations, Real updateLengthTolerance, Real errorDifferenceTolerance,
             Real lambdaFactor, Real lambdaAdjust, size_t maxAdjustments,
             bool useConeInputAsInitialGuess,
@@ -186,7 +186,7 @@ namespace gte
             // No test is made for result.converged so that we return some
             // estimates of the cone.  The caller can decide how to respond
             // when result.converged is false.
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 coneVertex[i] = result.minLocation[i];
                 coneAxis[i] = result.minLocation[i + 3];
@@ -210,7 +210,7 @@ namespace gte
             // Compute the average of the sample points.
             Vector<3, Real> center{ (Real)0, (Real)0, (Real)0 };
             Real const invNumPoints = (Real)1 / (Real)mNumPoints;
-            for (int i = 0; i < mNumPoints; ++i)
+            for (int32_t i = 0; i < mNumPoints; ++i)
             {
                 center += mPoints[i];
             }
@@ -218,7 +218,7 @@ namespace gte
 
             // The cone axis is estimated from ZZTZ (see the PDF).
             coneAxis = { (Real)0, (Real)0, (Real)0 };
-            for (int i = 0; i < mNumPoints; ++i)
+            for (int32_t i = 0; i < mNumPoints; ++i)
             {
                 Vector<3, Real> diff = mPoints[i] - center;
                 coneAxis += Dot(diff, diff) * diff;
@@ -230,7 +230,7 @@ namespace gte
             // a[i] = Dot(U,X[i]-C) and b[i] = Dot(X[i]-C,X[i]-C).
             Real c10 = (Real)0, c20 = (Real)0, c30 = (Real)0, c01 = (Real)0;
             Real c02 = (Real)0, c11 = (Real)0, c21 = (Real)0;
-            for (int i = 0; i < mNumPoints; ++i)
+            for (int32_t i = 0; i < mNumPoints; ++i)
             {
                 Vector<3, Real> diff = mPoints[i] - center;
                 Real ai = Dot(coneAxis, diff);
@@ -267,7 +267,7 @@ namespace gte
             Real g4 = c30 - c11 + c10 * (c01 - c20);
 
             // Compute the roots of g(t) = 0.
-            std::map<Real, int> rmMap;
+            std::map<Real, int32_t> rmMap;
             RootsPolynomial<Real>::SolveQuartic(g0, g1, g2, g3, g4, rmMap);
 
             // Locate the positive root t that leads to an s = cos(theta)
@@ -291,7 +291,7 @@ namespace gte
                         if ((Real)0 < s && s < (Real)1)
                         {
                             Real error(0);
-                            for (int i = 0; i < mNumPoints; ++i)
+                            for (int32_t i = 0; i < mNumPoints; ++i)
                             {
                                 Vector<3, Real> diff = mPoints[i] - center;
                                 Real ai = Dot(coneAxis, diff);
@@ -330,7 +330,7 @@ namespace gte
             }
         }
 
-        int mNumPoints;
+        int32_t mNumPoints;
         Vector<3, Real> const* mPoints;
         std::function<void(GVector<Real> const&, GVector<Real>&)> mFFunction;
         std::function<void(GVector<Real> const&, GMatrix<Real>&)> mJFunction;

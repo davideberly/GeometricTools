@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/VertexBuffer.h>
@@ -11,7 +11,7 @@
 using namespace gte;
 
 VertexBuffer::VertexBuffer(VertexFormat const& vformat,
-    unsigned int numVertices, bool createStorage)
+    uint32_t numVertices, bool createStorage)
     :
     Buffer(numVertices, vformat.GetVertexSize(), createStorage),
     mVFormat(vformat)
@@ -30,14 +30,14 @@ VertexBuffer::VertexBuffer(VertexFormat const& vformat,
     SetNumActiveElements(sbuffer->GetNumElements());
 }
 
-VertexBuffer::VertexBuffer(unsigned int numVertices)
+VertexBuffer::VertexBuffer(uint32_t numVertices)
     :
     Buffer(numVertices, 0, false)
 {
     mType = GT_VERTEX_BUFFER;
 }
 
-char* VertexBuffer::GetChannel(VASemantic semantic, unsigned int unit,
+char* VertexBuffer::GetChannel(VASemantic semantic, uint32_t unit,
     std::set<DFType> const& requiredTypes)
 {
     char* data = (mSBuffer == nullptr ? mData : mSBuffer->GetData());
@@ -48,7 +48,7 @@ char* VertexBuffer::GetChannel(VASemantic semantic, unsigned int unit,
         return nullptr;
     }
 
-    int index = mVFormat.GetIndex(semantic, unit);
+    int32_t index = mVFormat.GetIndex(semantic, unit);
     if (index < 0)
     {
         // The buffer does not have the specified semantic that uses the

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,7 +21,7 @@ namespace gte
     // points are (nearly) collinear.  In this case M has a (nearly) zero
     // eigenvalue, so inverting M can be a problem numerically.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector2<Real> const* points, Ellipse2<Real>& ellipse)
+    bool GetContainer(int32_t numPoints, Vector2<Real> const* points, Ellipse2<Real>& ellipse)
     {
         // Fit the points with a Gaussian distribution.  The covariance matrix
         // is M = sum_j D[j]*U[j]*U[j]^T, where D[j] are the eigenvalues and
@@ -33,7 +33,7 @@ namespace gte
 
             // If either eigenvalue is nonpositive, adjust the D[] values so
             // that we actually build an ellipse.
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 if (box.extent[j] < (Real)0)
                 {
@@ -52,7 +52,7 @@ namespace gte
             // for all i.
 
             Real maxValue = (Real)0;
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Vector2<Real> diff = points[i] - box.center;
                 Real dot[2] =
@@ -73,7 +73,7 @@ namespace gte
 
             // Arrange for the quadratic to satisfy Q(X) <= 1.
             ellipse.center = box.center;
-            for (int j = 0; j < 2; ++j)
+            for (int32_t j = 0; j < 2; ++j)
             {
                 ellipse.axis[j] = box.axis[j];
                 ellipse.extent[j] = std::sqrt(maxValue / box.extent[j]);
@@ -121,7 +121,7 @@ namespace gte
         // Project the input ellipses onto the axes obtained by the average
         // of the orientations and that go through the center obtained by the
         // average of the centers.
-        for (int j = 0; j < 2; ++j)
+        for (int32_t j = 0; j < 2; ++j)
         {
             // Projection axis.
             Line2<Real> line(merge.center, merge.axis[j]);

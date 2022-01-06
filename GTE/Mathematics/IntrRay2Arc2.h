@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -55,7 +55,7 @@ namespace gte
             }
 
             bool intersect;
-            int numIntersections;
+            int32_t numIntersections;
             std::array<T, 2> parameter;
             std::array<Vector2<T>, 2> point;
         };
@@ -71,7 +71,7 @@ namespace gte
             {
                 // Test whether ray-circle intersections are on the arc.
                 result.numIntersections = 0;
-                for (int i = 0; i < rcResult.numIntersections; ++i)
+                for (int32_t i = 0; i < rcResult.numIntersections; ++i)
                 {
                     if (arc.Contains(rcResult.point[i]))
                     {

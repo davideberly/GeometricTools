@@ -27,8 +27,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\RootFinder.cs.hlsl">
-      <Filter>Shader Files</Filter>
-    </FxCompile>
+    <None Include="Shaders\RootFinder.cs.hlsl" />
   </ItemGroup>
 </Project>

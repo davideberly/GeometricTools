@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -28,12 +28,12 @@ namespace gte
     public:
         // vertices
         typedef Vector2<Real> Vertex;
-        typedef std::map<Vertex, int> VMap;
+        typedef std::map<Vertex, int32_t> VMap;
         typedef std::vector<Vertex> VArray;
 
         // edges
         typedef EdgeKey<true> Edge;
-        typedef std::map<Edge, int> EMap;
+        typedef std::map<Edge, int32_t> EMap;
         typedef std::vector<Edge> EArray;
 
         // Construction and destruction.
@@ -83,7 +83,7 @@ namespace gte
         }
 
         // Support for deferred construction.
-        int InsertVertex(Vertex const& vertex)
+        int32_t InsertVertex(Vertex const& vertex)
         {
             auto iter = mVMap.find(vertex);
             if (iter != mVMap.end())
@@ -93,13 +93,13 @@ namespace gte
             }
 
             // Vertex not in map, insert it and assign it a unique index.
-            int i = static_cast<int>(mVArray.size());
+            int32_t i = static_cast<int32_t>(mVArray.size());
             mVMap.insert(std::make_pair(vertex, i));
             mVArray.push_back(vertex);
             return i;
         }
 
-        int InsertEdge(Edge const& edge)
+        int32_t InsertEdge(Edge const& edge)
         {
             LogAssert(edge.V[0] != edge.V[1], "Degenerate edges not allowed.");
 
@@ -111,7 +111,7 @@ namespace gte
             }
 
             // Edge not in map, insert it and assign it a unique index.
-            int i = static_cast<int>(mEArray.size());
+            int32_t i = static_cast<int32_t>(mEArray.size());
             mEMap.insert(std::make_pair(edge, i));
             mEArray.push_back(edge);
             return i;
@@ -130,22 +130,22 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
-            return static_cast<int>(mVMap.size());
+            return static_cast<int32_t>(mVMap.size());
         }
 
-        inline Vertex const& GetVertex(int i) const
+        inline Vertex const& GetVertex(int32_t i) const
         {
             return mVArray[i];
         }
 
-        inline int GetNumEdges() const
+        inline int32_t GetNumEdges() const
         {
-            return static_cast<int>(mEMap.size());
+            return static_cast<int32_t>(mEMap.size());
         }
 
-        inline Edge const& GetEdge(int i) const
+        inline Edge const& GetEdge(int32_t i) const
         {
             return mEArray[i];
         }
@@ -201,7 +201,7 @@ namespace gte
         }
 
         // point location (-1 inside, 0 on polygon, 1 outside)
-        int PointLocation(Vertex const& vertex) const
+        int32_t PointLocation(Vertex const& vertex) const
         {
             LogAssert(mTree != nullptr, "Tree must exist.");
             return mTree->PointLocation(*this, vertex);
@@ -213,17 +213,17 @@ namespace gte
         {
             std::ofstream output(filename);
 
-            int const numVertices = GetNumVertices();
+            int32_t const numVertices = GetNumVertices();
             output << "vquantity = " << numVertices << std::endl;
-            for (int i = 0; i < numVertices; ++i)
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 output << i << "  (" << mVArray[i][0] << ',' << mVArray[i][1] << ')' << std::endl;
             }
             output << std::endl;
 
-            int const numEdges = GetNumEdges();
+            int32_t const numEdges = GetNumEdges();
             output << "equantity = " << numEdges << std::endl;
-            for (int i = 0; i < numEdges; ++i)
+            for (int32_t i = 0; i < numEdges; ++i)
             {
                 output << "  <" << mEArray[i].V[0] << ',' << mEArray[i].V[1] << '>' << std::endl;
             }
@@ -269,13 +269,13 @@ namespace gte
                 EArray posArray, negArray;
                 for (size_t i = 1; i < edges.size(); ++i)
                 {
-                    int v0 = edges[i].V[0];
-                    int v1 = edges[i].V[1];
+                    int32_t v0 = edges[i].V[0];
+                    int32_t v1 = edges[i].V[1];
                     Vertex vertex0 = polygon.GetVertex(v0);
                     Vertex vertex1 = polygon.GetVertex(v1);
 
                     Vertex intr;
-                    int vmid;
+                    int32_t vmid;
 
                     switch (Classify(end0, end1, vertex0, vertex1, intr))
                     {
@@ -418,7 +418,7 @@ namespace gte
             }
 
             // Point-in-polygon support (-1 outside, 0 on polygon, +1 inside).
-            int PointLocation(BSPPolygon2 const& polygon, Vertex const& vertex) const
+            int32_t PointLocation(BSPPolygon2 const& polygon, Vertex const& vertex) const
             {
                 // Construct splitting line from first coincident edge.
                 Vertex end0 = polygon.GetVertex(mCoincident[0].V[0]);
@@ -450,11 +450,11 @@ namespace gte
             }
 
 #if defined(GTE_BSPPOLYGON2_ENABLE_DEBUG_PRINT)
-            void Print(std::ofstream& outFile, int level, char type) const
+            void Print(std::ofstream& outFile, int32_t level, char type) const
             {
                 for (size_t i = 0; i < mCoincident.size(); ++i)
                 {
-                    for (int j = 0; j < 4 * level; ++j)
+                    for (int32_t j = 0; j < 4 * level; ++j)
                     {
                         outFile << ' ';
                     }
@@ -485,7 +485,7 @@ namespace gte
                 COINCIDENT
             };
 
-            int Classify(Vertex const& end0, Vertex const& end1,
+            int32_t Classify(Vertex const& end0, Vertex const& end1,
                 Vertex const& v0, Vertex const& v1, Vertex& intr) const
             {
                 Vertex dir = end1 - end0;
@@ -555,8 +555,8 @@ namespace gte
                 }
                 else
                 {
-                    int i0 = pos.InsertVertex(v0);
-                    int i1 = pos.InsertVertex(v1);
+                    int32_t i0 = pos.InsertVertex(v0);
+                    int32_t i1 = pos.InsertVertex(v1);
                     pos.InsertEdge(Edge(i0, i1));
                 }
             }
@@ -571,8 +571,8 @@ namespace gte
                 }
                 else
                 {
-                    int i0 = neg.InsertVertex(v0);
-                    int i1 = neg.InsertVertex(v1);
+                    int32_t i0 = neg.InsertVertex(v0);
+                    int32_t i1 = neg.InsertVertex(v1);
                     neg.InsertEdge(Edge(i0, i1));
                 }
             }
@@ -770,7 +770,7 @@ namespace gte
             }
 
             // point-in-polygon support
-            int Classify(Vertex const& end0, Vertex const& end1, Vertex const& vertex) const
+            int32_t Classify(Vertex const& end0, Vertex const& end1, Vertex const& vertex) const
             {
                 Vertex dir = end1 - end0;
                 Vertex nor = Perp(dir);
@@ -790,7 +790,7 @@ namespace gte
                 return COINCIDENT;
             }
 
-            int CoPointLocation(BSPPolygon2 const& polygon, Vertex const& vertex) const
+            int32_t CoPointLocation(BSPPolygon2 const& polygon, Vertex const& vertex) const
             {
                 for (auto const& edge : mCoincident)
                 {
@@ -828,13 +828,13 @@ namespace gte
         };
 
     private:
-        void SplitEdge(int v0, int v1, int vmid)
+        void SplitEdge(int32_t v0, int32_t v1, int32_t vmid)
         {
             // Find the edge in the map to get the edge-array index.
             auto iter = mEMap.find(Edge(v0, v1));
             LogAssert(iter != mEMap.end(), "Edge does not exist.");
 
-            int eIndex = iter->second;
+            int32_t eIndex = iter->second;
 
             // Delete edge <V0,V1>.
             mEMap.erase(iter);
@@ -852,11 +852,11 @@ namespace gte
             LogAssert(mTree != nullptr, "Tree must exist.");
 
             BSPPolygon2 ignore(mEpsilon);
-            const int numEdges = polygon.GetNumEdges();
-            for (int i = 0; i < numEdges; ++i)
+            const int32_t numEdges = polygon.GetNumEdges();
+            for (int32_t i = 0; i < numEdges; ++i)
             {
-                int v0 = polygon.mEArray[i].V[0];
-                int v1 = polygon.mEArray[i].V[1];
+                int32_t v0 = polygon.mEArray[i].V[0];
+                int32_t v1 = polygon.mEArray[i].V[1];
                 Vertex vertex0 = polygon.mVArray[v0];
                 Vertex vertex1 = polygon.mVArray[v1];
                 mTree->GetPartition(*this, vertex0, vertex1, ignore, inside, inside, ignore);

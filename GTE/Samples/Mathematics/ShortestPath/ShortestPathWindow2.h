@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -37,13 +37,13 @@ private:
     bool CreateWeightsShader();
     void GenerateWeights();
     std::shared_ptr<ConstantBuffer> CreateBicubicMatrix();
-    void DrawPath(std::stack<std::pair<int, int>>& path);
+    void DrawPath(std::stack<std::pair<int32_t, int32_t>>& path);
 
     std::shared_ptr<OverlayEffect> mOverlay;
     std::shared_ptr<Texture2> mRandom;
     std::shared_ptr<Texture2> mWeights;
     std::shared_ptr<ComputeProgram> mWeightsProgram;
-    unsigned int mNumGroups;
+    uint32_t mNumGroups;
 
 #if defined(USE_CPU_SHORTEST_PATH)
     std::shared_ptr<CpuShortestPath> mCpuShortestPath;

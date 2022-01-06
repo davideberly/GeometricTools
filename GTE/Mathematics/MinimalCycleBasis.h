@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -38,7 +38,7 @@ namespace gte
     public:
         struct Tree
         {
-            std::vector<int> cycle;
+            std::vector<int32_t> cycle;
             std::vector<std::shared_ptr<Tree>> children;
         };
 
@@ -47,7 +47,7 @@ namespace gte
         // intersect at an interior point of one of the edges.
         MinimalCycleBasis(
             std::vector<std::array<Real, 2>> const& positions,
-            std::vector<std::array<int, 2>> const& edges,
+            std::vector<std::array<int32_t, 2>> const& edges,
             std::vector<std::shared_ptr<Tree>>& forest)
         {
             forest.clear();
@@ -58,12 +58,12 @@ namespace gte
             }
 
             // Determine the unique positions referenced by the edges.
-            std::map<int, std::shared_ptr<Vertex>> unique;
+            std::map<int32_t, std::shared_ptr<Vertex>> unique;
             for (auto const& edge : edges)
             {
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
-                    int name = edge[i];
+                    int32_t name = edge[i];
                     if (unique.find(name) == unique.end())
                     {
                         auto vertex = std::make_shared<Vertex>(name, &positions[name]);
@@ -127,7 +127,7 @@ namespace gte
     private:
         struct Vertex
         {
-            Vertex(int inName, std::array<Real, 2> const* inPosition)
+            Vertex(int32_t inName, std::array<Real, 2> const* inPosition)
                 :
                 name(inName),
                 position(inPosition),
@@ -143,7 +143,7 @@ namespace gte
             // The index into the 'positions' input provided to the call to
             // operator().  The index is used when reporting cycles to the
             // caller of the constructor for MinimalCycleBasis.
-            int name;
+            int32_t name;
 
             // Multiple vertices can share a position during processing of
             // graph components.
@@ -156,7 +156,7 @@ namespace gte
             std::set<Vertex*> adjacent;
 
             // Support for depth-first traversal of a graph.
-            int visited;
+            int32_t visited;
         };
 
         // The constructor uses GetComponents(...) and DepthFirstSearch(...)
@@ -325,10 +325,10 @@ namespace gte
         {
             auto tree = std::make_shared<Tree>();
 
-            std::map<Vertex*, int> duplicates;
-            std::set<int> detachments;
-            int numClosedWalk = static_cast<int>(closedWalk.size());
-            for (int i = 1; i < numClosedWalk - 1; ++i)
+            std::map<Vertex*, int32_t> duplicates;
+            std::set<int32_t> detachments;
+            int32_t numClosedWalk = static_cast<int32_t>(closedWalk.size());
+            for (int32_t i = 1; i < numClosedWalk - 1; ++i)
             {
                 auto diter = duplicates.find(closedWalk[i]);
                 if (diter == duplicates.end())
@@ -342,16 +342,16 @@ namespace gte
                 // closed walk by removing the subwalk sharing this vertex.
                 // Note that the vertex is pointed to by
                 // closedWalk[diter->second] and closedWalk[i].
-                int iMin = diter->second, iMax = i;
+                int32_t iMin = diter->second, iMax = i;
                 detachments.insert(iMin);
-                for (int j = iMin + 1; j < iMax; ++j)
+                for (int32_t j = iMin + 1; j < iMax; ++j)
                 {
                     Vertex* vertex = closedWalk[j];
                     duplicates.erase(vertex);
                     detachments.erase(j);
                 }
                 closedWalk.erase(closedWalk.begin() + iMin + 1, closedWalk.begin() + iMax + 1);
-                numClosedWalk = static_cast<int>(closedWalk.size());
+                numClosedWalk = static_cast<int32_t>(closedWalk.size());
                 i = iMin;
             }
 
@@ -377,7 +377,7 @@ namespace gte
                     Vertex* minVertex = (i > 0 ? closedWalk[static_cast<size_t>(i) - 1] : closedWalk[static_cast<size_t>(numClosedWalk) - 2]);
 
                     std::array<Real, 2> dMin, dMax;
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         dMin[j] = (*minVertex->position)[j] - (*original->position)[j];
                         dMax[j] = (*maxVertex->position)[j] - (*original->position)[j];
@@ -397,7 +397,7 @@ namespace gte
                         }
 
                         std::array<Real, 2> dVer;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             dVer[j] = (*vertex->position)[j] - (*original->position)[j];
                         }
@@ -487,16 +487,16 @@ namespace gte
             return tree;
         }
 
-        std::vector<int> ExtractCycle(std::vector<Vertex*>& closedWalk)
+        std::vector<int32_t> ExtractCycle(std::vector<Vertex*>& closedWalk)
         {
             // TODO:  This logic was designed not to remove filaments after
             // the cycle deletion is complete.  Modify this to allow filament
             // removal.
 
             // The closed walk is a cycle.
-            int const numVertices = static_cast<int>(closedWalk.size());
-            std::vector<int> cycle(numVertices);
-            for (int i = 0; i < numVertices; ++i)
+            int32_t const numVertices = static_cast<int32_t>(closedWalk.size());
+            std::vector<int32_t> cycle(numVertices);
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 cycle[i] = closedWalk[i]->name;
             }

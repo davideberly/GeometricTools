@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -27,19 +27,19 @@ namespace gte
         void InitializeJoint(size_t j, std::shared_ptr<Spatial> const& object,
             std::vector<size_t> const& goalIndices);
 
-        void SetJointAllowTranslation(size_t j, int axis, bool allow);
-        void SetJointMinTranslation(size_t j, int axis, float minTranslation);
-        void SetJointMaxTranslation(size_t j, int axis, float maxTranslation);
-        bool GetJointAllowTranslation(size_t j, int axis) const;
-        float GetJointMinTranslation(size_t j, int axis) const;
-        float GetJointMaxTranslation(size_t j, int axis) const;
+        void SetJointAllowTranslation(size_t j, int32_t axis, bool allow);
+        void SetJointMinTranslation(size_t j, int32_t axis, float minTranslation);
+        void SetJointMaxTranslation(size_t j, int32_t axis, float maxTranslation);
+        bool GetJointAllowTranslation(size_t j, int32_t axis) const;
+        float GetJointMinTranslation(size_t j, int32_t axis) const;
+        float GetJointMaxTranslation(size_t j, int32_t axis) const;
 
-        void SetJointAllowRotation(size_t j, int axis, bool allow);
-        void SetJointMinRotation(size_t j, int axis, float minRotation);
-        void SetJointMaxRotation(size_t j, int axis, float maxRotation);
-        bool GetJointAllowRotation(size_t j, int axis) const;
-        float GetJointMinRotation(size_t j, int axis) const;
-        float GetJointMaxRotation(size_t j, int axis) const;
+        void SetJointAllowRotation(size_t j, int32_t axis, bool allow);
+        void SetJointMinRotation(size_t j, int32_t axis, float minRotation);
+        void SetJointMaxRotation(size_t j, int32_t axis, float maxRotation);
+        bool GetJointAllowRotation(size_t j, int32_t axis) const;
+        float GetJointMinRotation(size_t j, int32_t axis) const;
+        float GetJointMaxRotation(size_t j, int32_t axis) const;
 
         // The animation update.  The application time is in milliseconds.
         virtual bool Update(double applicationTime) override;
@@ -69,13 +69,13 @@ namespace gte
             Joint();
 
             // No range checking is performed in the functions with input
-            // 'int axis' because the IKController wrapper ensures the
+            // 'int32_t axis' because the IKController wrapper ensures the
             // correct input.
             void UpdateWorldSRT();
             void UpdateWorldRT();
-            Vector3<float> GetAxis(int axis);
-            bool UpdateLocalT(int axis, std::vector<Goal> const& goals);
-            bool UpdateLocalR(int axis, std::vector<Goal> const& goals);
+            Vector3<float> GetAxis(int32_t axis);
+            bool UpdateLocalT(int32_t axis, std::vector<Goal> const& goals);
+            bool UpdateLocalR(int32_t axis, std::vector<Goal> const& goals);
 
             Spatial* object;
             std::vector<size_t> goalIndices;

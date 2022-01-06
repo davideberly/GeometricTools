@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.17
+// Version: 6.0.2022.01.06
 
 #include "DistancePointConvexPolyhedronWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -13,14 +13,14 @@ DistancePointConvexPolyhedronWindow3::DistancePointConvexPolyhedronWindow3(Param
     Window3(parameters)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
     mEngine->SetBlendState(mBlendState);
 
     CreateScene();
@@ -50,7 +50,7 @@ void DistancePointConvexPolyhedronWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool DistancePointConvexPolyhedronWindow3::OnCharPress(unsigned char key, int x, int y)
+bool DistancePointConvexPolyhedronWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const delta = 0.1f;
 
@@ -127,7 +127,7 @@ bool DistancePointConvexPolyhedronWindow3::OnCharPress(unsigned char key, int x,
 void DistancePointConvexPolyhedronWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -149,12 +149,12 @@ void DistancePointConvexPolyhedronWindow3::CreateScene()
     mPolyhedronMesh->SetEffect(mBlueEffect);
     mPVWMatrices.Subscribe(mPolyhedronMesh->worldTransform, mBlueEffect->GetPVWMatrixConstant());
 
-    auto vbuffer = mPolyhedronMesh->GetVertexBuffer();
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    std::shared_ptr<VertexBuffer> vbuffer = mPolyhedronMesh->GetVertexBuffer();
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     mPolyhedron.vertices.resize(vbuffer->GetNumElements());
     std::memcpy(mPolyhedron.vertices.data(), vbuffer->GetData(), vbuffer->GetNumBytes());
 
-    auto ibuffer = mPolyhedronMesh->GetIndexBuffer();
+    std::shared_ptr<IndexBuffer> ibuffer = mPolyhedronMesh->GetIndexBuffer();
     mPolyhedron.indices.resize(ibuffer->GetNumElements());
     std::memcpy(mPolyhedron.indices.data(), ibuffer->GetData(), ibuffer->GetNumBytes());
 
@@ -163,7 +163,7 @@ void DistancePointConvexPolyhedronWindow3::CreateScene()
     mPolyhedron.GenerateAlignedBox();
 
     vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 1);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
@@ -176,7 +176,7 @@ void DistancePointConvexPolyhedronWindow3::CreateScene()
     mTrackBall.Update();
 }
 
-void DistancePointConvexPolyhedronWindow3::Translate(int direction, float delta)
+void DistancePointConvexPolyhedronWindow3::Translate(int32_t direction, float delta)
 {
     for (auto& vertex : mPolyhedron.vertices)
     {
@@ -186,7 +186,7 @@ void DistancePointConvexPolyhedronWindow3::Translate(int direction, float delta)
     mPolyhedron.GeneratePlanes();
     mPolyhedron.GenerateAlignedBox();
 
-    auto vbuffer = mPolyhedronMesh->GetVertexBuffer();
+    auto const& vbuffer = mPolyhedronMesh->GetVertexBuffer();
     std::memcpy(vbuffer->GetData(), mPolyhedron.vertices.data(), vbuffer->GetNumBytes());
     mEngine->Update(vbuffer);
 
@@ -194,7 +194,7 @@ void DistancePointConvexPolyhedronWindow3::Translate(int direction, float delta)
     mPVWMatrices.Update();
 }
 
-void DistancePointConvexPolyhedronWindow3::Rotate(int direction, float delta)
+void DistancePointConvexPolyhedronWindow3::Rotate(int32_t direction, float delta)
 {
     Matrix3x3<float> rotate = Rotation<3, float>(
         AxisAngle<3, float>(Vector3<float>::Unit(direction), delta));
@@ -205,7 +205,7 @@ void DistancePointConvexPolyhedronWindow3::Rotate(int direction, float delta)
     mPolyhedron.GeneratePlanes();
     mPolyhedron.GenerateAlignedBox();
 
-    auto vbuffer = mPolyhedronMesh->GetVertexBuffer();
+    auto const& vbuffer = mPolyhedronMesh->GetVertexBuffer();
     std::memcpy(vbuffer->GetData(), mPolyhedron.vertices.data(), vbuffer->GetNumBytes());
     mEngine->Update(vbuffer);
 

@@ -1,15 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/GEInputLayoutManager.h>
 #include <Graphics/GL45/GL45InputLayout.h>
-#include <Mathematics/ThreadSafeMap.h>
+#include <map>
+#include <mutex>
 
 namespace gte
 {
@@ -17,8 +18,14 @@ namespace gte
     {
     public:
         // Construction and destruction.
+        GL45InputLayoutManager()
+            :
+            mMap{},
+            mMutex{}
+        {
+        }
+
         virtual ~GL45InputLayoutManager();
-        GL45InputLayoutManager() = default;
 
         // Management functions.  The Unbind(vbuffer) removes all layouts that
         // involve vbuffer.  The Unbind(vshader) is stubbed out because GL45
@@ -33,16 +40,7 @@ namespace gte
 
     private:
         typedef std::pair<VertexBuffer const*, GLuint> VBPPair;
-
-        class LayoutMap : public ThreadSafeMap<VBPPair, std::shared_ptr<GL45InputLayout>>
-        {
-        public:
-            virtual ~LayoutMap() = default;
-            LayoutMap() = default;
-
-            void GatherMatch(VertexBuffer const* vbuffer, std::vector<VBPPair>& matches);
-        };
-
-        LayoutMap mMap;
+        std::map<VBPPair, std::shared_ptr<GL45InputLayout>> mMap;
+        mutable std::mutex mMutex;
     };
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class TCBSplineCurve : public ParametricCurve<N, Real>
     {
     public:
@@ -21,7 +21,7 @@ namespace gte
         // create an object as shown:
         //     TCBSplineCurve<N, Real> curve(parameters);
         //     if (!curve) { <constructor failed, handle accordingly>; }
-        TCBSplineCurve(int numPoints, Vector<N, Real> const* points,
+        TCBSplineCurve(int32_t numPoints, Vector<N, Real> const* points,
             Real const* times, Real const* tension, Real const* continuity,
             Real const* bias)
             :
@@ -38,7 +38,7 @@ namespace gte
             std::copy(continuity, continuity + numPoints, mContinuity.begin());
             std::copy(bias, bias + numPoints, mBias.begin());
 
-            int numSegments = numPoints - 1;
+            int32_t numSegments = numPoints - 1;
             mA.resize(numSegments);
             mB.resize(numSegments);
             mC.resize(numSegments);
@@ -47,7 +47,7 @@ namespace gte
             // For now, treat the first point as if it occurred twice.
             ComputePoly(0, 0, 1, 2);
 
-            for (int i = 1; i < numSegments - 1; ++i)
+            for (int32_t i = 1; i < numSegments - 1; ++i)
             {
                 ComputePoly(i - 1, i, i + 1, i + 2);
             }
@@ -63,9 +63,9 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumPoints() const
+        inline int32_t GetNumPoints() const
         {
-            return static_cast<int>(mPoints.size());
+            return static_cast<int32_t>(mPoints.size());
         }
 
         inline Vector<N, Real> const* GetPoints() const
@@ -95,20 +95,20 @@ namespace gte
         // output array 'jet' must have enough storage to support the maximum
         // order.  The values are ordered as: position, first derivative,
         // second derivative, third derivative.
-        virtual void Evaluate(Real t, unsigned int order, Vector<N, Real>* jet) const override
+        virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            unsigned int const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
+            uint32_t const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
             if (!this->mConstructed || order >= supOrder)
             {
                 // Return a zero-valued jet for invalid state.
-                for (unsigned int i = 0; i < supOrder; ++i)
+                for (uint32_t i = 0; i < supOrder; ++i)
                 {
                     jet[i].MakeZero();
                 }
                 return;
             }
 
-            int key;
+            int32_t key;
             Real dt;
             GetKeyInfo(t, key, dt);
             dt /= (this->mTime[static_cast<size_t>(key) + 1] - this->mTime[key]);
@@ -133,7 +133,7 @@ namespace gte
 
     protected:
         // Support for construction.
-        void ComputePoly(int i0, int i1, int i2, int i3)
+        void ComputePoly(int32_t i0, int32_t i1, int32_t i2, int32_t i3)
         {
             Vector<N, Real> diff = mPoints[i2] - mPoints[i1];
             Real dt = this->mTime[i2] - this->mTime[i1];
@@ -171,9 +171,9 @@ namespace gte
         }
 
         // Determine the index i for which times[i] <= t < times[i+1].
-        void GetKeyInfo(Real t, int& key, Real& dt) const
+        void GetKeyInfo(Real t, int32_t& key, Real& dt) const
         {
-            int numSegments = static_cast<int>(mA.size());
+            int32_t numSegments = static_cast<int32_t>(mA.size());
             if (t <= this->mTime[0])
             {
                 key = 0;
@@ -183,7 +183,7 @@ namespace gte
 
             if (t < this->mTime[numSegments])
             {
-                for (int i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+                for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
                 {
                     if (t < this->mTime[ip1])
                     {

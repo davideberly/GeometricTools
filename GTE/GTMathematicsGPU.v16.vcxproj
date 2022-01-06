@@ -153,6 +153,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,6 +171,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -189,6 +191,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -210,6 +213,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>MathematicsGPU/GTMathematicsGPUPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

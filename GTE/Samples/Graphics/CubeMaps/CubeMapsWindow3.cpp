@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CubeMapsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -22,7 +22,7 @@ CubeMapsWindow3::CubeMapsWindow3(Parameters& parameters)
     }
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.01f, 10.0f, 0.01f, 0.01f,
         { 0.0f, 0.0f, -0.85f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
@@ -42,7 +42,7 @@ void CubeMapsWindow3::OnIdle()
         {
             // Cull the sphere object because it is the object that
             // reflects the environment.
-            mSphere->culling = CULL_ALWAYS;
+            mSphere->culling = CullingMode::ALWAYS;
 
             // You can take a snapshot of the environment from any camera
             // position and camera orientation.  In this application, the
@@ -53,7 +53,7 @@ void CubeMapsWindow3::OnIdle()
                 { 0.0f, 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f, 0.0f });
 
             // Restore the sphere object's culling state.
-            mSphere->culling = CULL_DYNAMIC;
+            mSphere->culling = CullingMode::DYNAMIC;
         }
 
         mPVWMatrices.Update();
@@ -76,7 +76,7 @@ void CubeMapsWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool CubeMapsWindow3::OnCharPress(unsigned char key, int x, int y)
+bool CubeMapsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -145,12 +145,12 @@ void CubeMapsWindow3::CreateScene()
         Vector2<float> tcoord;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     // The index buffer shared by the room walls.
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
-    auto* indices = ibuffer->Get<unsigned int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
+    auto* indices = ibuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 1;  indices[2] = 3;
     indices[3] = 0;  indices[4] = 3;  indices[5] = 2;
 
@@ -159,8 +159,8 @@ void CubeMapsWindow3::CreateScene()
     std::shared_ptr<Texture2> texture;
     std::shared_ptr<Texture2Effect> effect;
     std::shared_ptr<Visual> wall;
-    SamplerState::Filter filter = SamplerState::MIN_L_MAG_L_MIP_L;
-    SamplerState::Mode mode = SamplerState::WRAP;
+    SamplerState::Filter filter = SamplerState::Filter::MIN_L_MAG_L_MIP_L;
+    SamplerState::Mode mode = SamplerState::Mode::WRAP;
 
     // +x wall
     vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
@@ -259,9 +259,9 @@ void CubeMapsWindow3::CreateScene()
         Vector3<float> position, normal, color;
     };
     VertexFormat svformat;
-    svformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    svformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    svformat.Bind(VA_COLOR, DF_R32G32B32_FLOAT, 0);
+    svformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    svformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    svformat.Bind(VASemantic::COLOR, DF_R32G32B32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(svformat);
@@ -279,10 +279,10 @@ void CubeMapsWindow3::CreateScene()
     std::uniform_real_distribution<float> rndG(0.5f, 0.75f);
     std::uniform_real_distribution<float> rndB(0.75f, 1.0f);
     vbuffer = mSphere->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     SVertex* svertex = vbuffer->Get<SVertex>();
     std::map<Vector3<float>, Vector3<float>> dataMap;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         auto const& element = dataMap.find(svertex[i].position);
         if (element != dataMap.end())
@@ -309,8 +309,8 @@ void CubeMapsWindow3::CreateScene()
     // The cube-map faces are 64x64 textures.
     mCubeTexture = std::make_shared<TextureCube>(DF_R8G8B8A8_UNORM, 64, true);
     mCubeTexture->AutogenerateMipmaps();
-    mCubeTexture->SetCopyType(Resource::COPY_CPU_TO_STAGING);
-    for (int face = 0; face < 6; ++face)
+    mCubeTexture->SetCopy(Resource::Copy::CPU_TO_STAGING);
+    for (int32_t face = 0; face < 6; ++face)
     {
         std::string textureName = mEnvironment.GetPath(name[face]);
         texture = WICFileIO::Load(textureName, true);
@@ -318,7 +318,8 @@ void CubeMapsWindow3::CreateScene()
     }
     float const reflectivity = 0.5f;
     mCubeMapEffect = std::make_shared<CubeMapEffect>(mProgramFactory, mCubeTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP, reflectivity);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP, reflectivity);
 
     mSphere->SetEffect(mCubeMapEffect);
     mPVWMatrices.Subscribe(mSphere->worldTransform, mCubeMapEffect->GetPVWMatrixConstant());

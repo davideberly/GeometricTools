@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "PlaneEstimationWindow2.h"
 #include <random>
@@ -19,7 +19,7 @@ PlaneEstimationWindow2::PlaneEstimationWindow2 (Parameters& parameters)
     }
 
     // Create the shaders.
-    int const numThreads = 8, txWidth = 1024, txHeight = 1024;
+    int32_t const numThreads = 8, txWidth = 1024, txHeight = 1024;
     mNumXGroups = txWidth / numThreads;
     mNumYGroups = txHeight / numThreads;
 
@@ -47,29 +47,29 @@ PlaneEstimationWindow2::PlaneEstimationWindow2 (Parameters& parameters)
     auto cshader = mPositionProgram->GetComputeShader();
     cshader->Set("ControlPoints", CreateBezierControls());
     mPositions = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, txWidth, txHeight);
-    mPositions->SetUsage(Resource::SHADER_OUTPUT);
-    mPositions->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mPositions->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mPositions->SetCopy(Resource::Copy::STAGING_TO_CPU);
     cshader->Set("positions", mPositions);
 
     cshader = mPlaneProgram->GetComputeShader();
     cshader->Set("positions", mPositions);
     mPlanes = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, txWidth, txHeight);
-    mPlanes->SetUsage(Resource::SHADER_OUTPUT);
-    mPlanes->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mPlanes->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mPlanes->SetCopy(Resource::Copy::STAGING_TO_CPU);
     cshader->Set("planes", mPlanes);
 
     auto sstate = std::make_shared<SamplerState>();
-    sstate->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    sstate->mode[0] = SamplerState::CLAMP;
-    sstate->mode[1] = SamplerState::CLAMP;
+    sstate->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    sstate->mode[0] = SamplerState::Mode::CLAMP;
+    sstate->mode[1] = SamplerState::Mode::CLAMP;
 
     std::string psPath = mEnvironment.GetPath(mEngine->GetShaderName("PositionVisualize.ps"));
     std::string psString = ProgramFactory::GetStringFromFile(psPath);
     mOverlay[0] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, txWidth, txHeight, psString);
-    std::array<int, 4> rect = { 0, 0, mXSize / 2, mYSize };
+    std::array<int32_t, 4> rect = { 0, 0, mXSize / 2, mYSize };
     mOverlay[0]->SetOverlayRectangle(rect);
-    auto pshader = mOverlay[0]->GetProgram()->GetPixelShader();
+    std::shared_ptr<Shader> pshader = mOverlay[0]->GetProgram()->GetPixelShader();
     pshader->Set("myTexture", mPositions, "mySampler", sstate);
 
     psPath = mEnvironment.GetPath(mEngine->GetShaderName("PlaneVisualize.ps"));
@@ -127,9 +127,9 @@ std::shared_ptr<ConstantBuffer> PlaneEstimationWindow2::CreateBezierControls()
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(-0.25f, 1.0f);
     float P[4][4];
-    for (int r = 0; r < 4; ++r)
+    for (int32_t r = 0; r < 4; ++r)
     {
-        for (int c = 0; c < 4; ++c)
+        for (int32_t c = 0; c < 4; ++c)
         {
             P[r][c] = rnd(mte);
         }
@@ -192,10 +192,10 @@ std::shared_ptr<ConstantBuffer> PlaneEstimationWindow2::CreateBezierControls()
 
     auto cbuffer = std::make_shared<ConstantBuffer>(4 * sizeof(Vector4<float>), false);
     auto data = cbuffer->Get<Vector4<float>>();
-    for (int r = 0; r < 4; ++r)
+    for (int32_t r = 0; r < 4; ++r)
     {
         Vector4<float>& trg = data[r];
-        for (int c = 0; c < 4; ++c)
+        for (int32_t c = 0; c < 4; ++c)
         {
             trg[c] = control[r][c];
         }

@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Mathematics/Math.h>
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <vector>
 
@@ -45,7 +46,7 @@
 // FOR INTERNAL USE ONLY (unit testing).  Do not define the symbol
 // GTE_ROOTS_LOW_DEGREE_UNIT_TEST in your own code.
 #if defined(GTE_ROOTS_LOW_DEGREE_UNIT_TEST)
-extern void RootsLowDegreeBlock(int);
+extern void RootsLowDegreeBlock(int32_t);
 #define GTE_ROOTS_LOW_DEGREE_BLOCK(block) RootsLowDegreeBlock(block)
 #else
 #define GTE_ROOTS_LOW_DEGREE_BLOCK(block)
@@ -71,7 +72,7 @@ namespace gte
 
         template <typename Rational>
         static void SolveQuadratic(Rational const& p0, Rational const& p1,
-            Rational const& p2, std::map<Real, int>& rmMap)
+            Rational const& p2, std::map<Real, int32_t>& rmMap)
         {
             Rational const rat2 = 2;
             Rational q0 = p0 / p2;
@@ -79,7 +80,7 @@ namespace gte
             Rational q1half = q1 / rat2;
             Rational c0 = q0 - q1half * q1half;
 
-            std::map<Rational, int> rmLocalMap;
+            std::map<Rational, int32_t> rmLocalMap;
             SolveDepressedQuadratic(c0, rmLocalMap);
 
             rmMap.clear();
@@ -92,7 +93,7 @@ namespace gte
 
         template <typename Rational>
         static void SolveCubic(Rational const& p0, Rational const& p1,
-            Rational const& p2, Rational const& p3, std::map<Real, int>& rmMap)
+            Rational const& p2, Rational const& p3, std::map<Real, int32_t>& rmMap)
         {
             Rational const rat2 = 2, rat3 = 3;
             Rational q0 = p0 / p3;
@@ -102,7 +103,7 @@ namespace gte
             Rational c0 = q0 - q2third * (q1 - rat2 * q2third * q2third);
             Rational c1 = q1 - q2 * q2third;
 
-            std::map<Rational, int> rmLocalMap;
+            std::map<Rational, int32_t> rmLocalMap;
             SolveDepressedCubic(c0, c1, rmLocalMap);
 
             rmMap.clear();
@@ -116,7 +117,7 @@ namespace gte
         template <typename Rational>
         static void SolveQuartic(Rational const& p0, Rational const& p1,
             Rational const& p2, Rational const& p3, Rational const& p4,
-            std::map<Real, int>& rmMap)
+            std::map<Real, int32_t>& rmMap)
         {
             Rational const rat2 = 2, rat3 = 3, rat4 = 4, rat6 = 6;
             Rational q0 = p0 / p4;
@@ -129,7 +130,7 @@ namespace gte
             Rational c1 = q1 - rat2 * q3fourth * (q2 - rat4 * q3fourthSqr);
             Rational c2 = q2 - rat6 * q3fourthSqr;
 
-            std::map<Rational, int> rmLocalMap;
+            std::map<Rational, int32_t> rmLocalMap;
             SolveDepressedQuartic(c0, c1, c2, rmLocalMap);
 
             rmMap.clear();
@@ -145,7 +146,7 @@ namespace gte
         // and info[i] is the multiplicity of root corresponding to index i.
         template <typename Rational>
         static void GetRootInfoQuadratic(Rational const& p0, Rational const& p1,
-            Rational const& p2, std::vector<int>& info)
+            Rational const& p2, std::vector<int32_t>& info)
         {
             Rational const rat2 = 2;
             Rational q0 = p0 / p2;
@@ -160,7 +161,7 @@ namespace gte
 
         template <typename Rational>
         static void GetRootInfoCubic(Rational const& p0, Rational const& p1,
-            Rational const& p2, Rational const& p3, std::vector<int>& info)
+            Rational const& p2, Rational const& p3, std::vector<int32_t>& info)
         {
             Rational const rat2 = 2, rat3 = 3;
             Rational q0 = p0 / p3;
@@ -178,7 +179,7 @@ namespace gte
         template <typename Rational>
         static void GetRootInfoQuartic(Rational const& p0, Rational const& p1,
             Rational const& p2, Rational const& p3, Rational const& p4,
-            std::vector<int>& info)
+            std::vector<int32_t>& info)
         {
             Rational const rat2 = 2, rat3 = 3, rat4 = 4, rat6 = 6;
             Rational q0 = p0 / p4;
@@ -201,7 +202,7 @@ namespace gte
         // have at least d elements.
 
         // Find the roots on (-infinity,+infinity).
-        static int Find(int degree, Real const* c, unsigned int maxIterations, Real* roots)
+        static int32_t Find(int32_t degree, Real const* c, uint32_t maxIterations, Real* roots)
         {
             if (degree >= 0 && c)
             {
@@ -217,7 +218,7 @@ namespace gte
                     Real const one = (Real)1;
                     Real invLeading = one / c[degree];
                     Real maxValue = zero;
-                    for (int i = 0; i < degree; ++i)
+                    for (int32_t i = 0; i < degree; ++i)
                     {
                         Real value = std::fabs(c[i] * invLeading);
                         if (value > maxValue)
@@ -251,8 +252,8 @@ namespace gte
 
         // If you know that p(tmin) * p(tmax) <= 0, then there must be at
         // least one root in [tmin, tmax].  Compute it using bisection.
-        static bool Find(int degree, Real const* c, Real tmin, Real tmax,
-            unsigned int maxIterations, Real& root)
+        static bool Find(int32_t degree, Real const* c, Real tmin, Real tmax,
+            uint32_t maxIterations, Real& root)
         {
             Real const zero = (Real)0;
             Real pmin = Evaluate(degree, c, tmin);
@@ -280,7 +281,7 @@ namespace gte
                 return false;
             }
 
-            for (unsigned int i = 1; i <= maxIterations; ++i)
+            for (uint32_t i = 1; i <= maxIterations; ++i)
             {
                 root = ((Real)0.5) * (tmin + tmax);
 
@@ -316,7 +317,7 @@ namespace gte
         // Support for the Solve* functions.
         template <typename Rational>
         static void SolveDepressedQuadratic(Rational const& c0,
-            std::map<Rational, int>& rmMap)
+            std::map<Rational, int32_t>& rmMap)
         {
             Rational const zero = 0;
             if (c0 < zero)
@@ -345,7 +346,7 @@ namespace gte
 
         template <typename Rational>
         static void SolveDepressedCubic(Rational const& c0, Rational const& c1,
-            std::map<Rational, int>& rmMap)
+            std::map<Rational, int32_t>& rmMap)
         {
             // Handle the special case of c0 = 0, in which case the polynomial
             // reduces to a depressed quadratic.
@@ -469,7 +470,7 @@ namespace gte
 
         template <typename Rational>
         static void SolveDepressedQuartic(Rational const& c0, Rational const& c1,
-            Rational const& c2, std::map<Rational, int>& rmMap)
+            Rational const& c2, std::map<Rational, int32_t>& rmMap)
         {
             // Handle the special case of c0 = 0, in which case the polynomial
             // reduces to a depressed cubic.
@@ -521,7 +522,7 @@ namespace gte
                 if (c2 < zero && a1 < zero)
                 {
                     // Four simple real roots.
-                    std::map<Real, int> rmCubicMap;
+                    std::map<Real, int32_t> rmCubicMap;
                     SolveCubic(c1sqr - rat4 * c0 * c2, rat8 * c0, rat4 * c2, -rat8, rmCubicMap);
                     Rational t = (Rational)rmCubicMap.rbegin()->first;
                     Rational alphaSqr = rat2 * t - c2;
@@ -566,7 +567,7 @@ namespace gte
             else if (delta < zero)
             {
                 // Two simple real roots, one complex-conjugate pair.
-                std::map<Real, int> rmCubicMap;
+                std::map<Real, int32_t> rmCubicMap;
                 SolveCubic(c1sqr - rat4 * c0 * c2, rat8 * c0, rat4 * c2, -rat8,
                     rmCubicMap);
                 Rational t = (Rational)rmCubicMap.rbegin()->first;
@@ -659,7 +660,7 @@ namespace gte
 
         template <typename Rational>
         static void SolveBiquadratic(Rational const& c0, Rational const& c2,
-            std::map<Rational, int>& rmMap)
+            std::map<Rational, int32_t>& rmMap)
         {
             // Solve 0 = x^4 + c2*x^2 + c0 = (x^2 + c2/2)^2 + a1, where
             // a1 = c0 - c2^2/2.  We know that c0 != 0 at the time of the
@@ -752,7 +753,7 @@ namespace gte
         // Support for the GetNumRoots* functions.
         template <typename Rational>
         static void GetRootInfoDepressedQuadratic(Rational const& c0,
-            std::vector<int>& info)
+            std::vector<int32_t>& info)
         {
             Rational const zero = 0;
             if (c0 < zero)
@@ -774,7 +775,7 @@ namespace gte
 
         template <typename Rational>
         static void GetRootInfoDepressedCubic(Rational const& c0,
-            Rational const& c1, std::vector<int>& info)
+            Rational const& c1, std::vector<int32_t>& info)
         {
             // Handle the special case of c0 = 0, in which case the polynomial
             // reduces to a depressed quadratic.
@@ -817,7 +818,7 @@ namespace gte
 
         template <typename Rational>
         static void GetRootInfoDepressedQuartic(Rational const& c0,
-            Rational const& c1, Rational const& c2, std::vector<int>& info)
+            Rational const& c1, Rational const& c2, std::vector<int32_t>& info)
         {
             // Handle the special case of c0 = 0, in which case the polynomial
             // reduces to a depressed cubic.
@@ -914,7 +915,7 @@ namespace gte
 
         template <typename Rational>
         static void GetRootInfoBiquadratic(Rational const& c0,
-            Rational const& c2, std::vector<int>& info)
+            Rational const& c2, std::vector<int32_t>& info)
         {
             // Solve 0 = x^4 + c2*x^2 + c0 = (x^2 + c2/2)^2 + a1, where
             // a1 = c0 - c2^2/2.  We know that c0 != 0 at the time of the
@@ -969,15 +970,15 @@ namespace gte
         }
 
         // Support for the Find functions.
-        static int FindRecursive(int degree, Real const* c, Real tmin, Real tmax,
-            unsigned int maxIterations, Real* roots)
+        static int32_t FindRecursive(int32_t degree, Real const* c, Real tmin, Real tmax,
+            uint32_t maxIterations, Real* roots)
         {
             // The base of the recursion.
             Real const zero = (Real)0;
             Real root = zero;
             if (degree == 1)
             {
-                int numRoots;
+                int32_t numRoots;
                 if (c[1] != zero)
                 {
                     root = -c[0] / c[1];
@@ -1007,17 +1008,17 @@ namespace gte
             // becomes (d!)*x through multiple differentiations.  With the
             // scaling we instead get x.  This leads to better numerical
             // behavior of the root finder.
-            int derivDegree = degree - 1;
+            int32_t derivDegree = degree - 1;
             std::vector<Real> derivCoeff(static_cast<size_t>(derivDegree) + 1);
             std::vector<Real> derivRoots(derivDegree);
-            for (int i = 0, ip1 = 1; i <= derivDegree; ++i, ++ip1)
+            for (int32_t i = 0, ip1 = 1; i <= derivDegree; ++i, ++ip1)
             {
                 derivCoeff[i] = c[ip1] * (Real)(ip1) / (Real)degree;
             }
-            int numDerivRoots = FindRecursive(degree - 1, &derivCoeff[0], tmin, tmax,
+            int32_t numDerivRoots = FindRecursive(degree - 1, &derivCoeff[0], tmin, tmax,
                 maxIterations, &derivRoots[0]);
 
-            int numRoots = 0;
+            int32_t numRoots = 0;
             if (numDerivRoots > 0)
             {
                 // Find root on [tmin,derivRoots[0]].
@@ -1027,7 +1028,7 @@ namespace gte
                 }
 
                 // Find root on [derivRoots[i],derivRoots[i+1]].
-                for (int i = 0, ip1 = 1; i <= numDerivRoots - 2; ++i, ++ip1)
+                for (int32_t i = 0, ip1 = 1; i <= numDerivRoots - 2; ++i, ++ip1)
                 {
                     if (Find(degree, c, derivRoots[i], derivRoots[ip1],
                         maxIterations, root))
@@ -1054,9 +1055,9 @@ namespace gte
             return numRoots;
         }
 
-        static Real Evaluate(int degree, Real const* c, Real t)
+        static Real Evaluate(int32_t degree, Real const* c, Real t)
         {
-            int i = degree;
+            int32_t i = degree;
             Real result = c[i];
             while (--i >= 0)
             {

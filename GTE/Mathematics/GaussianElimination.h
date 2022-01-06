@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.11.23
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -28,10 +28,10 @@ namespace gte
     class GaussianElimination
     {
     public:
-        bool operator()(int numRows,
+        bool operator()(int32_t numRows,
             Real const* M, Real* inverseM, Real& determinant,
             Real const* B, Real* X,
-            Real const* C, int numCols, Real* Y) const
+            Real const* C, int32_t numCols, Real* Y) const
         {
             if (numRows <= 0 || !M
                 || ((B != nullptr) != (X != nullptr))
@@ -41,7 +41,7 @@ namespace gte
                 LogError("Invalid input.");
             }
 
-            int numElements = numRows * numRows;
+            int32_t numElements = numRows * numRows;
             bool wantInverse = (inverseM != nullptr);
             std::vector<Real> localInverseM;
             if (!wantInverse)
@@ -69,7 +69,7 @@ namespace gte
             LexicoArray2<false, Real> matY(numRows, numCols, Y);
 #endif
 
-            std::vector<int> colIndex(numRows), rowIndex(numRows), pivoted(numRows);
+            std::vector<int32_t> colIndex(numRows), rowIndex(numRows), pivoted(numRows);
             std::fill(pivoted.begin(), pivoted.end(), 0);
 
             Real const zero = (Real)0;
@@ -78,8 +78,8 @@ namespace gte
             determinant = one;
 
             // Elimination by full pivoting.
-            int i1, i2, row = 0, col = 0;
-            for (int i0 = 0; i0 < numRows; ++i0)
+            int32_t i1, i2, row = 0, col = 0;
+            for (int32_t i0 = 0; i0 < numRows; ++i0)
             {
                 // Search matrix (excluding pivoted rows) for maximum absolute entry.
                 Real maxValue = zero;
@@ -131,7 +131,7 @@ namespace gte
                 if (row != col)
                 {
                     odd = !odd;
-                    for (int i = 0; i < numRows; ++i)
+                    for (int32_t i = 0; i < numRows; ++i)
                     {
                         std::swap(matInvM(row, i), matInvM(col, i));
                     }
@@ -143,7 +143,7 @@ namespace gte
 
                     if (C)
                     {
-                        for (int i = 0; i < numCols; ++i)
+                        for (int32_t i = 0; i < numCols; ++i)
                         {
                             std::swap(matY(row, i), matY(col, i));
                         }
@@ -235,7 +235,7 @@ namespace gte
         // copied to target.  This function hides the type traits used to
         // determine whether Real is native floating-point or otherwise (such
         // as BSNumber or BSRational).
-        void Set(int numElements, Real const* source, Real* target) const
+        void Set(int32_t numElements, Real const* source, Real* target) const
         {
             if (std::is_floating_point<Real>() == std::true_type())
             {
@@ -256,7 +256,7 @@ namespace gte
                 // correctly.
                 if (source)
                 {
-                    for (int i = 0; i < numElements; ++i)
+                    for (int32_t i = 0; i < numElements; ++i)
                     {
                         target[i] = source[i];
                     }
@@ -264,7 +264,7 @@ namespace gte
                 else
                 {
                     Real const zero = (Real)0;
-                    for (int i = 0; i < numElements; ++i)
+                    for (int32_t i = 0; i < numElements; ++i)
                     {
                         target[i] = zero;
                     }

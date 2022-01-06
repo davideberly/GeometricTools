@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BspNodesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -57,7 +57,7 @@ void BspNodesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool BspNodesWindow3::OnResize(int xSize, int ySize)
+bool BspNodesWindow3::OnResize(int32_t xSize, int32_t ySize)
 {
     if (Window3::OnResize(xSize, ySize))
     {
@@ -66,7 +66,7 @@ bool BspNodesWindow3::OnResize(int xSize, int ySize)
     return true;
 }
 
-bool BspNodesWindow3::OnMouseMotion(MouseButton button, int x, int y, unsigned int modifiers)
+bool BspNodesWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (Window3::OnMouseMotion(button, x, y, modifiers))
     {
@@ -171,17 +171,17 @@ void BspNodesWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     mGround = mf.CreateRectangle(2, 2, 16.0f, 16.0f);
     mVisualOpaque.insert(mGround.get());
     mScene->AttachChild(mGround);
-    auto vbuffer = mGround->GetVertexBuffer().get();
+    auto const& vbuffer = mGround->GetVertexBuffer();
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < vbuffer->GetNumElements(); ++i)
+    for (uint32_t i = 0; i < vbuffer->GetNumElements(); ++i)
     {
         vertex[i].tcoord *= 128.0f;
     }
@@ -191,41 +191,42 @@ void BspNodesWindow3::CreateScene()
     groundTexture->AutogenerateMipmaps();
     std::shared_ptr<Texture2Effect> txEffect =
         std::make_shared<Texture2Effect>(mProgramFactory, groundTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP,
-        SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+            SamplerState::Mode::WRAP);
     mGround->SetEffect(txEffect);
 
     // Partition the region above the ground into 5 convex pieces.  Each plane
     // is perpendicular to the ground (not required generally).
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
-    Vector4<float> color[4] =
+    std::array<Vector4<float>, 4> color =
     {
-        { 1.0f, 0.0f, 0.0f, 1.0f },
-        { 0.0f, 0.5f, 0.0f, 1.0f },
-        { 0.0f, 0.0f, 1.0f, 1.0f },
-        { 0.0f, 0.0f, 0.0f, 1.0f }
+        Vector4<float>{ 1.0f, 0.0f, 0.0f, 1.0f },
+        Vector4<float>{ 0.0f, 0.5f, 0.0f, 1.0f },
+        Vector4<float>{ 0.0f, 0.0f, 1.0f, 1.0f },
+        Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
-    Vector2<float> v[9] =
+    std::array<Vector2<float>, 9> v =
     {
-        { -1.0f, 1.0f },
-        { 1.0f, -1.0f },
-        { -0.25f, 0.25f },
-        { -1.0f, -1.0f },
-        { 0.0f, 0.0f },
-        { 1.0f, 0.5f },
-        { -0.75f, -7.0f / 12.0f },
-        { -0.75f, 0.75f },
-        { 1.0f, 1.0f }
+        Vector2<float>{ -1.0f, 1.0f },
+        Vector2<float>{ 1.0f, -1.0f },
+        Vector2<float>{ -0.25f, 0.25f },
+        Vector2<float>{ -1.0f, -1.0f },
+        Vector2<float>{ 0.0f, 0.0f },
+        Vector2<float>{ 1.0f, 0.5f },
+        Vector2<float>{ -0.75f, -7.0f / 12.0f },
+        Vector2<float>{ -0.75f, 0.75f },
+        Vector2<float>{ 1.0f, 1.0f }
     };
 
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
+        size_t twoI = 2 * static_cast<size_t>(i);
         mVCEffect[i] = std::make_shared<VertexColorEffect>(mProgramFactory);
-        mBSPNode[i] = CreateNode(i, v[2 * i], v[2 * i + 1], color[i]);
+        mBSPNode[i] = CreateNode(i, v[twoI], v[twoI + 1], color[i]);
     }
 
     mScene->AttachChild(mBSPNode[0]);
@@ -246,8 +247,8 @@ void BspNodesWindow3::CreateScene()
     mTorus = mf.CreateTorus(16, 16, 1.0f, 0.25f);
     mVisualOpaque.insert(mTorus.get());
     txEffect = std::make_shared<Texture2Effect>(mProgramFactory,
-        flowerTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        flowerTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mTorus->SetEffect(txEffect);
     mTorus->localTransform.SetUniformScale(0.1f);
     center = (v[2] + v[6] + v[7]) / 3.0f;
@@ -258,8 +259,8 @@ void BspNodesWindow3::CreateScene()
     mSphere = mf.CreateSphere(32, 16, 1.0f);
     mVisualOpaque.insert(mSphere.get());
     txEffect = std::make_shared<Texture2Effect>(mProgramFactory,
-        flowerTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        flowerTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mSphere->SetEffect(txEffect);
     mSphere->localTransform.SetUniformScale(0.1f);
     center = (v[0] + v[3] + v[6] + v[7]) / 4.0f;
@@ -270,8 +271,8 @@ void BspNodesWindow3::CreateScene()
     mTetrahedron = mf.CreateTetrahedron();
     mVisualOpaque.insert(mTetrahedron.get());
     txEffect = std::make_shared<Texture2Effect>(mProgramFactory,
-        flowerTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        flowerTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mTetrahedron->SetEffect(txEffect);
     mTetrahedron->localTransform.SetUniformScale(0.1f);
     center = (v[1] + v[2] + v[3]) / 3.0f;
@@ -282,8 +283,8 @@ void BspNodesWindow3::CreateScene()
     mCube = mf.CreateHexahedron();
     mVisualOpaque.insert(mCube.get());
     txEffect = std::make_shared<Texture2Effect>(mProgramFactory,
-        flowerTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        flowerTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mCube->SetEffect(txEffect);
     mCube->localTransform.SetUniformScale(0.1f);
     center = (v[1] + v[4] + v[5]) / 3.0f;
@@ -294,8 +295,8 @@ void BspNodesWindow3::CreateScene()
     mOctahedron = mf.CreateOctahedron();
     mVisualOpaque.insert(mOctahedron.get());
     txEffect = std::make_shared<Texture2Effect>(mProgramFactory,
-        flowerTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        flowerTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mOctahedron->SetEffect(txEffect);
     mOctahedron->localTransform.SetUniformScale(0.1f);
     center = (v[0] + v[4] + v[5] + v[8]) / 4.0f;
@@ -326,7 +327,7 @@ void BspNodesWindow3::DoCullSort()
     }
 }
 
-std::shared_ptr<BspNode> BspNodesWindow3::CreateNode(int i,
+std::shared_ptr<BspNode> BspNodesWindow3::CreateNode(int32_t i,
     Vector2<float> const& v0, Vector2<float> const& v1,
     Vector4<float> const& color)
 {
@@ -346,8 +347,8 @@ std::shared_ptr<BspNode> BspNodesWindow3::CreateNode(int i,
         Vector4<float> color;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -358,7 +359,7 @@ std::shared_ptr<BspNode> BspNodesWindow3::CreateNode(int i,
     mRectangle[i] = mf.CreateRectangle(2, 2, xExtent, yExtent);
     auto vbuffer = mRectangle[i]->GetVertexBuffer().get();
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (int j = 0; j < 4; ++j)
+    for (int32_t j = 0; j < 4; ++j)
     {
         vertex[j].color = color;
     }

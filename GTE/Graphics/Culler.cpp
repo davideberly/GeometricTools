@@ -1,11 +1,12 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
+#include <Graphics/Culler.h>
 #include <Graphics/Camera.h>
 #include <Graphics/Spatial.h>
 #include <Mathematics/Logger.h>
@@ -17,7 +18,10 @@ Culler::~Culler()
 
 Culler::Culler()
     :
-    mPlaneQuantity(6)
+    mPlaneQuantity(6),
+    mPlane{},
+    mPlaneState(0),
+    mVisibleSet{}
 {
     // The data members mFrustum, mPlane, and mPlaneState are
     // uninitialized.  They are initialized in the GetVisibleSet call.
@@ -66,14 +70,14 @@ bool Culler::IsVisible(BoundingSphere<float> const& sphere)
 
     // Start with the last pushed plane, which is potentially the most
     // restrictive plane.
-    int index = mPlaneQuantity - 1;
-    unsigned int mask = (1u << index);
+    int32_t index = mPlaneQuantity - 1;
+    uint32_t mask = (1u << index);
 
-    for (int i = 0; i < mPlaneQuantity; ++i, --index, mask >>= 1)
+    for (int32_t i = 0; i < mPlaneQuantity; ++i, --index, mask >>= 1)
     {
         if (mPlaneState & mask)
         {
-            int side = sphere.WhichSide(mPlane[index]);
+            int32_t side = sphere.WhichSide(mPlane[index]);
 
             if (side < 0)
             {

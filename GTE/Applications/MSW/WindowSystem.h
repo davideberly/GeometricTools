@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -65,7 +65,7 @@ namespace gte
         };
 
         template <typename WindowType>
-        void MessagePump(std::shared_ptr<WindowType> const& window, unsigned int flags)
+        void MessagePump(std::shared_ptr<WindowType> const& window, uint32_t flags)
         {
             if (window)
             {
@@ -111,7 +111,7 @@ namespace gte
         // menu bar, and so on).  This information is useful to know before
         // creating a window to ensure the to-be-created window fits within
         // the monitor resolution.
-        static bool GetWindowRectangle(int xClientSize, int yClientSize,
+        static bool GetWindowRectangle(int32_t xClientSize, int32_t yClientSize,
             DWORD style, RECT& windowRectangle);
 
         // Window creation and destruction.  The CreateEngineAndProgramFactory
@@ -125,8 +125,8 @@ namespace gte
 
         // Extraction of cursor location, avoiding the extraction in <windows.h>
         // that does not work when you have dual monitors.
-        static void Extract(LPARAM lParam, int& x, int& y);
-        static void Extract(WPARAM wParam, int& x, int& y);
+        static void Extract(LPARAM lParam, int32_t& x, int32_t& y);
+        static void Extract(WPARAM wParam, int32_t& x, int32_t& y);
 
         // The event handler.
         static LRESULT CALLBACK WindowProcedure(HWND handle, UINT message, WPARAM wParam, LPARAM lParam);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -116,7 +116,7 @@ namespace gte
         // (d = 0, 1, 2, or 3).  When epsilon is positive, the determination
         // is fuzzy--vertices approximately the same point, approximately on
         // a line, approximately planar, or volumetric.
-        bool operator()(int numVertices, Vector3<InputType> const* vertices, InputType epsilon)
+        bool operator()(int32_t numVertices, Vector3<InputType> const* vertices, InputType epsilon)
         {
             mEpsilon = std::max(epsilon, (InputType)0);
             mDimension = 0;
@@ -132,7 +132,7 @@ namespace gte
             mIndices.clear();
             mAdjacencies.clear();
 
-            int i, j;
+            int32_t i, j;
             if (mNumVertices < 4)
             {
                 // Delaunay3 should be called with at least four points.
@@ -211,7 +211,7 @@ namespace gte
                     processed.insert(vertices[i]);
                 }
             }
-            mNumUniqueVertices = static_cast<int>(processed.size());
+            mNumUniqueVertices = static_cast<int32_t>(processed.size());
 
             // Assign integer values to the tetrahedra for use by the caller
             // and copy the tetrahedra information to compact arrays mIndices
@@ -234,7 +234,7 @@ namespace gte
             return mEpsilon;
         }
 
-        inline int GetDimension() const
+        inline int32_t GetDimension() const
         {
             return mDimension;
         }
@@ -250,17 +250,17 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
 
-        inline int GetNumUniqueVertices() const
+        inline int32_t GetNumUniqueVertices() const
         {
             return mNumUniqueVertices;
         }
 
-        inline int GetNumTetrahedra() const
+        inline int32_t GetNumTetrahedra() const
         {
             return mNumTetrahedra;
         }
@@ -280,12 +280,12 @@ namespace gte
             return mGraph;
         }
 
-        inline std::vector<int> const& GetIndices() const
+        inline std::vector<int32_t> const& GetIndices() const
         {
             return mIndices;
         }
 
-        inline std::vector<int> const& GetAdjacencies() const
+        inline std::vector<int32_t> const& GetAdjacencies() const
         {
             return mAdjacencies;
         }
@@ -295,13 +295,13 @@ namespace gte
         // triple representing a triangle.  The triangles are counterclockwise
         // ordered when viewed from outside the hull.  The return value is
         // 'true' iff the dimension is 3.
-        bool GetHull(std::vector<int>& hull) const
+        bool GetHull(std::vector<int32_t>& hull) const
         {
             if (mDimension == 3)
             {
                 // Count the number of triangles that are not shared by two
                 // tetrahedra.
-                int numTriangles = 0;
+                int32_t numTriangles = 0;
                 for (auto adj : mAdjacencies)
                 {
                     if (adj == -1)
@@ -364,14 +364,14 @@ namespace gte
 
         // Copy Delaunay tetrahedra to compact arrays mIndices and
         // mAdjacencies. The array information is accessible via the
-        // functions GetIndices(int, std::array<int, 4>&) and
-        // GetAdjacencies(int, std::array<int, 4>&).
+        // functions GetIndices(int32_t, std::array<int32_t, 4>&) and
+        // GetAdjacencies(int32_t, std::array<int32_t, 4>&).
         void UpdateIndicesAdjacencies()
         {
             // Assign integer values to the tetrahedra for use by the caller.
             auto const& smap = mGraph.GetTetrahedra();
-            std::map<Tetrahedron*, int> permute;
-            int i = -1;
+            std::map<Tetrahedron*, int32_t> permute;
+            int32_t i = -1;
             permute[nullptr] = i++;
             for (auto const& element : smap)
             {
@@ -380,8 +380,8 @@ namespace gte
 
             // Put Delaunay tetrahedra into an array (vertices and adjacency
             // info).
-            mNumTetrahedra = static_cast<int>(smap.size());
-            int numIndices = 4 * mNumTetrahedra;
+            mNumTetrahedra = static_cast<int32_t>(smap.size());
+            int32_t numIndices = 4 * mNumTetrahedra;
             if (mNumTetrahedra > 0)
             {
                 mIndices.resize(numIndices);
@@ -403,11 +403,11 @@ namespace gte
         // 'true' when the dimension is 3 and i is a valid tetrahedron index,
         // in which case the vertices are valid; otherwise, the function
         // returns 'false' and the vertices are invalid.
-        bool GetIndices(int i, std::array<int, 4>& indices) const
+        bool GetIndices(int32_t i, std::array<int32_t, 4>& indices) const
         {
             if (mDimension == 3)
             {
-                int numTetrahedra = static_cast<int>(mIndices.size() / 4);
+                int32_t numTetrahedra = static_cast<int32_t>(mIndices.size() / 4);
                 if (0 <= i && i < numTetrahedra)
                 {
                     size_t fourI = 4 * static_cast<size_t>(i);
@@ -430,11 +430,11 @@ namespace gte
         // tetrahedron index, in which case the adjacencies are valid;
         // otherwise, the function returns 'false' and the adjacencies are
         // invalid.
-        bool GetAdjacencies(int i, std::array<int, 4>& adjacencies) const
+        bool GetAdjacencies(int32_t i, std::array<int32_t, 4>& adjacencies) const
         {
             if (mDimension == 3)
             {
-                int numTetrahedra = static_cast<int>(mIndices.size() / 4);
+                int32_t numTetrahedra = static_cast<int32_t>(mIndices.size() / 4);
                 if (0 <= i && i < numTetrahedra)
                 {
                     size_t fourI = 4 * static_cast<size_t>(i);
@@ -482,23 +482,23 @@ namespace gte
             {
             }
 
-            int initialTetrahedron;
-            int numPath;
-            std::vector<int> path;
-            int finalTetrahedron;
-            std::array<int, 4> finalV;
+            int32_t initialTetrahedron;
+            int32_t numPath;
+            std::vector<int32_t> path;
+            int32_t finalTetrahedron;
+            std::array<int32_t, 4> finalV;
         };
 
-        int GetContainingTetrahedron(Vector3<InputType> const& p, SearchInfo& info) const
+        int32_t GetContainingTetrahedron(Vector3<InputType> const& p, SearchInfo& info) const
         {
             if (mDimension == 3)
             {
                 Vector3<ComputeType> test{ p[0], p[1], p[2] };
 
-                int numTetrahedra = static_cast<int>(mIndices.size() / 4);
+                int32_t numTetrahedra = static_cast<int32_t>(mIndices.size() / 4);
                 info.path.resize(numTetrahedra);
                 info.numPath = 0;
-                int tetrahedron;
+                int32_t tetrahedron;
                 if (0 <= info.initialTetrahedron
                     && info.initialTetrahedron < numTetrahedra)
                 {
@@ -511,10 +511,10 @@ namespace gte
                 }
 
                 // Use tetrahedron faces as binary separating planes.
-                for (int i = 0; i < numTetrahedra; ++i)
+                for (int32_t i = 0; i < numTetrahedra; ++i)
                 {
-                    int ibase = 4 * tetrahedron;
-                    int const* v = &mIndices[ibase];
+                    int32_t ibase = 4 * tetrahedron;
+                    int32_t const* v = &mIndices[ibase];
 
                     info.path[info.numPath++] = tetrahedron;
                     info.finalTetrahedron = tetrahedron;
@@ -601,18 +601,18 @@ namespace gte
         // Support for incremental Delaunay tetrahedralization.
         typedef TSManifoldMesh::Tetrahedron Tetrahedron;
 
-        bool GetContainingTetrahedron(int i, Tetrahedron*& tetra) const
+        bool GetContainingTetrahedron(int32_t i, Tetrahedron*& tetra) const
         {
-            int numTetrahedra = static_cast<int>(mGraph.GetTetrahedra().size());
-            for (int t = 0; t < numTetrahedra; ++t)
+            int32_t numTetrahedra = static_cast<int32_t>(mGraph.GetTetrahedra().size());
+            for (int32_t t = 0; t < numTetrahedra; ++t)
             {
-                int j;
+                int32_t j;
                 for (j = 0; j < 4; ++j)
                 {
                     auto const& opposite = TetrahedronKey<true>::GetOppositeFace();
-                    int v0 = tetra->V[opposite[j][0]];
-                    int v1 = tetra->V[opposite[j][1]];
-                    int v2 = tetra->V[opposite[j][2]];
+                    int32_t v0 = tetra->V[opposite[j][0]];
+                    int32_t v1 = tetra->V[opposite[j][1]];
+                    int32_t v2 = tetra->V[opposite[j][2]];
                     if (mQuery.ToPlane(i, v0, v1, v2) > 0)
                     {
                         // Point i sees face <v0,v1,v2> from outside the
@@ -645,7 +645,7 @@ namespace gte
             LogError("Unexpected termination of loop.");
         }
 
-        bool GetAndRemoveInsertionPolyhedron(int i, std::set<Tetrahedron*>& candidates,
+        bool GetAndRemoveInsertionPolyhedron(int32_t i, std::set<Tetrahedron*>& candidates,
             std::set<TriangleKey<true>>& boundary)
         {
             // Locate the tetrahedra that make up the insertion polyhedron.
@@ -655,15 +655,15 @@ namespace gte
                 Tetrahedron* tetra = *candidates.begin();
                 candidates.erase(candidates.begin());
 
-                for (int j = 0; j < 4; ++j)
+                for (int32_t j = 0; j < 4; ++j)
                 {
                     auto adj = tetra->S[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
-                        int a0 = adj->V[0];
-                        int a1 = adj->V[1];
-                        int a2 = adj->V[2];
-                        int a3 = adj->V[3];
+                        int32_t a0 = adj->V[0];
+                        int32_t a1 = adj->V[1];
+                        int32_t a2 = adj->V[2];
+                        int32_t a3 = adj->V[3];
                         if (mQuery.ToCircumsphere(i, a0, a1, a2, a3) <= 0)
                         {
                             // Point i is in the circumsphere.
@@ -672,10 +672,10 @@ namespace gte
                     }
                 }
 
-                int v0 = tetra->V[0];
-                int v1 = tetra->V[1];
-                int v2 = tetra->V[2];
-                int v3 = tetra->V[3];
+                int32_t v0 = tetra->V[0];
+                int32_t v1 = tetra->V[1];
+                int32_t v2 = tetra->V[2];
+                int32_t v3 = tetra->V[3];
                 if (!polyhedron.Insert(v0, v1, v2, v3))
                 {
                     return false;
@@ -690,14 +690,14 @@ namespace gte
             for (auto const& element : polyhedron.GetTetrahedra())
             {
                 Tetrahedron* tetra = element.second.get();
-                for (int j = 0; j < 4; ++j)
+                for (int32_t j = 0; j < 4; ++j)
                 {
                     if (!tetra->S[j])
                     {
                         auto const& opposite = TetrahedronKey<true>::GetOppositeFace();
-                        int v0 = tetra->V[opposite[j][0]];
-                        int v1 = tetra->V[opposite[j][1]];
-                        int v2 = tetra->V[opposite[j][2]];
+                        int32_t v0 = tetra->V[opposite[j][0]];
+                        int32_t v1 = tetra->V[opposite[j][1]];
+                        int32_t v2 = tetra->V[opposite[j][2]];
                         boundary.insert(TriangleKey<true>(v0, v1, v2));
                     }
                 }
@@ -705,7 +705,7 @@ namespace gte
             return true;
         }
 
-        bool Update(int i)
+        bool Update(int32_t i)
         {
             // The return value of mGraph.Insert(...) is nullptr if there was
             // a failure to insert.  The Update function will return 'false'
@@ -737,9 +737,9 @@ namespace gte
                 // by point i and the faces of C.
                 for (auto const& key : boundary)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
-                    int v2 = key.V[2];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
+                    int32_t v2 = key.V[2];
                     if (mQuery.ToPlane(i, v0, v1, v2) < 0)
                     {
                         if (!mGraph.Insert(i, v0, v1, v2))
@@ -764,14 +764,14 @@ namespace gte
                 for (auto const& element : smap)
                 {
                     Tetrahedron* t = element.second.get();
-                    for (int j = 0; j < 4; ++j)
+                    for (int32_t j = 0; j < 4; ++j)
                     {
                         if (!t->S[j])
                         {
                             auto const& opposite = TetrahedronKey<true>::GetOppositeFace();
-                            int v0 = t->V[opposite[j][0]];
-                            int v1 = t->V[opposite[j][1]];
-                            int v2 = t->V[opposite[j][2]];
+                            int32_t v0 = t->V[opposite[j][0]];
+                            int32_t v1 = t->V[opposite[j][1]];
+                            int32_t v2 = t->V[opposite[j][2]];
                             hull.insert(TriangleKey<true>(v0, v1, v2));
                         }
                     }
@@ -784,9 +784,9 @@ namespace gte
                 std::set<TriangleKey<true>> visible;
                 for (auto const& key : hull)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
-                    int v2 = key.V[2];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
+                    int32_t v2 = key.V[2];
                     if (mQuery.ToPlane(i, v0, v1, v2) > 0)
                     {
                         auto iter = tmap.find(TriangleKey<false>(v0, v1, v2));
@@ -795,10 +795,10 @@ namespace gte
                             auto adj = iter->second->T[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
-                                int a0 = adj->V[0];
-                                int a1 = adj->V[1];
-                                int a2 = adj->V[2];
-                                int a3 = adj->V[3];
+                                int32_t a0 = adj->V[0];
+                                int32_t a1 = adj->V[1];
+                                int32_t a2 = adj->V[2];
+                                int32_t a3 = adj->V[3];
                                 if (mQuery.ToCircumsphere(i, a0, a1, a2, a3) <= 0)
                                 {
                                     // Point i is in the circumsphere.
@@ -839,9 +839,9 @@ namespace gte
                 // faces of mGraph-C.
                 for (auto const& key : boundary)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
-                    int v2 = key.V[2];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
+                    int32_t v2 = key.V[2];
                     if (mQuery.ToPlane(i, v0, v1, v2) < 0)
                     {
                         // This is a back face of the boundary.
@@ -874,7 +874,7 @@ namespace gte
         // dimension is 2, the caller can query for the approximating plane
         // and project vertices[] onto it for further processing.
         InputType mEpsilon;
-        int mDimension;
+        int32_t mDimension;
         Line3<InputType> mLine;
         Plane3<InputType> mPlane;
 
@@ -884,13 +884,13 @@ namespace gte
         PrimalQuery3<ComputeType> mQuery;
 
         // The graph information.
-        int mNumVertices;
-        int mNumUniqueVertices;
-        int mNumTetrahedra;
+        int32_t mNumVertices;
+        int32_t mNumUniqueVertices;
+        int32_t mNumTetrahedra;
         Vector3<InputType> const* mVertices;
         TSManifoldMesh mGraph;
-        std::vector<int> mIndices;
-        std::vector<int> mAdjacencies;
+        std::vector<int32_t> mIndices;
+        std::vector<int32_t> mAdjacencies;
     };
 }
 

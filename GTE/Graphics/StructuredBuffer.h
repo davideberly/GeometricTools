@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Buffer.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -15,13 +16,13 @@ namespace gte
     {
     public:
         // Construction.
-        StructuredBuffer(unsigned int numElements, size_t elementSize, bool createStorage = true);
+        StructuredBuffer(uint32_t numElements, size_t elementSize, bool createStorage = true);
 
         enum CounterType
         {
-            CT_NONE,  // default, 
-            CT_APPEND_CONSUME,
-            CT_COUNTER
+            NONE, 
+            APPEND_CONSUME,
+            COUNTER
         };
 
         inline CounterType GetCounterType() const
@@ -34,14 +35,14 @@ namespace gte
         // SHADER_OUTPUT.
         inline void MakeAppendConsume()
         {
-            mCounterType = CT_APPEND_CONSUME;
-            mUsage = SHADER_OUTPUT;
+            mCounterType = CounterType::APPEND_CONSUME;
+            mUsage = Usage::SHADER_OUTPUT;
         }
 
         inline void MakeCounter()
         {
-            mCounterType = CT_COUNTER;
-            mUsage = SHADER_OUTPUT;
+            mCounterType = CounterType::COUNTER;
+            mUsage = Usage::SHADER_OUTPUT;
         }
 
         // Let the GPU know whether or not to change its internal count when
@@ -51,7 +52,7 @@ namespace gte
         // CT_NONE.
         inline void SetKeepInternalCount(bool keepInternalCount)
         {
-            if (mCounterType != CT_NONE)
+            if (mCounterType != CounterType::NONE)
             {
                 mKeepInternalCount = keepInternalCount;
             }
@@ -67,7 +68,7 @@ namespace gte
         //   DX11Engine* engine = <your engine>;
         //   StructuredBuffer* buf = <your buffer>;
         //   engine->GetNumActiveElements(buf);  // copy count from GPU to CPU
-        //   int numElements = buf->GetNumActiveElements();
+        //   int32_t numElements = buf->GetNumActiveElements();
         // Also
         //   engine->CopyGpuToCpu(buf);
         // will fetch the buffer contents as well as the active number.
@@ -78,6 +79,6 @@ namespace gte
 
     public:
         // For use by the Shader class for storing reflection information.
-        static int const shaderDataLookup = 2;
+        static int32_t const shaderDataLookup = 2;
     };
 }

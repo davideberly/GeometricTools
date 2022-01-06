@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid2UpdateState.h>
@@ -11,22 +11,22 @@ using namespace gte;
 
 GPUFluid2UpdateState::GPUFluid2UpdateState(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int numXThreads, int numYThreads,
+    int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads,
     std::shared_ptr<ConstantBuffer> const& parameters)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads)
 {
     mUpdateState = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, xSize, ySize);
-    mUpdateState->SetUsage(Resource::SHADER_OUTPUT);
+    mUpdateState->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
     mAdvectionSampler = std::make_shared<SamplerState>();
-    mAdvectionSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    mAdvectionSampler->mode[0] = SamplerState::CLAMP;
-    mAdvectionSampler->mode[1] = SamplerState::CLAMP;
+    mAdvectionSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    mAdvectionSampler->mode[0] = SamplerState::Mode::CLAMP;
+    mAdvectionSampler->mode[1] = SamplerState::Mode::CLAMP;
 
     // Create the shader for generating velocity from vortices.
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("NUM_X_THREADS", numXThreads);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -34,7 +34,7 @@ GPUFluid2UpdateState::GPUFluid2UpdateState(
     mComputeUpdateState = factory->CreateFromSource(*msSource[api]);
     if (mComputeUpdateState)
     {
-        auto cshader =  mComputeUpdateState->GetComputeShader();
+        auto const& cshader =  mComputeUpdateState->GetComputeShader();
         cshader->Set("Parameters", parameters);
         cshader->Set("updateState", mUpdateState);
     }
@@ -48,7 +48,7 @@ void GPUFluid2UpdateState::Execute(
     std::shared_ptr<Texture2> const& stateTm1,
     std::shared_ptr<Texture2> const& stateT)
 {
-    auto cshader = mComputeUpdateState->GetComputeShader();
+    auto const& cshader = mComputeUpdateState->GetComputeShader();
     cshader->Set("source", source);
     cshader->Set("stateTm1", stateTm1, "advectionSampler", mAdvectionSampler);
     cshader->Set("stateT", stateT);

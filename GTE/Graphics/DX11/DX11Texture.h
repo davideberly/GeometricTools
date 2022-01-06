@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Texture.h>
 #include <Graphics/DX11/DX11Resource.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -38,14 +39,14 @@ namespace gte
         }
 
         // Copy of data between CPU and GPU.
-        virtual bool Update(ID3D11DeviceContext* context, unsigned int sri) override;
+        virtual bool Update(ID3D11DeviceContext* context, uint32_t sri) override;
         virtual bool Update(ID3D11DeviceContext* context) override;
-        virtual bool CopyCpuToGpu(ID3D11DeviceContext* context, unsigned int sri) override;
+        virtual bool CopyCpuToGpu(ID3D11DeviceContext* context, uint32_t sri) override;
         virtual bool CopyCpuToGpu(ID3D11DeviceContext* context) override;
-        virtual bool CopyGpuToCpu(ID3D11DeviceContext* context, unsigned int sri) override;
+        virtual bool CopyGpuToCpu(ID3D11DeviceContext* context, uint32_t sri) override;
         virtual bool CopyGpuToCpu(ID3D11DeviceContext* context) override;
         virtual void CopyGpuToGpu(ID3D11DeviceContext* context,
-            ID3D11Resource* target, unsigned int sri) override;
+            ID3D11Resource* target, uint32_t sri) override;
         virtual void CopyGpuToGpu(ID3D11DeviceContext* context,
             ID3D11Resource* target) override;
 
@@ -56,13 +57,13 @@ namespace gte
     protected:
         // Support for copy of row-pitched and slice-pitched (noncontiguous)
         // texture memory.
-        static void CopyPitched2(unsigned int numRows, unsigned int srcRowPitch,
-            void const* srcData, unsigned int trgRowPitch, void* trgData);
+        static void CopyPitched2(uint32_t numRows, uint32_t srcRowPitch,
+            void const* srcData, uint32_t trgRowPitch, void* trgData);
 
-        static void CopyPitched3(unsigned int numRows, unsigned int numSlices,
-            unsigned int srcRowPitch, unsigned int srcSlicePitch,
-            void const* srcData, unsigned int trgRowPitch,
-            unsigned int trgSlicePitch, void* trgData);
+        static void CopyPitched3(uint32_t numRows, uint32_t numSlices,
+            uint32_t srcRowPitch, uint32_t srcSlicePitch,
+            void const* srcData, uint32_t trgRowPitch,
+            uint32_t trgSlicePitch, void* trgData);
 
         ID3D11ShaderResourceView* mSRView;
         ID3D11UnorderedAccessView* mUAView;

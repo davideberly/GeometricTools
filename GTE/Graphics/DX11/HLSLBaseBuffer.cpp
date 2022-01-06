@@ -1,16 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLBaseBuffer.h>
 using namespace gte;
 
 HLSLBaseBuffer::HLSLBaseBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc,
-    unsigned int numBytes, std::vector<Member> const& members)
+    uint32_t numBytes, std::vector<Member> const& members)
     :
     HLSLResource(desc, numBytes),
     mMembers(members)
@@ -18,7 +18,7 @@ HLSLBaseBuffer::HLSLBaseBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc,
 }
 
 HLSLBaseBuffer::HLSLBaseBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc,
-    unsigned int index, unsigned int numBytes,
+    uint32_t index, uint32_t numBytes,
     std::vector<Member> const& members)
     :
     HLSLResource(desc, index, numBytes),
@@ -28,7 +28,7 @@ HLSLBaseBuffer::HLSLBaseBuffer(D3D_SHADER_INPUT_BIND_DESC const& desc,
 
 void HLSLBaseBuffer::Print(std::ofstream& output) const
 {
-    int i = 0;
+    int32_t i = 0;
     for (auto const& member : mMembers)
     {
         output << "Variable[" << i << "]:" << std::endl;
@@ -50,13 +50,13 @@ void HLSLBaseBuffer::GenerateLayout(std::vector<MemberLayout>& layout) const
 }
 
 void HLSLBaseBuffer::GenerateLayout(HLSLShaderType const& parent,
-    unsigned int parentOffset, std::string const& parentName,
+    uint32_t parentOffset, std::string const& parentName,
     std::vector<MemberLayout>& layout) const
 {
-    unsigned int const numChildren = parent.GetNumChildren();
+    uint32_t const numChildren = parent.GetNumChildren();
     if (numChildren > 0)
     {
-        for (unsigned int i = 0; i < numChildren; ++i)
+        for (uint32_t i = 0; i < numChildren; ++i)
         {
             HLSLShaderType const& child = parent.GetChild(i);
             GenerateLayout(child, parentOffset + child.GetOffset(),

@@ -1,46 +1,46 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DrawingState.h>
+#include <cstdint>
 
 namespace gte
 {
     class RasterizerState : public DrawingState
     {
     public:
-        enum FillMode
+        enum Fill
         {
-            FILL_SOLID,
-            FILL_WIREFRAME
+            SOLID,
+            WIREFRAME
         };
 
-        enum CullMode
+        enum Cull
         {
-            CULL_NONE,
-            CULL_FRONT,
-            CULL_BACK
+            NONE,
+            FRONT,
+            BACK
         };
 
-        // Construction.
         RasterizerState();
 
         // Member access.  The members are intended to be write-once before
         // you create an associated graphics state.
-        FillMode fillMode;              // default: FILL_SOLID
-        CullMode cullMode;              // default: CULL_BACK
-        bool frontCCW;                  // default: true
-        int depthBias;                  // default: 0
-        float depthBiasClamp;           // default: 0
-        float slopeScaledDepthBias;     // default: 0
-        bool enableDepthClip;           // default: true
-        bool enableScissor;             // default: false
-        bool enableMultisample;         // default: false
-        bool enableAntialiasedLine;     // default: false
+        Fill fill;                  // default: SOLID
+        Cull cull;                  // default: BACK
+        bool frontCCW;              // default: true
+        int32_t depthBias;          // default: 0
+        float depthBiasClamp;       // default: 0
+        float slopeScaledDepthBias; // default: 0
+        bool enableDepthClip;       // default: true
+        bool enableScissor;         // default: false
+        bool enableMultisample;     // default: false
+        bool enableAntialiasedLine; // default: false
     };
 }

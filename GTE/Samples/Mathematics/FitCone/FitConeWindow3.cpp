@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FitConeWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -18,19 +18,19 @@ FitConeWindow3::FitConeWindow3(Parameters& parameters)
     mTextColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
     mNoCullSolidState = std::make_shared<RasterizerState>();
-    mNoCullSolidState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullSolidState->fillMode = RasterizerState::FILL_SOLID;
+    mNoCullSolidState->cull = RasterizerState::Cull::NONE;
+    mNoCullSolidState->fill = RasterizerState::Fill::SOLID;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullSolidState);
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     CreateScene();
 
@@ -55,11 +55,11 @@ void FitConeWindow3::OnIdle()
     mEngine->Draw(mPoints);
 
     mEngine->SetBlendState(mBlendState);
-    if (mGNCone->culling == CullingMode::CULL_NEVER)
+    if (mGNCone->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mGNCone);
     }
-    if (mLMCone->culling == CullingMode::CULL_NEVER)
+    if (mLMCone->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mLMCone);
     }
@@ -74,7 +74,7 @@ void FitConeWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool FitConeWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FitConeWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -90,23 +90,23 @@ bool FitConeWindow3::OnCharPress(unsigned char key, int x, int y)
         }
         return true;
     case '0':
-        if (mGNCone->culling == CullingMode::CULL_NEVER)
+        if (mGNCone->culling == CullingMode::NEVER)
         {
-            mGNCone->culling = CullingMode::CULL_ALWAYS;
+            mGNCone->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mGNCone->culling = CullingMode::CULL_NEVER;
+            mGNCone->culling = CullingMode::NEVER;
         }
         return true;
     case '1':
-        if (mLMCone->culling == CullingMode::CULL_NEVER)
+        if (mLMCone->culling == CullingMode::NEVER)
         {
-            mLMCone->culling = CullingMode::CULL_ALWAYS;
+            mLMCone->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mLMCone->culling = CullingMode::CULL_NEVER;
+            mLMCone->culling = CullingMode::NEVER;
         }
         return true;
     }
@@ -121,9 +121,9 @@ void FitConeWindow3::CreateScene()
 
     Vector3<double> V = { 3.0, 2.0, 1.0 };
     Vector3<double> U = { 1.0, 2.0, 3.0 };
-    Vector3<double> basis[3];
+    std::array<Vector3<double>, 3> basis{};
     basis[0] = U;
-    ComputeOrthogonalComplement(1, basis);
+    ComputeOrthogonalComplement(1, basis.data());
     U = basis[0];
     Vector3<double> W0 = basis[1];
     Vector3<double> W1 = basis[2];
@@ -132,9 +132,9 @@ void FitConeWindow3::CreateScene()
     double theta = GTE_C_PI / 4.0;
     double tantheta = std::tan(theta);
 
-    unsigned int const numPoints = 8196;
+    uint32_t const numPoints = 8196;
     std::vector<Vector3<double>> X(numPoints);
-    for (unsigned int i = 0; i < numPoints; ++i)
+    for (uint32_t i = 0; i < numPoints; ++i)
     {
         double unit = 0.5 * (rnd(dre) + 1.0); // in [0,1)
         double h = H0 + (H1 - H0) * unit;
@@ -165,14 +165,14 @@ void FitConeWindow3::CreateScene()
 void FitConeWindow3::CreatePoints(std::vector<Vector3<double>> const& X)
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    unsigned int numVertices = static_cast<unsigned int>(X.size());
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    uint32_t numVertices = static_cast<uint32_t>(X.size());
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto vertices = vbuffer->Get<Vector3<float>>();
     mCenter = { 0.0f, 0.0f, 0.0f };
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[i][j] = static_cast<float>(X[i][j]);
         }
@@ -201,7 +201,7 @@ void FitConeWindow3::CreateGNCone(std::vector<Vector3<double>> const& X,
     double const errorDifferenceTolerance = 1e-08;
     bool useConeInputAsInitialGuess = false;
 
-    fitter(static_cast<int>(X.size()), X.data(),
+    fitter(static_cast<int32_t>(X.size()), X.data(),
         maxIterations, updateLengthTolerance, errorDifferenceTolerance,
         useConeInputAsInitialGuess, coneVertex, coneAxis, coneAngle);
 }
@@ -218,7 +218,7 @@ void FitConeWindow3::CreateLMCone(std::vector<Vector3<double>> const& X,
     size_t const maxAdjustments = 8;
     bool useConeInputAsInitialGuess = false;
 
-    fitter(static_cast<int>(X.size()), X.data(),
+    fitter(static_cast<int32_t>(X.size()), X.data(),
         maxIterations, updateLengthTolerance, errorDifferenceTolerance,
         lambdaFactor, lambdaAdjust, maxAdjustments, useConeInputAsInitialGuess,
         coneVertex, coneAxis, coneAngle);
@@ -257,30 +257,30 @@ std::shared_ptr<Visual> FitConeWindow3::CreateConeMesh(std::vector<Vector3<doubl
 
     // Create a cone frustum mesh.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
-    unsigned int const numXSamples = 16;
-    unsigned int const numYSamples = 16;
+    uint32_t const numXSamples = 16;
+    uint32_t const numYSamples = 16;
     auto cone = mf.CreateRectangle(numXSamples, numYSamples, 1.0f, 1.0f);
     cone->localTransform.SetTranslation(-mCenter);
-    cone->culling = CullingMode::CULL_ALWAYS;
+    cone->culling = CullingMode::ALWAYS;
 
     auto vertices = cone->GetVertexBuffer()->Get<Vector3<float>>();
     double const xMult = GTE_C_TWO_PI / static_cast<double>(numYSamples - 1);
     double const YMult = (hmax - hmin) / static_cast<double>(numXSamples - 1);
-    for (unsigned int y = 0, i = 0; y < numYSamples; ++y)
+    for (uint32_t y = 0, i = 0; y < numYSamples; ++y)
     {
         double h = hmin + static_cast<double>(y) * YMult;
         double r = h * tanTheta;
-        for (unsigned int x = 0; x < numXSamples; ++x, ++i)
+        for (uint32_t x = 0; x < numXSamples; ++x, ++i)
         {
             double phi = static_cast<double>(x) * xMult;
             double rcs = r * std::cos(phi);
             double rsn = r * std::sin(phi);
             Vector3<double> P = coneVertex + h * coneAxis + rcs * W0 + rsn * W1;
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 vertices[i][j] = static_cast<float>(P[j]);
             }

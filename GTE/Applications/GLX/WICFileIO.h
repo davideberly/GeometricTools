@@ -1,17 +1,17 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Texture2.h>
 #include <memory>
 
-// The supported texture types are DF_R8G8B8A8_UNORM, DF_R8_UNORM, and
-// DF_R8G8_UNORM (gray+alpha).
+// The supported texture types are DF_R8G8B8A8_UNORM, DF_R8_UNORM
+// and DF_R8G8_UNORM (gray+alpha).
 
 namespace gte
 {

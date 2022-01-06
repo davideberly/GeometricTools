@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLSLComputeProgram.h>
@@ -17,7 +17,7 @@ std::string GLSLProgramFactory::defaultVSEntry = "main";
 std::string GLSLProgramFactory::defaultPSEntry = "main";
 std::string GLSLProgramFactory::defaultGSEntry = "main";
 std::string GLSLProgramFactory::defaultCSEntry = "main";
-unsigned int GLSLProgramFactory::defaultFlags = 0;  // unused in GLSL for now
+uint32_t GLSLProgramFactory::defaultFlags = 0;  // unused in GLSL for now
 
 GLSLProgramFactory::GLSLProgramFactory()
 {
@@ -94,13 +94,13 @@ std::shared_ptr<VisualProgram> GLSLProgramFactory::CreateFromNamedSources(
         psHandle, gsHandle);
 
     GLSLReflection const& reflector = program->GetReflector();
-    auto vshader = std::make_shared<GLSLShader>(reflector, GT_VERTEX_SHADER, GLSLReflection::ST_VERTEX);
-    auto pshader = std::make_shared<GLSLShader>(reflector, GT_PIXEL_SHADER, GLSLReflection::ST_PIXEL);
+    auto vshader = std::make_shared<GLSLShader>(reflector, GT_VERTEX_SHADER, GLSLReflection::ReferenceType::VERTEX);
+    auto pshader = std::make_shared<GLSLShader>(reflector, GT_PIXEL_SHADER, GLSLReflection::ReferenceType::PIXEL);
     program->SetVertexShader(vshader);
     program->SetPixelShader(pshader);
     if (gsHandle > 0)
     {
-        auto gshader = std::make_shared<GLSLShader>(reflector, GT_GEOMETRY_SHADER, GLSLReflection::ST_GEOMETRY);
+        auto gshader = std::make_shared<GLSLShader>(reflector, GT_GEOMETRY_SHADER, GLSLReflection::ReferenceType::GEOMETRY);
         program->SetGeometryShader(gshader);
     }
     return program;
@@ -138,7 +138,7 @@ std::shared_ptr<ComputeProgram> GLSLProgramFactory::CreateFromNamedSource(
 
     auto program = std::make_shared<GLSLComputeProgram>(programHandle, csHandle);
     GLSLReflection const& reflector = program->GetReflector();
-    auto cshader = std::make_shared<GLSLShader>(reflector, GT_COMPUTE_SHADER, GLSLReflection::ST_COMPUTE);
+    auto cshader = std::make_shared<GLSLShader>(reflector, GT_COMPUTE_SHADER, GLSLReflection::ReferenceType::COMPUTE);
     program->SetComputeShader(cshader);
     return program;
 }
@@ -176,7 +176,7 @@ GLuint GLSLProgramFactory::Compile(GLenum shaderType, std::string const& source)
         glslDefines.push_back("layout(std140, column_major) uniform;\n");
         glslDefines.push_back("layout(std430, column_major) buffer;\n");
 #endif
-        for (auto d : definitions)
+        for (auto const& d : definitions)
         {
             glslDefines.push_back("#define " + d.first + " " + d.second + "\n");
         }
@@ -224,19 +224,19 @@ GLuint GLSLProgramFactory::Compile(GLenum shaderType, std::string const& source)
 bool GLSLProgramFactory::Link(GLuint programHandle)
 {
     glLinkProgram(programHandle);
-    int status;
+    int32_t status;
     glGetProgramiv(programHandle, GL_LINK_STATUS, &status);
     if (status == GL_TRUE)
     {
         return true;
     }
 
-    int logLength;
+    int32_t logLength;
     glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 0)
     {
         std::vector<GLchar> log(logLength);
-        int numWritten;
+        int32_t numWritten;
         glGetProgramInfoLog(programHandle, logLength, &numWritten, log.data());
         std::string message(log.data());
         LogError("Link failed:\n" + message);

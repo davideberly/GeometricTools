@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,7 +21,7 @@
 
 namespace gte
 {
-    template <int N, typename T>
+    template <int32_t N, typename T>
     class DCPQuery<T, Vector<N, T>, AlignedBox<N, T>>
     {
     public:
@@ -55,7 +55,7 @@ namespace gte
     };
 
     // Template aliases for convenience.
-    template <int N, typename T>
+    template <int32_t N, typename T>
     using DCPPointAlignedBox = DCPQuery<T, Vector<N, T>, AlignedBox<N, T>>;
 
     template <typename T>

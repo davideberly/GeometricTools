@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,8 +23,8 @@ namespace gte
     // the output 'mass' by 'd' and the output 'inertia' by 'd'.
 
     template <typename Real>
-    void ComputeMassProperties(Vector3<Real> const* vertices, int numTriangles,
-        int const* indices, bool bodyCoords, Real& mass, Vector3<Real>& center,
+    void ComputeMassProperties(Vector3<Real> const* vertices, int32_t numTriangles,
+        int32_t const* indices, bool bodyCoords, Real& mass, Vector3<Real>& center,
         Matrix3x3<Real>& inertia)
     {
         Real const oneDiv6 = (Real)1 / (Real)6;
@@ -36,8 +36,8 @@ namespace gte
         std::array<Real, 10> integral;
         integral.fill((Real)0);
 
-        int const* index = indices;
-        for (int i = 0; i < numTriangles; ++i)
+        int32_t const* index = indices;
+        for (int32_t i = 0; i < numTriangles; ++i)
         {
             // Get vertices of triangle i.
             Vector3<Real> v0 = vertices[*index++];

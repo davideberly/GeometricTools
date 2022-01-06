@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -13,7 +13,7 @@
 namespace gte
 {
     // Implementation for size known at compile time.
-    template <typename Real, int N = 0>
+    template <typename Real, int32_t N = 0>
     class CholeskyDecomposition
     {
     public:
@@ -34,7 +34,7 @@ namespace gte
         // A = L * L^T.
         bool Factor(Matrix<N, N, Real>& A)
         {
-            for (int c = 0; c < N; ++c)
+            for (int32_t c = 0; c < N; ++c)
             {
                 if (A(c, c) <= (Real)0)
                 {
@@ -42,14 +42,14 @@ namespace gte
                 }
                 A(c, c) = std::sqrt(A(c, c));
 
-                for (int r = c + 1; r < N; ++r)
+                for (int32_t r = c + 1; r < N; ++r)
                 {
                     A(r, c) /= A(c, c);
                 }
 
-                for (int k = c + 1; k < N; ++k)
+                for (int32_t k = c + 1; k < N; ++k)
                 {
-                    for (int r = k; r < N; ++r)
+                    for (int32_t r = k; r < N; ++r)
                     {
                         A(r, k) -= A(r, c) * A(k, c);
                     }
@@ -62,9 +62,9 @@ namespace gte
         // input value of Y is B.  On output, Y is the solution.
         void SolveLower(Matrix<N, N, Real> const& L, Vector<N, Real>& Y)
         {
-            for (int r = 0; r < N; ++r)
+            for (int32_t r = 0; r < N; ++r)
             {
-                for (int c = 0; c < r; ++c)
+                for (int32_t c = 0; c < r; ++c)
                 {
                     Y[r] -= L(r, c) * Y[c];
                 }
@@ -77,9 +77,9 @@ namespace gte
         // output, X is the solution.
         void SolveUpper(Matrix<N, N, Real> const& L, Vector<N, Real>& X)
         {
-            for (int r = N - 1; r >= 0; --r)
+            for (int32_t r = N - 1; r >= 0; --r)
             {
-                for (int c = r + 1; c < N; ++c)
+                for (int32_t c = r + 1; c < N; ++c)
                 {
                     X[r] -= L(c, r) * X[c];
                 }
@@ -93,17 +93,17 @@ namespace gte
     class CholeskyDecomposition<Real, 0>
     {
     public:
-        int const N;
+        int32_t const N;
 
         // Ensure that N > 0 at run time.
-        CholeskyDecomposition(int n)
+        CholeskyDecomposition(int32_t n)
             :
             N(n)
         {
         }
 
         // Disallow copies and moves.  This is required to avoid compiler
-        // complaints about the 'int const N' member.
+        // complaints about the 'int32_t const N' member.
         CholeskyDecomposition(CholeskyDecomposition const&) = delete;
         CholeskyDecomposition& operator=(CholeskyDecomposition const&) = delete;
         CholeskyDecomposition(CholeskyDecomposition&&) = delete;
@@ -116,7 +116,7 @@ namespace gte
         {
             if (A.GetNumRows() == N && A.GetNumCols() == N)
             {
-                for (int c = 0; c < N; ++c)
+                for (int32_t c = 0; c < N; ++c)
                 {
                     if (A(c, c) <= (Real)0)
                     {
@@ -124,14 +124,14 @@ namespace gte
                     }
                     A(c, c) = std::sqrt(A(c, c));
 
-                    for (int r = c + 1; r < N; ++r)
+                    for (int32_t r = c + 1; r < N; ++r)
                     {
                         A(r, c) /= A(c, c);
                     }
 
-                    for (int k = c + 1; k < N; ++k)
+                    for (int32_t k = c + 1; k < N; ++k)
                     {
-                        for (int r = k; r < N; ++r)
+                        for (int32_t r = k; r < N; ++r)
                         {
                             A(r, k) -= A(r, c) * A(k, c);
                         }
@@ -148,9 +148,9 @@ namespace gte
         {
             if (L.GetNumRows() == N && L.GetNumCols() == N && Y.GetSize() == N)
             {
-                for (int r = 0; r < N; ++r)
+                for (int32_t r = 0; r < N; ++r)
                 {
-                    for (int c = 0; c < r; ++c)
+                    for (int32_t c = 0; c < r; ++c)
                     {
                         Y[r] -= L(r, c) * Y[c];
                     }
@@ -168,9 +168,9 @@ namespace gte
         {
             if (L.GetNumRows() == N && L.GetNumCols() == N && X.GetSize() == N)
             {
-                for (int r = N - 1; r >= 0; --r)
+                for (int32_t r = N - 1; r >= 0; --r)
                 {
-                    for (int c = r + 1; c < N; ++c)
+                    for (int32_t c = r + 1; c < N; ++c)
                     {
                         X[r] -= L(c, r) * X[c];
                     }
@@ -186,7 +186,7 @@ namespace gte
 
 
     // Implementation for sizes known at compile time.
-    template <typename Real, int BlockSize = 0, int NumBlocks = 0>
+    template <typename Real, int32_t BlockSize = 0, int32_t NumBlocks = 0>
     class BlockCholeskyDecomposition
     {
     public:
@@ -217,39 +217,39 @@ namespace gte
         // Treating the matrix as a 2D table of scalars with NUM_DIMENSIONS
         // rows and NUM_DIMENSIONS columns, look up the correct block that
         // stores the requested element and return a reference.
-        Real Get(BlockMatrix const& M, int row, int col)
+        Real Get(BlockMatrix const& M, int32_t row, int32_t col)
         {
-            int b0 = col / BlockSize, b1 = row / BlockSize;
-            int i0 = col % BlockSize, i1 = row % BlockSize;
+            int32_t b0 = col / BlockSize, b1 = row / BlockSize;
+            int32_t i0 = col % BlockSize, i1 = row % BlockSize;
             auto const& block = M[b1][b0];
             return block(i1, i0);
         }
 
-        void Set(BlockMatrix& M, int row, int col, Real value)
+        void Set(BlockMatrix& M, int32_t row, int32_t col, Real value)
         {
-            int b0 = col / BlockSize, b1 = row / BlockSize;
-            int i0 = col % BlockSize, i1 = row % BlockSize;
+            int32_t b0 = col / BlockSize, b1 = row / BlockSize;
+            int32_t i0 = col % BlockSize, i1 = row % BlockSize;
             auto& block = M[b1][b0];
             block(i1, i0) = value;
         }
 
         bool Factor(BlockMatrix& A)
         {
-            for (int c = 0; c < NumBlocks; ++c)
+            for (int32_t c = 0; c < NumBlocks; ++c)
             {
                 if (!mDecomposer.Factor(A[c][c]))
                 {
                     return false;
                 }
 
-                for (int r = c + 1; r < NumBlocks; ++r)
+                for (int32_t r = c + 1; r < NumBlocks; ++r)
                 {
                     LowerTriangularSolver(r, c, A);
                 }
 
-                for (int k = c + 1; k < NumBlocks; ++k)
+                for (int32_t k = c + 1; k < NumBlocks; ++k)
                 {
-                    for (int r = k; r < NumBlocks; ++r)
+                    for (int32_t r = k; r < NumBlocks; ++r)
                     {
                         SubtractiveUpdate(r, k, c, A);
                     }
@@ -264,16 +264,16 @@ namespace gte
         // value of Y is B.  On output, Y is the solution.
         void SolveLower(BlockMatrix const& L, BlockVector& Y)
         {
-            for (int r = 0; r < NumBlocks; ++r)
+            for (int32_t r = 0; r < NumBlocks; ++r)
             {
                 auto& Yr = Y[r];
-                for (int c = 0; c < r; ++c)
+                for (int32_t c = 0; c < r; ++c)
                 {
                     auto const& Lrc = L[r][c];
                     auto const& Yc = Y[c];
-                    for (int i = 0; i < BlockSize; ++i)
+                    for (int32_t i = 0; i < BlockSize; ++i)
                     {
-                        for (int j = 0; j < BlockSize; ++j)
+                        for (int32_t j = 0; j < BlockSize; ++j)
                         {
                             Yr[i] -= Lrc(i, j) * Yc[j];
                         }
@@ -289,16 +289,16 @@ namespace gte
         // On output, X is the solution.
         void SolveUpper(BlockMatrix const& L, BlockVector& X)
         {
-            for (int r = NumBlocks - 1; r >= 0; --r)
+            for (int32_t r = NumBlocks - 1; r >= 0; --r)
             {
                 auto& Xr = X[r];
-                for (int c = r + 1; c < NumBlocks; ++c)
+                for (int32_t c = r + 1; c < NumBlocks; ++c)
                 {
                     auto const& Lcr = L[c][r];
                     auto const& Xc = X[c];
-                    for (int i = 0; i < BlockSize; ++i)
+                    for (int32_t i = 0; i < BlockSize; ++i)
                     {
-                        for (int j = 0; j < BlockSize; ++j)
+                        for (int32_t j = 0; j < BlockSize; ++j)
                         {
                             Xr[i] -= Lcr(j, i) * Xc[j];
                         }
@@ -313,39 +313,39 @@ namespace gte
         // G(c,c) and A(r,c) are known quantities, and G(c,c) occupies
         // the lower triangular portion of A(c,c).  The solver stores
         // its results in-place, so A(r,c) stores the G(r,c) result.
-        void LowerTriangularSolver(int r, int c, BlockMatrix& A)
+        void LowerTriangularSolver(int32_t r, int32_t c, BlockMatrix& A)
         {
             auto const& Acc = A[c][c];
             auto& Arc = A[r][c];
-            for (int j = 0; j < BlockSize; ++j)
+            for (int32_t j = 0; j < BlockSize; ++j)
             {
-                for (int i = 0; i < j; ++i)
+                for (int32_t i = 0; i < j; ++i)
                 {
                     Real Lji = Acc(j, i);
-                    for (int k = 0; k < BlockSize; ++k)
+                    for (int32_t k = 0; k < BlockSize; ++k)
                     {
                         Arc(k, j) -= Lji * Arc(k, i);
                     }
                 }
 
                 Real Ljj = Acc(j, j);
-                for (int k = 0; k < BlockSize; ++k)
+                for (int32_t k = 0; k < BlockSize; ++k)
                 {
                     Arc(k, j) /= Ljj;
                 }
             }
         }
 
-        void SubtractiveUpdate(int r, int k, int c, BlockMatrix& A)
+        void SubtractiveUpdate(int32_t r, int32_t k, int32_t c, BlockMatrix& A)
         {
             auto const& Arc = A[r][c];
             auto const& Akc = A[k][c];
             auto& Ark = A[r][k];
-            for (int j = 0; j < BlockSize; ++j)
+            for (int32_t j = 0; j < BlockSize; ++j)
             {
-                for (int i = 0; i < BlockSize; ++i)
+                for (int32_t i = 0; i < BlockSize; ++i)
                 {
-                    for (int m = 0; m < BlockSize; ++m)
+                    for (int32_t m = 0; m < BlockSize; ++m)
                     {
                         Ark(j, i) -= Arc(j, m) * Akc(i, m);
                     }
@@ -365,9 +365,9 @@ namespace gte
         // blocks.  The matrix A is (N*B)-by-(N*B) but partitioned into an
         // N-by-N matrix of blocks, each block of size B-by-B.  The value
         // N*B is NumDimensions.
-        int const BlockSize;
-        int const NumBlocks;
-        int const NumDimensions;
+        int32_t const BlockSize;
+        int32_t const NumBlocks;
+        int32_t const NumDimensions;
 
         // The number of elements in a BlockVector object must be NumBlocks
         // and each GVector element has BlockSize components.
@@ -382,7 +382,7 @@ namespace gte
         typedef std::vector<GMatrix<Real>> BlockMatrix;
 
         // Ensure that BlockSize > 0 and NumDimensions > 0 at run time.
-        BlockCholeskyDecomposition(int blockSize, int numBlocks)
+        BlockCholeskyDecomposition(int32_t blockSize, int32_t numBlocks)
             :
             BlockSize(blockSize),
             NumBlocks(numBlocks),
@@ -393,7 +393,7 @@ namespace gte
         }
 
         // Disallow copies and moves.  This is required to avoid compiler
-        // complaints about the 'int const' members.
+        // complaints about the 'int32_t const' members.
         BlockCholeskyDecomposition(BlockCholeskyDecomposition const&) = delete;
         BlockCholeskyDecomposition& operator=(BlockCholeskyDecomposition const&) = delete;
         BlockCholeskyDecomposition(BlockCholeskyDecomposition&&) = delete;
@@ -402,39 +402,39 @@ namespace gte
         // Treating the matrix as a 2D table of scalars with NumDimensions
         // rows and NumDimensions columns, look up the correct block that
         // stores the requested element and return a reference.
-        Real Get(BlockMatrix const& M, int row, int col)
+        Real Get(BlockMatrix const& M, int32_t row, int32_t col)
         {
-            int b0 = col / BlockSize, b1 = row / BlockSize;
-            int i0 = col % BlockSize, i1 = row % BlockSize;
+            int32_t b0 = col / BlockSize, b1 = row / BlockSize;
+            int32_t i0 = col % BlockSize, i1 = row % BlockSize;
             auto const& block = M[GetIndex(b1, b0)];
             return block(i1, i0);
         }
 
-        void Set(BlockMatrix& M, int row, int col, Real value)
+        void Set(BlockMatrix& M, int32_t row, int32_t col, Real value)
         {
-            int b0 = col / BlockSize, b1 = row / BlockSize;
-            int i0 = col % BlockSize, i1 = row % BlockSize;
+            int32_t b0 = col / BlockSize, b1 = row / BlockSize;
+            int32_t i0 = col % BlockSize, i1 = row % BlockSize;
             auto& block = M[GetIndex(b1, b0)];
             block(i1, i0) = value;
         }
 
         bool Factor(BlockMatrix& A)
         {
-            for (int c = 0; c < NumBlocks; ++c)
+            for (int32_t c = 0; c < NumBlocks; ++c)
             {
                 if (!mDecomposer.Factor(A[GetIndex(c, c)]))
                 {
                     return false;
                 }
 
-                for (int r = c + 1; r < NumBlocks; ++r)
+                for (int32_t r = c + 1; r < NumBlocks; ++r)
                 {
                     LowerTriangularSolver(r, c, A);
                 }
 
-                for (int k = c + 1; k < NumBlocks; ++k)
+                for (int32_t k = c + 1; k < NumBlocks; ++k)
                 {
-                    for (int r = k; r < NumBlocks; ++r)
+                    for (int32_t r = k; r < NumBlocks; ++r)
                     {
                         SubtractiveUpdate(r, k, c, A);
                     }
@@ -449,16 +449,16 @@ namespace gte
         // value of Y is B.  On output, Y is the solution.
         void SolveLower(BlockMatrix const& L, BlockVector& Y)
         {
-            for (int r = 0; r < NumBlocks; ++r)
+            for (int32_t r = 0; r < NumBlocks; ++r)
             {
                 auto& Yr = Y[r];
-                for (int c = 0; c < r; ++c)
+                for (int32_t c = 0; c < r; ++c)
                 {
                     auto const& Lrc = L[GetIndex(r, c)];
                     auto const& Yc = Y[c];
-                    for (int i = 0; i < NumBlocks; ++i)
+                    for (int32_t i = 0; i < NumBlocks; ++i)
                     {
-                        for (int j = 0; j < NumBlocks; ++j)
+                        for (int32_t j = 0; j < NumBlocks; ++j)
                         {
                             Yr[i] -= Lrc[GetIndex(i, j)] * Yc[j];
                         }
@@ -474,16 +474,16 @@ namespace gte
         // On output, X is the solution.
         void SolveUpper(BlockMatrix const& L, BlockVector& X)
         {
-            for (int r = NumBlocks - 1; r >= 0; --r)
+            for (int32_t r = NumBlocks - 1; r >= 0; --r)
             {
                 auto& Xr = X[r];
-                for (int c = r + 1; c < NumBlocks; ++c)
+                for (int32_t c = r + 1; c < NumBlocks; ++c)
                 {
                     auto const& Lcr = L[GetIndex(c, r)];
                     auto const& Xc = X[c];
-                    for (int i = 0; i < BlockSize; ++i)
+                    for (int32_t i = 0; i < BlockSize; ++i)
                     {
-                        for (int j = 0; j < BlockSize; ++j)
+                        for (int32_t j = 0; j < BlockSize; ++j)
                         {
                             Xr[i] -= Lcr[GetIndex(j, i)] * Xc[j];
                         }
@@ -496,7 +496,7 @@ namespace gte
     private:
         // Compute the 1-dimensional index of the block matrix in a
         // 2-dimensional BlockMatrix object.
-        inline int GetIndex(int row, int col) const
+        inline int32_t GetIndex(int32_t row, int32_t col) const
         {
             return col + row * NumBlocks;
         }
@@ -505,39 +505,39 @@ namespace gte
         // G(c,c) and A(r,c) are known quantities, and G(c,c) occupies
         // the lower triangular portion of A(c,c).  The solver stores
         // its results in-place, so A(r,c) stores the G(r,c) result.
-        void LowerTriangularSolver(int r, int c, BlockMatrix& A)
+        void LowerTriangularSolver(int32_t r, int32_t c, BlockMatrix& A)
         {
             auto const& Acc = A[GetIndex(c, c)];
             auto& Arc = A[GetIndex(r, c)];
-            for (int j = 0; j < BlockSize; ++j)
+            for (int32_t j = 0; j < BlockSize; ++j)
             {
-                for (int i = 0; i < j; ++i)
+                for (int32_t i = 0; i < j; ++i)
                 {
                     Real Lji = Acc[GetIndex(j, i)];
-                    for (int k = 0; k < BlockSize; ++k)
+                    for (int32_t k = 0; k < BlockSize; ++k)
                     {
                         Arc[GetIndex(k, j)] -= Lji * Arc[GetIndex(k, i)];
                     }
                 }
 
                 Real Ljj = Acc[GetIndex(j, j)];
-                for (int k = 0; k < BlockSize; ++k)
+                for (int32_t k = 0; k < BlockSize; ++k)
                 {
                     Arc[GetIndex(k, j)] /= Ljj;
                 }
             }
         }
 
-        void SubtractiveUpdate(int r, int k, int c, BlockMatrix& A)
+        void SubtractiveUpdate(int32_t r, int32_t k, int32_t c, BlockMatrix& A)
         {
             auto const& Arc = A[GetIndex(r, c)];
             auto const& Akc = A[GetIndex(k, c)];
             auto& Ark = A[GetIndex(r, k)];
-            for (int j = 0; j < BlockSize; ++j)
+            for (int32_t j = 0; j < BlockSize; ++j)
             {
-                for (int i = 0; i < BlockSize; ++i)
+                for (int32_t i = 0; i < BlockSize; ++i)
                 {
-                    for (int m = 0; m < BlockSize; ++m)
+                    for (int32_t m = 0; m < BlockSize; ++m)
                     {
                         Ark[GetIndex(j, i)] -= Arc[GetIndex(j, m)] * Akc[GetIndex(i, m)];
                     }

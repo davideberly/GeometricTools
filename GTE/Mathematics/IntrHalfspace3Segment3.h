@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -41,7 +41,7 @@ namespace gte
             // of the halfspace occurs at the origin (zero) of the normal
             // line.
             std::array<T, 2> s{};
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 s[i] = Dot(halfspace.normal, segment.p[i]) - halfspace.constant;
             }
@@ -72,7 +72,7 @@ namespace gte
             // The segment is clipped against the plane defining the 
             // halfspace.  The 'numPoints' is either 0 (no intersection),
             // 1 (point), or 2 (segment).
-            int numPoints;
+            int32_t numPoints;
             std::array<Vector3<T>, 2> point;
         };
 
@@ -92,8 +92,8 @@ namespace gte
             //   2 0 0  none
 
             std::array<T, 2> s{};
-            int numPositive = 0, numNegative = 0, numZero = 0;
-            for (int i = 0; i < 2; ++i)
+            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            for (int32_t i = 0; i < 2; ++i)
             {
                 s[i] = Dot(halfspace.normal, segment.p[i]) - halfspace.constant;
                 if (s[i] > (T)0)

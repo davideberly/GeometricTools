@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -121,7 +121,7 @@ namespace gte
     // responsible for ensuring that the matrix is invertible (although the
     // inverse is not calculated by these functions).
     template <typename Real>
-    void SetBasis(Matrix3x3<Real>& M, int i, Vector3<Real> const& V)
+    void SetBasis(Matrix3x3<Real>& M, int32_t i, Vector3<Real> const& V)
     {
 #if defined(GTE_USE_MAT_VEC)
         return M.SetCol(i, V);
@@ -131,7 +131,7 @@ namespace gte
     }
 
     template <typename Real>
-    Vector3<Real> GetBasis(Matrix3x3<Real> const& M, int i)
+    Vector3<Real> GetBasis(Matrix3x3<Real> const& M, int32_t i)
     {
 #if defined(GTE_USE_MAT_VEC)
         return M.GetCol(i);

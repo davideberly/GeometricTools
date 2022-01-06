@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/IndexBuffer.h>
@@ -63,7 +63,7 @@ uint32_t IndexBuffer::GetFirstIndex() const
         return 0;
     }
 
-    int i = BitHacks::Log2OfPowerOfTwo(mPrimitiveType);
+    int32_t i = BitHacks::Log2OfPowerOfTwo(mPrimitiveType);
     return msIndexCounter[i](mFirstPrimitive);
 }
 
@@ -121,13 +121,13 @@ bool IndexBuffer::SetSegment(uint32_t i, uint32_t v0, uint32_t v1)
             {
                 if (mPrimitiveType == IP_POLYSEGMENT_DISJOINT)
                 {
-                    uint32_t* index = 2 * i + Get<uint32_t>();
+                    uint32_t* index = 2 * static_cast<size_t>(i) + Get<uint32_t>();
                     *index++ = v0;
                     *index = v1;
                 }
                 else
                 {
-                    uint32_t* index = i + Get<uint32_t>();
+                    uint32_t* index = static_cast<size_t>(i) + Get<uint32_t>();
                     *index++ = v0;
                     *index = v1;
                 }
@@ -136,13 +136,13 @@ bool IndexBuffer::SetSegment(uint32_t i, uint32_t v0, uint32_t v1)
             {
                 if (mPrimitiveType == IP_POLYSEGMENT_DISJOINT)
                 {
-                    uint16_t* index = 2 * i + Get<uint16_t>();
+                    uint16_t* index = 2 * static_cast<size_t>(i) + Get<uint16_t>();
                     *index++ = static_cast<uint16_t>(v0);
                     *index = static_cast<uint16_t>(v1);
                 }
                 else
                 {
-                    uint16_t* index = i + Get<uint16_t>();
+                    uint16_t* index = static_cast<size_t>(i) + Get<uint16_t>();
                     *index++ = static_cast<uint16_t>(v0);
                     *index = static_cast<uint16_t>(v1);
                 }
@@ -163,13 +163,13 @@ bool IndexBuffer::GetSegment(uint32_t i, uint32_t& v0, uint32_t& v1) const
             {
                 if (mPrimitiveType == IP_POLYSEGMENT_DISJOINT)
                 {
-                    uint32_t const* index = 2 * i + Get<uint32_t>();
+                    uint32_t const* index = 2 * static_cast<size_t>(i) + Get<uint32_t>();
                     v0 = *index++;
                     v1 = *index;
                 }
                 else
                 {
-                    uint32_t const* index = i + Get<uint32_t>();
+                    uint32_t const* index = static_cast<size_t>(i) + Get<uint32_t>();
                     v0 = *index++;
                     v1 = *index;
                 }
@@ -178,13 +178,13 @@ bool IndexBuffer::GetSegment(uint32_t i, uint32_t& v0, uint32_t& v1) const
             {
                 if (mPrimitiveType == IP_POLYSEGMENT_DISJOINT)
                 {
-                    uint16_t const* index = 2 * i + Get<uint16_t>();
+                    uint16_t const* index = 2 * static_cast<size_t>(i) + Get<uint16_t>();
                     v0 = static_cast<uint32_t>(*index++);
                     v1 = static_cast<uint32_t>(*index);
                 }
                 else
                 {
-                    uint16_t const* index = i + Get<uint16_t>();
+                    uint16_t const* index = static_cast<size_t>(i) + Get<uint16_t>();
                     v0 = static_cast<uint32_t>(*index++);
                     v1 = static_cast<uint32_t>(*index);
                 }
@@ -205,14 +205,14 @@ bool IndexBuffer::SetTriangle(uint32_t i, uint32_t v0, uint32_t v1, uint32_t v2)
             {
                 if (mPrimitiveType == IP_TRIMESH)
                 {
-                    uint32_t* index = 3 * i + Get<uint32_t>();
+                    uint32_t* index = 3 * static_cast<size_t>(i) + Get<uint32_t>();
                     *index++ = v0;
                     *index++ = v1;
                     *index = v2;
                 }
                 else if (mPrimitiveType == IP_TRISTRIP)
                 {
-                    uint32_t* index = i + Get<uint32_t>();
+                    uint32_t* index = static_cast<size_t>(i) + Get<uint32_t>();
                     index[0] = v0;
                     if (i & 1)
                     {
@@ -238,7 +238,7 @@ bool IndexBuffer::SetTriangle(uint32_t i, uint32_t v0, uint32_t v1, uint32_t v2)
             {
                 if (mPrimitiveType == IP_TRIMESH)
                 {
-                    uint16_t* index = 3 * i + Get<uint16_t>();
+                    uint16_t* index = 3 * static_cast<size_t>(i) + Get<uint16_t>();
                     *index++ = static_cast<uint16_t>(v0);
                     *index++ = static_cast<uint16_t>(v1);
                     *index = static_cast<uint16_t>(v2);
@@ -283,14 +283,14 @@ bool IndexBuffer::GetTriangle(uint32_t i, uint32_t& v0, uint32_t& v1, uint32_t& 
             {
                 if (mPrimitiveType == IP_TRIMESH)
                 {
-                    uint32_t const* index = 3 * i + Get<uint32_t>();
+                    uint32_t const* index = 3 * static_cast<size_t>(i) + Get<uint32_t>();
                     v0 = *index++;
                     v1 = *index++;
                     v2 = *index;
                 }
                 else if (mPrimitiveType == IP_TRISTRIP)
                 {
-                    uint32_t const* index = i + Get<uint32_t>();
+                    uint32_t const* index = static_cast<size_t>(i) + Get<uint32_t>();
                     uint32_t offset = (i & 1);
                     v0 = index[0];
                     v1 = index[1 + offset];
@@ -298,7 +298,7 @@ bool IndexBuffer::GetTriangle(uint32_t i, uint32_t& v0, uint32_t& v1, uint32_t& 
                 }
                 else if (mPrimitiveType == IP_TRIMESH_ADJ)
                 {
-                    uint32_t const* index = 6 * i + Get<uint32_t>();
+                    uint32_t const* index = 6 * static_cast<size_t>(i) + Get<uint32_t>();
                     v0 = index[0];
                     v1 = index[2];
                     v2 = index[4];
@@ -312,23 +312,22 @@ bool IndexBuffer::GetTriangle(uint32_t i, uint32_t& v0, uint32_t& v1, uint32_t& 
             {
                 if (mPrimitiveType == IP_TRIMESH)
                 {
-                    uint16_t const* index =
-                        3 * i + Get<uint16_t>();
+                    uint16_t const* index = 3 * static_cast<size_t>(i) + Get<uint16_t>();
                     v0 = static_cast<uint32_t>(*index++);
                     v1 = static_cast<uint32_t>(*index++);
                     v2 = static_cast<uint32_t>(*index);
                 }
                 else if (mPrimitiveType == IP_TRISTRIP)
                 {
-                    uint16_t const* index = i + Get<uint16_t>();
-                    int offset = (i & 1);
+                    uint16_t const* index = static_cast<size_t>(i) + Get<uint16_t>();
+                    int32_t offset = (i & 1);
                     v0 = static_cast<uint32_t>(index[0]);
                     v1 = static_cast<uint32_t>(index[1 + offset]);
                     v2 = static_cast<uint32_t>(index[2 - offset]);
                 }
                 else if (mPrimitiveType == IP_TRIMESH_ADJ)
                 {
-                    uint16_t const* index = 6 * i + Get<uint16_t>();
+                    uint16_t const* index = 6 * static_cast<size_t>(i) + Get<uint16_t>();
                     v0 = index[0];
                     v1 = index[2];
                     v2 = index[4];

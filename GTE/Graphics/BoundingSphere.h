@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -74,7 +74,7 @@ namespace gte
         // positive side, -1 when the sphere is fully on the negative side, or
         // 0 when the sphere is transversely cut by the plane (sphere volume 
         // on each side of plane is positive).
-        int WhichSide(CullingPlane<Real> const& plane) const
+        int32_t WhichSide(CullingPlane<Real> const& plane) const
         {
             Vector4<Real> hcenter = HLift(GetCenter(), (Real)1);
             Real signedDistance = plane.DistanceTo(hcenter);
@@ -180,7 +180,8 @@ namespace gte
             Real sum[3] = { (Real)0, (Real)0, (Real)0 };
             for (uint32_t i = 0; i < numVertices; ++i)
             {
-                Real const* position = reinterpret_cast<Real const*>(data + i * vertexSize);
+                Real const* position = reinterpret_cast<Real const*>(data +
+                    static_cast<size_t>(i) * vertexSize);
                 sum[0] += position[0];
                 sum[1] += position[1];
                 sum[2] += position[2];
@@ -195,7 +196,7 @@ namespace gte
             mTuple[3] = (Real)0;
             for (uint32_t i = 0; i < numVertices; ++i)
             {
-                Real const* position = reinterpret_cast<Real const*>(data + i * vertexSize);
+                Real const* position = reinterpret_cast<Real const*>(data + static_cast<size_t>(i) * vertexSize);
                 Real diff[3] =
                 {
                     position[0] - mTuple[0],

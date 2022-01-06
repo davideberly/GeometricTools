@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -41,7 +41,7 @@ namespace gte
             // of the halfspace occurs at the origin (zero) of the normal
             // line.
             std::array<T, 3> s{};
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 s[i] = Dot(halfspace.normal, triangle.v[i]) - halfspace.constant;
             }
@@ -73,7 +73,7 @@ namespace gte
             // The triangle is clipped against the plane defining the
             // halfspace.  The 'numPoints' is either 0 (no intersection),
             // 1 (point), 2 (segment), 3 (triangle), or 4 (quadrilateral).
-            int numPoints;
+            int32_t numPoints;
             std::array<Vector3<T>, 4> point;
         };
 
@@ -99,8 +99,8 @@ namespace gte
             //   3 0 0  none
 
             std::array<T, 3> s{};
-            int numPositive = 0, numNegative = 0, numZero = 0;
-            for (int i = 0; i < 3; ++i)
+            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            for (int32_t i = 0; i < 3; ++i)
             {
                 s[i] = Dot(halfspace.normal, triangle.v[i]) - halfspace.constant;
                 if (s[i] > (T)0)
@@ -134,11 +134,11 @@ namespace gte
                     // The portion of the triangle in the halfspace is a
                     // quadrilateral.
                     result.numPoints = 4;
-                    for (int i0 = 0; i0 < 3; ++i0)
+                    for (int32_t i0 = 0; i0 < 3; ++i0)
                     {
                         if (s[i0] < (T)0)
                         {
-                            int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                            int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                             result.point[0] = triangle.v[i1];
                             result.point[1] = triangle.v[i2];
                             T t2 = s[i2] / (s[i2] - s[i0]);
@@ -156,11 +156,11 @@ namespace gte
                     // The portion of the triangle in the halfspace is a
                     // triangle with one vertex on the plane.
                     result.numPoints = 3;
-                    for (int i0 = 0; i0 < 3; ++i0)
+                    for (int32_t i0 = 0; i0 < 3; ++i0)
                     {
                         if (s[i0] == (T)0)
                         {
-                            int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                            int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                             result.point[0] = triangle.v[i0];
                             T t1 = s[i1] / (s[i1] - s[i2]);
                             Vector3<T> p = triangle.v[i1] + t1 *
@@ -183,7 +183,7 @@ namespace gte
                 {
                     // Only an edge of the triangle is in the halfspace.
                     result.numPoints = 0;
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         if (s[i] == (T)0)
                         {
@@ -200,11 +200,11 @@ namespace gte
                     // The portion of the triangle in the halfspace is a
                     // triangle.
                     result.numPoints = 3;
-                    for (int i0 = 0; i0 < 3; ++i0)
+                    for (int32_t i0 = 0; i0 < 3; ++i0)
                     {
                         if (s[i0] > (T)0)
                         {
-                            int i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
+                            int32_t i1 = (i0 + 1) % 3, i2 = (i0 + 2) % 3;
                             result.point[0] = triangle.v[i0];
                             T t0 = s[i0] / (s[i0] - s[i1]);
                             T t2 = s[i2] / (s[i2] - s[i0]);
@@ -220,7 +220,7 @@ namespace gte
                 {
                     // Only a vertex of the triangle is in the halfspace.
                     result.numPoints = 1;
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         if (s[i] == (T)0)
                         {

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Command.h>
@@ -16,7 +16,7 @@ std::string const Command::msArgOutOfRange("Argument out of range.");
 std::string const Command::msFilenameNotFound("Filename not found.");
 std::string const Command::msDash("-");
 
-Command::Command (int numArguments, char const* arguments[])
+Command::Command(int32_t numArguments, char const* arguments[])
     :
     mSmall(0.0),
     mLarge(0.0),
@@ -29,9 +29,9 @@ Command::Command (int numArguments, char const* arguments[])
     // The first argument is always the executable name.
     LogAssert(numArguments > 0, "Invalid number of arguments.");
 
-    mArguments.resize(numArguments);
-    mProcessed.resize(numArguments);
-    for (int i = 0; i < numArguments; ++i)
+    mArguments.resize(static_cast<size_t>(numArguments));
+    mProcessed.resize(mArguments.size());
+    for (size_t i = 0; i < mArguments.size(); ++i)
     {
         mArguments[i] = std::string(arguments[i]);
         mProcessed[i] = false;
@@ -41,7 +41,7 @@ Command::Command (int numArguments, char const* arguments[])
     mProcessed[0] = true;
 }
 
-Command::Command(int numArguments, char* arguments[])
+Command::Command(int32_t numArguments, char* arguments[])
     :
     mSmall(0.0),
     mLarge(0.0),
@@ -54,9 +54,9 @@ Command::Command(int numArguments, char* arguments[])
     // The first argument is always the executable name.
     LogAssert(numArguments > 0, "Invalid number of arguments.");
 
-    mArguments.resize(numArguments);
-    mProcessed.resize(numArguments);
-    for (int i = 0; i < numArguments; ++i)
+    mArguments.resize(static_cast<size_t>(numArguments));
+    mProcessed.resize(mArguments.size());
+    for (size_t i = 0; i < mArguments.size(); ++i)
     {
         mArguments[i] = std::string(arguments[i]);
         mProcessed[i] = false;
@@ -66,11 +66,10 @@ Command::Command(int numArguments, char* arguments[])
     mProcessed[0] = true;
 }
 
-int Command::ExcessArguments () const
+size_t Command::ExcessArguments() const
 {
     // Check to see whether any command line arguments were not processed.
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i < numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         if (!mProcessed[i])
         {
@@ -80,47 +79,46 @@ int Command::ExcessArguments () const
     return 0;
 }
 
-Command& Command::Min (double value)
+Command& Command::Min(double value)
 {
     mSmall = value;
     mMinSet = true;
     return *this;
 }
 
-Command& Command::Max (double value)
+Command& Command::Max(double value)
 {
     mLarge = value;
     mMaxSet = true;
     return *this;
 }
 
-Command& Command::Inf (double value)
+Command& Command::Inf(double value)
 {
     mSmall = value;
     mInfSet = true;
     return *this;
 }
 
-Command& Command::Sup (double value)
+Command& Command::Sup(double value)
 {
     mLarge = value;
     mSupSet = true;
     return *this;
 }
 
-int Command::GetBoolean (std::string const& name)
+size_t Command::GetBoolean(std::string const& name)
 {
     bool value = false;
     return GetBoolean(name, value);
 }
 
-int Command::GetBoolean (std::string const& name, bool& value)
+size_t Command::GetBoolean(std::string const& name, bool& value)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
     value = false;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i < numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         std::string tmp = mArguments[i];
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
@@ -140,28 +138,27 @@ int Command::GetBoolean (std::string const& name, bool& value)
     return matchFound;
 }
 
-int Command::GetInteger (std::string const& name, int& value)
+size_t Command::GetInteger(std::string const& name, int32_t& value)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i < numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
             std::string argument = mArguments[i + 1];
-            if (mProcessed[i + 1]
-            || (argument[0] == '-' && !isdigit((int)argument[1])))
+            if (mProcessed[i + 1] ||
+                (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
             {
                 mLastError = msArgRequired;
                 return 0;
             }
 
             value = atoi(argument.c_str());
-            if ((mMinSet && value < mSmall)
-            ||  (mMaxSet && value > mLarge)
-            ||  (mInfSet && value <= mSmall)
-            ||  (mSupSet && value >= mLarge))
+            if ((mMinSet && value < mSmall) ||
+                (mMaxSet && value > mLarge) ||
+                (mInfSet && value <= mSmall) ||
+                (mSupSet && value >= mLarge))
             {
                 mLastError = msArgOutOfRange;
                 return 0;
@@ -187,28 +184,27 @@ int Command::GetInteger (std::string const& name, int& value)
     return matchFound;
 }
 
-int Command::GetFloat (std::string const& name, float& value)
+size_t Command::GetFloat(std::string const& name, float& value)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i <numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
             std::string argument = mArguments[i + 1];
-            if (mProcessed[i + 1]
-            || (argument[0] == '-' && !isdigit((int)argument[1])))
+            if (mProcessed[i + 1] ||
+                (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
             {
                 mLastError = msArgRequired;
                 return 0;
             }
 
-            value = (float)atof(argument.c_str());
-            if ((mMinSet && value < mSmall)
-            ||  (mMaxSet && value > mLarge)
-            ||  (mInfSet && value <= mSmall)
-            ||  (mSupSet && value >= mLarge))
+            value = static_cast<float>(atof(argument.c_str()));
+            if ((mMinSet && value < mSmall) ||
+                (mMaxSet && value > mLarge) ||
+                (mInfSet && value <= mSmall) ||
+                (mSupSet && value >= mLarge))
             {
                 mLastError = msArgOutOfRange;
                 return 0;
@@ -234,28 +230,27 @@ int Command::GetFloat (std::string const& name, float& value)
     return matchFound;
 }
 
-int Command::GetDouble (std::string const& name, double& value)
+size_t Command::GetDouble(std::string const& name, double& value)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i < numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
             std::string argument = mArguments[i + 1];
-            if (mProcessed[i + 1]
-            || (argument[0] == '-' && !isdigit((int)argument[1])))
+            if (mProcessed[i + 1] ||
+                (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
             {
                 mLastError = msArgRequired;
                 return 0;
             }
 
             value = atof(argument.c_str());
-            if ((mMinSet && value < mSmall)
-            ||  (mMaxSet && value > mLarge)
-            ||  (mInfSet && value <= mSmall)
-            ||  (mSupSet && value >= mLarge))
+            if ((mMinSet && value < mSmall) ||
+                (mMaxSet && value > mLarge) ||
+                (mInfSet && value <= mSmall) ||
+                (mSupSet && value >= mLarge))
             {
                 mLastError = msArgOutOfRange;
                 return 0;
@@ -281,12 +276,11 @@ int Command::GetDouble (std::string const& name, double& value)
     return matchFound;
 }
 
-int Command::GetString (std::string const& name, std::string& value)
+size_t Command::GetString(std::string const& name, std::string& value)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = 1; i < numArguments; ++i)
+    for (size_t i = 1; i < mArguments.size(); ++i)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
@@ -313,12 +307,11 @@ int Command::GetString (std::string const& name, std::string& value)
     return matchFound;
 }
 
-int Command::GetFilename (std::string& value, int startArgIndex)
+size_t Command::GetFilename(std::string& value, size_t startArgIndex)
 {
-    int matchFound = 0;
+    size_t matchFound = 0;
 
-    int const numArguments = (int)mArguments.size();
-    for (int i = startArgIndex; i < numArguments; ++i)
+    for (size_t i = startArgIndex; i < mArguments.size(); ++i)
     {
         std::string argument = mArguments[i];
         if (!mProcessed[i] && argument[0] != '-')

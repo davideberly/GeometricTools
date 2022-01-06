@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -27,13 +27,13 @@ namespace gte
     class ContEllipse2MinCR
     {
     public:
-        void operator()(int numPoints, Vector2<Real> const* points,
+        void operator()(int32_t numPoints, Vector2<Real> const* points,
             Vector2<Real> const& C, Matrix2x2<Real> const& R, Real D[2]) const
         {
             // Compute the constraint coefficients, of the form (A[0],A[1])
             // for each i.
             std::vector<Vector2<Real>> A(numPoints);
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Vector2<Real> diff = points[i] - C;  // P[i] - C
                 Vector2<Real> prod = diff * R;  // R^T*(P[i] - C) = (u,v)
@@ -96,7 +96,7 @@ namespace gte
         {
             // Keep track of which constraint lines have already been used in
             // the search.
-            int numConstraints = static_cast<int>(A.size());
+            int32_t numConstraints = static_cast<int32_t>(A.size());
             std::vector<bool> used(A.size());
             std::fill(used.begin(), used.end(), false);
 
@@ -107,8 +107,8 @@ namespace gte
             // to the origin.  This line contributes to the convex hull of the
             // constraints and the search for the maximum terminates before or
             // at this line.
-            int i, iYMin = -1;
-            int iXMin = -1;
+            int32_t i, iYMin = -1;
+            int32_t iXMin = -1;
             Real axMax = (Real)0, ayMax = (Real)0;  // A[i] >= (0,0) by design
             for (i = 0; i < numConstraints; ++i)
             {
@@ -137,14 +137,14 @@ namespace gte
             // current constraint line.  The following loop finds each
             // consecutive vertex.
             Real x0 = (Real)0, xMax = ((Real)1) / axMax;
-            int j;
+            int32_t j;
             for (j = 0; j < numConstraints; ++j)
             {
                 // Find the line whose intersection with the current line is
                 // closest to the last hull vertex.  The last vertex is at
                 // (x0,y0) on the current line.
                 Real x1 = xMax;
-                int line = -1;
+                int32_t line = -1;
                 for (i = 0; i < numConstraints; ++i)
                 {
                     if (!used[i])

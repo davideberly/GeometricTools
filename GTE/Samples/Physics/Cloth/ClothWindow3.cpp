@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ClothWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -22,12 +22,12 @@ ClothWindow3::ClothWindow3(Parameters& parameters)
     }
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     mWireNoCullState = std::make_shared<RasterizerState>();
-    mWireNoCullState->fillMode = RasterizerState::FILL_WIREFRAME;
-    mWireNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mWireNoCullState->fill = RasterizerState::Fill::WIREFRAME;
+    mWireNoCullState->cull = RasterizerState::Cull::NONE;
 
     mEngine->SetClearColor({ 0.85f, 0.85f, 1.0f, 1.0f });
 
@@ -58,7 +58,7 @@ void ClothWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool ClothWindow3::OnCharPress(unsigned char key, int x, int y)
+bool ClothWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -107,8 +107,8 @@ bool ClothWindow3::SetEnvironment()
 void ClothWindow3::CreateSprings()
 {
     // Set up the mass-spring system.
-    int numRows = 8;
-    int numCols = 16;
+    int32_t numRows = 8;
+    int32_t numCols = 16;
     float step = 0.01f;
     Vector3<float> gravity{ 0.0f, 0.0f, -1.0f };
     Vector3<float> wind{ 0.5f, 0.0f, 0.0f };
@@ -119,7 +119,7 @@ void ClothWindow3::CreateSprings()
 
     // The top r of the mesh is immovable (infinite mass).  All other masses
     // are constant.
-    int r, c;
+    int32_t r, c;
     for (c = 0; c < numCols; ++c)
     {
         mModule->SetMass(numRows - 1, c, std::numeric_limits<float>::max());
@@ -176,12 +176,12 @@ void ClothWindow3::CreateCloth()
     MeshDescription desc(MeshTopology::RECTANGLE, 16, 32);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, desc.numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(uint32_t));
 
     desc.vertexAttributes =
     {
@@ -203,7 +203,8 @@ void ClothWindow3::CreateCloth()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mCloth = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mCloth->UpdateModelBound();
@@ -222,9 +223,9 @@ void ClothWindow3::PhysicsTick()
 
     // Update spline surface.  Remember that the spline maintains its own
     // copy of the control points, so this update is necessary.
-    for (int r = 0; r < mModule->GetNumRows(); ++r)
+    for (int32_t r = 0; r < mModule->GetNumRows(); ++r)
     {
-        for (int c = 0; c < mModule->GetNumCols(); ++c)
+        for (int32_t c = 0; c < mModule->GetNumCols(); ++c)
         {
             mSpline->SetControl(r, c, mModule->GetPosition(r, c));
         }

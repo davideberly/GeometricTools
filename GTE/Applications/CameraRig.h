@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -133,68 +133,68 @@ namespace gte
         // iff the trigger is mapped.  A call to PopMotion(trigger) will
         // disable the motion if the trigger is currently mapped; the Boolean
         // return it 'true' iff the trigger is currently mapped.
-        inline void RegisterMoveForward(int trigger)
+        inline void RegisterMoveForward(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveForward);
         }
 
-        inline void RegisterMoveBackward(int trigger)
+        inline void RegisterMoveBackward(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveBackward);
         }
 
-        inline void RegisterMoveUp(int trigger)
+        inline void RegisterMoveUp(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveUp);
         }
 
-        inline void RegisterMoveDown(int trigger)
+        inline void RegisterMoveDown(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveDown);
         }
 
-        inline void RegisterMoveRight(int trigger)
+        inline void RegisterMoveRight(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveRight);
         }
 
-        inline void RegisterMoveLeft(int trigger)
+        inline void RegisterMoveLeft(int32_t trigger)
         {
             Register(trigger, &CameraRig::MoveLeft);
         }
 
-        inline void RegisterTurnRight(int trigger)
+        inline void RegisterTurnRight(int32_t trigger)
         {
             Register(trigger, &CameraRig::TurnRight);
         }
 
-        inline void RegisterTurnLeft(int trigger)
+        inline void RegisterTurnLeft(int32_t trigger)
         {
             Register(trigger, &CameraRig::TurnLeft);
         }
 
-        inline void RegisterLookUp(int trigger)
+        inline void RegisterLookUp(int32_t trigger)
         {
             Register(trigger, &CameraRig::LookUp);
         }
 
-        inline void RegisterLookDown(int trigger)
+        inline void RegisterLookDown(int32_t trigger)
         {
             Register(trigger, &CameraRig::LookDown);
         }
 
-        inline void RegisterRollClockwise(int trigger)
+        inline void RegisterRollClockwise(int32_t trigger)
         {
             Register(trigger, &CameraRig::RollClockwise);
         }
 
-        inline void RegisterRollCounterclockwise(int trigger)
+        inline void RegisterRollCounterclockwise(int32_t trigger)
         {
             Register(trigger, &CameraRig::RollCounterclockwise);
         }
 
-        bool PushMotion(int trigger);
-        bool PopMotion(int trigger);
+        bool PushMotion(int32_t trigger);
+        bool PopMotion(int32_t trigger);
 
         bool Move();
         void ClearMotions();
@@ -217,7 +217,7 @@ namespace gte
         virtual void RollCounterclockwise();
 
         typedef void(CameraRig::* MoveFunction)(void);
-        void Register(int trigger, MoveFunction function);
+        void Register(int32_t trigger, MoveFunction function);
 
         bool SetActive(MoveFunction function);
         bool SetInactive(MoveFunction function);
@@ -230,8 +230,8 @@ namespace gte
 
         // Move via direct or indirect triggers.
         MoveFunction mMotion;
-        std::map<int, MoveFunction> mIndirectMap;
-        int mNumActiveMotions;
+        std::map<int32_t, MoveFunction> mIndirectMap;
+        int32_t mNumActiveMotions;
         std::array<MoveFunction, MAX_ACTIVE_MOTIONS> mActiveMotions;
     };
 }

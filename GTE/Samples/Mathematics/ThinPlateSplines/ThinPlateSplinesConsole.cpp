@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ThinPlateSplinesConsole.h"
 #include <Mathematics/IntpThinPlateSpline2.h>
@@ -29,13 +29,13 @@ void ThinPlateSplinesConsole::TestThinPlateSplines2D()
     output << std::scientific << std::setprecision(8);
 
     // Tabulated data on a 3x3 regular grid, points of form (x,y,f(x,y)).
-    int const numPoints = 9;
+    int32_t const numPoints = 9;
     std::array<double, numPoints> x = { 0.0, 0.5, 1.0, 0.0, 0.5, 1.0, 0.0, 0.5, 1.0 };
     std::array<double, numPoints> y = { 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0 };
     std::array<double, numPoints> f = { 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 1.0, 2.0, 3.0 };
 
     // Resample on a 7x7 regular grid.
-    int const numResample = 6;
+    int32_t const numResample = 6;
     double const invResample = 1.0 / static_cast<double>(numResample);
     double smooth, interp, functional;
 
@@ -44,9 +44,9 @@ void ThinPlateSplinesConsole::TestThinPlateSplines2D()
     IntpThinPlateSpline2<double> noSmooth(
         numPoints, x.data(), y.data(), f.data(), smooth, false);
     output << "no smoothing (smooth parameter is 0.0)" << std::endl;
-    for (int j = 0; j <= numResample; ++j)
+    for (int32_t j = 0; j <= numResample; ++j)
     {
-        for (int i = 0; i <= numResample; ++i)
+        for (int32_t i = 0; i <= numResample; ++i)
         {
             interp = noSmooth(invResample * i, invResample * j);
             output << interp << " ";
@@ -58,14 +58,14 @@ void ThinPlateSplinesConsole::TestThinPlateSplines2D()
 
     // Increasing amounts of smoothing.
     smooth = 0.1;
-    for (int k = 1; k <= 6; ++k, smooth *= 10.0)
+    for (int32_t k = 1; k <= 6; ++k, smooth *= 10.0)
     {
         IntpThinPlateSpline2<double> spline(
             numPoints, x.data(), y.data(), f.data(), smooth, false);
         output << "smoothing (parameter is " << smooth << ")" << std::endl;
-        for (int j = 0; j <= numResample; ++j)
+        for (int32_t j = 0; j <= numResample; ++j)
         {
-            for (int i = 0; i <= numResample; ++i)
+            for (int32_t i = 0; i <= numResample; ++i)
             {
                 interp = spline(invResample * i, invResample * j);
                 interp = noSmooth(invResample * i, invResample * j);
@@ -88,16 +88,16 @@ void ThinPlateSplinesConsole::TestThinPlateSplines3D()
     // Tabulated data on a 3x3x3 regular grid, points (x,y,z,f(x,y,z)).
     std::default_random_engine dre;
     std::uniform_real_distribution<double> urd(0.0, 1.0);
-    int const numPoints = 27;
+    int32_t const numPoints = 27;
     std::array<double, numPoints> x, y, z, f;
     double xdomain, ydomain, zdomain;
-    for (int k = 0, index = 0; k < 3; ++k)
+    for (int32_t k = 0, index = 0; k < 3; ++k)
     {
         zdomain = 0.5 * k;
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             ydomain = 0.5 * j;
-            for (int i = 0; i < 3; ++i, ++index)
+            for (int32_t i = 0; i < 3; ++i, ++index)
             {
                 xdomain = 0.5 * i;
                 x[index] = xdomain;
@@ -109,7 +109,7 @@ void ThinPlateSplinesConsole::TestThinPlateSplines3D()
     }
 
     // Resample on a 7x7x7 regular grid.
-    int const numResample = 6;
+    int32_t const numResample = 6;
     double const invResample = 1.0 / static_cast<double>(numResample);
     double smooth, interp, functional;
 
@@ -118,13 +118,13 @@ void ThinPlateSplinesConsole::TestThinPlateSplines3D()
     IntpThinPlateSpline3<double> noSmooth(
         numPoints, x.data(), y.data(), z.data(), f.data(), smooth, false);
     output << "no smoothing (smooth parameter is 0.0)" << std::endl;
-    for (int k = 0; k <= numResample; ++k)
+    for (int32_t k = 0; k <= numResample; ++k)
     {
         zdomain = invResample * k;
-        for (int j = 0; j <= numResample; ++j)
+        for (int32_t j = 0; j <= numResample; ++j)
         {
             ydomain = invResample * j;
-            for (int i = 0; i <= numResample; ++i)
+            for (int32_t i = 0; i <= numResample; ++i)
             {
                 xdomain = invResample * i;
                 interp = noSmooth(xdomain, ydomain, zdomain);
@@ -139,18 +139,18 @@ void ThinPlateSplinesConsole::TestThinPlateSplines3D()
 
     // Increasing amounts of smoothing.
     smooth = 0.1;
-    for (int ell = 1; ell <= 6; ++ell, smooth *= 10.0)
+    for (int32_t ell = 1; ell <= 6; ++ell, smooth *= 10.0)
     {
         IntpThinPlateSpline3<double> spline(
             numPoints, x.data(), y.data(), z.data(), f.data(), smooth, false);
         output << "smoothing (parameter is " << smooth << ")" << std::endl;
-        for (int k = 0; k <= numResample; ++k)
+        for (int32_t k = 0; k <= numResample; ++k)
         {
             zdomain = invResample * k;
-            for (int j = 0; j <= numResample; ++j)
+            for (int32_t j = 0; j <= numResample; ++j)
             {
                 ydomain = invResample * j;
-                for (int i = 0; i <= numResample; ++i)
+                for (int32_t i = 0; i <= numResample; ++i)
                 {
                     xdomain = invResample * i;
                     interp = spline(xdomain, ydomain, zdomain);

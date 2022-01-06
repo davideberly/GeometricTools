@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,6 +20,7 @@
 #include <Graphics/Texture2Array.h>
 #include <Graphics/TextureCubeArray.h>
 #include <Mathematics/Logger.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -34,7 +35,7 @@ namespace gte
         // handle for an object and use it instead for setting and getting the
         // values.  If the named object exists, the returned handle is
         // nonnegative; otherwise, it is -1.
-        int Get(std::string const& name) const;
+        int32_t Get(std::string const& name) const;
 
         // Set or get the buffers.  If the set is successful, the return value
         // is nonnegative and is the index into the appropriate array.  This
@@ -43,9 +44,9 @@ namespace gte
         // avoid the name comparisons that occur with the Set(name,*) and
         // Get(name,*) functions.
         template <typename T>
-        int Set(std::string const& name, std::shared_ptr<T> const& object)
+        int32_t Set(std::string const& name, std::shared_ptr<T> const& object)
         {
-            int handle = 0;
+            int32_t handle = 0;
             for (auto& data : mData[T::shaderDataLookup])
             {
                 if (name == data.name)
@@ -77,10 +78,10 @@ namespace gte
         }
 
         template <typename T>
-        void Set(int handle, std::shared_ptr<T> const& object)
+        void Set(int32_t handle, std::shared_ptr<T> const& object)
         {
             std::vector<Data>& data = mData[T::shaderDataLookup];
-            if (0 <= handle && handle < static_cast<int>(data.size()))
+            if (0 <= handle && handle < static_cast<int32_t>(data.size()))
             {
                 auto& d = data[handle];
                 if (IsValid(d, object.get()))
@@ -94,10 +95,10 @@ namespace gte
         }
 
         template <typename T>
-        std::shared_ptr<T> const Get(int handle) const
+        std::shared_ptr<T> const Get(int32_t handle) const
         {
             std::vector<Data> const& data = mData[T::shaderDataLookup];
-            if (0 <= handle && handle < static_cast<int>(data.size()))
+            if (0 <= handle && handle < static_cast<int32_t>(data.size()))
             {
                 return std::static_pointer_cast<T>(data[handle].object);
             }
@@ -129,33 +130,33 @@ namespace gte
         // Access size of one of these buffers.
         // Returns 0 if the requested buffer does not exist.
         // For StructuredBuffers, it's the size of one structure element.
-        unsigned int GetConstantBufferSize(int handle) const;
-        unsigned int GetConstantBufferSize(std::string const& name) const;
-        unsigned int GetTextureBufferSize(int handle) const;
-        unsigned int GetTextureBufferSize(std::string const& name) const;
-        unsigned int GetStructuredBufferSize(int handle) const;
-        unsigned int GetStructuredBufferSize(std::string const& name) const;
+        uint32_t GetConstantBufferSize(int32_t handle) const;
+        uint32_t GetConstantBufferSize(std::string const& name) const;
+        uint32_t GetTextureBufferSize(int32_t handle) const;
+        uint32_t GetTextureBufferSize(std::string const& name) const;
+        uint32_t GetStructuredBufferSize(int32_t handle) const;
+        uint32_t GetStructuredBufferSize(std::string const& name) const;
 
         // Access member layouts for these types of buffers.  Only GL45
         // needs access to the structured buffer layout.
-        void GetConstantBufferLayout(int handle, BufferLayout& layout) const;
+        void GetConstantBufferLayout(int32_t handle, BufferLayout& layout) const;
         void GetConstantBufferLayout(std::string const& name, BufferLayout& layout) const;
-        void GetTextureBufferLayout(int handle, BufferLayout& layout) const;
+        void GetTextureBufferLayout(int32_t handle, BufferLayout& layout) const;
         void GetTextureBufferLayout(std::string const& name, BufferLayout& layout) const;
-        void GetStructuredBufferLayout(int handle, BufferLayout& layout) const;
+        void GetStructuredBufferLayout(int32_t handle, BufferLayout& layout) const;
         void GetStructuredBufferLayout(std::string const& name, BufferLayout& layout) const;
 
-        inline unsigned int GetNumXThreads() const
+        inline uint32_t GetNumXThreads() const
         {
             return mNumXThreads;
         }
 
-        inline unsigned int GetNumYThreads() const
+        inline uint32_t GetNumYThreads() const
         {
             return mNumYThreads;
         }
 
-        inline unsigned int GetNumZThreads() const
+        inline uint32_t GetNumZThreads() const
         {
             return mNumZThreads;
         }
@@ -208,8 +209,8 @@ namespace gte
 
         struct Data
         {
-            Data(GraphicsObjectType inType, std::string const& inName, int inBindPoint,
-                int inNumBytes, unsigned int inExtra, bool inIsGpuWritable)
+            Data(GraphicsObjectType inType, std::string const& inName, int32_t inBindPoint,
+                int32_t inNumBytes, uint32_t inExtra, bool inIsGpuWritable)
                 :
                 type(inType),
                 name(inName),
@@ -230,14 +231,14 @@ namespace gte
             std::string name;
 
             // CB, TB, SB, RB, TY, TX, TA, SS, AB, AC
-            int bindPoint;
+            int32_t bindPoint;
 
             // CB, TB, SB, RB, TY, AB, AC (always 4)
-            int numBytes;
+            int32_t numBytes;
 
             // TX, TA (dims), SS (type for TX or TA), SB (if has atomic
             // counter, AC index), AC (offset)
-            unsigned int extra;
+            uint32_t extra;
 
             // SB (true if has atomic counter), RB, TX/TA (in GL45, false
             // for gsampler*, true for gimage*)
@@ -253,10 +254,10 @@ namespace gte
         virtual bool IsValid(Data const& goal, SamplerState* state) const = 0;
 
         std::vector<Data> mData[NUM_LOOKUP_INDICES];
-        std::vector<unsigned char> mCompiledCode;
-        unsigned int mNumXThreads;
-        unsigned int mNumYThreads;
-        unsigned int mNumZThreads;
+        std::vector<uint8_t> mCompiledCode;
+        uint32_t mNumXThreads;
+        uint32_t mNumYThreads;
+        uint32_t mNumZThreads;
 
         std::vector<BufferLayout> mCBufferLayouts;
         std::vector<BufferLayout> mTBufferLayouts;
@@ -264,12 +265,12 @@ namespace gte
 
     public:
         // For use by the graphics engine.
-        inline std::vector<unsigned char> const& GetCompiledCode() const
+        inline std::vector<uint8_t> const& GetCompiledCode() const
         {
             return mCompiledCode;
         }
 
-        inline std::vector<Shader::Data> const& GetData(int lookup) const
+        inline std::vector<Shader::Data> const& GetData(int32_t lookup) const
         {
             return mData[lookup];
         }
@@ -278,9 +279,9 @@ namespace gte
     // Specialization to copy the member layouts of the shader program to
     // the buffer objects.
     template <>
-    inline int Shader::Set(std::string const& name, std::shared_ptr<ConstantBuffer> const& object)
+    inline int32_t Shader::Set(std::string const& name, std::shared_ptr<ConstantBuffer> const& object)
     {
-        int handle = 0;
+        int32_t handle = 0;
         for (auto& data : mData[ConstantBuffer::shaderDataLookup])
         {
             if (name == data.name)
@@ -302,9 +303,9 @@ namespace gte
     // Specialization to copy the member layouts of the shader program to
     // the buffer objects.
     template <>
-    inline int Shader::Set(std::string const& name, std::shared_ptr<TextureBuffer> const& object)
+    inline int32_t Shader::Set(std::string const& name, std::shared_ptr<TextureBuffer> const& object)
     {
-        int handle = 0;
+        int32_t handle = 0;
         for (auto& data : mData[TextureBuffer::shaderDataLookup])
         {
             if (name == data.name)
@@ -326,10 +327,10 @@ namespace gte
     // Specialization to copy the member layouts of the shader program to
     // the buffer objects.
     template <>
-    inline void Shader::Set(int handle, std::shared_ptr<ConstantBuffer> const& object)
+    inline void Shader::Set(int32_t handle, std::shared_ptr<ConstantBuffer> const& object)
     {
         std::vector<Data>& data = mData[ConstantBuffer::shaderDataLookup];
-        if (0 <= handle && handle < static_cast<int>(data.size()))
+        if (0 <= handle && handle < static_cast<int32_t>(data.size()))
         {
             auto& d = data[handle];
             if (IsValid(d, object.get()))
@@ -346,10 +347,10 @@ namespace gte
     // Specialization to copy the member layouts of the shader program to
     // the buffer objects.
     template <>
-    inline void Shader::Set(int handle, std::shared_ptr<TextureBuffer> const& object)
+    inline void Shader::Set(int32_t handle, std::shared_ptr<TextureBuffer> const& object)
     {
         std::vector<Data>& data = mData[TextureBuffer::shaderDataLookup];
-        if (0 <= handle && handle < static_cast<int>(data.size()))
+        if (0 <= handle && handle < static_cast<int32_t>(data.size()))
         {
             auto& d = data[handle];
             if (IsValid(d, object.get()))

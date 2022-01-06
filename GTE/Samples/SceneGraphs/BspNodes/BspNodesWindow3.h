@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,15 +25,15 @@ public:
     // These functions are overridden because the Window3 versions call
     // mPVWMatriceds.Update().  Because we are dynamically culling, we also
     // need to call mPVWMatrices.Update(mCuller.GetVisibleSet()).
-    virtual bool OnResize(int xSize, int ySize) override;
-    virtual bool OnMouseMotion(MouseButton button, int x, int y, unsigned int modifiers) override;
+    virtual bool OnResize(int32_t xSize, int32_t ySize) override;
+    virtual bool OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t modifiers) override;
 
 private:
     bool SetEnvironment();
     void CreateScene();
     void DoCullSort();
 
-    std::shared_ptr<BspNode> CreateNode(int i, Vector2<float> const& v0,
+    std::shared_ptr<BspNode> CreateNode(int32_t i, Vector2<float> const& v0,
         Vector2<float> const& v1, Vector4<float> const& color);
 
     Culler mCuller;

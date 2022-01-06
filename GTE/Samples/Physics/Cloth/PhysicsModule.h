@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,13 +24,13 @@ public:
     // each mass in the direction perpendicular to the plane of the wind and
     // gravity vectors.  The amplitudes are sinusoidal.  The phases are
     // randomly generated.
-    PhysicsModule(int numRows, int numCols, float step,
+    PhysicsModule(int32_t numRows, int32_t numCols, float step,
         Vector3<float> const& gravity, Vector3<float> const& wind,
         float viscosity, float amplitude);
 
     // External acceleration is due to forces of gravitation, wind, and
     // viscous friction.  The wind forces are randomly generated.
-    virtual Vector<3, float> ExternalAcceleration(int i, float time,
+    virtual Vector<3, float> ExternalAcceleration(int32_t i, float time,
         std::vector<Vector<3, float>> const& position,
         std::vector<Vector<3, float>> const& velocity);
 

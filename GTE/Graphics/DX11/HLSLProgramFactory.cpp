@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLComputeProgram.h>
@@ -22,15 +22,15 @@ HLSLProgramFactory::HLSLProgramFactory()
     flags = defaultFlags;
 }
 
-int HLSLProgramFactory::GetAPI() const
+int32_t HLSLProgramFactory::GetAPI() const
 {
     return PF_HLSL;
 }
 
 std::shared_ptr<VisualProgram> HLSLProgramFactory::CreateFromBytecode(
-    std::vector<unsigned char> const& vsBytecode,
-    std::vector<unsigned char> const& psBytecode,
-    std::vector<unsigned char> const& gsBytecode)
+    std::vector<uint8_t> const& vsBytecode,
+    std::vector<uint8_t> const& psBytecode,
+    std::vector<uint8_t> const& gsBytecode)
 {
     LogAssert(vsBytecode.size() > 0 && psBytecode.size() > 0,
         "A program must have a vertex shader and a pixel shader.");
@@ -163,7 +163,7 @@ std::shared_ptr<VisualProgram> HLSLProgramFactory::CreateFromNamedSources(
 }
 
 std::shared_ptr<ComputeProgram> HLSLProgramFactory::CreateFromBytecode(
-    std::vector<unsigned char> const& csBytecode)
+    std::vector<uint8_t> const& csBytecode)
 {
     LogAssert(csBytecode.size() > 0, "A program must have a compute shader.");
 
@@ -189,7 +189,7 @@ std::string HLSLProgramFactory::defaultVSEntry = "VSMain";
 std::string HLSLProgramFactory::defaultPSEntry = "PSMain";
 std::string HLSLProgramFactory::defaultGSEntry = "GSMain";
 std::string HLSLProgramFactory::defaultCSEntry = "CSMain";
-unsigned int HLSLProgramFactory::defaultFlags = (
+uint32_t HLSLProgramFactory::defaultFlags = (
     D3DCOMPILE_ENABLE_STRICTNESS |
     D3DCOMPILE_IEEE_STRICTNESS |
     D3DCOMPILE_OPTIMIZATION_LEVEL3);

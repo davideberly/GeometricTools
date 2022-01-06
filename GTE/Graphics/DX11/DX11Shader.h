@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -31,27 +31,27 @@ namespace gte
 
         // Calls to ID3D11DeviceContext::XSSetConstantBuffers.
         virtual void EnableCBuffer(ID3D11DeviceContext* context,
-            unsigned int bindPoint, ID3D11Buffer* buffer) = 0;
+            uint32_t bindPoint, ID3D11Buffer* buffer) = 0;
         virtual void DisableCBuffer(ID3D11DeviceContext* context,
-            unsigned int bindPoint) = 0;
+            uint32_t bindPoint) = 0;
 
         // Calls to ID3D11DeviceContext::XSSetShaderResources.
         virtual void EnableSRView(ID3D11DeviceContext* context,
-            unsigned int bindPoint, ID3D11ShaderResourceView* srView) = 0;
+            uint32_t bindPoint, ID3D11ShaderResourceView* srView) = 0;
         virtual void DisableSRView(ID3D11DeviceContext* context,
-            unsigned int bindPoint) = 0;
+            uint32_t bindPoint) = 0;
 
         // Calls to ID3D11DeviceContext::XSSetUnorderedAccessViews.
         virtual void EnableUAView(ID3D11DeviceContext* context,
-            unsigned int bindPoint, ID3D11UnorderedAccessView* uaView,
-            unsigned int initialCount) = 0;
+            uint32_t bindPoint, ID3D11UnorderedAccessView* uaView,
+            uint32_t initialCount) = 0;
         virtual void DisableUAView(ID3D11DeviceContext* context,
-            unsigned int bindPoint) = 0;
+            uint32_t bindPoint) = 0;
 
         // Calls to ID3D11DeviceContext::XSSetSamplers.
         virtual void EnableSampler(ID3D11DeviceContext* context,
-            unsigned int bindPoint, ID3D11SamplerState* state) = 0;
+            uint32_t bindPoint, ID3D11SamplerState* state) = 0;
         virtual void DisableSampler(ID3D11DeviceContext* context,
-            unsigned int bindPoint) = 0;
+            uint32_t bindPoint) = 0;
     };
 }

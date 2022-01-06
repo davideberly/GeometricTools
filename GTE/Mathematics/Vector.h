@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -14,7 +14,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class Vector
     {
     public:
@@ -38,7 +38,7 @@ namespace gte
         // constructor!
         Vector(std::initializer_list<Real> values)
         {
-            int const numValues = static_cast<int>(values.size());
+            int32_t const numValues = static_cast<int32_t>(values.size());
             if (N == numValues)
             {
                 std::copy(values.begin(), values.end(), mTuple.begin());
@@ -57,8 +57,8 @@ namespace gte
         // For 0 <= d < N, element d is 1 and all others are 0.  If d is
         // invalid, the zero vector is created.  This is a convenience for
         // creating the standard Euclidean basis vectors; see also
-        // MakeUnit(int) and Unit(int).
-        Vector(int d)
+        // MakeUnit(int32_t) and Unit(int32_t).
+        Vector(int32_t d)
         {
             MakeUnit(d);
         }
@@ -69,17 +69,17 @@ namespace gte
         // Member access.  The first operator[] returns a const reference
         // rather than a Real value.  This supports writing via standard file
         // operations that require a const pointer to data.
-        inline int GetSize() const
+        inline int32_t GetSize() const
         {
             return N;
         }
 
-        inline Real const& operator[](int i) const
+        inline Real const& operator[](int32_t i) const
         {
             return mTuple[i];
         }
 
-        inline Real& operator[](int i)
+        inline Real& operator[](int32_t i)
         {
             return mTuple[i];
         }
@@ -130,7 +130,7 @@ namespace gte
         }
 
         // Component d is 1, all others are zero.
-        void MakeUnit(int d)
+        void MakeUnit(int32_t d)
         {
             std::fill(mTuple.begin(), mTuple.end(), (Real)0);
             if (0 <= d && d < N)
@@ -153,7 +153,7 @@ namespace gte
             return v;
         }
 
-        static Vector Unit(int d)
+        static Vector Unit(int32_t d)
         {
             Vector<N, Real> v;
             v.MakeUnit(d);
@@ -167,17 +167,17 @@ namespace gte
     };
 
     // Unary operations.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator+(Vector<N, Real> const& v)
     {
         return v;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator-(Vector<N, Real> const& v)
     {
         Vector<N, Real> result;
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             result[i] = -v[i];
         }
@@ -185,85 +185,85 @@ namespace gte
     }
 
     // Linear-algebraic operations.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator+(Vector<N, Real> const& v0, Vector<N, Real> const& v1)
     {
         Vector<N, Real> result = v0;
         return result += v1;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator-(Vector<N, Real> const& v0, Vector<N, Real> const& v1)
     {
         Vector<N, Real> result = v0;
         return result -= v1;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator*(Vector<N, Real> const& v, Real scalar)
     {
         Vector<N, Real> result = v;
         return result *= scalar;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator*(Real scalar, Vector<N, Real> const& v)
     {
         Vector<N, Real> result = v;
         return result *= scalar;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator/(Vector<N, Real> const& v, Real scalar)
     {
         Vector<N, Real> result = v;
         return result /= scalar;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator+=(Vector<N, Real>& v0, Vector<N, Real> const& v1)
     {
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             v0[i] += v1[i];
         }
         return v0;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator-=(Vector<N, Real>& v0, Vector<N, Real> const& v1)
     {
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             v0[i] -= v1[i];
         }
         return v0;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator*=(Vector<N, Real>& v, Real scalar)
     {
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             v[i] *= scalar;
         }
         return v;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator/=(Vector<N, Real>& v, Real scalar)
     {
         if (scalar != (Real)0)
         {
             Real invScalar = (Real)1 / scalar;
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 v[i] *= invScalar;
             }
         }
         else
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 v[i] = (Real)0;
             }
@@ -272,34 +272,34 @@ namespace gte
     }
 
     // Componentwise algebraic operations.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator*(Vector<N, Real> const& v0, Vector<N, Real> const& v1)
     {
         Vector<N, Real> result = v0;
         return result *= v1;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> operator/(Vector<N, Real> const& v0, Vector<N, Real> const& v1)
     {
         Vector<N, Real> result = v0;
         return result /= v1;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator*=(Vector<N, Real>& v0, Vector<N, Real> const& v1)
     {
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             v0[i] *= v1[i];
         }
         return v0;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real>& operator/=(Vector<N, Real>& v0, Vector<N, Real> const& v1)
     {
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             v0[i] /= v1[i];
         }
@@ -312,24 +312,24 @@ namespace gte
     // can be infinite (or NaN) if the length is zero.  When 'robust' is set
     // to 'true', the algorithm is designed to avoid floating-point overflow
     // and sets the normalized vector to zero when the length is zero.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Real Dot(Vector<N, Real> const& v0, Vector<N, Real> const& v1)
     {
         Real dot = v0[0] * v1[0];
-        for (int i = 1; i < N; ++i)
+        for (int32_t i = 1; i < N; ++i)
         {
             dot += v0[i] * v1[i];
         }
         return dot;
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Real Length(Vector<N, Real> const& v, bool robust = false)
     {
         if (robust)
         {
             Real maxAbsComp = std::fabs(v[0]);
-            for (int i = 1; i < N; ++i)
+            for (int32_t i = 1; i < N; ++i)
             {
                 Real absComp = std::fabs(v[i]);
                 if (absComp > maxAbsComp)
@@ -356,13 +356,13 @@ namespace gte
         }
     }
 
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Real Normalize(Vector<N, Real>& v, bool robust = false)
     {
         if (robust)
         {
             Real maxAbsComp = std::fabs(v[0]);
-            for (int i = 1; i < N; ++i)
+            for (int32_t i = 1; i < N; ++i)
             {
                 Real absComp = std::fabs(v[i]);
                 if (absComp > maxAbsComp)
@@ -382,7 +382,7 @@ namespace gte
             else
             {
                 length = (Real)0;
-                for (int i = 0; i < N; ++i)
+                for (int32_t i = 0; i < N; ++i)
                 {
                     v[i] = (Real)0;
                 }
@@ -398,7 +398,7 @@ namespace gte
             }
             else
             {
-                for (int i = 0; i < N; ++i)
+                for (int32_t i = 0; i < N; ++i)
                 {
                     v[i] = (Real)0;
                 }
@@ -415,15 +415,15 @@ namespace gte
     // 1 <= numElements <= N and v[0] through v[numElements-1] must be
     // initialized.  On output, the vectors v[0] through v[numElements-1]
     // form an orthonormal set.
-    template <int N, typename Real>
-    Real Orthonormalize(int numInputs, Vector<N, Real>* v, bool robust = false)
+    template <int32_t N, typename Real>
+    Real Orthonormalize(int32_t numInputs, Vector<N, Real>* v, bool robust = false)
     {
         if (v && 1 <= numInputs && numInputs <= N)
         {
             Real minLength = Normalize(v[0], robust);
-            for (int i = 1; i < numInputs; ++i)
+            for (int32_t i = 1; i < numInputs; ++i)
             {
-                for (int j = 0; j < i; ++j)
+                for (int32_t j = 0; j < i; ++j)
                 {
                     Real dot = Dot(v[i], v[j]);
                     v[i] -= v[j] * dot;
@@ -444,12 +444,12 @@ namespace gte
     // the maximum absolute component occurs at index i, then the orthogonal
     // vector U has u[i] = v[i+1], u[i+1] = -v[i], and all other components
     // zero.  The index addition i+1 is computed modulo N.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N, Real> GetOrthogonal(Vector<N, Real> const& v, bool unitLength)
     {
         Real cmax = std::fabs(v[0]);
-        int imax = 0;
-        for (int i = 1; i < N; ++i)
+        int32_t imax = 0;
+        for (int32_t i = 1; i < N; ++i)
         {
             Real c = std::fabs(v[i]);
             if (c > cmax)
@@ -461,7 +461,7 @@ namespace gte
 
         Vector<N, Real> result;
         result.MakeZero();
-        int inext = imax + 1;
+        int32_t inext = imax + 1;
         if (inext == N)
         {
             inext = 0;
@@ -481,18 +481,18 @@ namespace gte
     // Compute the axis-aligned bounding box of the vectors.  The return value
     // is 'true' iff the inputs are valid, in which case vmin and vmax have
     // valid values.
-    template <int N, typename Real>
-    bool ComputeExtremes(int numVectors, Vector<N, Real> const* v,
+    template <int32_t N, typename Real>
+    bool ComputeExtremes(int32_t numVectors, Vector<N, Real> const* v,
         Vector<N, Real>& vmin, Vector<N, Real>& vmax)
     {
         if (v && numVectors > 0)
         {
             vmin = v[0];
             vmax = vmin;
-            for (int j = 1; j < numVectors; ++j)
+            for (int32_t j = 1; j < numVectors; ++j)
             {
                 Vector<N, Real> const& vec = v[j];
-                for (int i = 0; i < N; ++i)
+                for (int32_t i = 0; i < N; ++i)
                 {
                     if (vec[i] < vmin[i])
                     {
@@ -511,11 +511,11 @@ namespace gte
     }
 
     // Lift n-tuple v to homogeneous (n+1)-tuple (v,last).
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N + 1, Real> HLift(Vector<N, Real> const& v, Real last)
     {
         Vector<N + 1, Real> result;
-        for (int i = 0; i < N; ++i)
+        for (int32_t i = 0; i < N; ++i)
         {
             result[i] = v[i];
         }
@@ -524,12 +524,12 @@ namespace gte
     }
 
     // Project homogeneous n-tuple v = (u,v[n-1]) to (n-1)-tuple u.
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     Vector<N - 1, Real> HProject(Vector<N, Real> const& v)
     {
         static_assert(N >= 2, "Invalid dimension.");
         Vector<N - 1, Real> result;
-        for (int i = 0; i < N - 1; ++i)
+        for (int32_t i = 0; i < N - 1; ++i)
         {
             result[i] = v[i];
         }
@@ -539,17 +539,17 @@ namespace gte
     // Lift n-tuple v = (w0,w1) to (n+1)-tuple u = (w0,u[inject],w1).  By
     // inference, w0 is a (inject)-tuple [nonexistent when inject=0] and w1 is
     // a (n-inject)-tuple [nonexistent when inject=n].
-    template <int N, typename Real>
-    Vector<N + 1, Real> Lift(Vector<N, Real> const& v, int inject, Real value)
+    template <int32_t N, typename Real>
+    Vector<N + 1, Real> Lift(Vector<N, Real> const& v, int32_t inject, Real value)
     {
         Vector<N + 1, Real> result;
-        int i;
+        int32_t i;
         for (i = 0; i < inject; ++i)
         {
             result[i] = v[i];
         }
         result[i] = value;
-        int j = i;
+        int32_t j = i;
         for (++j; i < N; ++i, ++j)
         {
             result[j] = v[i];
@@ -560,12 +560,12 @@ namespace gte
     // Project n-tuple v = (w0,v[reject],w1) to (n-1)-tuple u = (w0,w1).  By
     // inference, w0 is a (reject)-tuple [nonexistent when reject=0] and w1 is
     // a (n-1-reject)-tuple [nonexistent when reject=n-1].
-    template <int N, typename Real>
-    Vector<N - 1, Real> Project(Vector<N, Real> const& v, int reject)
+    template <int32_t N, typename Real>
+    Vector<N - 1, Real> Project(Vector<N, Real> const& v, int32_t reject)
     {
         static_assert(N >= 2, "Invalid dimension.");
         Vector<N - 1, Real> result;
-        for (int i = 0, j = 0; i < N - 1; ++i, ++j)
+        for (int32_t i = 0, j = 0; i < N - 1; ++i, ++j)
         {
             if (j == reject)
             {

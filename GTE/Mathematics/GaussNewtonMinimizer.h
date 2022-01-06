@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.03
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -68,7 +68,7 @@ namespace gte
         typedef std::function<void(DVector const&, JTJMatrix&, JTFVector&)> JPlusFunction;
 
         // Create the minimizer that computes F(p) and J(p) directly.
-        GaussNewtonMinimizer(int numPDimensions, int numFDimensions,
+        GaussNewtonMinimizer(int32_t numPDimensions, int32_t numFDimensions,
             FFunction const& inFFunction, JFunction const& inJFunction)
             :
             mNumPDimensions(numPDimensions),
@@ -86,7 +86,7 @@ namespace gte
         }
 
         // Create the minimizer that computes J^T(p)*J(p) and -J(p)*F(p).
-        GaussNewtonMinimizer(int numPDimensions, int numFDimensions,
+        GaussNewtonMinimizer(int32_t numPDimensions, int32_t numFDimensions,
             FFunction const& inFFunction, JPlusFunction const& inJPlusFunction)
             :
             mNumPDimensions(numPDimensions),
@@ -109,12 +109,12 @@ namespace gte
         GaussNewtonMinimizer(GaussNewtonMinimizer&&) = delete;
         GaussNewtonMinimizer& operator=(GaussNewtonMinimizer&&) = delete;
 
-        inline int GetNumPDimensions() const
+        inline int32_t GetNumPDimensions() const
         {
             return mNumPDimensions;
         }
 
-        inline int GetNumFDimensions() const
+        inline int32_t GetNumFDimensions() const
         {
             return mNumFDimensions;
         }
@@ -214,7 +214,7 @@ namespace gte
             }
         }
 
-        int mNumPDimensions, mNumFDimensions;
+        int32_t mNumPDimensions, mNumFDimensions;
         FFunction mFFunction;
         JFunction mJFunction;
         JPlusFunction mJPlusFunction;

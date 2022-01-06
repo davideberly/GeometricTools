@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.01
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,8 +24,8 @@ namespace gte
         // The return value is 'true' if and only if there is a separation.
         // If 'true', the returned line is a separating line.  The code
         // assumes that each point set has at least 3 noncollinear points.
-        bool operator()(int numPoints0, Vector2<Real> const* points0,
-            int numPoints1, Vector2<Real> const* points1,
+        bool operator()(int32_t numPoints0, Vector2<Real> const* points0,
+            int32_t numPoints1, Vector2<Real> const* points1,
             Line2<Real>& separatingLine) const
         {
             // Construct convex hull of point set 0.
@@ -44,13 +44,13 @@ namespace gte
                 return false;
             }
 
-            int numEdges0 = static_cast<int>(ch0.GetHull().size());
-            int const* edges0 = &ch0.GetHull()[0];
-            int numEdges1 = static_cast<int>(ch1.GetHull().size());
-            int const* edges1 = &ch1.GetHull()[0];
+            int32_t numEdges0 = static_cast<int32_t>(ch0.GetHull().size());
+            int32_t const* edges0 = &ch0.GetHull()[0];
+            int32_t numEdges1 = static_cast<int32_t>(ch1.GetHull().size());
+            int32_t const* edges1 = &ch1.GetHull()[0];
 
             // Test edges of hull 0 for possible separation of points.
-            int j0, j1, i0, i1, side0, side1;
+            int32_t j0, j1, i0, i1, side0, side1;
             Vector2<Real> lineNormal;
             Real lineConstant;
             for (j1 = 0, j0 = numEdges0 - 1; j1 < numEdges0; j0 = j1++)
@@ -120,14 +120,14 @@ namespace gte
         }
 
     private:
-        int OnSameSide(Vector2<Real> const& lineNormal, Real lineConstant,
-            int numEdges, int const* edges, Vector2<Real> const* points) const
+        int32_t OnSameSide(Vector2<Real> const& lineNormal, Real lineConstant,
+            int32_t numEdges, int32_t const* edges, Vector2<Real> const* points) const
         {
             // Test whether all points on same side of line Dot(N,X) = c.
             Real c0;
-            int posSide = 0, negSide = 0;
+            int32_t posSide = 0, negSide = 0;
 
-            for (int i1 = 0, i0 = numEdges - 1; i1 < numEdges; i0 = i1++)
+            for (int32_t i1 = 0, i0 = numEdges - 1; i1 < numEdges; i0 = i1++)
             {
                 c0 = Dot(lineNormal, points[edges[i0]]);
                 if (c0 > lineConstant)
@@ -165,12 +165,12 @@ namespace gte
             return (posSide ? +1 : -1);
         }
 
-        int WhichSide(Vector2<Real> const& lineNormal, Real lineConstant,
-            int numEdges, int const* edges, Vector2<Real> const* points) const
+        int32_t WhichSide(Vector2<Real> const& lineNormal, Real lineConstant,
+            int32_t numEdges, int32_t const* edges, Vector2<Real> const* points) const
         {
             // Establish which side of line hull is on.
             Real c0;
-            for (int i1 = 0, i0 = numEdges - 1; i1 < numEdges; i0 = i1++)
+            for (int32_t i1 = 0, i0 = numEdges - 1; i1 < numEdges; i0 = i1++)
             {
                 c0 = Dot(lineNormal, points[edges[i0]]);
                 if (c0 > lineConstant)

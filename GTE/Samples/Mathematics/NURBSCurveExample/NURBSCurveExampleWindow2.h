@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,7 +17,7 @@ public:
     NURBSCurveExampleWindow2(Parameters& parameters);
 
     virtual void OnDisplay() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     void DoSimulation1();
@@ -25,17 +25,17 @@ private:
     void InitialConfiguration();
     void NextConfiguration();
 
-    inline void Get(Vector2<float> const& position, int& x, int& y)
+    inline void Get(Vector2<float> const& position, int32_t& x, int32_t& y)
     {
-        x = static_cast<int>(position[0] + 0.5f);
-        y = mSize - 1 - static_cast<int>(position[1] + 0.5f);
+        x = static_cast<int32_t>(position[0] + 0.5f);
+        y = mSize - 1 - static_cast<int32_t>(position[1] + 0.5f);
     }
 
     std::shared_ptr<NURBSCurve<2, float>> mSpline;
     std::shared_ptr<NURBSCurve<2, float>> mCircle;
     std::vector<Vector2<float>> mControls;
     std::vector<Vector2<float>> mTargets;
-    int mSize;
+    int32_t mSize;
     float mH, mD;
     float mSimTime, mSimDelta;
     bool mDrawControlPoints;

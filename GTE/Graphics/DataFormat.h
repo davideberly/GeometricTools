@@ -1,12 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.12.23
+// Version: 6.0.2022.01.06
 
 #pragma once
 
+#include <array>
+#include <cstdint>
 #include <string>
 
 namespace gte
@@ -163,36 +165,36 @@ namespace gte
         // queries for format information given the type.
 
         // A string version of the DF_* enumeration.
-        static std::string const& GetName(DFType type);
+        static std::string const& GetName(uint32_t type);
 
         // The number of bytes per struct.
-        static unsigned int GetNumBytesPerStruct(DFType type);
+        static uint32_t GetNumBytesPerStruct(uint32_t type);
 
         // The number of channels per struct.
-        static unsigned int GetNumChannels(DFType type);
+        static uint32_t GetNumChannels(uint32_t type);
 
         // The type of the channel.
-        static DFChannelType GetChannelType(DFType type);
+        static uint32_t GetChannelType(uint32_t type);
 
         // The conversion semantics for the channel.  When true, signed
         // integers are converted to floats in [-1,1] and unsigned integers
         // are converted to floats in [0,1].  When false, integer data is
         // converted directly to floats.
-        static bool ConvertChannel(DFType type);
+        static bool ConvertChannel(uint32_t type);
 
         // Not all data formats are currently supported.
-        static bool IsSupported(DFType type);
+        static bool IsSupported(uint32_t type);
 
         // The struct has a depth format.
-        static bool IsDepth(DFType type);
+        static bool IsDepth(uint32_t type);
 
     private:
         // Texel information.
-        static std::string const msName[DF_NUM_FORMATS];
-        static unsigned int const msNumBytesPerStruct[DF_NUM_FORMATS];
-        static unsigned int const msNumChannels[DF_NUM_FORMATS];
-        static DFChannelType const msChannelType[DF_NUM_FORMATS];
-        static bool const msConvertChannel[DF_NUM_FORMATS];
-        static bool const msSupported[DF_NUM_FORMATS];
+        static std::array<std::string, DF_NUM_FORMATS> const msName;
+        static std::array<uint32_t, DF_NUM_FORMATS> const msNumBytesPerStruct;
+        static std::array<uint32_t, DF_NUM_FORMATS> const msNumChannels;
+        static std::array<DFChannelType, DF_NUM_FORMATS> const msChannelType;
+        static std::array<bool, DF_NUM_FORMATS> const msConvertChannel;
+        static std::array<bool, DF_NUM_FORMATS> const msSupported;
     };
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -85,7 +85,7 @@ namespace gte
                 Vector<3, Real> N = { csTheta * snPhi, snTheta * snPhi, csPhi };
                 Real u = P[5];
                 Real v = P[6];
-                for (int i = 0; i < mNumPoints; ++i)
+                for (int32_t i = 0; i < mNumPoints; ++i)
                 {
                     Vector<3, Real> D = C - mPoints[i];
                     Real DdotD = Dot(D, D), NdotD = Dot(N, D);
@@ -110,7 +110,7 @@ namespace gte
                 Vector<3, Real> N = { csTheta * snPhi, snTheta * snPhi, csPhi };
                 Real u = P[5];
                 Real v = P[6];
-                for (int row = 0; row < mNumPoints; ++row)
+                for (int32_t row = 0; row < mNumPoints; ++row)
                 {
                     Vector<3, Real> D = C - mPoints[row];
                     Real DdotD = Dot(D, D), NdotD = Dot(N, D);
@@ -144,7 +144,7 @@ namespace gte
         // the first element is 'false' and the second element is
         // std::numeric_limits<Real>::max().
         std::pair<bool, Real>
-        operator()(int numPoints, Vector<3, Real> const* points,
+        operator()(int32_t numPoints, Vector<3, Real> const* points,
             Vector<3, Real>& C, Vector<3, Real>& N, Real& r0, Real& r1) const
         {
             ApprOrthogonalPlane3<Real> fitter;
@@ -158,7 +158,7 @@ namespace gte
             Real const zero(0);
             Real a0 = zero, a1 = zero, a2 = zero, b0 = zero;
             Real c0 = zero, c1 = zero, c2 = zero, c3 = (Real)numPoints;
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 Vector<3, Real> delta = points[i] - C;
                 Real dot = Dot(N, delta);
@@ -186,7 +186,7 @@ namespace gte
             Rational f1 = c1 - d1 * e0 - d0 * e1;
             Rational f2 = c2 - d1 * e1 - d0 * e2;
             Rational f3 = c3 - d1 * e2;
-            std::map<Real, int> rmMap;
+            std::map<Real, int32_t> rmMap;
             RootsPolynomial<Real>::SolveCubic(f0, f1, f2, f3, rmMap);
 
             Real hmin = std::numeric_limits<Real>::max();
@@ -200,7 +200,7 @@ namespace gte
                     if (u > v)
                     {
                         Real h = zero;
-                        for (int i = 0; i < numPoints; ++i)
+                        for (int32_t i = 0; i < numPoints; ++i)
                         {
                             Vector<3, Real> delta = points[i] - C;
                             Real dot = Dot(N, delta);
@@ -239,7 +239,7 @@ namespace gte
         // for a description of the least-squares algorithm and the parameters
         // that it requires.
         typename GaussNewtonMinimizer<Real>::Result
-        operator()(int numPoints, Vector<3, Real> const* points,
+        operator()(int32_t numPoints, Vector<3, Real> const* points,
             size_t maxIterations, Real updateLengthTolerance, Real errorDifferenceTolerance,
             bool useTorusInputAsInitialGuess,
             Vector<3, Real>& C, Vector<3, Real>& N, Real& r0, Real& r1) const
@@ -316,7 +316,7 @@ namespace gte
         // for a description of the least-squares algorithm and the parameters
         // that it requires.
         typename LevenbergMarquardtMinimizer<Real>::Result
-        operator()(int numPoints, Vector<3, Real> const* points,
+        operator()(int32_t numPoints, Vector<3, Real> const* points,
             size_t maxIterations, Real updateLengthTolerance, Real errorDifferenceTolerance,
             Real lambdaFactor, Real lambdaAdjust, size_t maxAdjustments,
             bool useTorusInputAsInitialGuess,
@@ -388,7 +388,7 @@ namespace gte
     private:
         typedef BSRational<UIntegerAP32> Rational;
 
-        mutable int mNumPoints;
+        mutable int32_t mNumPoints;
         mutable Vector<3, Real> const* mPoints;
         std::function<void(GVector<Real> const&, GVector<Real>&)> mFFunction;
         std::function<void(GVector<Real> const&, GMatrix<Real>&)> mJFunction;

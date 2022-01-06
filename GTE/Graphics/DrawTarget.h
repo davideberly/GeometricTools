@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/TextureDS.h>
 #include <Graphics/TextureRT.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -29,23 +30,23 @@ namespace gte
         // depth-stencil.
         virtual ~DrawTarget();
 
-        DrawTarget(unsigned int numRenderTargets, DFType rtFormat,
-            unsigned int width, unsigned int height, bool hasRTMipmaps = false,
-            bool createRTStorage = true, DFType dsFormat = DF_UNKNOWN,
+        DrawTarget(uint32_t numRenderTargets, uint32_t rtFormat,
+            uint32_t width, uint32_t height, bool hasRTMipmaps = false,
+            bool createRTStorage = true, uint32_t dsFormat = DF_UNKNOWN,
             bool createDSStorage = false);
 
         // Member access.
-        inline unsigned int GetNumTargets() const
+        inline uint32_t GetNumTargets() const
         {
-            return static_cast<unsigned int>(mRTTextures.size());
+            return static_cast<uint32_t>(mRTTextures.size());
         }
 
-        DFType GetRTFormat() const;
-        unsigned int GetWidth() const;
-        unsigned int GetHeight() const;
+        uint32_t GetRTFormat() const;
+        uint32_t GetWidth() const;
+        uint32_t GetHeight() const;
         bool HasRTMipmaps() const;
-        DFType GetDSFormat() const;
-        std::shared_ptr<TextureRT> const GetRTTexture(unsigned int i) const;
+        uint32_t GetDSFormat() const;
+        std::shared_ptr<TextureRT> const GetRTTexture(uint32_t i) const;
 
         inline std::shared_ptr<TextureDS> const GetDSTexture() const
         {

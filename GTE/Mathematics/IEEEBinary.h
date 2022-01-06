@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.02.12
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -11,7 +11,7 @@
 
 namespace gte
 {
-    template <typename Float, typename UInt, int NumBits, int Precision>
+    template <typename Float, typename UInt, int32_t NumBits, int32_t Precision>
     class IEEEBinary
     {
     public:
@@ -59,15 +59,15 @@ namespace gte
         }
 
         // Special constants.
-        static int const NUM_ENCODING_BITS = NumBits;
-        static int const NUM_EXPONENT_BITS = NumBits - Precision;
-        static int const NUM_SIGNIFICAND_BITS = Precision;
-        static int const NUM_TRAILING_BITS = Precision - 1;
-        static int const EXPONENT_BIAS = (1 << (NUM_EXPONENT_BITS - 1)) - 1;
-        static int const MAX_BIASED_EXPONENT = (1 << NUM_EXPONENT_BITS) - 1;
-        static int const MIN_SUB_EXPONENT = 1 - EXPONENT_BIAS;
-        static int const MIN_EXPONENT = MIN_SUB_EXPONENT - NUM_TRAILING_BITS;
-        static int const SIGN_SHIFT = NumBits - 1;
+        static int32_t const NUM_ENCODING_BITS = NumBits;
+        static int32_t const NUM_EXPONENT_BITS = NumBits - Precision;
+        static int32_t const NUM_SIGNIFICAND_BITS = Precision;
+        static int32_t const NUM_TRAILING_BITS = Precision - 1;
+        static int32_t const EXPONENT_BIAS = (1 << (NUM_EXPONENT_BITS - 1)) - 1;
+        static int32_t const MAX_BIASED_EXPONENT = (1 << NUM_EXPONENT_BITS) - 1;
+        static int32_t const MIN_SUB_EXPONENT = 1 - EXPONENT_BIAS;
+        static int32_t const MIN_EXPONENT = MIN_SUB_EXPONENT - NUM_TRAILING_BITS;
+        static int32_t const SIGN_SHIFT = NumBits - 1;
 
         static UInt const SIGN_MASK = (UInt(1) << (NumBits - 1));
         static UInt const NOT_SIGN_MASK = UInt(~SIGN_MASK);

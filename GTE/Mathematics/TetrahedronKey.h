@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -38,7 +38,7 @@ namespace gte
             this->V = { -1, -1, -1, -1 };
         }
 
-        explicit TetrahedronKey(int v0, int v1, int v2, int v3)
+        explicit TetrahedronKey(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
             Initialize(v0, v1, v2, v3);
         }
@@ -48,9 +48,9 @@ namespace gte
         //   <oppositeFace[j][0], oppositeFace[j][1], oppositeFace[j][2]>
         // and is listed in counterclockwise order when viewed from outside
         // the tetrahedron.
-        static inline std::array<std::array<int, 3>, 4> const& GetOppositeFace()
+        static inline std::array<std::array<int32_t, 3>, 4> const& GetOppositeFace()
         {
-            static std::array<std::array<int, 3>, 4> const sOppositeFace =
+            static std::array<std::array<int32_t, 3>, 4> const sOppositeFace =
             {{
                 { 1, 2, 3 },
                 { 0, 3, 2 },
@@ -63,9 +63,9 @@ namespace gte
     private:
         template <bool Dummy = Ordered>
         typename std::enable_if<Dummy, void>::type
-        Initialize(int v0, int v1, int v2, int v3)
+        Initialize(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
-            int imin = 0;
+            int32_t imin = 0;
             this->V[0] = v0;
             if (v1 < this->V[0])
             {
@@ -103,7 +103,7 @@ namespace gte
 
         template <bool Dummy = Ordered>
         typename std::enable_if<!Dummy, void>::type
-        Initialize(int v0, int v1, int v2, int v3)
+        Initialize(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
             this->V[0] = v0;
             this->V[1] = v1;
@@ -114,7 +114,7 @@ namespace gte
 
         template <bool Dummy = Ordered>
         typename std::enable_if<Dummy, void>::type
-        Permute(int u0, int u1, int u2)
+        Permute(int32_t u0, int32_t u1, int32_t u2)
         {
             // Once V[0] is determined, create a permutation
             // (V[1], V[2], V[3]) so that (V[0], V[1], V[2], V[3]) is a

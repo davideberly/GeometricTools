@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "Fluids2DWindow2.h"
 #include <Applications/WICFileIO.h>
@@ -45,7 +45,7 @@ void Fluids2DWindow2::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool Fluids2DWindow2::OnCharPress(unsigned char key, int x, int y)
+bool Fluids2DWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -84,22 +84,22 @@ bool Fluids2DWindow2::CreateOverlay()
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize,
         GRID_SIZE, GRID_SIZE, psSource);
     auto stateSampler = std::make_shared<SamplerState>();
-    stateSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    stateSampler->mode[0] = SamplerState::CLAMP;
-    stateSampler->mode[1] = SamplerState::CLAMP;
-    auto pshader = mOverlay->GetProgram()->GetPixelShader();
+    stateSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    stateSampler->mode[0] = SamplerState::Mode::CLAMP;
+    stateSampler->mode[1] = SamplerState::Mode::CLAMP;
+    auto const& pshader = mOverlay->GetProgram()->GetPixelShader();
     pshader->Set("stateTexture", mFluid.GetState(), "stateSampler", stateSampler);
 
     mNoDepthState = std::make_shared<DepthStencilState>();
     mNoDepthState->depthEnable = false;
     mEngine->SetDepthStencilState(mNoDepthState);
     mNoCullingState = std::make_shared<RasterizerState>();
-    mNoCullingState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullingState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullingState);
 
 #if defined(SAVE_RENDERING_TO_DISK)
     mTarget = std::make_shared<DrawTarget>(1, DF_R8G8B8A8_UNORM, mXSize, mYSize);
-    mTarget->GetRTTexture(0)->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mTarget->GetRTTexture(0)->SetCopy(Resource::Copy::STAGING_TO_CPU);
     mVideoFrame = 0;
 #endif
     return true;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,7 +22,7 @@ namespace gte
     {
     public:
         // Construction.
-        IntpBilinear2(int xBound, int yBound, Real xMin, Real xSpacing,
+        IntpBilinear2(int32_t xBound, int32_t yBound, Real xMin, Real xSpacing,
             Real yMin, Real ySpacing, Real const* F)
             :
             mXBound(xBound),
@@ -51,17 +51,17 @@ namespace gte
         }
 
         // Member access.
-        inline int GetXBound() const
+        inline int32_t GetXBound() const
         {
             return mXBound;
         }
 
-        inline int GetYBound() const
+        inline int32_t GetYBound() const
         {
             return mYBound;
         }
 
-        inline int GetQuantity() const
+        inline int32_t GetQuantity() const
         {
             return mQuantity;
         }
@@ -112,7 +112,7 @@ namespace gte
         {
             // Compute x-index and clamp to image.
             Real xIndex = (x - mXMin) * mInvXSpacing;
-            int ix = static_cast<int>(xIndex);
+            int32_t ix = static_cast<int32_t>(xIndex);
             if (ix < 0)
             {
                 ix = 0;
@@ -124,7 +124,7 @@ namespace gte
 
             // Compute y-index and clamp to image.
             Real yIndex = (y - mYMin) * mInvYSpacing;
-            int iy = static_cast<int>(yIndex);
+            int32_t iy = static_cast<int32_t>(yIndex);
             if (iy < 0)
             {
                 iy = 0;
@@ -144,11 +144,11 @@ namespace gte
 
             // Compute P = M*U and Q = M*V.
             std::array<Real, 2> P, Q;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
                 P[row] = (Real)0;
                 Q[row] = (Real)0;
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
                     P[row] += mBlend[row][col] * U[col];
                     Q[row] += mBlend[row][col] * V[col];
@@ -158,17 +158,17 @@ namespace gte
             // Compute (M*U)^t D (M*V) where D is the 2x2 subimage 
             // containing (x,y).
             Real result = (Real)0;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
-                int yClamp = iy + row;
+                int32_t yClamp = iy + row;
                 if (yClamp >= mYBound)
                 {
                     yClamp = mYBound - 1;
                 }
 
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
-                    int xClamp = ix + col;
+                    int32_t xClamp = ix + col;
                     if (xClamp >= mXBound)
                     {
                         xClamp = mXBound - 1;
@@ -181,11 +181,11 @@ namespace gte
             return result;
         }
 
-        Real operator()(int xOrder, int yOrder, Real x, Real y) const
+        Real operator()(int32_t xOrder, int32_t yOrder, Real x, Real y) const
         {
             // Compute x-index and clamp to image.
             Real xIndex = (x - mXMin) * mInvXSpacing;
-            int ix = static_cast<int>(xIndex);
+            int32_t ix = static_cast<int32_t>(xIndex);
             if (ix < 0)
             {
                 ix = 0;
@@ -197,7 +197,7 @@ namespace gte
 
             // Compute y-index and clamp to image.
             Real yIndex = (y - mYMin) * mInvYSpacing;
-            int iy = static_cast<int>(yIndex);
+            int32_t iy = static_cast<int32_t>(yIndex);
             if (iy < 0)
             {
                 iy = 0;
@@ -249,11 +249,11 @@ namespace gte
 
             // Compute P = M*U and Q = M*V.
             std::array<Real, 2> P, Q;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
                 P[row] = (Real)0;
                 Q[row] = (Real)0;
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
                     P[row] += mBlend[row][col] * U[col];
                     Q[row] += mBlend[row][col] * V[col];
@@ -262,17 +262,17 @@ namespace gte
 
             // Compute (M*U)^t D (M*V) where D is the 2x2 subimage containing (x,y).
             Real result = (Real)0;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
-                int yClamp = iy + row;
+                int32_t yClamp = iy + row;
                 if (yClamp >= mYBound)
                 {
                     yClamp = mYBound - 1;
                 }
 
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
-                    int xClamp = ix + col;
+                    int32_t xClamp = ix + col;
                     if (xClamp >= mXBound)
                     {
                         xClamp = mXBound - 1;
@@ -287,7 +287,7 @@ namespace gte
         }
 
     private:
-        int mXBound, mYBound, mQuantity;
+        int32_t mXBound, mYBound, mQuantity;
         Real mXMin, mXMax, mXSpacing, mInvXSpacing;
         Real mYMin, mYMax, mYSpacing, mInvYSpacing;
         Real const* mF;

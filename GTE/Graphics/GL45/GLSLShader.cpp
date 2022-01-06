@@ -1,21 +1,21 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLSLShader.h>
 using namespace gte;
 
-GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type, int glslType)
+GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type, uint32_t glslType)
     :
     Shader(type)
 {
     // If this is a compute shader, then query the number of threads per
     // group.
-    if (GLSLReflection::ST_COMPUTE == glslType)
+    if (GLSLReflection::ReferenceType::COMPUTE == glslType)
     {
         GLint sizeX, sizeY, sizeZ;
         reflector.GetComputeShaderWorkGroupSize(sizeX, sizeY, sizeZ);
@@ -153,7 +153,7 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
     // Gather the uniform blocks information to create constant buffer data.
     auto const& uniformBlocks = reflector.GetUniformBlocks();
-    int numUniformBlockReferences = 0;
+    int32_t numUniformBlockReferences = 0;
     for (auto const& block : uniformBlocks)
     {
         if (block.referencedBy[glslType])
@@ -167,8 +167,8 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
         // Store information needed by GL4Engine for enabling/disabling the
         // constant buffers.
-        int blockIndex = 0;
-        int layoutIndex = 0;
+        int32_t blockIndex = 0;
+        int32_t layoutIndex = 0;
         for (auto const& block : uniformBlocks)
         {
             if (block.referencedBy[glslType])
@@ -209,7 +209,7 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
     // Gather the atomic counter buffer information to create atomic counter
     // buffer data.
     auto const& atomicCounterBuffers = reflector.GetAtomicCounterBuffers();
-    int numAtomicCounterBufferReferences = 0;
+    int32_t numAtomicCounterBufferReferences = 0;
     for (auto const& block : atomicCounterBuffers)
     {
         if (block.referencedBy[glslType])
@@ -219,7 +219,7 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
     }
     if (numAtomicCounterBufferReferences > 0)
     {
-        unsigned blockIndex = 0;
+        uint32_t blockIndex = 0;
         for (auto const& block : atomicCounterBuffers)
         {
             if (block.referencedBy[glslType])
@@ -228,11 +228,11 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
                 // only has 4 bytes for a single counter located at offset=4.
                 // But we will want to allocate a buffer large enough to store
                 // from offset=0 to the last counter declared in the buffer.
-                unsigned bufferDataSize = block.bufferDataSize;
-                for (unsigned i=0; i < block.activeVariables.size(); ++i)
+                uint32_t bufferDataSize = block.bufferDataSize;
+                for (uint32_t i = 0; i < block.activeVariables.size(); ++i)
                 {
                     auto const& ac = uniforms[block.activeVariables[i]];
-                    unsigned const lastByte = ac.offset + 4;
+                    uint32_t const lastByte = ac.offset + 4;
 
                     bufferDataSize = std::max(bufferDataSize, lastByte);
                 }
@@ -247,7 +247,7 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
     // Gather the buffer blocks information to create structured buffer data.
     auto const& bufferBlocks = reflector.GetBufferBlocks();
-    int numBufferBlockReferences = 0;
+    int32_t numBufferBlockReferences = 0;
     for (auto const& block : bufferBlocks)
     {
         if (block.referencedBy[glslType])
@@ -262,8 +262,8 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
         // Store information needed by GL4Engine for enabling/disabling the
         // structured buffers.
-        int blockIndex = 0;
-        int layoutIndex = 0;
+        int32_t blockIndex = 0;
+        int32_t layoutIndex = 0;
         for (auto const& block : bufferBlocks)
         {
             if (block.referencedBy[glslType])
@@ -273,13 +273,13 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
                 // for this uniform so that it can be looked up later.
                 auto const counterName = block.name + "Counter";
                 bool hasAtomicCounter = false;
-                unsigned int idAtomicCounter = ~0U;
+                uint32_t idAtomicCounter = ~0U;
                 for (auto const& uniform : uniforms)
                 {
                     if ((counterName == uniform.name) && (uniform.atomicCounterBufferIndex >= 0))
                     {
                         hasAtomicCounter = true;
-                        idAtomicCounter = static_cast<unsigned int>(mData[AtomicCounterShaderDataLookup].size());
+                        idAtomicCounter = static_cast<uint32_t>(mData[AtomicCounterShaderDataLookup].size());
                         mData[AtomicCounterShaderDataLookup].push_back(
                             Data(GT_STRUCTURED_BUFFER, uniform.name, uniform.atomicCounterBufferIndex,
                             4, uniform.offset, false));
@@ -294,7 +294,7 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
                 // means only one top level array is supported.
                 auto& layout = mSBufferLayouts[layoutIndex];
                 GLint structSize = 0;
-                for (unsigned v = 0; v < block.activeVariables.size(); ++v)
+                for (uint32_t v = 0; v < block.activeVariables.size(); ++v)
                 {
                     auto const& bufferVar = bufferVariables[block.activeVariables[v]];
 
@@ -439,7 +439,7 @@ bool GLSLShader::IsValid(Data const& goal, StructuredBuffer* resource) const
     // a structured buffer as long as it has the same name.  If the shader is
     // expecting a counter, then the structured buffer needs to be declared
     // with one.
-    if (goal.isGpuWritable && (StructuredBuffer::CT_NONE == resource->GetCounterType()))
+    if (goal.isGpuWritable && (StructuredBuffer::CounterType::NONE == resource->GetCounterType()))
     {
         // mismatch of counter type
         return false;
@@ -462,7 +462,7 @@ bool GLSLShader::IsValid(Data const& goal, RawBuffer* resource) const
         return false;
     }
 
-    if (goal.isGpuWritable && resource->GetUsage() != Resource::SHADER_OUTPUT)
+    if (goal.isGpuWritable && resource->GetUsage() != Resource::Usage::SHADER_OUTPUT)
     {
         // mismatch of GPU write flag
         return false;

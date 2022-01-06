@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MorphFacesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -20,7 +20,7 @@ MorphFacesWindow3::MorphFacesWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
     mScene->Update();
@@ -56,7 +56,7 @@ void MorphFacesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MorphFacesWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MorphFacesWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -172,7 +172,7 @@ void MorphFacesWindow3::CreateMorphResult()
     mScene->AttachChild(mMorphResult);
 
     std::array<std::shared_ptr<Material>, 4> materials;
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
         if (i != 1)
         {
@@ -204,7 +204,7 @@ void MorphFacesWindow3::CreateMorphResult()
     mLightGeometry = std::make_shared<LightCameraGeometry>();
     mLightWorldPosition = { -1186.77f, -1843.32f, -50.7567f, 1.0f };
 
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
         if (i != 1)
         {
@@ -214,16 +214,16 @@ void MorphFacesWindow3::CreateMorphResult()
     }
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     std::ifstream input(mEnvironment.GetPath("SharedTexTri.txt"));
     input >> mNumVertices;
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, mNumVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     OutVertex* vertices = vbuffer->Get<OutVertex>();
-    for (int i = 0; i < mNumVertices; ++i)
+    for (int32_t i = 0; i < mNumVertices; ++i)
     {
         vertices[i].position = { 0.0f, 0.0f, 0.0f };
         vertices[i].normal = { 0.0f, 0.0f, 0.0f };
@@ -231,16 +231,16 @@ void MorphFacesWindow3::CreateMorphResult()
         input >> vertices[i].tcoord[1];
     }
 
-    for (int j = 0; j < 4; ++j)
+    for (int32_t j = 0; j < 4; ++j)
     {
-        int numSubTriangles;
+        int32_t numSubTriangles;
         input >> numSubTriangles;
-        int numSubIndices = 3 * numSubTriangles;
-        auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numSubTriangles, sizeof(unsigned int));
-        auto* subIndices = ibuffer->Get<unsigned int>();
-        for (int i = 0; i < numSubIndices; ++i)
+        int32_t numSubIndices = 3 * numSubTriangles;
+        auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numSubTriangles, sizeof(uint32_t));
+        auto* subIndices = ibuffer->Get<uint32_t>();
+        for (int32_t i = 0; i < numSubIndices; ++i)
         {
-            int index;
+            int32_t index;
             input >> index;
             *subIndices++ = index;
         }
@@ -263,11 +263,11 @@ void MorphFacesWindow3::CreateMorphResult()
             auto program = mProgramFactory->CreateFromFiles(vsPath, psPath, "");
             auto pvwMatrixConstant = std::make_shared<ConstantBuffer>(sizeof(Matrix4x4<float>), true);
             auto sampler = std::make_shared<SamplerState>();
-            sampler->filter = SamplerState::MIN_L_MAG_L_MIP_L;
-            sampler->mode[0] = SamplerState::WRAP;
-            sampler->mode[1] = SamplerState::WRAP;
-            auto vshader = program->GetVertexShader();
-            auto pshader = program->GetPixelShader();
+            sampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_L;
+            sampler->mode[0] = SamplerState::Mode::WRAP;
+            sampler->mode[1] = SamplerState::Mode::WRAP;
+            auto const& vshader = program->GetVertexShader();
+            auto const& pshader = program->GetPixelShader();
             vshader->Set("PVWMatrix", pvwMatrixConstant);
             pshader->Set("baseTexture", texture, "baseSampler", sampler);
             auto txEffect = std::make_shared<VisualEffect>(program);
@@ -279,7 +279,7 @@ void MorphFacesWindow3::CreateMorphResult()
     input.close();
 }
 
-void MorphFacesWindow3::LoadTarget(int i, std::string const& targetName)
+void MorphFacesWindow3::LoadTarget(int32_t i, std::string const& targetName)
 {
     std::string filename = mEnvironment.GetPath(targetName + "PosNor.txt");
     std::ifstream inFile(filename);
@@ -313,9 +313,9 @@ void MorphFacesWindow3::UpdateMorph(float time)
 
     // Sample the weights at the specified time.  Ensure that the sum of the
     // weights is 1.
-    std::array<float, NUM_TARGETS> weights;
+    std::array<float, NUM_TARGETS> weights{};
     weights[0] = 1.0f;
-    for (int i = 1; i < NUM_TARGETS; ++i)
+    for (int32_t i = 1; i < NUM_TARGETS; ++i)
     {
         std::array<float, 1> interp = (*mWeightInterpolator[i])(time);
         weights[i] = interp[0];
@@ -326,19 +326,19 @@ void MorphFacesWindow3::UpdateMorph(float time)
     InVertex const* inVertex = mVertices[0].data();
     OutVertex* outVertex = output;
     float weight = weights[0];
-    for (int j = 0; j < mNumVertices; ++j, ++inVertex, ++outVertex)
+    for (int32_t j = 0; j < mNumVertices; ++j, ++inVertex, ++outVertex)
     {
         outVertex->position = weight * inVertex->position;
         outVertex->normal = weight * inVertex->normal;
     }
-    for (int i = 1; i < NUM_TARGETS; ++i)
+    for (int32_t i = 1; i < NUM_TARGETS; ++i)
     {
         inVertex = mVertices[i].data();
         outVertex = output;
         weight = weights[i];
         if (weight > 0.0f)
         {
-            for (int j = 0; j < mNumVertices; ++j, ++inVertex, ++outVertex)
+            for (int32_t j = 0; j < mNumVertices; ++j, ++inVertex, ++outVertex)
             {
                 outVertex->position += weight * inVertex->position;
                 outVertex->normal += weight * inVertex->normal;
@@ -348,7 +348,7 @@ void MorphFacesWindow3::UpdateMorph(float time)
 
     // Normalize the normals.
     outVertex = output;
-    for (int j = 0; j < mNumVertices; ++j, ++outVertex)
+    for (int32_t j = 0; j < mNumVertices; ++j, ++outVertex)
     {
         Normalize(outVertex->normal);
     }
@@ -357,7 +357,7 @@ void MorphFacesWindow3::UpdateMorph(float time)
     mEngine->Update(visual->GetVertexBuffer());
 
     // Update the bounding spheres.
-    for (int j = 0; j < 4; ++j)
+    for (int32_t j = 0; j < 4; ++j)
     {
         visual = std::static_pointer_cast<Visual>(mMorphResult->GetChild(j));
         visual->UpdateModelBound();
@@ -372,7 +372,7 @@ void MorphFacesWindow3::UpdateMorph(float time)
     Matrix4x4<float> hinverse = mScene->worldTransform.GetHInverse();
     mLightGeometry->lightModelPosition = DoTransform(hinverse, mLightWorldPosition);
     mLightGeometry->cameraModelPosition = DoTransform(hinverse, mCamera->GetPosition());
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
         if (i != 1)
         {

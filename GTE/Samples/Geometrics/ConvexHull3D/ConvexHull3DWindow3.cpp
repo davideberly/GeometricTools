@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 6.0.2022.01.06
 
 #include "ConvexHull3DWindow3.h"
 #include <Mathematics/ArbitraryPrecision.h>
@@ -33,8 +33,8 @@ ConvexHull3DWindow3::ConvexHull3DWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->cullMode = RasterizerState::CULL_NONE;
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->cull = RasterizerState::Cull::NONE;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 }
 
 void ConvexHull3DWindow3::OnIdle()
@@ -65,7 +65,7 @@ void ConvexHull3DWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool ConvexHull3DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool ConvexHull3DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -130,12 +130,12 @@ bool ConvexHull3DWindow3::LoadData()
     }
 
     Vector3<float> center{ 0.0f, 0.0f, 0.0f };
-    unsigned int numVertices;
+    uint32_t numVertices;
     input >> numVertices;
     std::vector<Vector3<float>> vertices(numVertices);
     for (auto& v : vertices)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             input >> v[j];
         }
@@ -186,11 +186,11 @@ bool ConvexHull3DWindow3::LoadData()
         Vector4<float> color;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertex[i].position = vertices[i];
         vertex[i].color[0] = rnd(mte);
@@ -199,7 +199,7 @@ bool ConvexHull3DWindow3::LoadData()
         vertex[i].color[3] = 1.0f;
     }
 
-    unsigned int numPrimitives = static_cast<unsigned int>(hull.size() / 3);
+    uint32_t numPrimitives = static_cast<uint32_t>(hull.size() / 3);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numPrimitives, sizeof(int32_t));
     auto indices = ibuffer->Get<int32_t>();
     for (size_t i = 0; i < hull.size(); ++i)

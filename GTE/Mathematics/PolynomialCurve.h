@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class PolynomialCurve : public ParametricCurve<N, Real>
     {
     public:
@@ -31,7 +31,7 @@ namespace gte
             :
             ParametricCurve<N, Real>(tmin, tmax)
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 SetPolynomial(i, components[i]);
             }
@@ -42,7 +42,7 @@ namespace gte
         }
 
         // Member access.
-        void SetPolynomial(int i, Polynomial1<Real> const& poly)
+        void SetPolynomial(int32_t i, Polynomial1<Real> const& poly)
         {
             mPolynomial[i] = poly;
             mDer1Polynomial[i] = mPolynomial[i].GetDerivative();
@@ -50,22 +50,22 @@ namespace gte
             mDer3Polynomial[i] = mDer2Polynomial[i].GetDerivative();
         }
 
-        inline Polynomial1<Real> const& GetPolynomial(int i) const
+        inline Polynomial1<Real> const& GetPolynomial(int32_t i) const
         {
             return mPolynomial[i];
         }
 
-        inline Polynomial1<Real> const& GetDer1Polynomial(int i) const
+        inline Polynomial1<Real> const& GetDer1Polynomial(int32_t i) const
         {
             return mDer1Polynomial[i];
         }
 
-        inline Polynomial1<Real> const& GetDer2Polynomial(int i) const
+        inline Polynomial1<Real> const& GetDer2Polynomial(int32_t i) const
         {
             return mDer2Polynomial[i];
         }
 
-        inline Polynomial1<Real> const& GetDer3Polynomial(int i) const
+        inline Polynomial1<Real> const& GetDer3Polynomial(int32_t i) const
         {
             return mDer3Polynomial[i];
         }
@@ -77,30 +77,30 @@ namespace gte
         // output array 'jet' must have enough storage to support the maximum
         // order.  The values are ordered as: position, first derivative,
         // second derivative, third derivative.
-        virtual void Evaluate(Real t, unsigned int order, Vector<N, Real>* jet) const override
+        virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 jet[0][i] = mPolynomial[i](t);
             }
 
             if (order >= 1)
             {
-                for (int i = 0; i < N; ++i)
+                for (int32_t i = 0; i < N; ++i)
                 {
                     jet[1][i] = mDer1Polynomial[i](t);
                 }
 
                 if (order >= 2)
                 {
-                    for (int i = 0; i < N; ++i)
+                    for (int32_t i = 0; i < N; ++i)
                     {
                         jet[2][i] = mDer2Polynomial[i](t);
                     }
 
                     if (order == 3)
                     {
-                        for (int i = 0; i < N; ++i)
+                        for (int32_t i = 0; i < N; ++i)
                         {
                             jet[3][i] = mDer3Polynomial[i](t);
                         }

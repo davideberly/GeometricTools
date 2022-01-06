@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/DrawTarget.h>
@@ -14,7 +14,7 @@ DrawTarget::~DrawTarget()
 {
     msLFDMutex.lock();
     {
-        for (auto listener : msLFDSet)
+        for (auto const& listener : msLFDSet)
         {
             listener->OnDestroy(this);
         }
@@ -22,9 +22,9 @@ DrawTarget::~DrawTarget()
     msLFDMutex.unlock();
 }
 
-DrawTarget::DrawTarget(unsigned int numRenderTargets, DFType rtFormat,
-    unsigned int width, unsigned int height, bool hasRTMipmaps,
-    bool createRTStorage, DFType dsFormat, bool createDSStorage)
+DrawTarget::DrawTarget(uint32_t numRenderTargets, uint32_t rtFormat,
+    uint32_t width, uint32_t height, bool hasRTMipmaps,
+    bool createRTStorage, uint32_t dsFormat, bool createDSStorage)
 {
     LogAssert(numRenderTargets > 0, "Number of targets must be at least one.");
     mRTTextures.resize(numRenderTargets);
@@ -46,19 +46,19 @@ DrawTarget::DrawTarget(unsigned int numRenderTargets, DFType rtFormat,
     }
 }
 
-DFType DrawTarget::GetRTFormat() const
+uint32_t DrawTarget::GetRTFormat() const
 {
     LogAssert(mRTTextures.size() > 0, "Unexpected condition.");
     return mRTTextures[0]->GetFormat();
 }
 
-unsigned int DrawTarget::GetWidth() const
+uint32_t DrawTarget::GetWidth() const
 {
     LogAssert(mRTTextures.size() > 0, "Unexpected condition.");
     return mRTTextures[0]->GetWidth();
 }
 
-unsigned int DrawTarget::GetHeight() const
+uint32_t DrawTarget::GetHeight() const
 {
     LogAssert(mRTTextures.size() > 0, "Unexpected condition.");
     return mRTTextures[0]->GetHeight();
@@ -70,15 +70,15 @@ bool DrawTarget::HasRTMipmaps() const
     return mRTTextures[0]->HasMipmaps();
 }
 
-DFType DrawTarget::GetDSFormat() const
+uint32_t DrawTarget::GetDSFormat() const
 {
     LogAssert(mDSTexture != nullptr, "Unexpected condition.");
     return mDSTexture->GetFormat();
 }
 
-std::shared_ptr<TextureRT> const DrawTarget::GetRTTexture(unsigned int i) const
+std::shared_ptr<TextureRT> const DrawTarget::GetRTTexture(uint32_t i) const
 {
-    LogAssert(i < static_cast<unsigned int>(mRTTextures.size()), "Unexpected condition.");
+    LogAssert(i < static_cast<uint32_t>(mRTTextures.size()), "Unexpected condition.");
     return mRTTextures[i];
 }
 

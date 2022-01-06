@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/GraphicsObject.h>
@@ -13,7 +13,7 @@ GraphicsObject::~GraphicsObject()
 {
     msLFDMutex.lock();
     {
-        for (auto listener : msLFDSet)
+        for (auto const& listener : msLFDSet)
         {
             listener->OnDestroy(this);
         }
@@ -23,13 +23,15 @@ GraphicsObject::~GraphicsObject()
 
 GraphicsObject::GraphicsObject()
     :
-    mType(GT_GRAPHICS_OBJECT)
+    mType(GT_NONE),
+    mName("")
 {
 }
 
 GraphicsObject::GraphicsObject(GraphicsObjectType type)
     :
-    mType(type)
+    mType(type),
+    mName("")
 {
 }
 
@@ -51,5 +53,5 @@ void GraphicsObject::UnsubscribeForDestruction(std::shared_ptr<ListenerForDestru
     msLFDMutex.unlock();
 }
 
-std::mutex GraphicsObject::msLFDMutex;
-std::set<std::shared_ptr<GraphicsObject::ListenerForDestruction>> GraphicsObject::msLFDSet;
+std::mutex GraphicsObject::msLFDMutex{};
+std::set<std::shared_ptr<GraphicsObject::ListenerForDestruction>> GraphicsObject::msLFDSet{};

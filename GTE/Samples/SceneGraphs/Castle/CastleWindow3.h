@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -32,10 +32,10 @@ public:
     CastleWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
-    virtual bool OnKeyDown(int key, int x, int y) override;
-    virtual bool OnKeyUp(int key, int x, int y) override;
-    virtual bool OnMouseClick(MouseButton button, MouseState state, int x, int y, unsigned int modifiers) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
+    virtual bool OnKeyDown(int32_t key, int32_t x, int32_t y) override;
+    virtual bool OnKeyUp(int32_t key, int32_t x, int32_t y) override;
+    virtual bool OnMouseClick(MouseButton button, MouseState state, int32_t x, int32_t y, uint32_t modifiers) override;
 
 private:
     bool SetEnvironment();
@@ -75,13 +75,25 @@ private:
     class FixedHeightRig : public CameraRig
     {
     public:
+        FixedHeightRig()
+            :
+            CameraRig{},
+            mScene{},
+            mPicker(nullptr),
+            mVerticalDistance(0.0f),
+            mCos{},
+            mSin{},
+            mTolerance{}
+        {
+        }
+
         void SetPicker(std::shared_ptr<Node> const& scene, Picker& picker);
         void SetVerticalDistance(float verticalDistance);
         float GetVerticalDistance() const;
         void AdjustVerticalDistance();
 
     private:
-        enum { NUM_RAYS = 5 };
+        static int32_t constexpr NUM_RAYS = 5;
 
         bool AllowMotion(float sign);
         virtual void MoveForward();
@@ -231,7 +243,7 @@ private:
     public:
         LookupPNT1();
         bool operator< (LookupPNT1 const& other) const;
-        int PIndex, NIndex, TIndex;
+        int32_t PIndex, NIndex, TIndex;
     };
 
     struct VertexPNT1
@@ -266,7 +278,7 @@ private:
     public:
         LookupPNT2();
         bool operator< (LookupPNT2 const& other) const;
-        int PIndex, NIndex, T0Index, T1Index;
+        int32_t PIndex, NIndex, T0Index, T1Index;
     };
 
     struct VertexPNT2
@@ -330,8 +342,8 @@ private:
     void CreateCylinder02();
     void CreateBridge();
     void CreateLargePort();
-    void CreateSmallPort(int i);
-    void CreateRope(int i);
+    void CreateSmallPort(int32_t i);
+    void CreateRope(int32_t i);
     void CreateSkyDome();
     void CreateTerrain();
 
@@ -339,81 +351,81 @@ private:
     static Vector4<float> msWoodShieldTrn[MAX_WOODSHIELDS];
     static float msWoodShieldYRotate[MAX_WOODSHIELDS];
     static float msWoodShieldXRotate[MAX_WOODSHIELDS];
-    void CreateWoodShield(int i);
+    void CreateWoodShield(int32_t i);
 
     enum { MAX_TORCHES = 18 };  // 0 unused
     static Vector4<float> msTorchTrn[MAX_TORCHES];
     static float msTorchZAngle[MAX_TORCHES];
-    void CreateTorch(int i);
+    void CreateTorch(int32_t i);
 
     enum { MAX_KEGS = 4 };  // 0 unused
     static Vector4<float> msKegTrn[MAX_KEGS];
     static float msKegZAngle[MAX_KEGS];
-    void CreateKeg(int i);
+    void CreateKeg(int32_t i);
 
     enum { MAX_BARRELS = 38 };  // 0 and 1 not used
     static Vector4<float> msBarrelTrn[MAX_BARRELS];
     static float msBarrelZAngle[MAX_BARRELS];
     static float msBarrelYAngle[MAX_BARRELS];
     static float msBarrelXAngle[MAX_BARRELS];
-    void CreateBarrel(int i);
+    void CreateBarrel(int32_t i);
 
     enum { MAX_DOORFRAMES = 84 };  // 0 unused
     static Vector4<float> msDoorFrameTrn[MAX_DOORFRAMES];
     static float msDoorFrameZAngle[MAX_DOORFRAMES];
     static Vector4<float> msDoorFramePivotTrn[35];  // index i-49
-    std::string GetDoorFrameFilename(int i);
-    void CreateDoorFrame(int i);  // 1 <= i <= 48, i = 61, 64 <= i <= 68, 79
-    void CreateDoorFramePivotTrn(int i);  // 49 <= i <= 60, 69 <= i <= 78, 82, 83
-    void CreateDoorFrameScalePivotTrn(int i);  // 62, 63, 80, 81
+    std::string GetDoorFrameFilename(int32_t i);
+    void CreateDoorFrame(int32_t i);  // 1 <= i <= 48, i = 61, 64 <= i <= 68, 79
+    void CreateDoorFramePivotTrn(int32_t i);  // 49 <= i <= 60, 69 <= i <= 78, 82, 83
+    void CreateDoorFrameScalePivotTrn(int32_t i);  // 62, 63, 80, 81
 
     enum { MAX_BUNKS = 21 };  // 0, 2, 3 unused
     static Vector4<float> msBunkTrn[MAX_BUNKS];
     static float msBunkZAngle[MAX_BUNKS];
-    void CreateBunk(int i);
+    void CreateBunk(int32_t i);
 
     enum { MAX_BENCHES = 37 };  // 0 unused
     static Vector4<float> msBenchTrn[MAX_BENCHES];
     static float msBenchZAngle[MAX_BENCHES];
-    void CreateBench(int i);
+    void CreateBench(int32_t i);
 
     enum { MAX_TABLES = 10 };  // 0 unused
     static Vector4<float> msTableTrn[MAX_TABLES];
     static float msTableZAngle[MAX_TABLES];
-    void CreateTable(int i);
+    void CreateTable(int32_t i);
 
     enum { MAX_BARREL_RACKS = 5 };  // 0 unused
     static Vector4<float> msBarrelRackTrn[MAX_BARREL_RACKS];
-    void CreateBarrelRack(int i);
+    void CreateBarrelRack(int32_t i);
 
     enum { MAX_CHESTS = 37 };  // 0 unused
     static Vector4<float> msChestTrn[MAX_CHESTS];
     static float msChestZAngle[MAX_CHESTS];
-    void CreateChest(int i);
+    void CreateChest(int32_t i);
 
     enum { MAX_CEILING_LIGHTS = 4 };  // 0 unused
     static Vector4<float> msCeilingLightTrn[MAX_CEILING_LIGHTS];
-    void CreateCeilingLight(int i);
+    void CreateCeilingLight(int32_t i);
 
     enum { MAX_SQUARE_TABLES = 8 };  // 0 unused
     static Vector4<float> msSquareTableTrn[MAX_SQUARE_TABLES];
     static float msSquareTableZAngle[MAX_SQUARE_TABLES];
-    void CreateSquareTable(int i);
+    void CreateSquareTable(int32_t i);
 
     enum { MAX_SIMPLE_CHAIRS = 28 };  // 0 unused
     static Vector4<float> msSimpleChairTrn[MAX_SIMPLE_CHAIRS];
     static float msSimpleChairZAngle[MAX_SIMPLE_CHAIRS];
-    void CreateSimpleChair(int i);
+    void CreateSimpleChair(int32_t i);
 
     enum { MAX_MUGS = 43 };  // 0 unused
     static Vector4<float> msMugTrn[MAX_MUGS];
     static float msMugZAngle[MAX_MUGS];
-    void CreateMug(int i);
+    void CreateMug(int32_t i);
 
     enum { MAX_DOORS = 10 };  // 0 unused
     static Vector4<float> msDoorTrn[MAX_DOORS];
     static float msDoorZAngle[MAX_DOORS];
-    void CreateDoor(int i);
+    void CreateDoor(int32_t i);
 
 #if defined(USE_DIRECTIONAL_LIGHT_TEXTURE)
     std::shared_ptr<DirectionalLightTextureEffect> CreateLTEffect(

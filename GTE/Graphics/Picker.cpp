@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Picker.h>
@@ -14,7 +14,7 @@
 #include <thread>
 using namespace gte;
 
-Picker::Picker(unsigned int numThreads)
+Picker::Picker(uint32_t numThreads)
     :
     mNumThreads(numThreads > 1 ? numThreads : 1),
     mMaxDistance(0.0f),
@@ -40,12 +40,15 @@ void Picker::operator()(std::shared_ptr<Spatial> const& scene,
 {
     if (tmin == -std::numeric_limits<float>::max())
     {
-        LogAssert(tmax == std::numeric_limits<float>::max(),
+        LogAssert(
+            tmax == std::numeric_limits<float>::max(),
             "The line must have t in (-infinity,infinity)");
     }
     else
     {
-        LogAssert(tmin == 0.0f && tmax > 0.0f, "The rat must have t in [0,infinity)");
+        LogAssert(
+            tmin == 0.0f && tmax > 0.0f,
+            "The ray must have t in [0,infinity)");
     }
 
     mOrigin = origin;
@@ -61,15 +64,16 @@ PickRecord const& Picker::GetClosestToZero() const
 {
     if (records.size() > 0)
     {
-        auto iter = records.begin(), end = records.end(), candidate = iter;
-        float closest = iter->distanceToLinePoint;
-        for (/**/; iter != end; ++iter)
+        float closest = std::numeric_limits<float>::max();
+        PickRecord const* candidate = nullptr;
+        for (size_t i = 0; i < records.size(); ++i)
         {
-            float tmp = iter->distanceToLinePoint;
+            auto const& record = records[i];
+            float tmp = record.distanceToLinePoint;
             if (tmp < closest)
             {
                 closest = tmp;
-                candidate = iter;
+                candidate = &record;
             }
         }
         return *candidate;
@@ -85,26 +89,29 @@ PickRecord const& Picker::GetClosestNonnegative() const
     if (records.size() > 0)
     {
         // Get first nonnegative value.
-        auto iter = records.begin(), end = records.end(), candidate = iter;
         float closest = std::numeric_limits<float>::max();
-        for (/**/; iter != end; ++iter)
+        PickRecord const* candidate = nullptr;
+        size_t i;
+        for (i = 0; i < records.size(); ++i)
         {
-            if (iter->t >= 0.0f)
+            auto const& record = records[i];
+            if (record.t >= 0.0f)
             {
-                closest = iter->distanceToLinePoint;
-                candidate = iter;
+                closest = record.distanceToLinePoint;
+                candidate = &record;
                 break;
             }
         }
 
-        if (iter != end)
+        if (i < records.size())
         {
-            for (++iter; iter != end; ++iter)
+            for (++i; i < records.size(); ++i)
             {
-                if (iter->t >= 0.0f && iter->distanceToLinePoint < closest)
+                auto const& record = records[i];
+                if (record.t >= 0.0f && record.distanceToLinePoint < closest)
                 {
-                    closest = iter->distanceToLinePoint;
-                    candidate = iter;
+                    closest = record.distanceToLinePoint;
+                    candidate = &record;
                 }
             }
             return *candidate;
@@ -126,26 +133,29 @@ PickRecord const& Picker::GetClosestNonpositive() const
     if (records.size() > 0)
     {
         // Get first nonpositive value.
-        auto iter = records.begin(), end = records.end(), candidate = iter;
         float closest = std::numeric_limits<float>::max();
-        for (/**/; iter != end; ++iter)
+        PickRecord const* candidate = nullptr;
+        size_t i;
+        for (i = 0; i < records.size(); ++i)
         {
-            if (iter->t <= 0.0f)
+            auto const& record = records[i];
+            if (record.t <= 0.0f)
             {
-                closest = iter->distanceToLinePoint;
-                candidate = iter;
+                closest = record.distanceToLinePoint;
+                candidate = &record;
                 break;
             }
         }
 
-        if (iter != end)
+        if (i < records.size())
         {
-            for (++iter; iter != end; ++iter)
+            for (++i; i < records.size(); ++i)
             {
-                if (iter->t <= 0.0f && closest < iter->distanceToLinePoint)
+                auto const& record = records[i];
+                if (record.t <= 0.0f && closest < record.distanceToLinePoint)
                 {
-                    closest = iter->distanceToLinePoint;
-                    candidate = iter;
+                    closest = record.distanceToLinePoint;
+                    candidate = &record;
                 }
             }
             return *candidate;
@@ -190,16 +200,16 @@ void Picker::ExecuteRecursive(std::shared_ptr<Spatial> const& object)
 
             // Get the position data.
             VertexBuffer* vbuffer = visual->GetVertexBuffer().get();
-            std::set<DFType> required;
+            std::set<uint32_t> required;
             required.insert(DF_R32G32B32_FLOAT);
             required.insert(DF_R32G32B32A32_FLOAT);
-            char const* positions = vbuffer->GetChannel(VA_POSITION, 0, required);
+            char const* positions = vbuffer->GetChannel(VASemantic::POSITION, 0, required);
             LogAssert(positions != nullptr, "Expecting 3D positions.");
 
             // The picking algorithm depends on the primitive type.
-            unsigned int vstride = vbuffer->GetElementSize();
+            uint32_t vstride = vbuffer->GetElementSize();
             IndexBuffer* ibuffer = visual->GetIndexBuffer().get();
-            IPType primitiveType = ibuffer->GetPrimitiveType();
+            uint32_t primitiveType = ibuffer->GetPrimitiveType();
             if (primitiveType & IP_HAS_TRIANGLES)
             {
                 PickTriangles(visual, positions, vstride, ibuffer, line);
@@ -221,8 +231,8 @@ void Picker::ExecuteRecursive(std::shared_ptr<Spatial> const& object)
     {
         if (node->worldBound.TestIntersection(HProject(mOrigin), HProject(mDirection), mTMin, mTMax))
         {
-            int const numChildren = node->GetNumChildren();
-            for (int i = 0; i < numChildren; ++i)
+            int32_t const numChildren = node->GetNumChildren();
+            for (int32_t i = 0; i < numChildren; ++i)
             {
                 std::shared_ptr<Spatial> child = node->GetChild(i);
                 if (child)
@@ -242,7 +252,7 @@ void Picker::ExecuteRecursive(std::shared_ptr<Spatial> const& object)
 
 
 void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* positions,
-    unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line)
+    uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line)
 {
     // Partition the items for multiple threads.
     auto const firstTriangle = ibuffer->GetFirstPrimitive();
@@ -252,18 +262,18 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
     if (numThreads > 1)
     {
         auto const numPerThread = numTriangles / numThreads;
-        std::vector<int> imin(numThreads), imax(numThreads);
-        for (unsigned int t = 0; t < numThreads; ++t)
+        std::vector<int32_t> imin(numThreads), imax(numThreads);
+        for (uint32_t t = 0; t < numThreads; ++t)
         {
             imin[t] = firstTriangle + t * numPerThread;
             imax[t] = imin[t] + numPerThread - 1;
         }
-        imax[numThreads - 1] = firstTriangle + numTriangles - 1;
+        imax[static_cast<size_t>(numThreads) - 1] = firstTriangle + numTriangles - 1;
 
         // Process blocks of items in multiple threads.
         std::vector<std::thread> process(numThreads);
         std::vector<std::vector<PickRecord>> threadOutputs(numThreads);
-        for (unsigned int t = 0; t < numThreads; ++t)
+        for (uint32_t t = 0; t < numThreads; ++t)
         {
             auto const i0 = imin[t];
             auto const i1 = imax[t];
@@ -276,7 +286,7 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
         }
 
         // Wait for all threads to finish.
-        for (unsigned int t = 0; t < numThreads; ++t)
+        for (uint32_t t = 0; t < numThreads; ++t)
         {
             process[t].join();
             std::copy(threadOutputs[t].begin(), threadOutputs[t].end(), std::back_inserter(records));
@@ -290,16 +300,16 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
 }
 
 void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* positions,
-    unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line,
-    unsigned int i0, unsigned int i1, std::vector<PickRecord>& output) const
+    uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line,
+    uint32_t i0, uint32_t i1, std::vector<PickRecord>& output) const
 {
     // Compute intersections with the model-space triangles.
     bool isIndexed = ibuffer->IsIndexed();
     IPType primitiveType = ibuffer->GetPrimitiveType();
-    for (unsigned int i = i0; i <= i1; ++i)
+    for (uint32_t i = i0; i <= i1; ++i)
     {
         // Get the vertex indices for the triangle.
-        unsigned int v0, v1, v2;
+        uint32_t v0, v1, v2;
         if (isIndexed)
         {
             ibuffer->GetTriangle(i, v0, v1, v2);
@@ -312,16 +322,16 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
         }
         else  // primitiveType == IP_TRISTRIP
         {
-            int offset = (i & 1);
+            uint32_t offset = (i & 1);
             v0 = i + offset;
             v1 = i + 1 + offset;
             v2 = i + 2 - offset;
         }
 
         // Get the vertex positions.
-        Vector3<float> const& p0 = *(Vector3<float> const*)(positions + v0 * vstride);
-        Vector3<float> const& p1 = *(Vector3<float> const*)(positions + v1 * vstride);
-        Vector3<float> const& p2 = *(Vector3<float> const*)(positions + v2 * vstride);
+        Vector3<float> const& p0 = *(Vector3<float> const*)(positions + static_cast<size_t>(v0) * vstride);
+        Vector3<float> const& p1 = *(Vector3<float> const*)(positions + static_cast<size_t>(v1) * vstride);
+        Vector3<float> const& p2 = *(Vector3<float> const*)(positions + static_cast<size_t>(v2) * vstride);
 
         // Create the query triangle in model space.
         Triangle3<float> triangle(p0, p1, p2);
@@ -329,17 +339,15 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
         // Compute line-triangle intersection.
         FIQuery<float, Line3<float>, Triangle3<float>> query;
         auto result = query(line, triangle);
-        if (result.intersect
-            && mTMin <= result.parameter
-            && result.parameter <= mTMax)
+        if (result.intersect && mTMin <= result.parameter && result.parameter <= mTMax)
         {
             PickRecord record;
             record.visual = visual;
             record.primitiveType = primitiveType;
             record.primitiveIndex = i;
-            record.vertexIndex[0] = static_cast<int>(v0);
-            record.vertexIndex[1] = static_cast<int>(v1);
-            record.vertexIndex[2] = static_cast<int>(v2);
+            record.vertexIndex[0] = static_cast<int32_t>(v0);
+            record.vertexIndex[1] = static_cast<int32_t>(v1);
+            record.vertexIndex[2] = static_cast<int32_t>(v2);
             record.t = result.parameter;
             record.bary[0] = result.triangleBary[0];
             record.bary[1] = result.triangleBary[1];
@@ -366,17 +374,17 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
 }
 
 void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* positions,
-    unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line)
+    uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line)
 {
     // Compute distances from the model-space segments to the line.
-    unsigned int const firstSegment = ibuffer->GetFirstPrimitive();
-    unsigned int const numSegments = ibuffer->GetNumActivePrimitives();
+    uint32_t const firstSegment = ibuffer->GetFirstPrimitive();
+    uint32_t const numSegments = ibuffer->GetNumActivePrimitives();
     bool isIndexed = ibuffer->IsIndexed();
     IPType primitiveType = ibuffer->GetPrimitiveType();
-    for (unsigned int i = firstSegment; i < firstSegment + numSegments; ++i)
+    for (uint32_t i = firstSegment; i < firstSegment + numSegments; ++i)
     {
         // Get the vertex indices for the segment.
-        unsigned int v0, v1;
+        uint32_t v0, v1;
         if (isIndexed)
         {
             ibuffer->GetSegment(i, v0, v1);
@@ -393,8 +401,8 @@ void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* pos
         }
 
         // Get the vertex positions.
-        auto p0 = *reinterpret_cast<Vector3<float> const*>(positions + v0 * vstride);
-        auto p1 = *reinterpret_cast<Vector3<float> const*>(positions + v1 * vstride);
+        auto p0 = *reinterpret_cast<Vector3<float> const*>(positions + static_cast<size_t>(v0) * vstride);
+        auto p1 = *reinterpret_cast<Vector3<float> const*>(positions + static_cast<size_t>(v1) * vstride);
 
         // Create the query segment in model space.
         Segment3<float> segment(p0, p1);
@@ -408,8 +416,8 @@ void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* pos
             record.visual = visual;
             record.primitiveType = primitiveType;
             record.primitiveIndex = i;
-            record.vertexIndex[0] = static_cast<int>(v0);
-            record.vertexIndex[1] = static_cast<int>(v1);
+            record.vertexIndex[0] = static_cast<int32_t>(v0);
+            record.vertexIndex[1] = static_cast<int32_t>(v1);
             record.vertexIndex[2] = -1;
             record.t = result.parameter[0];
             record.bary[0] = 1.0f - result.parameter[1];
@@ -435,16 +443,16 @@ void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* pos
 }
 
 void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* positions,
-    unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line)
+    uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line)
 {
     // Compute distances from the model-space points to the line.
-    unsigned int const firstPoint = ibuffer->GetFirstPrimitive();
-    unsigned int const numPoints = ibuffer->GetNumActivePrimitives();
+    uint32_t const firstPoint = ibuffer->GetFirstPrimitive();
+    uint32_t const numPoints = ibuffer->GetNumActivePrimitives();
     bool isIndexed = ibuffer->IsIndexed();
-    for (unsigned int i = firstPoint; i < firstPoint + numPoints; ++i)
+    for (uint32_t i = firstPoint; i < firstPoint + numPoints; ++i)
     {
         // Get the vertex index for the point.
-        unsigned int v;
+        uint32_t v;
         if (isIndexed)
         {
             ibuffer->GetPoint(i, v);
@@ -455,7 +463,7 @@ void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* posit
         }
 
         // Get the vertex position.
-        auto p = *reinterpret_cast<Vector3<float> const*>(positions + v * vstride);
+        auto p = *reinterpret_cast<Vector3<float> const*>(positions + static_cast<size_t>(v) * vstride);
 
         // Compute point-line distance.
         DCPQuery<float, Vector3<float>, Line3<float>> query;
@@ -466,7 +474,7 @@ void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* posit
             record.visual = visual;
             record.primitiveType = IP_POLYPOINT;
             record.primitiveIndex = i;
-            record.vertexIndex[0] = static_cast<int>(v);
+            record.vertexIndex[0] = static_cast<int32_t>(v);
             record.vertexIndex[1] = -1;
             record.vertexIndex[2] = -1;
             record.t = result.parameter;

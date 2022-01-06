@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.08.01
+// Version: 6.0.2022.01.06
 
 #include "DistanceAlignedBoxesWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -13,19 +13,19 @@ DistanceAlignedBoxesWindow3::DistanceAlignedBoxesWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
     mEngine->SetBlendState(mBlendState);
 
     CreateScene();
@@ -57,7 +57,7 @@ void DistanceAlignedBoxesWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool DistanceAlignedBoxesWindow3::OnCharPress(unsigned char key, int x, int y)
+bool DistanceAlignedBoxesWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const delta = 0.1f;
 
@@ -110,7 +110,7 @@ bool DistanceAlignedBoxesWindow3::OnCharPress(unsigned char key, int x, int y)
 void DistanceAlignedBoxesWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -142,7 +142,7 @@ void DistanceAlignedBoxesWindow3::CreateScene()
     mPVWMatrices.Subscribe(mBox1Mesh->worldTransform, mBlueEffect->GetPVWMatrixConstant());
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_DISJOINT, 1);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 0.0f, 0.0f, 0.0f, 1.0f });
@@ -169,7 +169,7 @@ void DistanceAlignedBoxesWindow3::CreateScene()
     mTrackBall.Update();
 }
 
-void DistanceAlignedBoxesWindow3::Translate(int direction, float delta)
+void DistanceAlignedBoxesWindow3::Translate(int32_t direction, float delta)
 {
     mBox1.min[direction] += delta;
     mBox1.max[direction] += delta;

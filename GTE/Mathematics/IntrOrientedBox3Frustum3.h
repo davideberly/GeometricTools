@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -63,7 +63,7 @@ namespace gte
             std::array<Real, 3> RBpUA;  // rmax*Dot(U,A[i]) + umax*Dot(R,A[i])
             std::array<Real, 3> RBmUA;  // rmax*Dot(U,A[i]) - umax*Dot(R,A[i])
             Real DdD, radius, p, fmin, fmax, MTwoUF, MTwoRF, tmp;
-            int i, j;
+            int32_t i, j;
 
             // M = D
             D[2] = Dot(diff, frustum.dVector);

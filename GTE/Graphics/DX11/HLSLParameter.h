@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DX11/HLSLResource.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -16,14 +17,28 @@ namespace gte
     public:
         struct Description
         {
+            Description()
+                :
+                semanticName(""),
+                semanticIndex(0),
+                registerIndex(0),
+                systemValueType(D3D_NAME_UNDEFINED),
+                componentType(D3D_REGISTER_COMPONENT_UNKNOWN),
+                mask(0),
+                readWriteMask(0),
+                stream(0),
+                minPrecision(D3D_MIN_PRECISION_DEFAULT)
+            {
+            }
+
             std::string semanticName;
-            unsigned int semanticIndex;
-            unsigned int registerIndex;
+            uint32_t semanticIndex;
+            uint32_t registerIndex;
             D3D_NAME systemValueType;
             D3D_REGISTER_COMPONENT_TYPE componentType;
-            unsigned int mask;
-            unsigned int readWriteMask;
-            unsigned int stream;
+            uint32_t mask;
+            uint32_t readWriteMask;
+            uint32_t stream;
             D3D_MIN_PRECISION minPrecision;
         };
 
@@ -37,12 +52,12 @@ namespace gte
             return mDesc.semanticName;
         }
 
-        inline unsigned int GetSemanticIndex() const
+        inline uint32_t GetSemanticIndex() const
         {
             return mDesc.semanticIndex;
         }
 
-        inline unsigned int GetRegisterIndex() const
+        inline uint32_t GetRegisterIndex() const
         {
             return mDesc.registerIndex;
         }
@@ -57,17 +72,17 @@ namespace gte
             return mDesc.componentType;
         }
 
-        inline unsigned int GetMask() const
+        inline uint32_t GetMask() const
         {
             return mDesc.mask;
         }
 
-        inline unsigned int GetReadWriteMask() const
+        inline uint32_t GetReadWriteMask() const
         {
             return mDesc.readWriteMask;
         }
 
-        inline unsigned int GetStream() const
+        inline uint32_t GetStream() const
         {
             return mDesc.stream;
         }

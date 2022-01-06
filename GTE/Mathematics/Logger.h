@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ if (!(condition)) { throw exception(std::string(__FILE__) + "(" + std::string(__
 { throw exception(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
 
 // The report uses the specified source file, function and line. The file
-// and function are type 'char const*' and the line is type 'int'.
+// and function are type 'char const*' and the line is type 'int32_t'.
 #define GTE_ASSERT_INDIRECT(condition, exception, file, function, line, message) \
 if (!(condition)) { throw exception(std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
 

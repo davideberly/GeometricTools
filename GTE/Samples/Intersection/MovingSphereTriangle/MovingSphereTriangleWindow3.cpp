@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.12
+// Version: 6.0.2022.01.06
 
 #include "MovingSphereTriangleWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -24,13 +24,13 @@ MovingSphereTriangleWindow3::MovingSphereTriangleWindow3(Parameters& parameters)
 {
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     CreateScene();
@@ -62,7 +62,7 @@ void MovingSphereTriangleWindow3::OnIdle()
         mEngine->Draw(mSphereVisual);
     }
     mEngine->Draw(mVelocityVisual);
-    if (mSphereContactVisual->culling != CullingMode::CULL_ALWAYS)
+    if (mSphereContactVisual->culling != CullingMode::ALWAYS)
     {
         mEngine->Draw(mPointContactVisual);
         if (mDrawSphereVisual)
@@ -72,11 +72,11 @@ void MovingSphereTriangleWindow3::OnIdle()
     }
 
     mEngine->Draw(mTriangleVisual);
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
         mEngine->Draw(mVertexVisual[i]);
     }
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
         mEngine->Draw(mEdgeVisual[i]);
     }
@@ -93,7 +93,7 @@ void MovingSphereTriangleWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MovingSphereTriangleWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MovingSphereTriangleWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -196,7 +196,7 @@ void MovingSphereTriangleWindow3::CreateScene()
 void MovingSphereTriangleWindow3::CreateTriangleFaces()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 3);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = mTriangle.v[0];
@@ -227,9 +227,10 @@ void MovingSphereTriangleWindow3::CreateTriangleFaces()
 
 void MovingSphereTriangleWindow3::CreateHalfCylinders()
 {
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
-        CreateHalfCylinder(i, mTriangle.v[i], mTriangle.v[(i+1) % 3],
+        size_t iNext = (static_cast<size_t>(i) + 1) % 3;
+        CreateHalfCylinder(i, mTriangle.v[i], mTriangle.v[iNext],
             mTriangleNormal, mSphere.radius);
     }
 
@@ -237,32 +238,31 @@ void MovingSphereTriangleWindow3::CreateHalfCylinders()
 
 void MovingSphereTriangleWindow3::CreateSphereWedges()
 {
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
         CreateSphere(i, mTriangle.v[i], mSphere.radius);
     }
 }
 
-void MovingSphereTriangleWindow3::CreateHalfCylinder(int i, Vector3<float> const& P0,
+void MovingSphereTriangleWindow3::CreateHalfCylinder(int32_t i, Vector3<float> const& P0,
     Vector3<float> const& P1, Vector3<float> const& normal, float radius)
 {
     Vector3<float> E = P1 - P0;
     Vector3<float> V = UnitCross(E, normal);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    unsigned int const density = 32;
+    uint32_t const density = 32;
     mEdgeVisual[i] = mf.CreateRectangle(density, density, 1.0f, 1.0f);
-    auto vbuffer = mEdgeVisual[i]->GetVertexBuffer();
-    auto ibuffer = mEdgeVisual[i]->GetIndexBuffer();
+    auto const& vbuffer = mEdgeVisual[i]->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vector3<float>>();
     float const divisor = static_cast<float>(density - 1);
-    for (unsigned int row = 0; row < density; ++row)
+    for (uint32_t row = 0; row < density; ++row)
     {
         float z = static_cast<float>(row) / divisor;
-        for (unsigned int col = 0; col < density; ++col)
+        for (uint32_t col = 0; col < density; ++col)
         {
             float angle = static_cast<float>(GTE_C_PI) * static_cast<float>(col) / divisor;
             float cs = std::cos(angle), sn = std::sin(angle);
@@ -278,13 +278,13 @@ void MovingSphereTriangleWindow3::CreateHalfCylinder(int i, Vector3<float> const
     mSSVNode->AttachChild(mEdgeVisual[i]);
 }
 
-void MovingSphereTriangleWindow3::CreateSphere(int i, Vector3<float> const& C, float radius)
+void MovingSphereTriangleWindow3::CreateSphere(int32_t i, Vector3<float> const& C, float radius)
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    unsigned int const density = 32;
+    uint32_t const density = 32;
     mVertexVisual[i] = mf.CreateSphere(density, density, radius);
     mVertexVisual[i]->localTransform.SetTranslation(C);
 
@@ -298,7 +298,7 @@ void MovingSphereTriangleWindow3::CreateSphere(int i, Vector3<float> const& C, f
 void MovingSphereTriangleWindow3::CreateSpheres()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mSphereVisual = mf.CreateSphere(16, 16, mSphere.radius);
@@ -311,7 +311,7 @@ void MovingSphereTriangleWindow3::CreateSpheres()
 
     mSphereContactVisual = mf.CreateSphere(16, 16, mSphere.radius);
     color = { 0.25f, 0.25f, 0.25f, mAlpha };
-    mSphereContactVisual->culling = CullingMode::CULL_ALWAYS;
+    mSphereContactVisual->culling = CullingMode::ALWAYS;
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color);
     mSphereContactVisual->SetEffect(effect);
     mSphereContactVisual->localTransform.SetTranslation(mSphere.center);
@@ -330,7 +330,7 @@ void MovingSphereTriangleWindow3::CreateSpheres()
 void MovingSphereTriangleWindow3::CreateMotionCylinder()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { 0.0f, 0.0f, 0.0f };
@@ -351,9 +351,9 @@ void MovingSphereTriangleWindow3::UpdateSphereVelocity()
     float cs1 = std::cos(angle1), sn1 = std::sin(angle1);
     mSphereVelocity = { cs0 * sn1, sn0 * sn1, cs1 };
 
-    Vector3<float> basis[3];
+    std::array<Vector3<float>, 3> basis{};
     basis[0] = mSphereVelocity;
-    ComputeOrthogonalComplement(1, basis);
+    ComputeOrthogonalComplement(1, basis.data());
     Matrix3x3<float> rotate;
     rotate.SetCol(0, basis[1]);
     rotate.SetCol(1, basis[2]);
@@ -368,7 +368,7 @@ void MovingSphereTriangleWindow3::UpdateSphereVelocity()
     if (intersect)
     {
         Vector3<float> P = result.contactPoint;
-        mSphereContactVisual->culling = CullingMode::CULL_DYNAMIC;
+        mSphereContactVisual->culling = CullingMode::DYNAMIC;
         mSphereContactVisual->localTransform.SetTranslation(P);
         mSphereContactVisual->Update();
         mPointContactVisual->localTransform.SetTranslation(P);
@@ -380,7 +380,7 @@ void MovingSphereTriangleWindow3::UpdateSphereVelocity()
     }
     else
     {
-        mSphereContactVisual->culling = CullingMode::CULL_ALWAYS;
+        mSphereContactVisual->culling = CullingMode::ALWAYS;
         mMessage = "";
     }
 #else
@@ -389,9 +389,9 @@ void MovingSphereTriangleWindow3::UpdateSphereVelocity()
     Vector3<Rational> rSphereVelocity, rTriangleVelocity;
     rSphere.center = { mSphere.center[0], mSphere.center[1], mSphere.center[2] };
     rSphere.radius = mSphere.radius;
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             rTriangle.v[i][j] = mTriangle.v[i][j];
         }
@@ -423,7 +423,7 @@ void MovingSphereTriangleWindow3::UpdateSphereVelocity()
     }
     else
     {
-        mSphereContactVisual->culling = CullingMode::CULL_ALWAYS;
+        mSphereContactVisual->culling = CullingMode::ALWAYS;
         mMessage = "";
     }
 #endif

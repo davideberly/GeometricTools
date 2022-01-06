@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,10 +20,10 @@ namespace gte
             Parameters();
 
             Parameters(std::wstring const& inTitle,
-                int inXOrigin, int inYOrigin, int inXSize, int inYSize);
+                int32_t inXOrigin, int32_t inYOrigin, int32_t inXSize, int32_t inYSize);
 
             std::wstring title;
-            int xOrigin, yOrigin, xSize, ySize;
+            int32_t xOrigin, yOrigin, xSize, ySize;
             bool allowResize, useDepth24Stencil8, created;
         };
 
@@ -45,22 +45,22 @@ namespace gte
             return mTitle;
         }
 
-        inline int GetXOrigin() const
+        inline int32_t GetXOrigin() const
         {
             return mXOrigin;
         }
 
-        inline int GetYOrigin() const
+        inline int32_t GetYOrigin() const
         {
             return mYOrigin;
         }
 
-        inline int GetXSize() const
+        inline int32_t GetXSize() const
         {
             return mXSize;
         }
 
-        inline int GetYSize() const
+        inline int32_t GetYSize() const
         {
             return mYSize;
         }
@@ -81,8 +81,8 @@ namespace gte
         }
 
         // Display callbacks.
-        virtual void OnMove(int x, int y);
-        virtual bool OnResize(int xSize, int ySize);
+        virtual void OnMove(int32_t x, int32_t y);
+        virtual bool OnResize(int32_t xSize, int32_t ySize);
         virtual void OnMinimize();
         virtual void OnMaximize();
         virtual void OnDisplay();
@@ -92,21 +92,21 @@ namespace gte
         // upper-case and lower-case letters; OnKeyDown and OnKeyUp do not.
         // For OnCharPress, pressing KEY_ESCAPE terminates the application.
         // Pressing ' ' resets the application timer.
-        virtual bool OnCharPress(unsigned char key, int x, int y);
-        virtual bool OnKeyDown(int key, int x, int y);
-        virtual bool OnKeyUp(int key, int x, int y);
+        virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y);
+        virtual bool OnKeyDown(int32_t key, int32_t x, int32_t y);
+        virtual bool OnKeyUp(int32_t key, int32_t x, int32_t y);
 
         // Mouse callbacks and state information.
         // TODO: HACK FOR NOW. Once these are removed, all the sample
         // applications must have their signatures changed.
-        typedef int MouseButton;
-        typedef int MouseState;
+        typedef int32_t MouseButton;
+        typedef int32_t MouseState;
         // END TODO;
-        virtual bool OnMouseClick(int button, int state, int x, int y, unsigned int modifiers);
-        virtual bool OnMouseMotion(int button, int x, int y, unsigned int modifiers);
-        virtual bool OnMouseWheel(int delta, int x, int y, unsigned int modifiers);
-        virtual void SetMousePosition(int x, int y);
-        virtual void GetMousePosition(int& x, int& y) const;
+        virtual bool OnMouseClick(int32_t button, int32_t state, int32_t x, int32_t y, uint32_t modifiers);
+        virtual bool OnMouseMotion(int32_t button, int32_t x, int32_t y, uint32_t modifiers);
+        virtual bool OnMouseWheel(int32_t delta, int32_t x, int32_t y, uint32_t modifiers);
+        virtual void SetMousePosition(int32_t x, int32_t y);
+        virtual void GetMousePosition(int32_t& x, int32_t& y) const;
 
         // Actions to take before the window closes.
         virtual void OnClose();
@@ -114,61 +114,61 @@ namespace gte
         // Key identifiers. These are platform-specific, so classes that
         // derived from WindowApplication must define these variables. They
         // are not defined by WindowApplication itself.
-        static int const KEY_ESCAPE;
-        static int const KEY_LEFT;
-        static int const KEY_RIGHT;
-        static int const KEY_UP;
-        static int const KEY_DOWN;
-        static int const KEY_HOME;
-        static int const KEY_END;
-        static int const KEY_PAGE_UP;
-        static int const KEY_PAGE_DOWN;
-        static int const KEY_INSERT;
-        static int const KEY_DELETE;
-        static int const KEY_F1;
-        static int const KEY_F2;
-        static int const KEY_F3;
-        static int const KEY_F4;
-        static int const KEY_F5;
-        static int const KEY_F6;
-        static int const KEY_F7;
-        static int const KEY_F8;
-        static int const KEY_F9;
-        static int const KEY_F10;
-        static int const KEY_F11;
-        static int const KEY_F12;
-        static int const KEY_BACKSPACE;
-        static int const KEY_TAB;
-        static int const KEY_ENTER;
-        static int const KEY_RETURN;
+        static int32_t const KEY_ESCAPE;
+        static int32_t const KEY_LEFT;
+        static int32_t const KEY_RIGHT;
+        static int32_t const KEY_UP;
+        static int32_t const KEY_DOWN;
+        static int32_t const KEY_HOME;
+        static int32_t const KEY_END;
+        static int32_t const KEY_PAGE_UP;
+        static int32_t const KEY_PAGE_DOWN;
+        static int32_t const KEY_INSERT;
+        static int32_t const KEY_DELETE;
+        static int32_t const KEY_F1;
+        static int32_t const KEY_F2;
+        static int32_t const KEY_F3;
+        static int32_t const KEY_F4;
+        static int32_t const KEY_F5;
+        static int32_t const KEY_F6;
+        static int32_t const KEY_F7;
+        static int32_t const KEY_F8;
+        static int32_t const KEY_F9;
+        static int32_t const KEY_F10;
+        static int32_t const KEY_F11;
+        static int32_t const KEY_F12;
+        static int32_t const KEY_BACKSPACE;
+        static int32_t const KEY_TAB;
+        static int32_t const KEY_ENTER;
+        static int32_t const KEY_RETURN;
 
         // Keyboard modifiers.
-        static int const KEY_SHIFT;
-        static int const KEY_CONTROL;
-        static int const KEY_ALT;
-        static int const KEY_COMMAND;
+        static int32_t const KEY_SHIFT;
+        static int32_t const KEY_CONTROL;
+        static int32_t const KEY_ALT;
+        static int32_t const KEY_COMMAND;
 
         // Mouse buttons.
-        static int const MOUSE_NONE;
-        static int const MOUSE_LEFT;
-        static int const MOUSE_MIDDLE;
-        static int const MOUSE_RIGHT;
+        static int32_t const MOUSE_NONE;
+        static int32_t const MOUSE_LEFT;
+        static int32_t const MOUSE_MIDDLE;
+        static int32_t const MOUSE_RIGHT;
 
         // Mouse state.
-        static int const MOUSE_UP;
-        static int const MOUSE_DOWN;
+        static int32_t const MOUSE_UP;
+        static int32_t const MOUSE_DOWN;
 
         // Mouse modifiers.
-        static int const MODIFIER_CONTROL;
-        static int const MODIFIER_LBUTTON;
-        static int const MODIFIER_MBUTTON;
-        static int const MODIFIER_RBUTTON;
-        static int const MODIFIER_SHIFT;
+        static int32_t const MODIFIER_CONTROL;
+        static int32_t const MODIFIER_LBUTTON;
+        static int32_t const MODIFIER_MBUTTON;
+        static int32_t const MODIFIER_RBUTTON;
+        static int32_t const MODIFIER_SHIFT;
 
     protected:
         // Standard window information.
         std::wstring mTitle;
-        int mXOrigin, mYOrigin, mXSize, mYSize;
+        int32_t mXOrigin, mYOrigin, mXSize, mYSize;
         bool mAllowResize;
         bool mIsMinimized;
         bool mIsMaximized;

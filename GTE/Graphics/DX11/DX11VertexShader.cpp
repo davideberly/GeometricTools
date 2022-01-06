@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11VertexShader.h>
@@ -13,7 +13,7 @@ DX11VertexShader::DX11VertexShader(ID3D11Device* device, Shader const* shader)
     :
     DX11Shader(shader)
 {
-    std::vector<unsigned char> const& code = shader->GetCompiledCode();
+    std::vector<uint8_t> const& code = shader->GetCompiledCode();
 
     ID3D11ClassLinkage* linkage = nullptr;
     ID3D11VertexShader* dxShader = nullptr;
@@ -57,7 +57,7 @@ void DX11VertexShader::Disable(ID3D11DeviceContext* context)
 }
 
 void DX11VertexShader::EnableCBuffer(ID3D11DeviceContext* context,
-    unsigned int bindPoint, ID3D11Buffer* buffer)
+    uint32_t bindPoint, ID3D11Buffer* buffer)
 {
     if (mDXObject)
     {
@@ -67,7 +67,7 @@ void DX11VertexShader::EnableCBuffer(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::DisableCBuffer(ID3D11DeviceContext* context,
-    unsigned int bindPoint)
+    uint32_t bindPoint)
 {
     if (mDXObject)
     {
@@ -77,7 +77,7 @@ void DX11VertexShader::DisableCBuffer(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::EnableSRView(ID3D11DeviceContext* context,
-    unsigned int bindPoint, ID3D11ShaderResourceView* srView)
+    uint32_t bindPoint, ID3D11ShaderResourceView* srView)
 {
     if (mDXObject)
     {
@@ -87,7 +87,7 @@ void DX11VertexShader::EnableSRView(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::DisableSRView(ID3D11DeviceContext* context,
-    unsigned int bindPoint)
+    uint32_t bindPoint)
 {
     if (mDXObject)
     {
@@ -97,8 +97,8 @@ void DX11VertexShader::DisableSRView(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::EnableUAView(ID3D11DeviceContext* context,
-    unsigned int bindPoint, ID3D11UnorderedAccessView* uaView,
-    unsigned int initialCount)
+    uint32_t bindPoint, ID3D11UnorderedAccessView* uaView,
+    uint32_t initialCount)
 {
     if (mDXObject)
     {
@@ -109,7 +109,7 @@ void DX11VertexShader::EnableUAView(ID3D11DeviceContext* context,
             "D3D11.1 is required for UAVs in vertex shaders.");
 
         ID3D11UnorderedAccessView* uaViews[1] = { uaView };
-        unsigned int initialCounts[1] = { initialCount };
+        uint32_t initialCounts[1] = { initialCount };
         context->OMSetRenderTargetsAndUnorderedAccessViews(
             D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr,
             bindPoint, 1, uaViews, initialCounts);
@@ -119,7 +119,7 @@ void DX11VertexShader::EnableUAView(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::DisableUAView(ID3D11DeviceContext* context,
-    unsigned int bindPoint)
+    uint32_t bindPoint)
 {
     if (mDXObject)
     {
@@ -130,7 +130,7 @@ void DX11VertexShader::DisableUAView(ID3D11DeviceContext* context,
             "D3D11.1 is required for UAVs in vertex shaders.");
 
         ID3D11UnorderedAccessView* uaViews[1] = { nullptr };
-        unsigned int initialCounts[1] = { 0xFFFFFFFFu };
+        uint32_t initialCounts[1] = { 0xFFFFFFFFu };
         context->OMSetRenderTargetsAndUnorderedAccessViews(
             D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr,
             bindPoint, 1, uaViews, initialCounts);
@@ -140,7 +140,7 @@ void DX11VertexShader::DisableUAView(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::EnableSampler(ID3D11DeviceContext* context,
-    unsigned int bindPoint, ID3D11SamplerState* state)
+    uint32_t bindPoint, ID3D11SamplerState* state)
 {
     if (mDXObject)
     {
@@ -150,7 +150,7 @@ void DX11VertexShader::EnableSampler(ID3D11DeviceContext* context,
 }
 
 void DX11VertexShader::DisableSampler(ID3D11DeviceContext* context,
-    unsigned int bindPoint)
+    uint32_t bindPoint)
 {
     if (mDXObject)
     {

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,13 +19,13 @@ namespace gte
     public:
         // Vertex data types.
         class Vertex;
-        typedef std::shared_ptr<Vertex>(*VCreator)(int);
-        typedef std::map<int, std::shared_ptr<Vertex>> VMap;
+        typedef std::shared_ptr<Vertex>(*VCreator)(int32_t);
+        typedef std::map<int32_t, std::shared_ptr<Vertex>> VMap;
 
         // Edge data types.
         class Edge;
-        typedef std::shared_ptr<Edge>(*ECreator)(int, int);
-        typedef std::map<std::pair<int, int>, std::shared_ptr<Edge>> EMap;
+        typedef std::shared_ptr<Edge>(*ECreator)(int32_t, int32_t);
+        typedef std::map<std::pair<int32_t, int32_t>, std::shared_ptr<Edge>> EMap;
 
         // Vertex object.
         class Vertex
@@ -33,14 +33,14 @@ namespace gte
         public:
             virtual ~Vertex() = default;
 
-            Vertex(int v)
+            Vertex(int32_t v)
                 :
                 V(v)
             {
             }
 
             // The unique vertex index.
-            int V;
+            int32_t V;
 
             // The edges (if any) sharing the vertex.
             std::array<std::weak_ptr<Edge>, 2> E;
@@ -52,14 +52,14 @@ namespace gte
         public:
             virtual ~Edge() = default;
 
-            Edge(int v0, int v1)
+            Edge(int32_t v0, int32_t v1)
                 :
                 V{ v0, v1 }
             {
             }
 
             // Vertices, listed as a directed edge <V[0],V[1]>.
-            std::array<int, 2> V;
+            std::array<int32_t, 2> V;
 
             // Adjacent edges.  E[i] points to edge sharing V[i].
             std::array<std::weak_ptr<Edge>, 2> E;
@@ -101,9 +101,9 @@ namespace gte
         // returned; otherwise, <v0,v1> is in the mesh and nullptr is
         // returned.  If the insertion leads to a nonmanifold mesh, the
         // call fails with a nullptr returned.
-        std::shared_ptr<Edge> Insert(int v0, int v1)
+        std::shared_ptr<Edge> Insert(int32_t v0, int32_t v1)
         {
-            std::pair<int, int> ekey(v0, v1);
+            std::pair<int32_t, int32_t> ekey(v0, v1);
             if (mEMap.find(ekey) != mEMap.end())
             {
                 // The edge already exists.  Return a null pointer as a
@@ -116,9 +116,9 @@ namespace gte
             mEMap[ekey] = edge;
 
             // Add the vertices if they do not already exist.
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
-                int v = edge->V[i];
+                int32_t v = edge->V[i];
                 std::shared_ptr<Vertex> vertex;
                 auto viter = mVMap.find(v);
                 if (viter == mVMap.end())
@@ -153,7 +153,7 @@ namespace gte
                     // Update the adjacent edge.
                     auto adjacent = vertex->E[0].lock();
                     LogAssert(adjacent != nullptr, "Unexpected condition.");
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         if (adjacent->V[j] == v)
                         {
@@ -172,9 +172,9 @@ namespace gte
 
         // If <v0,v1> is in the mesh, it is removed and 'true' is returned;
         // otherwise, <v0,v1> is not in the mesh and 'false' is returned.
-        bool Remove(int v0, int v1)
+        bool Remove(int32_t v0, int32_t v1)
         {
-            std::pair<int, int> ekey(v0, v1);
+            std::pair<int32_t, int32_t> ekey(v0, v1);
             auto eiter = mEMap.find(ekey);
             if (eiter == mEMap.end())
             {
@@ -186,7 +186,7 @@ namespace gte
             std::shared_ptr<Edge> edge = eiter->second;
 
             // Remove the vertices if necessary (when they are not shared).
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 // Inform the vertices the edge is being deleted.
                 auto viter = mVMap.find(edge->V[i]);
@@ -219,7 +219,7 @@ namespace gte
                 auto adjacent = edge->E[i].lock();
                 if (adjacent)
                 {
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         if (adjacent->E[j].lock() == edge)
                         {
@@ -250,7 +250,7 @@ namespace gte
 
     protected:
         // The vertex data and default vertex creation.
-        static std::shared_ptr<Vertex> CreateVertex(int v0)
+        static std::shared_ptr<Vertex> CreateVertex(int32_t v0)
         {
             return std::make_shared<Vertex>(v0);
         }
@@ -259,7 +259,7 @@ namespace gte
         VMap mVMap;
 
         // The edge data and default edge creation.
-        static std::shared_ptr<Edge> CreateEdge(int v0, int v1)
+        static std::shared_ptr<Edge> CreateEdge(int32_t v0, int32_t v1)
         {
             return std::make_shared<Edge>(v0, v1);
         }

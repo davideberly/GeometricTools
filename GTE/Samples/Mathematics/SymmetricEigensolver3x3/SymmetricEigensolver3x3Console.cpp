@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "SymmetricEigensolver3x3Console.h"
 #include <Mathematics/SymmetricEigensolver3x3.h>
@@ -25,7 +25,7 @@ void SymmetricEigensolver3x3Console::Execute()
     std::array<double, 3> eval;
     std::array<std::array<double, 3>, 3> evec;
     SymmetricEigensolver3x3<double> esolver;
-    int iters; (void)iters;  // for debugging, but not used elsewhere
+    int32_t iters; (void)iters;  // for debugging, but not used elsewhere
     double test[3];  // should be (0,0,0)
     double det;  // should be 1
 
@@ -255,7 +255,7 @@ void SymmetricEigensolver3x3Console::Execute()
 
     // Cases where a02 is not zero.
     double maxComponentError = 0.0;
-    for (int i = 0; i < 1024; ++i)
+    for (int32_t i = 0; i < 1024; ++i)
     {
         a00 = rnd(mte);
         a01 = rnd(mte);

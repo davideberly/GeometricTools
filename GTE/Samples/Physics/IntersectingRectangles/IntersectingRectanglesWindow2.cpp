@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.12
+// Version: 6.0.2022.01.06
 
 #include "IntersectingRectanglesWindow2.h"
 
@@ -15,7 +15,7 @@ IntersectingRectanglesWindow2::IntersectingRectanglesWindow2(Parameters& paramet
 {
     std::uniform_real_distribution<float> rnd(0.125f * mSize, 0.875f * mSize);
     std::uniform_real_distribution<float> intrrnd(8.0f, 64.0f);
-    for (int i = 0; i < 16; ++i)
+    for (int32_t i = 0; i < 16; ++i)
     {
         Vector2<float> min{ rnd(mMTE), rnd(mMTE) };
         Vector2<float> max{ min[0] + intrrnd(mMTE), min[1] + intrrnd(mMTE) };
@@ -49,7 +49,7 @@ void IntersectingRectanglesWindow2::OnIdle()
 
 void IntersectingRectanglesWindow2::ModifyRectangles()
 {
-    int i = 0;
+    int32_t i = 0;
     for (auto rectangle : mRectangles)
     {
         float dx = mPerturb(mMTE);
@@ -75,15 +75,15 @@ void IntersectingRectanglesWindow2::ModifyRectangles()
 
 void IntersectingRectanglesWindow2::DrawRectangles()
 {
-    unsigned int const gray = 0xFFC0C0C0, black = 0, red = 0xFF0000FF;
-    int xmin, xmax, ymin, ymax;
+    uint32_t const gray = 0xFFC0C0C0, black = 0, red = 0xFF0000FF;
+    int32_t xmin, xmax, ymin, ymax;
 
     for (auto rectangle : mRectangles)
     {
-        xmin = static_cast<int>(std::lrint(rectangle.min[0]));
-        xmax = static_cast<int>(std::lrint(rectangle.max[0]));
-        ymin = static_cast<int>(std::lrint(rectangle.min[1]));
-        ymax = static_cast<int>(std::lrint(rectangle.max[1]));
+        xmin = static_cast<int32_t>(std::lrint(rectangle.min[0]));
+        xmax = static_cast<int32_t>(std::lrint(rectangle.max[0]));
+        ymin = static_cast<int32_t>(std::lrint(rectangle.min[1]));
+        ymax = static_cast<int32_t>(std::lrint(rectangle.max[1]));
         DrawRectangle(xmin, ymin, xmax, ymax, gray, true);
         DrawRectangle(xmin, ymin, xmax, ymax, black, false);
     }
@@ -91,14 +91,14 @@ void IntersectingRectanglesWindow2::DrawRectangles()
     FIQuery<float, AlignedBox2<float>, AlignedBox2<float>> query;
     for (auto const& overlap : mManager->GetOverlap())
     {
-        int i0 = overlap.V[0], i1 = overlap.V[1];
+        int32_t i0 = overlap.V[0], i1 = overlap.V[1];
         auto result = query(mRectangles[i0], mRectangles[i1]);
         if (result.intersect)
         {
-            xmin = static_cast<int>(std::lrint(result.box.min[0]));
-            xmax = static_cast<int>(std::lrint(result.box.max[0]));
-            ymin = static_cast<int>(std::lrint(result.box.min[1]));
-            ymax = static_cast<int>(std::lrint(result.box.max[1]));
+            xmin = static_cast<int32_t>(std::lrint(result.box.min[0]));
+            xmax = static_cast<int32_t>(std::lrint(result.box.max[0]));
+            ymin = static_cast<int32_t>(std::lrint(result.box.min[1]));
+            ymax = static_cast<int32_t>(std::lrint(result.box.max[1]));
             DrawRectangle(xmin, ymin, xmax, ymax, red, true);
             DrawRectangle(xmin, ymin, xmax, ymax, black, false);
         }

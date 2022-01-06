@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45TextureCubeArray.h>
@@ -45,9 +45,9 @@ GL45TextureCubeArray::GL45TextureCubeArray(TextureCubeArray const* texture)
         {
             // Initialize with the first mipmap level and then generate
             // the remaining mipmaps.
-            for (unsigned int cube = 0; cube < numCubes; ++cube)
+            for (uint32_t cube = 0; cube < numCubes; ++cube)
             {
-                for (unsigned int face = 0; face < texture->CubeFaceCount; ++face)
+                for (uint32_t face = 0; face < texture->cubeFaceCount; ++face)
                 {
                     auto data = texture->GetDataFor(cube, face, 0);
                     if (data)
@@ -62,11 +62,11 @@ GL45TextureCubeArray::GL45TextureCubeArray(TextureCubeArray const* texture)
         else
         {
             // Initialize with each mipmap level.
-            for (unsigned int cube = 0; cube < numCubes; ++cube)
+            for (uint32_t cube = 0; cube < numCubes; ++cube)
             {
-                for (unsigned int face = 0; face < texture->CubeFaceCount; ++face)
+                for (uint32_t face = 0; face < texture->cubeFaceCount; ++face)
                 {
-                    for (int level = 0; level < mNumLevels; ++level)
+                    for (int32_t level = 0; level < mNumLevels; ++level)
                     {
                         auto data = texture->GetDataFor(cube, face, level);
                         if (data)
@@ -105,7 +105,7 @@ bool GL45TextureCubeArray::CanAutoGenerateMipmaps() const
     return texture && texture->HasMipmaps() && texture->WantAutogenerateMipmaps();
 }
 
-void GL45TextureCubeArray::LoadTextureLevel(unsigned int item, unsigned int level, void const* data)
+void GL45TextureCubeArray::LoadTextureLevel(uint32_t item, uint32_t level, void const* data)
 {
     auto texture = GetTexture();
     if (texture && level < texture->GetNumLevels())

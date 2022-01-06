@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -45,10 +45,10 @@ namespace gte
 
             // Determine whether the polygon vertices are outside the
             // halfspace, inside the halfspace, or on the halfspace boundary.
-            int const numVertices = static_cast<int>(polygon.size());
+            int32_t const numVertices = static_cast<int32_t>(polygon.size());
             std::vector<T> distance(numVertices);
-            int positive = 0, negative = 0, positiveIndex = -1;
-            for (int i = 0; i < numVertices; ++i)
+            int32_t positive = 0, negative = 0, positiveIndex = -1;
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 distance[i] = Dot(halfspace.normal, polygon[i]) - halfspace.constant;
                 if (distance[i] > (T)0)
@@ -82,7 +82,7 @@ namespace gte
 
             // The line transversely intersects the polygon. Clip the polygon.
             Vector2<T> vertex;
-            int curr, prev;
+            int32_t curr, prev;
             T t;
 
             if (positiveIndex > 0)

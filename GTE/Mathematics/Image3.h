@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -30,9 +30,9 @@ namespace gte
         {
         }
 
-        Image3(int dimension0, int dimension1, int dimension2)
+        Image3(int32_t dimension0, int32_t dimension1, int32_t dimension2)
             :
-            Image<PixelType>(std::vector<int>{ dimension0, dimension1, dimension2 })
+            Image<PixelType>(std::vector<int32_t>{ dimension0, dimension1, dimension2 })
         {
         }
 
@@ -63,14 +63,14 @@ namespace gte
 
         // Support for changing the image dimensions.  All pixel data is lost
         // by this operation.
-        void Reconstruct(int dimension0, int dimension1, int dimension2)
+        void Reconstruct(int32_t dimension0, int32_t dimension1, int32_t dimension2)
         {
-            Image<PixelType>::Reconstruct(std::vector<int>{ dimension0, dimension1, dimension2 });
+            Image<PixelType>::Reconstruct(std::vector<int32_t>{ dimension0, dimension1, dimension2 });
         }
 
         // Conversion between 1-dimensional indices and 3-dimensional
         // coordinates.
-        inline size_t GetIndex(int x, int y, int z) const
+        inline size_t GetIndex(int32_t x, int32_t y, int32_t z) const
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= x && x < this->mDimensions[0]
@@ -94,7 +94,7 @@ namespace gte
 #endif
         }
 
-        inline size_t GetIndex(std::array<int, 3> const& coord) const
+        inline size_t GetIndex(std::array<int32_t, 3> const& coord) const
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= coord[0] && coord[0] < this->mDimensions[0]
@@ -118,15 +118,15 @@ namespace gte
 #endif
         }
 
-        inline void GetCoordinates(size_t index, int& x, int& y, int& z) const
+        inline void GetCoordinates(size_t index, int32_t& x, int32_t& y, int32_t& z) const
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (index < this->mPixels.size())
             {
-                x = static_cast<int>(index % this->mDimensions[0]);
+                x = static_cast<int32_t>(index % this->mDimensions[0]);
                 index /= this->mDimensions[0];
-                y = static_cast<int>(index % this->mDimensions[1]);
-                z = static_cast<int>(index / this->mDimensions[1]);
+                y = static_cast<int32_t>(index % this->mDimensions[1]);
+                z = static_cast<int32_t>(index / this->mDimensions[1]);
             }
             else
             {
@@ -134,23 +134,23 @@ namespace gte
                     "Invalid index " + std::to_string(index) + ".");
             }
 #else
-            x = static_cast<int>(index % this->mDimensions[0]);
+            x = static_cast<int32_t>(index % this->mDimensions[0]);
             index /= this->mDimensions[0];
-            y = static_cast<int>(index % this->mDimensions[1]);
-            z = static_cast<int>(index / this->mDimensions[1]);
+            y = static_cast<int32_t>(index % this->mDimensions[1]);
+            z = static_cast<int32_t>(index / this->mDimensions[1]);
 #endif
         }
 
-        inline std::array<int, 3> GetCoordinates(size_t index) const
+        inline std::array<int32_t, 3> GetCoordinates(size_t index) const
         {
-            std::array<int, 3> coord;
+            std::array<int32_t, 3> coord;
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (index < this->mPixels.size())
             {
-                coord[0] = static_cast<int>(index % this->mDimensions[0]);
+                coord[0] = static_cast<int32_t>(index % this->mDimensions[0]);
                 index /= this->mDimensions[0];
-                coord[1] = static_cast<int>(index % this->mDimensions[1]);
-                coord[2] = static_cast<int>(index / this->mDimensions[1]);
+                coord[1] = static_cast<int32_t>(index % this->mDimensions[1]);
+                coord[2] = static_cast<int32_t>(index / this->mDimensions[1]);
                 return coord;
             }
             else
@@ -159,10 +159,10 @@ namespace gte
                     "Invalid index " + std::to_string(index) + ".");
             }
 #else
-            coord[0] = static_cast<int>(index % this->mDimensions[0]);
+            coord[0] = static_cast<int32_t>(index % this->mDimensions[0]);
             index /= this->mDimensions[0];
-            coord[1] = static_cast<int>(index % this->mDimensions[1]);
-            coord[2] = static_cast<int>(index / this->mDimensions[1]);
+            coord[1] = static_cast<int32_t>(index % this->mDimensions[1]);
+            coord[2] = static_cast<int32_t>(index / this->mDimensions[1]);
             return coord;
 #endif
         }
@@ -171,7 +171,7 @@ namespace gte
         // test for valid (x,y,z) when iterator checking is enabled and throw
         // on invalid (x,y,z).  The Get() functions test for valid (x,y,z) and
         // clamp when invalid; these functions cannot fail.
-        inline PixelType& operator() (int x, int y, int z)
+        inline PixelType& operator() (int32_t x, int32_t y, int32_t z)
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= x && x < this->mDimensions[0]
@@ -197,7 +197,7 @@ namespace gte
 #endif
         }
 
-        inline PixelType const& operator() (int x, int y, int z) const
+        inline PixelType const& operator() (int32_t x, int32_t y, int32_t z) const
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= x && x < this->mDimensions[0]
@@ -223,7 +223,7 @@ namespace gte
 #endif
         }
 
-        inline PixelType& operator() (std::array<int, 3> const& coord)
+        inline PixelType& operator() (std::array<int32_t, 3> const& coord)
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= coord[0] && coord[0] < this->mDimensions[0]
@@ -249,7 +249,7 @@ namespace gte
 #endif
         }
 
-        inline PixelType const& operator() (std::array<int, 3> const& coord) const
+        inline PixelType const& operator() (std::array<int32_t, 3> const& coord) const
         {
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (0 <= coord[0] && coord[0] < this->mDimensions[0]
@@ -275,7 +275,7 @@ namespace gte
 #endif
         }
 
-        inline PixelType& Get(int x, int y, int z)
+        inline PixelType& Get(int32_t x, int32_t y, int32_t z)
         {
             // Clamp to valid (x,y,z).
             if (x < 0)
@@ -311,7 +311,7 @@ namespace gte
             return this->mPixels[i];
         }
 
-        inline PixelType const& Get(int x, int y, int z) const
+        inline PixelType const& Get(int32_t x, int32_t y, int32_t z) const
         {
             // Clamp to valid (x,y,z).
             if (x < 0)
@@ -347,10 +347,10 @@ namespace gte
             return this->mPixels[i];
         }
 
-        inline PixelType& Get(std::array<int, 3> coord)
+        inline PixelType& Get(std::array<int32_t, 3> coord)
         {
             // Clamp to valid (x,y,z).
-            for (int d = 0; d < 3; ++d)
+            for (int32_t d = 0; d < 3; ++d)
             {
                 if (coord[d] < 0)
                 {
@@ -368,10 +368,10 @@ namespace gte
             return this->mPixels[i];
         }
 
-        inline PixelType const& Get(std::array<int, 3> coord) const
+        inline PixelType const& Get(std::array<int32_t, 3> coord) const
         {
             // Clamp to valid (x,y,z).
-            for (int d = 0; d < 3; ++d)
+            for (int32_t d = 0; d < 3; ++d)
             {
                 if (coord[d] < 0)
                 {
@@ -406,10 +406,10 @@ namespace gte
         // image dimensions.  The last five functions provide 1-dimensional
         // indices for the actual voxels in the neighborhood; no clamping is
         // used when (x,y,z) is on the boundary.
-        void GetNeighborhood(std::array<int, 6>& nbr) const
+        void GetNeighborhood(std::array<int32_t, 6>& nbr) const
         {
-            int dim0 = this->mDimensions[0];
-            int dim01 = this->mDimensions[0] * this->mDimensions[1];
+            int32_t dim0 = this->mDimensions[0];
+            int32_t dim01 = this->mDimensions[0] * this->mDimensions[1];
             nbr[0] = -1;        // (x-1,y,z)
             nbr[1] = +1;        // (x+1,y,z)
             nbr[2] = -dim0;     // (x,y-1,z)
@@ -418,10 +418,10 @@ namespace gte
             nbr[5] = +dim01;    // (x,y,z+1)
         }
 
-        void GetNeighborhood(std::array<int, 18>& nbr) const
+        void GetNeighborhood(std::array<int32_t, 18>& nbr) const
         {
-            int dim0 = this->mDimensions[0];
-            int dim01 = this->mDimensions[0] * this->mDimensions[1];
+            int32_t dim0 = this->mDimensions[0];
+            int32_t dim01 = this->mDimensions[0] * this->mDimensions[1];
             nbr[0] = -1;                // (x-1,y,z)
             nbr[1] = +1;                // (x+1,y,z)
             nbr[2] = -dim0;             // (x,y-1,z)
@@ -442,10 +442,10 @@ namespace gte
             nbr[17] = +dim0 - dim01;    // (x,y+1,z-1)
         }
 
-        void GetNeighborhood(std::array<int, 26>& nbr) const
+        void GetNeighborhood(std::array<int32_t, 26>& nbr) const
         {
-            int dim0 = this->mDimensions[0];
-            int dim01 = this->mDimensions[0] * this->mDimensions[1];
+            int32_t dim0 = this->mDimensions[0];
+            int32_t dim01 = this->mDimensions[0] * this->mDimensions[1];
             nbr[0] = -1;                    // (x-1,y,z)
             nbr[1] = +1;                    // (x+1,y,z)
             nbr[2] = -dim0;                 // (x,y-1,z)
@@ -474,10 +474,10 @@ namespace gte
             nbr[25] = +1 + dim0 + dim01;    // (x+1,y+1,z+1)
         }
 
-        void GetCorners(std::array<int, 8>& nbr) const
+        void GetCorners(std::array<int32_t, 8>& nbr) const
         {
-            int dim0 = this->mDimensions[0];
-            int dim01 = this->mDimensions[0] * this->mDimensions[1];
+            int32_t dim0 = this->mDimensions[0];
+            int32_t dim01 = this->mDimensions[0] * this->mDimensions[1];
             nbr[0] = 0;                 // (x,y,z)
             nbr[1] = 1;                 // (x+1,y,z)
             nbr[2] = dim0;              // (x,y+1,z)
@@ -488,10 +488,10 @@ namespace gte
             nbr[7] = dim01 + dim0 + 1;  // (x+1,y+1,z+1)
         }
 
-        void GetFull(std::array<int, 27>& nbr) const
+        void GetFull(std::array<int32_t, 27>& nbr) const
         {
-            int dim0 = this->mDimensions[0];
-            int dim01 = this->mDimensions[0] * this->mDimensions[1];
+            int32_t dim0 = this->mDimensions[0];
+            int32_t dim01 = this->mDimensions[0] * this->mDimensions[1];
             nbr[0] = -1 - dim0 - dim01;     // (x-1,y-1,z-1)
             nbr[1] = -dim0 - dim01;         // (x,  y-1,z-1)
             nbr[2] = +1 - dim0 - dim01;     // (x+1,y-1,z-1)
@@ -521,56 +521,56 @@ namespace gte
             nbr[26] = +1 + dim0 + dim01;    // (x+1,y+1,z+1)
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<size_t, 6>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 6>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int, 6> inbr;
+            std::array<int32_t, 6> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 6; ++i)
+            for (int32_t i = 0; i < 6; ++i)
             {
                 nbr[i] = index + inbr[i];
             }
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<size_t, 18>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 18>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int, 18> inbr;
+            std::array<int32_t, 18> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 18; ++i)
+            for (int32_t i = 0; i < 18; ++i)
             {
                 nbr[i] = index + inbr[i];
             }
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<size_t, 26>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 26>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int, 26> inbr;
+            std::array<int32_t, 26> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 26; ++i)
+            for (int32_t i = 0; i < 26; ++i)
             {
                 nbr[i] = index + inbr[i];
             }
         }
 
-        void GetCorners(int x, int y, int z, std::array<size_t, 8>& nbr) const
+        void GetCorners(int32_t x, int32_t y, int32_t z, std::array<size_t, 8>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int, 8> inbr;
+            std::array<int32_t, 8> inbr;
             GetCorners(inbr);
-            for (int i = 0; i < 8; ++i)
+            for (int32_t i = 0; i < 8; ++i)
             {
                 nbr[i] = index + inbr[i];
             }
         }
 
-        void GetFull(int x, int y, int z, std::array<size_t, 27>& nbr) const
+        void GetFull(int32_t x, int32_t y, int32_t z, std::array<size_t, 27>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int, 27> inbr;
+            std::array<int32_t, 27> inbr;
             GetFull(inbr);
-            for (int i = 0; i < 27; ++i)
+            for (int32_t i = 0; i < 27; ++i)
             {
                 nbr[i] = index + inbr[i];
             }
@@ -581,7 +581,7 @@ namespace gte
         // any voxel location; these depend only on the image dimensions.  The
         // last five functions provide 3-tuples for the actual voxels in the
         // neighborhood; no clamping is used when (x,y,z) is on the boundary.
-        void GetNeighborhood(std::array<std::array<int, 3>, 6>& nbr) const
+        void GetNeighborhood(std::array<std::array<int32_t, 3>, 6>& nbr) const
         {
             nbr[0] = { { -1, 0, 0 } };
             nbr[1] = { { +1, 0, 0 } };
@@ -591,7 +591,7 @@ namespace gte
             nbr[5] = { { 0, 0, +1 } };
         }
 
-        void GetNeighborhood(std::array<std::array<int, 3>, 18>& nbr) const
+        void GetNeighborhood(std::array<std::array<int32_t, 3>, 18>& nbr) const
         {
             nbr[0] = { { -1, 0, 0 } };
             nbr[1] = { { +1, 0, 0 } };
@@ -613,7 +613,7 @@ namespace gte
             nbr[17] = { { 0, +1, -1 } };
         }
 
-        void GetNeighborhood(std::array<std::array<int, 3>, 26>& nbr) const
+        void GetNeighborhood(std::array<std::array<int32_t, 3>, 26>& nbr) const
         {
             nbr[0] = { { -1, 0, 0 } };
             nbr[1] = { { +1, 0, 0 } };
@@ -643,7 +643,7 @@ namespace gte
             nbr[25] = { { +1, +1, +1 } };
         }
 
-        void GetCorners(std::array<std::array<int, 3>, 8>& nbr) const
+        void GetCorners(std::array<std::array<int32_t, 3>, 8>& nbr) const
         {
             nbr[0] = { { 0, 0, 0 } };
             nbr[1] = { { 1, 0, 0 } };
@@ -655,7 +655,7 @@ namespace gte
             nbr[7] = { { 1, 1, 1 } };
         }
 
-        void GetFull(std::array<std::array<int, 3>, 27>& nbr) const
+        void GetFull(std::array<std::array<int32_t, 3>, 27>& nbr) const
         {
             nbr[0] = { { -1, -1, -1 } };
             nbr[1] = { { 0, -1, -1 } };
@@ -686,11 +686,11 @@ namespace gte
             nbr[26] = { { +1, +1, +1 } };
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<std::array<size_t, 3>, 6>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 6>& nbr) const
         {
-            std::array<std::array<int, 3>, 6> inbr;
+            std::array<std::array<int32_t, 3>, 6> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 6; ++i)
+            for (int32_t i = 0; i < 6; ++i)
             {
                 nbr[i][0] = static_cast<size_t>(x) + inbr[i][0];
                 nbr[i][1] = static_cast<size_t>(y) + inbr[i][1];
@@ -698,11 +698,11 @@ namespace gte
             }
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<std::array<size_t, 3>, 18>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 18>& nbr) const
         {
-            std::array<std::array<int, 3>, 18> inbr;
+            std::array<std::array<int32_t, 3>, 18> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 18; ++i)
+            for (int32_t i = 0; i < 18; ++i)
             {
                 nbr[i][0] = static_cast<size_t>(x) + inbr[i][0];
                 nbr[i][1] = static_cast<size_t>(y) + inbr[i][1];
@@ -710,11 +710,11 @@ namespace gte
             }
         }
 
-        void GetNeighborhood(int x, int y, int z, std::array<std::array<size_t, 3>, 26>& nbr) const
+        void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 26>& nbr) const
         {
-            std::array<std::array<int, 3>, 26> inbr;
+            std::array<std::array<int32_t, 3>, 26> inbr;
             GetNeighborhood(inbr);
-            for (int i = 0; i < 26; ++i)
+            for (int32_t i = 0; i < 26; ++i)
             {
                 nbr[i][0] = static_cast<size_t>(x) + inbr[i][0];
                 nbr[i][1] = static_cast<size_t>(y) + inbr[i][1];
@@ -722,11 +722,11 @@ namespace gte
             }
         }
 
-        void GetCorners(int x, int y, int z, std::array<std::array<size_t, 3>, 8>& nbr) const
+        void GetCorners(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 8>& nbr) const
         {
-            std::array<std::array<int, 3>, 8> inbr;
+            std::array<std::array<int32_t, 3>, 8> inbr;
             GetCorners(inbr);
-            for (int i = 0; i < 8; ++i)
+            for (int32_t i = 0; i < 8; ++i)
             {
                 nbr[i][0] = static_cast<size_t>(x) + inbr[i][0];
                 nbr[i][1] = static_cast<size_t>(y) + inbr[i][1];
@@ -734,11 +734,11 @@ namespace gte
             }
         }
 
-        void GetFull(int x, int y, int z, std::array<std::array<size_t, 3>, 27>& nbr) const
+        void GetFull(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 27>& nbr) const
         {
-            std::array<std::array<int, 3>, 27> inbr;
+            std::array<std::array<int32_t, 3>, 27> inbr;
             GetFull(inbr);
-            for (int i = 0; i < 27; ++i)
+            for (int32_t i = 0; i < 27; ++i)
             {
                 nbr[i][0] = static_cast<size_t>(x) + inbr[i][0];
                 nbr[i][1] = static_cast<size_t>(y) + inbr[i][1];

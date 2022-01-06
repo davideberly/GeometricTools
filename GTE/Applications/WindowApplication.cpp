@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/WindowApplication.h>
@@ -23,7 +23,7 @@ WindowApplication::Parameters::Parameters()
 }
 
 WindowApplication::Parameters::Parameters(std::wstring const& inTitle,
-    int inXOrigin, int inYOrigin, int inXSize, int inYSize)
+    int32_t inXOrigin, int32_t inYOrigin, int32_t inXSize, int32_t inYSize)
     :
     title(inTitle),
     xOrigin(inXOrigin),
@@ -50,13 +50,13 @@ WindowApplication::WindowApplication(Parameters& parameters)
 {
 }
 
-void WindowApplication::OnMove(int x, int y)
+void WindowApplication::OnMove(int32_t x, int32_t y)
 {
     mXOrigin = x;
     mYOrigin = y;
 }
 
-bool WindowApplication::OnResize(int xSize, int ySize)
+bool WindowApplication::OnResize(int32_t xSize, int32_t ySize)
 {
     mIsMinimized = false;
     mIsMaximized = false;
@@ -98,7 +98,7 @@ void WindowApplication::OnIdle()
     // Stub for derived classes.
 }
 
-bool WindowApplication::OnCharPress(unsigned char key, int, int)
+bool WindowApplication::OnCharPress(uint8_t key, int32_t, int32_t)
 {
     if (key == KEY_ESCAPE)
     {
@@ -116,42 +116,42 @@ bool WindowApplication::OnCharPress(unsigned char key, int, int)
     return false;
 }
 
-bool WindowApplication::OnKeyDown(int, int, int)
+bool WindowApplication::OnKeyDown(int32_t, int32_t, int32_t)
 {
     // Stub for derived classes.
     return false;
 }
 
-bool WindowApplication::OnKeyUp(int, int, int)
+bool WindowApplication::OnKeyUp(int32_t, int32_t, int32_t)
 {
     // Stub for derived classes.
     return false;
 }
 
-bool WindowApplication::OnMouseClick(int, int, int, int, unsigned int)
+bool WindowApplication::OnMouseClick(int32_t, int32_t, int32_t, int32_t, uint32_t)
 {
     // stub for derived classes
     return false;
 }
 
-bool WindowApplication::OnMouseMotion(int, int, int, unsigned int)
+bool WindowApplication::OnMouseMotion(int32_t, int32_t, int32_t, uint32_t)
 {
     // stub for derived classes
     return false;
 }
 
-bool WindowApplication::OnMouseWheel(int, int, int, unsigned int)
+bool WindowApplication::OnMouseWheel(int32_t, int32_t, int32_t, uint32_t)
 {
     // Stub for derived classes.
     return false;
 }
 
-void WindowApplication::SetMousePosition(int, int)
+void WindowApplication::SetMousePosition(int32_t, int32_t)
 {
     // Stub for derived classes.
 }
 
-void WindowApplication::GetMousePosition(int&, int&) const
+void WindowApplication::GetMousePosition(int32_t&, int32_t&) const
 {
     // Stub for derived classes.
 }

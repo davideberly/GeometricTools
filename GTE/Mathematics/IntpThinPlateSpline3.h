@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -27,7 +27,7 @@ namespace gte
     public:
         // Construction.  Data points are (x,y,z,f(x,y,z)).  The smoothing
         // parameter must be nonnegative
-        IntpThinPlateSpline3(int numPoints, Real const* X, Real const* Y,
+        IntpThinPlateSpline3(int32_t numPoints, Real const* X, Real const* Y,
             Real const* Z, Real const* F, Real smooth, bool transformToUnitCube)
             :
             mNumPoints(numPoints),
@@ -42,7 +42,7 @@ namespace gte
             LogAssert(numPoints >= 4 && X != nullptr && Y != nullptr
                 && Z != nullptr && F != nullptr && smooth >= (Real)0, "Invalid input.");
 
-            int i, row, col;
+            int32_t i, row, col;
 
             if (transformToUnitCube)
             {
@@ -213,7 +213,7 @@ namespace gte
                 z = (z - mZMin) * mZInvRange;
 
                 Real result = mB[0] + mB[1] * x + mB[2] * y + mB[3] * z;
-                for (int i = 0; i < mNumPoints; ++i)
+                for (int32_t i = 0; i < mNumPoints; ++i)
                 {
                     Real dx = x - mX[i];
                     Real dy = y - mY[i];
@@ -233,9 +233,9 @@ namespace gte
         Real ComputeFunctional() const
         {
             Real functional = (Real)0;
-            for (int row = 0; row < mNumPoints; ++row)
+            for (int32_t row = 0; row < mNumPoints; ++row)
             {
-                for (int col = 0; col < mNumPoints; ++col)
+                for (int32_t col = 0; col < mNumPoints; ++col)
                 {
                     if (row == col)
                     {
@@ -268,7 +268,7 @@ namespace gte
         }
 
         // Input data.
-        int mNumPoints;
+        int32_t mNumPoints;
         std::vector<Real> mX;
         std::vector<Real> mY;
         std::vector<Real> mZ;

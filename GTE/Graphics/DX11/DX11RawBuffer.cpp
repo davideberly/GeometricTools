@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11RawBuffer.h>
@@ -27,18 +27,18 @@ DX11RawBuffer::DX11RawBuffer(ID3D11Device* device, RawBuffer const* rbuffer)
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
     desc.StructureByteStride = 0;
-    Resource::Usage usage = rbuffer->GetUsage();
-    if (usage == Resource::IMMUTABLE)
+    uint32_t usage = rbuffer->GetUsage();
+    if (usage == Resource::Usage::IMMUTABLE)
     {
         desc.Usage = D3D11_USAGE_IMMUTABLE;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_NONE;
     }
-    else if (usage == Resource::DYNAMIC_UPDATE)
+    else if (usage == Resource::Usage::DYNAMIC_UPDATE)
     {
         desc.Usage = D3D11_USAGE_DYNAMIC;
         desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     }
-    else  // usage == Resource::SHADER_OUTPUT
+    else  // usage == Resource::Usage::SHADER_OUTPUT
     {
         desc.Usage = D3D11_USAGE_DEFAULT;
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
@@ -63,13 +63,13 @@ DX11RawBuffer::DX11RawBuffer(ID3D11Device* device, RawBuffer const* rbuffer)
 
     // Create views of the buffer.
     CreateSRView(device);
-    if (usage == Resource::SHADER_OUTPUT)
+    if (usage == Resource::Usage::SHADER_OUTPUT)
     {
         CreateUAView(device);
     }
 
     // Create a staging buffer if requested.
-    if (rbuffer->GetCopyType() != Resource::COPY_NONE)
+    if (rbuffer->GetCopy() != Resource::Copy::NONE)
     {
         CreateStaging(device, desc);
     }

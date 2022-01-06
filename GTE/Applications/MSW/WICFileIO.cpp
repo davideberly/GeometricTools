@@ -1,12 +1,13 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.06.06
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/WICFileIO.h>
+#include <Mathematics/Logger.h>
 using namespace gte;
 
 std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool wantMipmaps)
@@ -15,7 +16,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
 
     auto creator = [&texture, &wantMipmaps](uint32_t format, size_t width, size_t height)
     {
-        DFType type = msFormatToDFType[format];
+        uint32_t type = msFormatToDFType[format];
         texture = std::make_shared<Texture2>(type, static_cast<uint32_t>(width),
             static_cast<uint32_t>(height), wantMipmaps);
         return texture->Get<uint8_t>();
@@ -27,13 +28,13 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
 }
 
 std::shared_ptr<Texture2> WICFileIO::Load(void* module, std::string const& rtype,
-    int resource, bool wantMipmaps)
+    int32_t resource, bool wantMipmaps)
 {
     std::shared_ptr<Texture2> texture;
 
     auto creator = [&texture, &wantMipmaps](uint32_t format, size_t width, size_t height)
     {
-        DFType type = msFormatToDFType[format];
+        uint32_t type = msFormatToDFType[format];
         texture = std::make_shared<Texture2>(type, static_cast<uint32_t>(width),
             static_cast<uint32_t>(height), wantMipmaps);
         return texture->Get<uint8_t>();
@@ -60,7 +61,7 @@ void WICFileIO::SaveToJPEG(std::string const& filename,
         texture->GetHeight(), texture->Get<uint8_t>(), imageQuality);
 }
 
-uint32_t WICFileIO::DFTypeToFormat(DFType type)
+uint32_t WICFileIO::DFTypeToFormat(uint32_t type)
 {
     switch (type)
     {
@@ -90,7 +91,7 @@ uint32_t WICFileIO::DFTypeToFormat(DFType type)
 }
 
 
-std::array<DFType, WICFileIO::NUM_SUPPORTED_FORMATS> const
+std::array<uint32_t, WICFileIO::NUM_SUPPORTED_FORMATS> const
 WICFileIO::msFormatToDFType =
 {
     DF_R10G10B10A2_UNORM,

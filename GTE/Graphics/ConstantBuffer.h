@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -77,7 +77,7 @@ namespace gte
 
         // Set or get an array member.
         template <typename T>
-        void SetMember(std::string const& name, unsigned int index, T const& value)
+        void SetMember(std::string const& name, uint32_t index, T const& value)
         {
             auto iter = std::find_if(mLayout.begin(), mLayout.end(),
                 [&name](MemberLayout const& item) { return name == item.name; });
@@ -92,7 +92,7 @@ namespace gte
         }
 
         template <typename T>
-        void GetMember(std::string const& name, unsigned int index, T& value) const
+        void GetMember(std::string const& name, uint32_t index, T& value) const
         {
             auto iter = std::find_if(mLayout.begin(), mLayout.end(),
                 [&name](MemberLayout const& item) { return name == item.name; });
@@ -111,17 +111,13 @@ namespace gte
         // Direct3D 12 requires the storage to be a multiple of 256 bytes.
         // This function rounds to the nearest multiple of 256 bytes when
         // allocating buffer memory.
-        enum
-        {
-            CBUFFER_REQUIRED_MINIMUM_BYTES = 256
-        };
-
+        static size_t constexpr CBUFFER_REQUIRED_MINIMUM_BYTES = 256;
         static size_t GetRoundedNumBytes(size_t numBytes);
 
         std::vector<MemberLayout> mLayout;
 
     public:
         // For use by the Shader class for storing reflection information.
-        static int const shaderDataLookup = 0;
+        static int32_t const shaderDataLookup = 0;
     };
 }

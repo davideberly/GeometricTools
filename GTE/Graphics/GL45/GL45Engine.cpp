@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/FontArialW400H18.h>
@@ -95,7 +95,7 @@ void GL45Engine::DestroyDefaultFont()
     }
 }
 
-bool GL45Engine::Initialize(int requiredMajor, int requiredMinor, bool, bool saveDriverInfo)
+bool GL45Engine::Initialize(int32_t requiredMajor, int32_t requiredMinor, bool, bool saveDriverInfo)
 {
     if (saveDriverInfo)
     {
@@ -143,19 +143,23 @@ void GL45Engine::Terminate()
     DrawTarget::UnsubscribeForDestruction(mDTListener);
     mDTListener = nullptr;
 
-    if (mGOMap.HasElements())
+    mGOMapMutex.lock();
+    if (mGOMap.size() > 0)
     {
         // Bridge map is nonempty on destruction.
         // TODO: In GTL, handle differently. The condition should not occur.
-        mGOMap.RemoveAll();
+        mGOMap.clear();
     }
+    mGOMapMutex.unlock();
 
-    if (mDTMap.HasElements())
+    mDTMapMutex.lock();
+    if (mDTMap.size() > 0)
     {
         // Draw target map nonempty on destruction.
         // TODO: In GTL, handle differently. The condition should not occur.
-        mDTMap.RemoveAll();
+        mDTMap.clear();
     }
+    mDTMapMutex.unlock();
 
     if (mILMap->HasElements())
     {
@@ -168,49 +172,49 @@ void GL45Engine::Terminate()
 
 uint64_t GL45Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer const* ibuffer)
 {
-    unsigned int numActiveVertices = vbuffer->GetNumActiveElements();
-    unsigned int vertexOffset = vbuffer->GetOffset();
+    uint32_t numActiveVertices = vbuffer->GetNumActiveElements();
+    uint32_t vertexOffset = vbuffer->GetOffset();
 
-    unsigned int numActiveIndices = ibuffer->GetNumActiveIndices();
-    unsigned int indexSize = ibuffer->GetElementSize();
+    uint32_t numActiveIndices = ibuffer->GetNumActiveIndices();
+    uint32_t indexSize = ibuffer->GetElementSize();
     GLenum indexType = (indexSize == 4 ? GL_UNSIGNED_INT : GL_UNSIGNED_SHORT);
 
     GLenum topology = 0;
-    IPType type = ibuffer->GetPrimitiveType();
+    uint32_t type = ibuffer->GetPrimitiveType();
     switch (type)
     {
-    case IPType::IP_POLYPOINT:
+    case IP_POLYPOINT:
         topology = GL_POINTS;
         break;
-    case IPType::IP_POLYSEGMENT_DISJOINT:
+    case IP_POLYSEGMENT_DISJOINT:
         topology = GL_LINES;
         break;
-    case IPType::IP_POLYSEGMENT_CONTIGUOUS:
+    case IP_POLYSEGMENT_CONTIGUOUS:
         topology = GL_LINE_STRIP;
         break;
-    case IPType::IP_TRIMESH:
+    case IP_TRIMESH:
         topology = GL_TRIANGLES;
         break;
-    case IPType::IP_TRISTRIP:
+    case IP_TRISTRIP:
         topology = GL_TRIANGLE_STRIP;
         break;
-    case IPType::IP_POLYSEGMENT_DISJOINT_ADJ:
+    case IP_POLYSEGMENT_DISJOINT_ADJ:
         topology = GL_LINES_ADJACENCY;
         break;
-    case IPType::IP_POLYSEGMENT_CONTIGUOUS_ADJ:
+    case IP_POLYSEGMENT_CONTIGUOUS_ADJ:
         topology = GL_LINE_STRIP_ADJACENCY;
         break;
-    case IPType::IP_TRIMESH_ADJ:
+    case IP_TRIMESH_ADJ:
         topology = GL_TRIANGLES_ADJACENCY;
         break;
-    case IPType::IP_TRISTRIP_ADJ:
+    case IP_TRISTRIP_ADJ:
         topology = GL_TRIANGLE_STRIP_ADJACENCY;
         break;
     default:
         LogError("Unknown primitive topology = " + std::to_string(type));
     }
 
-    unsigned int offset = ibuffer->GetOffset();
+    uint32_t offset = ibuffer->GetOffset();
     if (ibuffer->IsIndexed())
     {
         void const* data = reinterpret_cast<void const*>(static_cast<size_t>(indexSize) * static_cast<size_t>(offset));
@@ -297,7 +301,7 @@ void GL45Engine::Disable(Shader const* shader, GLuint program)
 
 void GL45Engine::EnableCBuffers(Shader const* shader, GLuint program)
 {
-    int const index = ConstantBuffer::shaderDataLookup;
+    int32_t const index = ConstantBuffer::shaderDataLookup;
     for (auto const& cb : shader->GetData(index))
     {
         if (cb.object)
@@ -306,7 +310,7 @@ void GL45Engine::EnableCBuffers(Shader const* shader, GLuint program)
             if (gl4CB)
             {
                 auto const blockIndex = cb.bindPoint;
-                if (GL_INVALID_INDEX != static_cast<unsigned int>(blockIndex))
+                if (GL_INVALID_INDEX != static_cast<uint32_t>(blockIndex))
                 {
                     auto const unit = mUniformUnitMap.AcquireUnit(program, blockIndex);
                     glUniformBlockBinding(program, blockIndex, unit);
@@ -327,11 +331,11 @@ void GL45Engine::EnableCBuffers(Shader const* shader, GLuint program)
 
 void GL45Engine::DisableCBuffers(Shader const* shader, GLuint program)
 {
-    int const index = ConstantBuffer::shaderDataLookup;
+    int32_t const index = ConstantBuffer::shaderDataLookup;
     for (auto const& cb : shader->GetData(index))
     {
         auto const blockIndex = cb.bindPoint;
-        if (GL_INVALID_INDEX != static_cast<unsigned int>(blockIndex))
+        if (GL_INVALID_INDEX != static_cast<uint32_t>(blockIndex))
         {
             auto const unit = mUniformUnitMap.GetUnit(program, blockIndex);
             glBindBufferBase(GL_UNIFORM_BUFFER, unit, 0);
@@ -355,7 +359,7 @@ void GL45Engine::EnableSBuffers(Shader const* shader, GLuint program)
     // Configure atomic counter buffer objects used by the shader.
     auto const& atomicCounters = shader->GetData(Shader::AtomicCounterShaderDataLookup);
     auto const& atomicCounterBuffers = shader->GetData(Shader::AtomicCounterBufferShaderDataLookup);
-    for (unsigned acbIndex = 0; acbIndex < atomicCounterBuffers.size(); ++acbIndex)
+    for (uint32_t acbIndex = 0; acbIndex < atomicCounterBuffers.size(); ++acbIndex)
     {
         auto const& acb = atomicCounterBuffers[acbIndex];
 
@@ -371,7 +375,7 @@ void GL45Engine::EnableSBuffers(Shader const* shader, GLuint program)
 
         // If the raw buffer is not large enough, then unbind old one and
         // ready to create new one.
-        if (rawBuffer && (acb.numBytes > static_cast<int>(rawBuffer->GetNumBytes())))
+        if (rawBuffer && (acb.numBytes > static_cast<int32_t>(rawBuffer->GetNumBytes())))
         {
             Unbind(rawBuffer.get());
             rawBuffer = nullptr;
@@ -389,12 +393,14 @@ void GL45Engine::EnableSBuffers(Shader const* shader, GLuint program)
             // need CPU-side storage, but we must be able to copy values
             // between buffers.
             rawBuffer = std::make_shared<RawBuffer>((acb.numBytes + 3) / 4, false);
-            rawBuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+            rawBuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
 
             // Do a manual Bind operation because this is a special mapping
             // from RawBuffer to GL4AtomicCounterBuffer.
             auto temp = GL45AtomicCounterBuffer::Create(mGEObjectCreator, rawBuffer.get());
-            mGOMap.Insert(rawBuffer.get(), temp);
+            mGOMapMutex.lock();
+            mGOMap.insert(std::make_pair(rawBuffer.get(), temp));
+            mGOMapMutex.unlock();
             gl4ACB = static_cast<GL45AtomicCounterBuffer*>(temp.get());
         }
 
@@ -406,7 +412,7 @@ void GL45Engine::EnableSBuffers(Shader const* shader, GLuint program)
         gl4ACB->AttachToUnit(acb.bindPoint);
     }
 
-    int const indexSB = StructuredBuffer::shaderDataLookup;
+    int32_t const indexSB = StructuredBuffer::shaderDataLookup;
     for (auto const& sb : shader->GetData(indexSB))
     {
         if (sb.object)
@@ -415,7 +421,7 @@ void GL45Engine::EnableSBuffers(Shader const* shader, GLuint program)
             if (gl4SB)
             {
                 auto const blockIndex = sb.bindPoint;
-                if (GL_INVALID_INDEX != static_cast<unsigned int>(blockIndex))
+                if (GL_INVALID_INDEX != static_cast<uint32_t>(blockIndex))
                 {
                     auto const unit = mShaderStorageUnitMap.AcquireUnit(program, blockIndex);
                     glShaderStorageBlockBinding(program, blockIndex, unit);
@@ -469,13 +475,13 @@ void GL45Engine::DisableSBuffers(Shader const* shader, GLuint program)
     // Unbind any atomic counter buffers.
     auto const& atomicCounters = shader->GetData(Shader::AtomicCounterShaderDataLookup);
     auto const& atomicCounterBuffers = shader->GetData(Shader::AtomicCounterBufferShaderDataLookup);
-    for (unsigned acbIndex = 0; acbIndex < atomicCounterBuffers.size(); ++acbIndex)
+    for (uint32_t acbIndex = 0; acbIndex < atomicCounterBuffers.size(); ++acbIndex)
     {
         auto const& acb = atomicCounterBuffers[acbIndex];
         glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, acb.bindPoint, 0);
     }
 
-    int const index = StructuredBuffer::shaderDataLookup;
+    int32_t const index = StructuredBuffer::shaderDataLookup;
     for (auto const& sb : shader->GetData(index))
     {
         if (sb.object)
@@ -485,7 +491,7 @@ void GL45Engine::DisableSBuffers(Shader const* shader, GLuint program)
             if (gl4SB)
             {
                 auto const blockIndex = sb.bindPoint;
-                if (GL_INVALID_INDEX != static_cast<unsigned int>(blockIndex))
+                if (GL_INVALID_INDEX != static_cast<uint32_t>(blockIndex))
                 {
                     auto const unit = mShaderStorageUnitMap.GetUnit(program, blockIndex);
                     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, 0);
@@ -531,7 +537,7 @@ void GL45Engine::DisableRBuffers(Shader const*, GLuint)
 
 void GL45Engine::EnableTextures(Shader const* shader, GLuint program)
 {
-    int const index = TextureSingle::shaderDataLookup;
+    int32_t const index = TextureSingle::shaderDataLookup;
     for (auto const& ts : shader->GetData(index))
     {
         if (!ts.object)
@@ -556,7 +562,7 @@ void GL45Engine::EnableTextures(Shader const* shader, GLuint program)
             // Always bind level 0 and all layers.
             GLint unit = mTextureImageUnitMap.AcquireUnit(program, ts.bindPoint);
             glUniform1i(ts.bindPoint, unit);
-            DFType format = texture->GetTexture()->GetFormat();
+            uint32_t format = texture->GetTexture()->GetFormat();
             GLuint internalFormat = texture->GetInternalFormat(format);
             glBindImageTexture(unit, handle, 0, GL_TRUE, 0, GL_READ_WRITE, internalFormat);
         }
@@ -572,7 +578,7 @@ void GL45Engine::EnableTextures(Shader const* shader, GLuint program)
 
 void GL45Engine::DisableTextures(Shader const* shader, GLuint program)
 {
-    int const index = TextureSingle::shaderDataLookup;
+    int32_t const index = TextureSingle::shaderDataLookup;
     for (auto const& ts : shader->GetData(index))
     {
         if (!ts.object)
@@ -611,7 +617,7 @@ void GL45Engine::DisableTextures(Shader const* shader, GLuint program)
 
 void GL45Engine::EnableTextureArrays(Shader const* shader, GLuint program)
 {
-    int const index = TextureArray::shaderDataLookup;
+    int32_t const index = TextureArray::shaderDataLookup;
     for (auto const& ta : shader->GetData(index))
     {
         if (!ta.object)
@@ -636,7 +642,7 @@ void GL45Engine::EnableTextureArrays(Shader const* shader, GLuint program)
             // Always bind level 0 and all layers.
             GLint unit = mTextureImageUnitMap.AcquireUnit(program, ta.bindPoint);
             glUniform1i(ta.bindPoint, unit);
-            DFType format = texture->GetTexture()->GetFormat();
+            uint32_t format = texture->GetTexture()->GetFormat();
             GLuint internalFormat = texture->GetInternalFormat(format);
             glBindImageTexture(unit, handle, 0, GL_TRUE, 0, GL_READ_WRITE, internalFormat);
         }
@@ -652,7 +658,7 @@ void GL45Engine::EnableTextureArrays(Shader const* shader, GLuint program)
 
 void GL45Engine::DisableTextureArrays(Shader const* shader, GLuint program)
 {
-    int const index = TextureArray::shaderDataLookup;
+    int32_t const index = TextureArray::shaderDataLookup;
     for (auto const& ta : shader->GetData(index))
     {
         if (!ta.object)
@@ -693,7 +699,7 @@ void GL45Engine::DisableTextureArrays(Shader const* shader, GLuint program)
 
 void GL45Engine::EnableSamplers(Shader const* shader, GLuint program)
 {
-    int const index = SamplerState::shaderDataLookup;
+    int32_t const index = SamplerState::shaderDataLookup;
     for (auto const& ts : shader->GetData(index))
     {
         if (ts.object)
@@ -719,7 +725,7 @@ void GL45Engine::EnableSamplers(Shader const* shader, GLuint program)
 
 void GL45Engine::DisableSamplers(Shader const* shader, GLuint program)
 {
-    int const index = SamplerState::shaderDataLookup;
+    int32_t const index = SamplerState::shaderDataLookup;
     for (auto const& ts : shader->GetData(index))
     {
         if (ts.object)
@@ -745,10 +751,10 @@ void GL45Engine::DisableSamplers(Shader const* shader, GLuint program)
     }
 }
 
-int GL45Engine::ProgramIndexUnitMap::AcquireUnit(GLint program, GLint index)
+int32_t GL45Engine::ProgramIndexUnitMap::AcquireUnit(GLint program, GLint index)
 {
-    int availUnit = -1;
-    for (int unit = 0; unit < static_cast<int>(mLinkMap.size()); ++unit)
+    int32_t availUnit = -1;
+    for (int32_t unit = 0; unit < static_cast<int32_t>(mLinkMap.size()); ++unit)
     {
         auto& item = mLinkMap[unit];
 
@@ -774,7 +780,7 @@ int GL45Engine::ProgramIndexUnitMap::AcquireUnit(GLint program, GLint index)
     {
         // TODO: Consider querying the max number of units and check that
         // this number is not exceeded.
-        availUnit = static_cast<int>(mLinkMap.size());
+        availUnit = static_cast<int32_t>(mLinkMap.size());
         mLinkMap.push_back({ 0, 0, 0 });
     }
 
@@ -785,9 +791,9 @@ int GL45Engine::ProgramIndexUnitMap::AcquireUnit(GLint program, GLint index)
     return availUnit;
 }
 
-int GL45Engine::ProgramIndexUnitMap::GetUnit(GLint program, GLint index) const
+int32_t GL45Engine::ProgramIndexUnitMap::GetUnit(GLint program, GLint index) const
 {
-    for (int unit = 0; unit < static_cast<int>(mLinkMap.size()); ++unit)
+    for (int32_t unit = 0; unit < static_cast<int32_t>(mLinkMap.size()); ++unit)
     {
         auto& item = mLinkMap[unit];
         if (program == item.program && index == item.index)
@@ -798,7 +804,7 @@ int GL45Engine::ProgramIndexUnitMap::GetUnit(GLint program, GLint index) const
     return -1;
 }
 
-void GL45Engine::ProgramIndexUnitMap::ReleaseUnit(unsigned index)
+void GL45Engine::ProgramIndexUnitMap::ReleaseUnit(uint32_t index)
 {
     if (index < mLinkMap.size())
     {
@@ -810,7 +816,7 @@ void GL45Engine::ProgramIndexUnitMap::ReleaseUnit(unsigned index)
     }
 }
 
-unsigned GL45Engine::ProgramIndexUnitMap::GetUnitLinkCount(unsigned unit) const
+uint32_t GL45Engine::ProgramIndexUnitMap::GetUnitLinkCount(uint32_t unit) const
 {
     if (unit < mLinkMap.size())
     {
@@ -819,7 +825,7 @@ unsigned GL45Engine::ProgramIndexUnitMap::GetUnitLinkCount(unsigned unit) const
     return 0;
 }
 
-bool GL45Engine::ProgramIndexUnitMap::GetUnitProgramIndex(unsigned unit, GLint &program, GLint &index) const
+bool GL45Engine::ProgramIndexUnitMap::GetUnitProgramIndex(uint32_t unit, GLint &program, GLint &index) const
 {
     if (unit < mLinkMap.size())
     {
@@ -834,14 +840,14 @@ bool GL45Engine::ProgramIndexUnitMap::GetUnitProgramIndex(unsigned unit, GLint &
     return false;
 }
 
-void GL45Engine::SetViewport(int x, int y, int w, int h)
+void GL45Engine::SetViewport(int32_t x, int32_t y, int32_t w, int32_t h)
 {
     glViewport(x, y, w, h);
 }
 
-void GL45Engine::GetViewport(int& x, int& y, int& w, int& h) const
+void GL45Engine::GetViewport(int32_t& x, int32_t& y, int32_t& w, int32_t& h) const
 {
-    int param[4];
+    int32_t param[4];
     glGetIntegerv(GL_VIEWPORT, param);
     x = param[0];
     y = param[1];
@@ -862,11 +868,11 @@ void GL45Engine::GetDepthRange(float& zmin, float& zmax) const
     zmax = static_cast<float>(param[1]);
 }
 
-bool GL45Engine::Resize(unsigned int w, unsigned int h)
+bool GL45Engine::Resize(uint32_t w, uint32_t h)
 {
     mXSize = w;
     mYSize = h;
-    int param[4];
+    int32_t param[4];
     glGetIntegerv(GL_VIEWPORT, param);
     glViewport(param[0], param[1], static_cast<GLint>(w), static_cast<GLint>(h));
     return true;
@@ -1007,7 +1013,7 @@ bool GL45Engine::Update(std::shared_ptr<TextureSingle> const& texture)
     return glTexture->Update();
 }
 
-bool GL45Engine::Update(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool GL45Engine::Update(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1029,7 +1035,7 @@ bool GL45Engine::Update(std::shared_ptr<TextureArray> const& textureArray)
     return glTextureArray->Update();
 }
 
-bool GL45Engine::Update(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool GL45Engine::Update(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1062,7 +1068,7 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture)
     return glTexture->CopyCpuToGpu();
 }
 
-bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1084,7 +1090,7 @@ bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray)
     return glTextureArray->CopyCpuToGpu();
 }
 
-bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool GL45Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1117,7 +1123,7 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture)
     return glTexture->CopyGpuToCpu();
 }
 
-bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1139,7 +1145,7 @@ bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray)
     return glTextureArray->CopyGpuToCpu();
 }
 
-bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool GL45Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1171,7 +1177,7 @@ void GL45Engine::CopyGpuToGpu(
 void GL45Engine::CopyGpuToGpu(
     std::shared_ptr<TextureSingle> const& texture0,
     std::shared_ptr<TextureSingle> const& texture1,
-    unsigned int level)
+    uint32_t level)
 {
     (void)texture0;
     (void)texture1;
@@ -1191,7 +1197,7 @@ void GL45Engine::CopyGpuToGpu(
 void GL45Engine::CopyGpuToGpu(
     std::shared_ptr<TextureArray> const& textureArray0,
     std::shared_ptr<TextureArray> const& textureArray1,
-    unsigned int item, unsigned int level)
+    uint32_t item, uint32_t level)
 {
     (void)textureArray0;
     (void)textureArray1;
@@ -1218,7 +1224,7 @@ bool GL45Engine::BindProgram(std::shared_ptr<ComputeProgram> const&)
 }
 
 void GL45Engine::Execute(std::shared_ptr<ComputeProgram> const& program,
-    unsigned int numXGroups, unsigned int numYGroups, unsigned int numZGroups)
+    uint32_t numXGroups, uint32_t numYGroups, uint32_t numZGroups)
 {
     auto glslProgram = std::dynamic_pointer_cast<GLSLComputeProgram>(program);
     if (glslProgram && numXGroups > 0 && numYGroups > 0 && numZGroups > 0)

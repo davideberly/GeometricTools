@@ -181,6 +181,7 @@
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -198,6 +199,7 @@
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -217,6 +219,7 @@
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -238,6 +241,7 @@
       <AdditionalIncludeDirectories>.</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeaderFile>Applications/GTApplicationsPCH.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

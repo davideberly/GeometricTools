@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Font.h>
@@ -12,9 +12,9 @@
 using namespace gte;
 
 Font::Font(std::shared_ptr<ProgramFactory> const& factory,
-    unsigned int width, unsigned int height,
-    unsigned char const* texels, float const* characterData,
-    unsigned int maxMessageLength)
+    uint32_t width, uint32_t height,
+    uint8_t const* texels, float const* characterData,
+    uint32_t maxMessageLength)
     :
     mMaxMessageLength(maxMessageLength)
 {
@@ -25,11 +25,11 @@ Font::Font(std::shared_ptr<ProgramFactory> const& factory,
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
-    unsigned int numVertices = 4 * mMaxMessageLength;
+    vformat.Bind(VASemantic::POSITION, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
+    uint32_t numVertices = 4 * mMaxMessageLength;
     mVertexBuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    mVertexBuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    mVertexBuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
 
     // Set the y values for top vertex positions and all texture
     // coordinates, since they do not change.
@@ -38,12 +38,12 @@ Font::Font(std::shared_ptr<ProgramFactory> const& factory,
     // |  \ |   |  \ | 
     // 1 -- 3   5 -- 7  ... <-- tex.y = 1
     auto vertices = mVertexBuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].position = Vector2<float>::Zero();
         vertices[i].tcoord = Vector2<float>::Zero();
     }
-    for (unsigned int i = 0; i < mMaxMessageLength; ++i)
+    for (uint32_t i = 0; i < mMaxMessageLength; ++i)
     {
         Vertex& v0 = vertices[4 * i + 0];
         Vertex& v1 = vertices[4 * i + 1];
@@ -68,10 +68,10 @@ Font::Font(std::shared_ptr<ProgramFactory> const& factory,
     // | \  |   | \  | 
     // |  \ |   |  \ | 
     // 1 -- 3   5 -- 7  ...
-    unsigned int numTriangles = 2 * mMaxMessageLength;
-    mIndexBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    auto indices = mIndexBuffer->Get<unsigned int>();
-    for (unsigned int i = 0; i < mMaxMessageLength; ++i)
+    uint32_t numTriangles = 2 * mMaxMessageLength;
+    mIndexBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    auto indices = mIndexBuffer->Get<uint32_t>();
+    for (uint32_t i = 0; i < mMaxMessageLength; ++i)
     {
         // Bottom triangle
         indices[6 * i + 0] = 4 * i;
@@ -93,23 +93,23 @@ Font::Font(std::shared_ptr<ProgramFactory> const& factory,
     mTextEffect = std::make_shared<TextEffect>(factory, mTexture);
 }
 
-int Font::GetHeight() const
+int32_t Font::GetHeight() const
 {
     return (mTexture ? mTexture->GetHeight() : 0);
 }
 
-int Font::GetWidth(std::string const& message) const
+int32_t Font::GetWidth(std::string const& message) const
 {
     // Get texture information.
     float const tw = static_cast<float>(mTexture->GetWidth());
 
     float width = 0.0f;
-    unsigned int const length = std::min(
-        static_cast<unsigned int>(message.length()), mMaxMessageLength);
-    for (unsigned int i = 0; i < length; ++i)
+    uint32_t const length = std::min(
+        static_cast<uint32_t>(message.length()), mMaxMessageLength);
+    for (uint32_t i = 0; i < length; ++i)
     {
         // Get character data.
-        int const c = static_cast<int>(message[i]);
+        int32_t const c = static_cast<int32_t>(message[i]);
         float const tx0 = mCharacterData[c];
         float const tx1 = mCharacterData[c + 1];
         float const charWidthM1 = (tx1 - tx0) * tw - 1.0f;  // in pixels
@@ -117,10 +117,10 @@ int Font::GetWidth(std::string const& message) const
         width += charWidthM1;
     }
 
-    return static_cast<int>(std::ceil(width));
+    return static_cast<int32_t>(std::ceil(width));
 }
 
-void Font::Typeset(int viewportWidth, int viewportHeight, int x, int y,
+void Font::Typeset(int32_t viewportWidth, int32_t viewportHeight, int32_t x, int32_t y,
     Vector4<float> const& color, std::string const& message) const
 {
     // Get texel translation units, depends on viewport width and height.
@@ -132,16 +132,16 @@ void Font::Typeset(int viewportWidth, int viewportHeight, int x, int y,
     float th = static_cast<float>(mTexture->GetHeight());
 
     // Get vertex buffer information.
-    unsigned int vertexSize = mVertexBuffer->GetFormat().GetVertexSize();
+    uint32_t vertexSize = mVertexBuffer->GetFormat().GetVertexSize();
     char* data = mVertexBuffer->GetData();
 
     float x0 = 0.0f;
-    unsigned int const length = std::min(
-        static_cast<unsigned int>(message.length()), mMaxMessageLength);
-    for (unsigned int i = 0; i < length; ++i)
+    uint32_t const length = std::min(
+        static_cast<uint32_t>(message.length()), mMaxMessageLength);
+    for (uint32_t i = 0; i < length; ++i)
     {
         // Get character data.
-        int c = static_cast<int>(message[i]);
+        int32_t c = static_cast<int32_t>(message[i]);
         float const tx0 = mCharacterData[c];
         float const tx1 = mCharacterData[c + 1];
         float charWidthM1 = (tx1 - tx0)*tw - 1.0f;  // in pixels
@@ -150,10 +150,11 @@ void Font::Typeset(int viewportWidth, int viewportHeight, int x, int y,
         // | \  |   | \  | 
         // |  \ |   |  \ | 
         // 1 -- 3   5 -- 7  ...
-        float* v0 = reinterpret_cast<float*>(data + (4 * i + 0)*vertexSize);
-        float* v1 = reinterpret_cast<float*>(data + (4 * i + 1)*vertexSize);
-        float* v2 = reinterpret_cast<float*>(data + (4 * i + 2)*vertexSize);
-        float* v3 = reinterpret_cast<float*>(data + (4 * i + 3)*vertexSize);
+        size_t const fourI = 4 * static_cast<size_t>(i);
+        float* v0 = reinterpret_cast<float*>(data + (fourI + 0)*vertexSize);
+        float* v1 = reinterpret_cast<float*>(data + (fourI + 1)*vertexSize);
+        float* v2 = reinterpret_cast<float*>(data + (fourI + 2)*vertexSize);
+        float* v3 = reinterpret_cast<float*>(data + (fourI + 3)*vertexSize);
 
         // Set bottom left vertex y coordinate.
         v1[1] = vdy * th;

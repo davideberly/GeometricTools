@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/SkinController.h>
@@ -11,13 +11,13 @@
 #include <Graphics/Visual.h>
 using namespace gte;
 
-SkinController::SkinController(int numVertices, int numBones, BufferUpdater const& postUpdate)
+SkinController::SkinController(int32_t numVertices, int32_t numBones, BufferUpdater const& postUpdate)
     :
     mNumVertices(numVertices),
     mNumBones(numBones),
     mBones(numBones),
-    mWeights(numVertices * numBones),
-    mOffsets(numVertices * numBones),
+    mWeights(static_cast<size_t>(numVertices) * static_cast<size_t>(numBones)),
+    mOffsets(static_cast<size_t>(numVertices) * static_cast<size_t>(numBones)),
     mPostUpdate(postUpdate),
     mPosition(nullptr),
     mStride(0),
@@ -50,7 +50,7 @@ bool SkinController::Update(double applicationTime)
         // Package the bone transformations into a std::vector to avoid the
         // expensive lock() calls in the inner loop of the position updates.
         std::vector<Matrix4x4<float>> worldTransforms(mNumBones);
-        for (int bone = 0; bone < mNumBones; ++bone)
+        for (int32_t bone = 0; bone < mNumBones; ++bone)
         {
             worldTransforms[bone] = mBones[bone].lock()->worldTransform;
         }
@@ -70,11 +70,11 @@ bool SkinController::Update(double applicationTime)
         char* current = mPosition;
         float const* weights = mWeights.data();
         Vector4<float> const* offsets = mOffsets.data();
-        for (int vertex = 0; vertex < mNumVertices; ++vertex)
+        for (int32_t vertex = 0; vertex < mNumVertices; ++vertex)
         {
             Matrix4x4<float> const* worldTransform = worldTransforms.data();
             float position[3] = { 0.0f, 0.0f, 0.0f };
-            for (int bone = 0; bone < mNumBones; ++bone, ++weights, ++offsets, ++worldTransform)
+            for (int32_t bone = 0; bone < mNumBones; ++bone, ++weights, ++offsets, ++worldTransform)
             {
                 float weight = *weights;
                 if (weight != 0.0f)
@@ -114,18 +114,19 @@ void SkinController::OnFirstUpdate()
     // Get access to the vertex buffer positions to store the blended targets.
     Visual* visual = reinterpret_cast<Visual*>(mObject);
     VertexBuffer* vbuffer = visual->GetVertexBuffer().get();
-    if (mNumVertices == static_cast<int>(vbuffer->GetNumElements()))
+    if (mNumVertices == static_cast<int32_t>(vbuffer->GetNumElements()))
     {
         // Get the position data.
         VertexFormat vformat = vbuffer->GetFormat();
-        int const numAttributes = vformat.GetNumAttributes();
-        for (int i = 0; i < numAttributes; ++i)
+        int32_t const numAttributes = vformat.GetNumAttributes();
+        for (int32_t i = 0; i < numAttributes; ++i)
         {
-            VASemantic semantic;
-            DFType type;
-            unsigned int unit, offset;
+            VASemantic semantic{};
+            DFType type{};
+            uint32_t unit{}, offset{};
             vformat.GetAttribute(i, semantic, type, unit, offset);
-            if (semantic == VA_POSITION && (type == DF_R32G32B32_FLOAT || type == DF_R32G32B32A32_FLOAT))
+            if (semantic == VASemantic::POSITION &&
+                (type == DF_R32G32B32_FLOAT || type == DF_R32G32B32A32_FLOAT))
             {
                 mPosition = vbuffer->GetData() + offset;
                 mStride = vformat.GetVertexSize();

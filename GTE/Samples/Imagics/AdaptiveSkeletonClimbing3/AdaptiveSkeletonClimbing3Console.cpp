@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "AdaptiveSkeletonClimbing3Console.h"
 #include <Mathematics/AdaptiveSkeletonClimbing3.h>
@@ -18,8 +18,8 @@ AdaptiveSkeletonClimbing3Console::AdaptiveSkeletonClimbing3Console(Parameters& p
 void AdaptiveSkeletonClimbing3Console::Execute()
 {
     // Create a 65x65x65 image by summing two Gaussian distributions.
-    int const N = 6, bound = (1 << N) + 1;
-    Image3<int> image(bound, bound, bound);
+    int32_t const N = 6, bound = (1 << N) + 1;
+    Image3<int32_t> image(bound, bound, bound);
     std::fill(image.GetPixels().begin(), image.GetPixels().end(), 0);
 
     float a0 = 256.0f, a1 = 128.0f;
@@ -28,17 +28,17 @@ void AdaptiveSkeletonClimbing3Console::Execute()
     float xs0 = 2.0f * bound, ys0 = 4.0f * bound, zs0 = 8.0f * bound;
     float xs1 = 8.0f * bound, ys1 = 4.0f * bound, zs1 = 2.0f * bound;
 
-    for (int z = 0; z < bound; ++z)
+    for (int32_t z = 0; z < bound; ++z)
     {
         float vz0 = (z - z0) / zs0, vz1 = (z - z1) / zs1;
         vz0 *= vz0;
         vz1 *= vz1;
-        for (int y = 0; y < bound; ++y)
+        for (int32_t y = 0; y < bound; ++y)
         {
             float vy0 = (y - y0) / ys0, vy1 = (y - y1) / ys1;
             vy0 *= vy0;
             vy1 *= vy1;
-            for (int x = 0; x < bound; ++x)
+            for (int32_t x = 0; x < bound; ++x)
             {
                 float vx0 = (x - x0) / xs0, vx1 = (x - x1) / xs1;
                 vx0 *= vx0;
@@ -46,13 +46,13 @@ void AdaptiveSkeletonClimbing3Console::Execute()
 
                 float g0 = a0 * std::exp(-(vx0 + vy0 + vz0));
                 float g1 = a1 * std::exp(-(vx1 + vy1 + vz1));
-                image(x, y, z) = static_cast<int>(g0 + g1);
+                image(x, y, z) = static_cast<int32_t>(g0 + g1);
             }
         }
     }
 
     // Extract a level set from the image.
-    AdaptiveSkeletonClimbing3<int, float> climb(N, image.GetPixels().data());
+    AdaptiveSkeletonClimbing3<int32_t, float> climb(N, image.GetPixels().data());
     std::vector<std::array<float, 3>> vertices;
     std::vector<TriangleKey<true>> triangles;
     std::vector<std::array<float, 3>> normals;

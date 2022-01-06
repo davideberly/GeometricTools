@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GpuGaussianBlur2Window2.h"
 
@@ -25,8 +25,8 @@ GpuGaussianBlur2Window2::GpuGaussianBlur2Window2(Parameters& parameters)
     // Create an overlay that covers the entire window.  The blurred image
     // is drawn by the overlay effect.
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
-        mYSize, mXSize, mYSize, SamplerState::MIN_P_MAG_P_MIP_P,
-        SamplerState::CLAMP, SamplerState::CLAMP, false);
+        mYSize, mXSize, mYSize, SamplerState::Filter::MIN_P_MAG_P_MIP_P,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, false);
     mOverlay->SetTexture(mImage[0]);
 }
 
@@ -84,14 +84,14 @@ bool GpuGaussianBlur2Window2::SetEnvironment()
 
 bool GpuGaussianBlur2Window2::CreateImages()
 {
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mImage[i] = std::make_shared<Texture2>(DF_R32_FLOAT, mXSize, mYSize);
-        mImage[i]->SetUsage(Resource::SHADER_OUTPUT);
+        mImage[i]->SetUsage(Resource::Usage::SHADER_OUTPUT);
     }
 
     std::string path = mEnvironment.GetPath("Head_U16_X256_Y256.binary");
-    std::vector<uint16_t> original(mXSize * mYSize);
+    std::vector<uint16_t> original(static_cast<size_t>(mXSize) * static_cast<size_t>(mYSize));
     std::ifstream input(path, std::ios::binary);
     input.read((char*)original.data(), original.size() * sizeof(uint16_t));
     input.close();
@@ -100,7 +100,7 @@ bool GpuGaussianBlur2Window2::CreateImages()
     // texture image to have values in [0,1).
     float const divisor = 1024.0f;
     auto* target = mImage[0]->Get<float>();
-    for (int i = 0; i < mXSize * mYSize; ++i)
+    for (int32_t i = 0; i < mXSize * mYSize; ++i)
     {
         target[i] = static_cast<float>(original[i]) / divisor;
     }
@@ -110,13 +110,13 @@ bool GpuGaussianBlur2Window2::CreateImages()
     mMaskTexture = std::make_shared<Texture2>(DF_R32_FLOAT, mXSize, mYSize);
     auto* mask = mMaskTexture->Get<float>();
     mOffsetTexture = std::make_shared<Texture2>(DF_R32G32_SINT, mXSize, mYSize);
-    auto* offset = mOffsetTexture->Get<std::array<int, 2>>();
-    int xSizeM1 = mXSize - 1, ySizeM1 = mYSize - 1, index;
+    auto* offset = mOffsetTexture->Get<std::array<int32_t, 2>>();
+    int32_t xSizeM1 = mXSize - 1, ySizeM1 = mYSize - 1, index;
 
     // Interior.
-    for (int y = 1; y < ySizeM1; ++y)
+    for (int32_t y = 1; y < ySizeM1; ++y)
     {
-        for (int x = 1; x < xSizeM1; ++x)
+        for (int32_t x = 1; x < xSizeM1; ++x)
         {
             index = x + mXSize * y;
             mask[index] = 1.0f;
@@ -125,7 +125,7 @@ bool GpuGaussianBlur2Window2::CreateImages()
     }
 
     // Edge-interior.
-    for (int x = 1; x < xSizeM1; ++x)
+    for (int32_t x = 1; x < xSizeM1; ++x)
     {
         mask[x] = 0.0f;
         offset[x] = { 0, 1 };
@@ -133,7 +133,7 @@ bool GpuGaussianBlur2Window2::CreateImages()
         mask[index] = 0.0f;
         offset[index] = { 0, -1 };
     }
-    for (int y = 1; y < ySizeM1; ++y)
+    for (int32_t y = 1; y < ySizeM1; ++y)
     {
         index = mXSize * y;
         mask[index] = 0.0f;
@@ -190,7 +190,7 @@ bool GpuGaussianBlur2Window2::CreateShaders()
         return false;
     }
 
-    auto cshader = mGaussianBlurProgram->GetComputeShader();
+    std::shared_ptr<Shader> cshader = mGaussianBlurProgram->GetComputeShader();
     cshader->Set("inImage", mImage[0]);
     cshader->Set("outImage", mImage[1]);
     cshader->Set("Weight", mWeightBuffer);

@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Applications/Window3.h>
+#include <Mathematics/Timer.h>
 #include "BipedManager.h"
 using namespace gte;
 
@@ -17,9 +18,9 @@ public:
     BlendedAnimationsWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
-    virtual bool OnKeyDown(int key, int x, int y) override;
-    virtual bool OnKeyUp(int key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
+    virtual bool OnKeyDown(int32_t key, int32_t x, int32_t y) override;
+    virtual bool OnKeyUp(int32_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
@@ -38,6 +39,8 @@ private:
     std::shared_ptr<RasterizerState> mWireState;
     std::vector<Visual*> mMeshes;
     std::unique_ptr<BipedManager> mManager;
-    double mApplicationTime, mApplicationTimeDelta;
     bool mUpArrowPressed, mShiftPressed;
+
+    Timer mAnimTimer;
+    double mLastAnimTime, mCurrAnimTime;
 };

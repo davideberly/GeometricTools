@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ApproximateEllipsesByArcsWindow2.h"
 #include <Mathematics/ApprEllipseByArcs.h>
@@ -26,17 +26,18 @@ void ApproximateEllipsesByArcsWindow2::OnDisplay()
     ClearScreen(0xFFFFFFFF);
 
     // Draw the ellipse itself.
-    int xCenter = mXSize / 2;
-    int yCenter = mYSize / 2;
-    int xExtent = static_cast<int>(mMultiplier * mA);
-    int yExtent = static_cast<int>(mMultiplier * mB);
+    int32_t xCenter = mXSize / 2;
+    int32_t yCenter = mYSize / 2;
+    int32_t xExtent = static_cast<int32_t>(mMultiplier * mA);
+    int32_t yExtent = static_cast<int32_t>(mMultiplier * mB);
     DrawEllipse(xCenter, yCenter, xExtent, yExtent, 0xFFFF0000);
 
     // Draw the circular arcs that approximate the ellipse.  The drawing is
     // inefficient (not the concern of this sample application) in that it
     // overdraws pixels (unlike a Bresenham-style algorithm).
-    int const numArcSamples = mXSize;
-    for (int i = 0; i < mNumArcs; ++i)
+    size_t const numArcs = static_cast<size_t>(mNumArcs);
+    size_t const numArcSamples = static_cast<size_t>(mXSize);
+    for (size_t i = 0; i < numArcs; ++i)
     {
         // Get the arc endpoints, center, and radius in screen coordinates.
         Vector2<float> p0 = mPoints[i];
@@ -53,17 +54,17 @@ void ApproximateEllipsesByArcsWindow2::OnDisplay()
         float relativeAngle = angle / static_cast<float>(numArcSamples);
 
         // Draw the arc in the first quadrant.
-        for (int j = 0; j <= numArcSamples; ++j)
+        for (size_t j = 0; j <= numArcSamples; ++j)
         {
-            float t = j * relativeAngle;
+            float t = static_cast<float>(j) * relativeAngle;
             float cs = std::cos(t), sn = std::sin(t);
             Matrix2x2<float> rot{ cs, -sn, sn, cs };
             Vector2<float> p = center + rot * v0;
             Vector2<float> pScreen = mMultiplier * p + mOffset;
-            int x = static_cast<int>(pScreen[0]);
-            int y = static_cast<int>(pScreen[1]);
-            int rx = mXSize - 1 - x;
-            int ry = mYSize - 1 - y;
+            int32_t x = static_cast<int32_t>(pScreen[0]);
+            int32_t y = static_cast<int32_t>(pScreen[1]);
+            int32_t rx = mXSize - 1 - x;
+            int32_t ry = mYSize - 1 - y;
             SetPixel(x, y, 0xFF0000FF);
             SetPixel(x, ry, 0xFF0000FF);
             SetPixel(rx, y, 0xFF0000FF);
@@ -75,10 +76,10 @@ void ApproximateEllipsesByArcsWindow2::OnDisplay()
     for (auto const& p : mPoints)
     {
         Vector2<float> pScreen = mMultiplier * p + mOffset;
-        int x = static_cast<int>(pScreen[0]);
-        int y = static_cast<int>(pScreen[1]);
-        int rx = mXSize - 1 - x;
-        int ry = mYSize - 1 - y;
+        int32_t x = static_cast<int32_t>(pScreen[0]);
+        int32_t y = static_cast<int32_t>(pScreen[1]);
+        int32_t rx = mXSize - 1 - x;
+        int32_t ry = mYSize - 1 - y;
         DrawThickPixel(x, y, 1, 0xFF000000);
         DrawThickPixel(x, ry, 1, 0xFF000000);
         DrawThickPixel(rx, y, 1, 0xFF000000);
@@ -95,7 +96,7 @@ void ApproximateEllipsesByArcsWindow2::DrawScreenOverlay()
     mEngine->Draw(8, mYSize - 8, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
 }
 
-bool ApproximateEllipsesByArcsWindow2::OnCharPress(unsigned char key, int x, int y)
+bool ApproximateEllipsesByArcsWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {

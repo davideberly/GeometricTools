@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -11,6 +11,7 @@
 #include <Graphics/GraphicsEngine.h>
 #include <Graphics/PVWUpdater.h>
 #include <Graphics/Visual.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -23,19 +24,21 @@ namespace gte
         PlanarReflectionEffect(std::vector<std::shared_ptr<Visual>> const& planes,
             std::vector<float> const& reflectances);
 
+        virtual ~PlanarReflectionEffect() = default;
+
         virtual void Draw(std::shared_ptr<GraphicsEngine> const& engine,
             VisibleSet const& visibleSet, PVWUpdater& pvwMatrices);
 
         // Member access.  GetPlane(i) returns (origin,normal).
-        inline int GetNumPlanes() const
+        inline int32_t GetNumPlanes() const
         {
-            return static_cast<int>(mPlanes.size());
+            return static_cast<int32_t>(mPlanes.size());
         }
 
-        std::pair<Vector4<float>, Vector4<float>> GetPlane(int i) const;
-        std::shared_ptr<Visual> GetPlaneVisual(int i) const;
-        void SetReflectance(int i, float reflectance);
-        float GetReflectance(int i) const;
+        std::pair<Vector4<float>, Vector4<float>> GetPlane(int32_t i) const;
+        std::shared_ptr<Visual> GetPlaneVisual(int32_t i) const;
+        void SetReflectance(int32_t i, float reflectance);
+        float GetReflectance(int32_t i) const;
 
     protected:
         std::vector<std::shared_ptr<Visual>> mPlanes;

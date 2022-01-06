@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,11 +24,11 @@ namespace gte
             Parameters();
 
             Parameters(std::wstring const& inTitle,
-                int inXOrigin, int inYOrigin, int inXSize, int inYSize);
+                int32_t inXOrigin, int32_t inYOrigin, int32_t inXSize, int32_t inYSize);
 
             _XDisplay* display;
             unsigned long window;
-            unsigned int deviceCreationFlags;
+            uint32_t deviceCreationFlags;
         };
 
     protected:
@@ -44,8 +44,8 @@ namespace gte
         void ShowWindow();
 
         // Mouse position information.
-        virtual void SetMousePosition(int x, int y) override;
-        virtual void GetMousePosition(int& x, int& y) const override;
+        virtual void SetMousePosition(int32_t x, int32_t y) override;
+        virtual void GetMousePosition(int32_t& x, int32_t& y) const override;
 
         // Actions to take before the window closes.
         virtual void OnClose() override;
@@ -58,7 +58,7 @@ namespace gte
             EVT_PROCESSED,
             EVT_QUIT
         };
-        int ProcessedEvent();
+        int32_t ProcessedEvent();
 
     protected:
         _XDisplay* mDisplay;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BlendedTerrainWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -24,7 +24,7 @@ BlendedTerrainWindow3::BlendedTerrainWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateSkyDome();
     InitializeCamera(60.0f, GetAspectRatio(), 0.01f, 100.0f, 0.005f, 0.002f,
@@ -51,7 +51,7 @@ void BlendedTerrainWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool BlendedTerrainWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BlendedTerrainWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -132,8 +132,8 @@ bool BlendedTerrainWindow3::CreateTerrain()
     }
 
     // Create the vertex buffer for terrain.
-    unsigned int const numSamples0 = 64, numSamples1 = 64;
-    unsigned int const numVertices = numSamples0 * numSamples1;
+    uint32_t const numSamples0 = 64, numSamples1 = 64;
+    uint32_t const numVertices = numSamples0 * numSamples1;
 
     struct TerrainVertex
     {
@@ -143,10 +143,10 @@ bool BlendedTerrainWindow3::CreateTerrain()
         Vector2<float> tcoord2;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32_FLOAT, 1);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 2);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32_FLOAT, 1);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 2);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
 
     // Generate the geometry for a flat height field.
@@ -154,9 +154,9 @@ bool BlendedTerrainWindow3::CreateTerrain()
     float const extent0 = 8.0f, extent1 = 8.0f;
     float const inv0 = 1.0f / (static_cast<float>(numSamples0) - 1.0f);
     float const inv1 = 1.0f / (static_cast<float>(numSamples1) - 1.0f);
-    Vector3<float> position;
-    Vector2<float> tcoord;
-    unsigned int i, i0, i1;
+    Vector3<float> position{};
+    Vector2<float> tcoord{};
+    uint32_t i, i0, i1;
     for (i1 = 0, i = 0; i1 < numSamples1; ++i1)
     {
         tcoord[1] = i1 * inv1;
@@ -180,7 +180,7 @@ bool BlendedTerrainWindow3::CreateTerrain()
     // known to be 64x64, which matches numSamples0 and numSamples1.  It is
     // also gray scale, so we use only the red channel.
     auto texture = WICFileIO::Load(heightFile, false);
-    unsigned char* image = texture->Get<unsigned char>();
+    uint8_t* image = texture->Get<uint8_t>();
     for (i = 0; i < numVertices; i++)
     {
         float height = static_cast<float>(image[4 * i]) / 255.0f;
@@ -192,17 +192,17 @@ bool BlendedTerrainWindow3::CreateTerrain()
 
     // Generate the index array for a regular grid of squares, each square a
     // pair of triangles.
-    unsigned int const numTriangles = 2 * (numSamples0 - 1) * (numSamples1 - 1);
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    unsigned int* indices = ibuffer->Get<unsigned int>();
+    uint32_t const numTriangles = 2 * (numSamples0 - 1) * (numSamples1 - 1);
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    uint32_t* indices = ibuffer->Get<uint32_t>();
     for (i1 = 0, i = 0; i1 < numSamples1 - 1; ++i1)
     {
         for (i0 = 0; i0 < numSamples0 - 1; ++i0)
         {
-            int v0 = i0 + numSamples0 * i1;
-            int v1 = v0 + 1;
-            int v2 = v1 + numSamples0;
-            int v3 = v0 + numSamples0;
+            int32_t v0 = i0 + numSamples0 * i1;
+            int32_t v1 = v0 + 1;
+            int32_t v2 = v1 + numSamples0;
+            int32_t v3 = v0 + numSamples0;
             *indices++ = v0;
             *indices++ = v1;
             *indices++ = v2;
@@ -225,7 +225,7 @@ void BlendedTerrainWindow3::CreateSkyDome()
     std::string name = mEnvironment.GetPath("SkyDome.txt");
     std::ifstream inFile(name.c_str());
 
-    unsigned int numVertices, numIndices, i;
+    uint32_t numVertices, numIndices, i;
     inFile >> numVertices;
     inFile >> numIndices;
 
@@ -236,8 +236,8 @@ void BlendedTerrainWindow3::CreateSkyDome()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto* vertices = vbuffer->Get<SkyDomeVertex>();
@@ -250,9 +250,9 @@ void BlendedTerrainWindow3::CreateSkyDome()
         inFile >> vertices[i].tcoord[1];
     }
 
-    int const numTriangles = numIndices / 3;
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    auto* indices = ibuffer->Get<int>();
+    int32_t const numTriangles = numIndices / 3;
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    auto* indices = ibuffer->Get<int32_t>();
     for (i = 0; i < numIndices; ++i, ++indices)
     {
         inFile >> *indices;
@@ -267,7 +267,7 @@ void BlendedTerrainWindow3::CreateSkyDome()
 
     // Create the visual effect.
     mSkyDomeEffect = std::make_shared<Texture2Effect>(mProgramFactory, sky,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
 
     // Create the visual object.
     mSkyDome = std::make_shared<Visual>(vbuffer, ibuffer, mSkyDomeEffect);

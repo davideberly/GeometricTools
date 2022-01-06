@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -113,7 +113,7 @@ namespace gte
             // other.
             T minSqrDistance = std::numeric_limits<T>::max();
             T maxSqrDistance = zero;
-            int i;
+            int32_t i;
 
             if (K == Vector3<T>::Zero())
             {
@@ -222,7 +222,7 @@ namespace gte
             }
 
             size_t numValid = valid.size();
-            int numRoots = 0;
+            int32_t numRoots = 0;
             std::array<T, 6> roots{};
             if (numValid == 3)
             {
@@ -289,7 +289,7 @@ namespace gte
         }
 
     private:
-        void GetRoots(T d0, T c0, int& numRoots, T* roots)
+        void GetRoots(T d0, T c0, int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 - 1
             T const one = (T)1;
@@ -300,7 +300,7 @@ namespace gte
             roots[1] = (one + temp) * inv;
         }
 
-        void GetRoots(T d0, T d1, T c0, T c1, int& numRoots, T* roots)
+        void GetRoots(T d0, T d1, T c0, T c1, int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 + d1*c1/(d1*s-1)^2 - 1
             // with d0 > d1
@@ -331,8 +331,8 @@ namespace gte
                 return df;
             };
 
-            unsigned int const maxIterations = 1024;
-            unsigned int iterations;
+            uint32_t const maxIterations = 1024;
+            uint32_t iterations;
             numRoots = 0;
 
             // TODO: What role does epsilon play?
@@ -398,7 +398,7 @@ namespace gte
         }
 
         void GetRoots(T d0, T d1, T d2, T c0, T c1, T c2,
-            int& numRoots, T* roots)
+            int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 + d1*c1/(d1*s-1)^2
             // + d2*c2/(d2*s-1)^2 - 1 with d0 > d1 > d2
@@ -435,8 +435,8 @@ namespace gte
                 return df;
             };
 
-            unsigned int const maxIterations = 1024;
-            unsigned int iterations;
+            uint32_t const maxIterations = 1024;
+            uint32_t iterations;
             numRoots = 0;
 
             // TODO: What role does epsilon play?

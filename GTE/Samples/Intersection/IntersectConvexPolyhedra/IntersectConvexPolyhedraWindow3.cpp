@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "IntersectConvexPolyhedraWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -18,7 +18,7 @@ IntersectConvexPolyhedraWindow3::IntersectConvexPolyhedraWindow3(Parameters& par
 
     mEngine->SetClearColor({ 0.75f, 0.75f, 0.75f, 1.0f });
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 1000.0f, 0.01f, 0.001f,
         { 16.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
@@ -37,7 +37,7 @@ void IntersectConvexPolyhedraWindow3::OnIdle()
 
     mEngine->ClearBuffers();
 
-    if (mMeshIntersection->culling == CullingMode::CULL_NEVER)
+    if (mMeshIntersection->culling == CullingMode::NEVER)
     {
         // Draw the intersection only when it exists.
         mEngine->Draw(mMeshIntersection);
@@ -57,7 +57,7 @@ void IntersectConvexPolyhedraWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectConvexPolyhedraWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectConvexPolyhedraWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -93,7 +93,7 @@ void IntersectConvexPolyhedraWindow3::CreateScene()
     mScene = std::make_shared<Node>();
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     // Attach a dummy intersection mesh.  If the intersection is nonempty,
     // the Culling flag will be modified to CULL_DYNAMIC.  The intersection
@@ -106,28 +106,28 @@ void IntersectConvexPolyhedraWindow3::CreateScene()
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, green);
     mMeshIntersection->SetEffect(effect);
     mPVWMatrices.Subscribe(mMeshIntersection->worldTransform, effect->GetPVWMatrixConstant());
-    mMeshIntersection->culling = CullingMode::CULL_ALWAYS;
+    mMeshIntersection->culling = CullingMode::ALWAYS;
     mScene->AttachChild(mMeshIntersection);
 
     // The first polyhedron is an ellipsoid.
     ConvexPolyhedron<float>::CreateEggShape(Vector3<float>::Zero(),
         1.0f, 1.0f, 2.0f, 2.0f, 4.0f, 4.0f, 3, mPoly0);
 
-    int numVertices = mPoly0.GetNumVertices();
-    int numTriangles = mPoly0.GetNumTriangles();
-    auto vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<unsigned int>(numVertices));
+    int32_t numVertices = mPoly0.GetNumVertices();
+    int32_t numTriangles = mPoly0.GetNumTriangles();
+    auto vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<uint32_t>(numVertices));
     auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-        static_cast<unsigned int>(numTriangles), sizeof(unsigned int));
+        static_cast<uint32_t>(numTriangles), sizeof(uint32_t));
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (int i = 0; i < numVertices; ++i)
+    for (int32_t i = 0; i < numVertices; ++i)
     {
         vertices[i] = mPoly0.GetPoint(i);
     }
-    auto indices = ibuffer->Get<int>();
-    for (int i = 0; i < numTriangles; ++i)
+    auto indices = ibuffer->Get<int32_t>();
+    for (int32_t i = 0; i < numTriangles; ++i)
     {
         MTTriangle const& triangle = mPoly0.GetTriangle(i);
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             indices[3 * i + j] = mPoly0.GetVLabel(triangle.GetVertex(j));
         }
@@ -147,20 +147,20 @@ void IntersectConvexPolyhedraWindow3::CreateScene()
     // Build the corresponding mesh.
     numVertices = mPoly1.GetNumVertices();
     numTriangles = mPoly1.GetNumTriangles();
-    vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<unsigned int>(numVertices));
+    vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<uint32_t>(numVertices));
     ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-        static_cast<unsigned int>(numTriangles), sizeof(unsigned int));
+        static_cast<uint32_t>(numTriangles), sizeof(uint32_t));
 
     vertices = vbuffer->Get<Vector3<float>>();
-    for (int i = 0; i < numVertices; ++i)
+    for (int32_t i = 0; i < numVertices; ++i)
     {
         vertices[i] = mPoly1.GetPoint(i);
     }
-    indices = ibuffer->Get<int>();
-    for (int i = 0; i < numTriangles; ++i)
+    indices = ibuffer->Get<int32_t>();
+    for (int32_t i = 0; i < numTriangles; ++i)
     {
         MTTriangle const& triangle = mPoly1.GetTriangle(i);
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             indices[3 * i + j] = mPoly1.GetVLabel(triangle.GetVertex(j));
         }
@@ -183,10 +183,10 @@ void IntersectConvexPolyhedraWindow3::CreateScene()
 void IntersectConvexPolyhedraWindow3::ComputeIntersection()
 {
     // Transform the model-space vertices to world space.
-    auto vbuffer = mMeshPoly0->GetVertexBuffer();
-    int numVertices = static_cast<int>(vbuffer->GetNumElements());
+    std::shared_ptr<VertexBuffer> vbuffer = mMeshPoly0->GetVertexBuffer();
+    int32_t numVertices = static_cast<int32_t>(vbuffer->GetNumElements());
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (int i = 0; i < numVertices; ++i)
+    for (int32_t i = 0; i < numVertices; ++i)
     {
         Vector4<float> model = HLift(vertices[i], 1.0f);
         Vector4<float> local = mMeshPoly0->localTransform * model;
@@ -195,9 +195,9 @@ void IntersectConvexPolyhedraWindow3::ComputeIntersection()
     mPoly0.UpdatePlanes();
 
     vbuffer = mMeshPoly1->GetVertexBuffer();
-    numVertices = static_cast<int>(vbuffer->GetNumElements());
+    numVertices = static_cast<int32_t>(vbuffer->GetNumElements());
     vertices = vbuffer->Get<Vector3<float>>();
-    for (int i = 0; i < numVertices; ++i)
+    for (int32_t i = 0; i < numVertices; ++i)
     {
         Vector4<float> model = HLift(vertices[i], 1.0f);
         Vector4<float> local = mMeshPoly1->localTransform * model;
@@ -212,21 +212,21 @@ void IntersectConvexPolyhedraWindow3::ComputeIntersection()
     {
         // Build the corresponding mesh.
         numVertices = mIntersection.GetNumVertices();
-        int numTriangles = mIntersection.GetNumTriangles();
+        int32_t numTriangles = mIntersection.GetNumTriangles();
         VertexFormat vformat = mMeshPoly0->GetVertexBuffer()->GetFormat();
-        vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<unsigned int>(numVertices));
+        vbuffer = std::make_shared<VertexBuffer>(vformat, static_cast<uint32_t>(numVertices));
         vertices = vbuffer->Get<Vector3<float>>();
         auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH,
-            static_cast<unsigned int>(numTriangles), sizeof(int));
-        for (int i = 0; i < numVertices; ++i)
+            static_cast<uint32_t>(numTriangles), sizeof(int32_t));
+        for (int32_t i = 0; i < numVertices; ++i)
         {
             vertices[i] = mIntersection.GetPoint(i);
         }
-        auto indices = ibuffer->Get<int>();
-        for (int i = 0; i < numTriangles; ++i)
+        auto indices = ibuffer->Get<int32_t>();
+        for (int32_t i = 0; i < numTriangles; ++i)
         {
             MTTriangle const& triangle = mIntersection.GetTriangle(i);
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 indices[3 * i + j] = mIntersection.GetVLabel(triangle.GetVertex(j));
             }
@@ -234,10 +234,10 @@ void IntersectConvexPolyhedraWindow3::ComputeIntersection()
 
         mMeshIntersection->SetVertexBuffer(vbuffer);
         mMeshIntersection->SetIndexBuffer(ibuffer);
-        mMeshIntersection->culling = CullingMode::CULL_NEVER;
+        mMeshIntersection->culling = CullingMode::NEVER;
     }
     else
     {
-        mMeshIntersection->culling = CullingMode::CULL_ALWAYS;
+        mMeshIntersection->culling = CullingMode::ALWAYS;
     }
 }

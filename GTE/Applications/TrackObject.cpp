@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/TrackObject.h>
@@ -24,7 +24,7 @@ TrackObject::TrackObject()
     mRoot = std::make_shared<Node>();
 }
 
-TrackObject::TrackObject(int xSize, int ySize, std::shared_ptr<Camera> const& camera)
+TrackObject::TrackObject(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera)
     :
     mXSize(0),
     mYSize(0),
@@ -40,7 +40,7 @@ TrackObject::TrackObject(int xSize, int ySize, std::shared_ptr<Camera> const& ca
     mRoot = std::make_shared<Node>();
 }
 
-void TrackObject::Set(int xSize, int ySize, std::shared_ptr<Camera> const& camera)
+void TrackObject::Set(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera)
 {
     if (xSize > 0 && ySize > 0 && camera)
     {
@@ -102,7 +102,7 @@ void TrackObject::DetachAll()
     }
 }
 
-void TrackObject::SetInitialPoint(int x, int y)
+void TrackObject::SetInitialPoint(int32_t x, int32_t y)
 {
     if (mValid && mRoot)
     {
@@ -112,7 +112,7 @@ void TrackObject::SetInitialPoint(int x, int y)
     }
 }
 
-void TrackObject::SetFinalPoint(int x, int y)
+void TrackObject::SetFinalPoint(int32_t x, int32_t y)
 {
     if (mValid && mRoot)
     {

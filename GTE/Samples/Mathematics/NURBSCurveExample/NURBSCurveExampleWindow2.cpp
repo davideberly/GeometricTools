@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "NURBSCurveExampleWindow2.h"
 
@@ -23,14 +23,14 @@ NURBSCurveExampleWindow2::NURBSCurveExampleWindow2(Parameters& parameters)
 
 void NURBSCurveExampleWindow2::OnDisplay()
 {
-    unsigned int const white = 0xFFFFFFFF;
-    unsigned int const black = 0xFF000000;
-    unsigned int const gray = 0xFF808080;
+    uint32_t const white = 0xFFFFFFFF;
+    uint32_t const black = 0xFF000000;
+    uint32_t const gray = 0xFF808080;
 
     ClearScreen(white);
 
-    int imax = 2048;
-    int i, x, y;
+    int32_t imax = 2048;
+    int32_t i, x, y;
     float t;
     Vector2<float> position;
 
@@ -85,7 +85,7 @@ void NURBSCurveExampleWindow2::OnDisplay()
     Window2::OnDisplay();
 }
 
-bool NURBSCurveExampleWindow2::OnCharPress(unsigned char key, int x, int y)
+bool NURBSCurveExampleWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -122,8 +122,8 @@ void NURBSCurveExampleWindow2::DoSimulation1()
 
     float t = mSimTime;
     float oneMinusT = 1.0f - t;
-    int imax = mSpline->GetNumControls();
-    for (int i = 0; i < imax; ++i)
+    int32_t imax = mSpline->GetNumControls();
+    for (int32_t i = 0; i < imax; ++i)
     {
         if (i == 2 || i == 10)
         {
@@ -157,8 +157,8 @@ void NURBSCurveExampleWindow2::DoSimulation2()
         mSpline->SetControl(2, control);
 
         // The circle floats up a little bit.
-        int imax = mCircle->GetNumControls();
-        for (int i = 0; i < imax; ++i)
+        int32_t imax = mCircle->GetNumControls();
+        for (int32_t i = 0; i < imax; ++i)
         {
             control = mCircle->GetControl(i) + Vector2<float>{ 0.0f, 1.0f };
             mCircle->SetControl(i, control);
@@ -176,10 +176,10 @@ void NURBSCurveExampleWindow2::InitialConfiguration()
     mControls.clear();
     mTargets.clear();
 
-    int const numControls = 13;
+    int32_t const numControls = 13;
     mControls.resize(numControls);
     mTargets.resize(numControls);
-    for (int i = 0; i < numControls; ++i)
+    for (int32_t i = 0; i < numControls; ++i)
     {
         mControls[i] = { 0.125f * mSize + 0.0625f * mSize * i, 0.0625f * mSize };
     }
@@ -199,7 +199,7 @@ void NURBSCurveExampleWindow2::InitialConfiguration()
     mTargets[12] = mControls[12];
 
     std::vector<float> weights(numControls);
-    for (int i = 0; i < numControls; ++i)
+    for (int32_t i = 0; i < numControls; ++i)
     {
         weights[i] = 1.0f;
     }
@@ -218,20 +218,20 @@ void NURBSCurveExampleWindow2::NextConfiguration()
 {
     mTargets.clear();
 
-    int const numControls = 16;
+    int32_t const numControls = 16;
     mControls.resize(numControls);
     mControls[0] = mSpline->GetControl(0);
     mControls[1] = mSpline->GetControl(1);
     mControls[2] = 0.5f * (mSpline->GetControl(1) + mSpline->GetControl(2));
     mControls[3] = mSpline->GetControl(11);
     mControls[4] = mSpline->GetControl(12);
-    for (int i = 2, j = 5; i <= 10; ++i, ++j)
+    for (int32_t i = 2, j = 5; i <= 10; ++i, ++j)
     {
         mControls[j] = mSpline->GetControl(i);
     }
 
     std::vector<float> weights(numControls);
-    for (int i = 0; i < numControls; ++i)
+    for (int32_t i = 0; i < numControls; ++i)
     {
         weights[i] = 1.0f;
     }
@@ -258,7 +258,7 @@ void NURBSCurveExampleWindow2::NextConfiguration()
     input1.numUniqueKnots = input1.numControls + input1.degree + 1;
     input1.uniqueKnots.resize(input1.numUniqueKnots);
     float invNmD = 1.0f / static_cast<float>(input1.numControls - input1.degree);
-    for (int i = 0; i < input1.numUniqueKnots; ++i)
+    for (int32_t i = 0; i < input1.numUniqueKnots; ++i)
     {
         input1.uniqueKnots[i].t = static_cast<float>(i - input1.degree) * invNmD;
         input1.uniqueKnots[i].multiplicity = 1;

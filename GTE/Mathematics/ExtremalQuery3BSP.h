@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -33,13 +33,13 @@ namespace gte
             size_t const numTriangles = indices.size() / 3;
             for (size_t t = 0; t < numTriangles; ++t)
             {
-                std::array<int, 3> V = { 0, 0, 0 };
+                std::array<int32_t, 3> V = { 0, 0, 0 };
                 for (size_t j = 0; j < 3; ++j)
                 {
                     V[j] = indices[3 * t + j];
                 }
                 auto triangle = mesh.Insert(V[0], V[1], V[2]);
-                mTriToNormal.insert(std::make_pair(triangle, static_cast<int>(t)));
+                mTriToNormal.insert(std::make_pair(triangle, static_cast<int32_t>(t)));
             }
 
             // Create the set of unique arcs which are used to create the BSP
@@ -58,16 +58,16 @@ namespace gte
         // Compute the extreme vertices in the specified direction and return
         // the indices of the vertices in the polyhedron vertex array.
         virtual void GetExtremeVertices(Vector3<Real> const& direction,
-            int& positiveDirection, int& negativeDirection) override
+            int32_t& positiveDirection, int32_t& negativeDirection) override
         {
             // Do a nonrecursive depth-first search of the BSP tree to
             // determine spherical polygon contains the incoming direction D.
             // Index 0 is the root of the BSP tree.
-            int current = 0;
+            int32_t current = 0;
             while (current >= 0)
             {
                 SphericalArc& node = mNodes[current];
-                int sign = gte::isign(Dot(direction, node.normal));
+                int32_t sign = gte::isign(Dot(direction, node.normal));
                 if (sign >= 0)
                 {
                     current = node.posChild;
@@ -95,7 +95,7 @@ namespace gte
             while (current >= 0)
             {
                 SphericalArc& node = mNodes[current];
-                int sign = gte::isign(Dot(direction, node.normal));
+                int32_t sign = gte::isign(Dot(direction, node.normal));
                 if (sign <= 0)
                 {
                     current = node.posChild;
@@ -118,12 +118,12 @@ namespace gte
         }
 
         // Tree statistics.
-        inline int GetNumNodes() const
+        inline int32_t GetNumNodes() const
         {
-            return static_cast<int>(mNodes.size());
+            return static_cast<int32_t>(mNodes.size());
         }
 
-        inline int GetTreeDepth() const
+        inline int32_t GetTreeDepth() const
         {
             return mTreeDepth;
         }
@@ -157,12 +157,12 @@ namespace gte
 
             // Indices N[] into the face normal array for the endpoints of the
             // arc.
-            std::array<int, 2> nIndex;
+            std::array<int32_t, 2> nIndex;
 
             // The number of arcs in the path from normal N[0] to normal N[1].
             // For spherical polygon edges, the number is 1.  The number is 2
             // or larger for bisector arcs of the spherical polygon.
-            int separation;
+            int32_t separation;
 
             // The normal is Cross(FaceNormal[N[0]],FaceNormal[N[1]]).
             Vector3<Real> normal;
@@ -172,29 +172,29 @@ namespace gte
             // normal N[0] to normal N[1], PosVertex is the index for the
             // extreme vertex to the left of the arc and NegVertex is the
             // index for the extreme vertex to the right of the arc.
-            int posVertex, negVertex;
+            int32_t posVertex, negVertex;
 
             // Support for BSP trees stored as contiguous nodes in an array.
-            int posChild, negChild;
+            int32_t posChild, negChild;
         };
 
         typedef VETManifoldMesh::Triangle Triangle;
 
-        void SortAdjacentTriangles(int vIndex,
+        void SortAdjacentTriangles(int32_t vIndex,
             std::unordered_set<Triangle*> const& tAdj,
             std::vector<Triangle*>& tAdjSorted)
         {
             // Copy the set of adjacent triangles into a vector container.
-            int const numTriangles = static_cast<int>(tAdj.size());
+            int32_t const numTriangles = static_cast<int32_t>(tAdj.size());
             tAdjSorted.resize(tAdj.size());
 
             // Traverse the triangles adjacent to vertex V using edge-triangle
             // adjacency information to produce a sorted array of adjacent
             // triangles.
             Triangle* tri = *tAdj.begin();
-            for (int i = 0; i < numTriangles; ++i)
+            for (int32_t i = 0; i < numTriangles; ++i)
             {
-                for (int prev = 2, curr = 0; curr < 3; prev = curr++)
+                for (int32_t prev = 2, curr = 0; curr < 3; prev = curr++)
                 {
                     if (tri->V[curr] == vIndex)
                     {
@@ -208,8 +208,8 @@ namespace gte
 
         void CreateSphericalArcs(VETManifoldMesh& mesh, std::multiset<SphericalArc>& arcs)
         {
-            int const prev[3] = { 2, 0, 1 };
-            int const next[3] = { 1, 2, 0 };
+            int32_t const prev[3] = { 2, 0, 1 };
+            int32_t const next[3] = { 1, 2, 0 };
 
             for (auto const& element : mesh.GetEdges())
             {
@@ -225,7 +225,7 @@ namespace gte
                 arc.normal = Cross(this->mFaceNormals[arc.nIndex[0]], this->mFaceNormals[arc.nIndex[1]]);
 
                 Triangle* adj = edge->T[0];
-                int j;
+                int32_t j;
                 for (j = 0; j < 3; ++j)
                 {
                     if (adj->V[j] != edge->V[0] && adj->V[j] != edge->V[1])
@@ -245,23 +245,23 @@ namespace gte
 
         void CreateSphericalBisectors(VETManifoldMesh& mesh, std::multiset<SphericalArc>& arcs)
         {
-            std::queue<std::pair<int, int>> queue;
+            std::queue<std::pair<int32_t, int32_t>> queue;
             for (auto const& element : mesh.GetVertices())
             {
                 // Sort the normals into a counterclockwise spherical polygon
                 // when viewed from outside the sphere.
                 auto const& vertex = element.second;
-                int const vIndex = vertex->V;
+                int32_t const vIndex = vertex->V;
                 std::vector<Triangle*> tAdjSorted;
                 SortAdjacentTriangles(vIndex, vertex->TAdjacent, tAdjSorted);
-                int const numTriangles = static_cast<int>(vertex->TAdjacent.size());
+                int32_t const numTriangles = static_cast<int32_t>(vertex->TAdjacent.size());
                 queue.push(std::make_pair(0, numTriangles));
                 while (!queue.empty())
                 {
-                    std::pair<int, int> item = queue.front();
+                    std::pair<int32_t, int32_t> item = queue.front();
                     queue.pop();
-                    int i0 = item.first, i1 = item.second;
-                    int separation = i1 - i0;
+                    int32_t i0 = item.first, i1 = item.second;
+                    int32_t separation = i1 - i0;
                     if (separation > 1 && separation != numTriangles - 1)
                     {
                         if (i1 < numTriangles)
@@ -282,7 +282,7 @@ namespace gte
                             arc.negVertex = vIndex;
                             arcs.insert(arc);
                         }
-                        int imid = (i0 + i1 + 1) / 2;
+                        int32_t imid = (i0 + i1 + 1) / 2;
                         if (imid != i1)
                         {
                             queue.push(std::make_pair(i0, imid));
@@ -316,15 +316,15 @@ namespace gte
                 // Do a nonrecursive depth-first search of the current BSP
                 // tree to place the incoming arc.  Index 0 is the root of the
                 // BSP tree.
-                std::stack<int> candidates;
+                std::stack<int32_t> candidates;
                 candidates.push(0);
                 while (!candidates.empty())
                 {
-                    int current = candidates.top();
+                    int32_t current = candidates.top();
                     candidates.pop();
                     SphericalArc* node = &mNodes[current];
 
-                    int sign0;
+                    int32_t sign0;
                     if (arc.nIndex[0] == node->nIndex[0] || arc.nIndex[0] == node->nIndex[1])
                     {
                         sign0 = 0;
@@ -335,7 +335,7 @@ namespace gte
                         sign0 = gte::isign(dot);
                     }
 
-                    int sign1;
+                    int32_t sign1;
                     if (arc.nIndex[1] == node->nIndex[0] || arc.nIndex[1] == node->nIndex[1])
                     {
                         sign1 = 0;
@@ -346,7 +346,7 @@ namespace gte
                         sign1 = gte::isign(dot);
                     }
 
-                    int doTest = 0;
+                    int32_t doTest = 0;
                     if (sign0 * sign1 < 0)
                     {
                         // The new arc straddles the current arc, so propagate
@@ -370,14 +370,14 @@ namespace gte
                     // correct partitioning of the arcs during extremal
                     // queries.
 
-                    int depth;
+                    int32_t depth;
 
                     if (doTest & 1)
                     {
                         if (node->posChild != -1)
                         {
                             candidates.push(node->posChild);
-                            depth = static_cast<int>(candidates.size());
+                            depth = static_cast<int32_t>(candidates.size());
                             if (depth > mTreeDepth)
                             {
                                 mTreeDepth = depth;
@@ -385,7 +385,7 @@ namespace gte
                         }
                         else
                         {
-                            node->posChild = static_cast<int>(mNodes.size());
+                            node->posChild = static_cast<int32_t>(mNodes.size());
                             mNodes.push_back(arc);
 
                             // The push_back can cause a reallocation, so the
@@ -399,7 +399,7 @@ namespace gte
                         if (node->negChild != -1)
                         {
                             candidates.push(node->negChild);
-                            depth = static_cast<int>(candidates.size());
+                            depth = static_cast<int32_t>(candidates.size());
                             if (depth > mTreeDepth)
                             {
                                 mTreeDepth = depth;
@@ -407,7 +407,7 @@ namespace gte
                         }
                         else
                         {
-                            node->negChild = static_cast<int>(mNodes.size());
+                            node->negChild = static_cast<int32_t>(mNodes.size());
                             mNodes.push_back(arc);
                         }
                     }
@@ -421,10 +421,10 @@ namespace gte
         }
 
         // Lookup table for indexing into mFaceNormals.
-        std::map<Triangle*, int> mTriToNormal;
+        std::map<Triangle*, int32_t> mTriToNormal;
 
         // Fixed-size storage for the BSP nodes.
         std::vector<SphericalArc> mNodes;
-        int mTreeDepth;
+        int32_t mTreeDepth;
     };
 }

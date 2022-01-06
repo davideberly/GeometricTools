@@ -199,4 +199,3 @@ xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(C
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
-

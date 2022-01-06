@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "StructuredBuffersWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -40,12 +40,12 @@ void StructuredBuffersWindow3::OnIdle()
 
     mEngine->CopyGpuToCpu(mDrawnPixels);
     Vector4<float>* src = mDrawnPixels->Get<Vector4<float>>();
-    unsigned int* trg = mDrawnPixelsTexture->Get<unsigned int>();
-    for (int i = 0; i < mXSize*mYSize; ++i)
+    uint32_t* trg = mDrawnPixelsTexture->Get<uint32_t>();
+    for (int32_t i = 0; i < mXSize*mYSize; ++i)
     {
-        unsigned int r = static_cast<unsigned char>(255.0f*src[i][0]);
-        unsigned int g = static_cast<unsigned char>(255.0f*src[i][1]);
-        unsigned int b = static_cast<unsigned char>(255.0f*src[i][2]);
+        uint32_t r = static_cast<uint8_t>(255.0f*src[i][0]);
+        uint32_t g = static_cast<uint8_t>(255.0f*src[i][1]);
+        uint32_t b = static_cast<uint8_t>(255.0f*src[i][2]);
         trg[i] = r | (g << 8) | (b << 16) | (0xFF << 24);
     }
     WICFileIO::SaveToPNG("DrawnPixels.png", mDrawnPixelsTexture);
@@ -102,18 +102,18 @@ bool StructuredBuffersWindow3::CreateScene()
     program->GetVertexShader()->Set("PVWMatrix", cbuffer);
 
     // Create the pixel shader and associated resources.
-    auto pshader = program->GetPixelShader();
+    auto const& pshader = program->GetPixelShader();
     std::string path = mEnvironment.GetPath("StoneWall.png");
     auto baseTexture = WICFileIO::Load(path, false);
     auto baseSampler = std::make_shared<SamplerState>();
-    baseSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    baseSampler->mode[0] = SamplerState::CLAMP;
-    baseSampler->mode[1] = SamplerState::CLAMP;
+    baseSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    baseSampler->mode[0] = SamplerState::Mode::CLAMP;
+    baseSampler->mode[1] = SamplerState::Mode::CLAMP;
     pshader->Set("baseTexture", baseTexture, "baseSampler", baseSampler);
 
     mDrawnPixels = std::make_shared<StructuredBuffer>(mXSize * mYSize, sizeof(Vector4<float>));
-    mDrawnPixels->SetUsage(Resource::SHADER_OUTPUT);
-    mDrawnPixels->SetCopyType(Resource::COPY_BIDIRECTIONAL);
+    mDrawnPixels->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mDrawnPixels->SetCopy(Resource::Copy::BIDIRECTIONAL);
     std::memset(mDrawnPixels->GetData(), 0, mDrawnPixels->GetNumBytes());
     pshader->Set("drawnPixels", mDrawnPixels);
 
@@ -130,8 +130,8 @@ bool StructuredBuffersWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
     vertices[0].position = { 0.0f, 0.0f, 0.0f };

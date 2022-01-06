@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Environment.h>
@@ -36,14 +36,14 @@ std::string Environment::GetVariable(std::string const& name) const
 #endif
 }
 
-int Environment::GetNumDirectories() const
+int32_t Environment::GetNumDirectories() const
 {
-    return static_cast<int>(mDirectories.size());
+    return static_cast<int32_t>(mDirectories.size());
 }
 
-std::string Environment::Get(int i) const
+std::string Environment::Get(int32_t i) const
 {
-    if (0 <= i && i < static_cast<int>(mDirectories.size()))
+    if (0 <= i && i < static_cast<int32_t>(mDirectories.size()))
     {
         return mDirectories[i];
     }

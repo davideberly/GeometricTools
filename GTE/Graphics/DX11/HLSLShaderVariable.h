@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DX11/HLSLResource.h>
+#include <cstdint>
 #include <vector>
 
 namespace gte
@@ -17,15 +18,29 @@ namespace gte
     public:
         struct Description
         {
+            Description()
+                :
+                name(""),
+                offset(0),
+                numBytes(0),
+                flags(0),
+                textureStart(0),
+                textureNumSlots(0),
+                samplerStart(0),
+                samplerNumSlots(0),
+                defaultValue{}
+            {
+            }
+
             std::string name;
-            unsigned int offset;
-            unsigned int numBytes;
-            unsigned int flags;
-            unsigned int textureStart;
-            unsigned int textureNumSlots;
-            unsigned int samplerStart;
-            unsigned int samplerNumSlots;
-            std::vector<unsigned char> defaultValue;
+            uint32_t offset;
+            uint32_t numBytes;
+            uint32_t flags;
+            uint32_t textureStart;
+            uint32_t textureNumSlots;
+            uint32_t samplerStart;
+            uint32_t samplerNumSlots;
+            std::vector<uint8_t> defaultValue;
         };
 
         // Construction.  Shader variables are reported for constant buffers,
@@ -43,42 +58,42 @@ namespace gte
             return mDesc.name;
         }
 
-        inline unsigned int GetOffset() const
+        inline uint32_t GetOffset() const
         {
             return mDesc.offset;
         }
 
-        inline unsigned int GetNumBytes() const
+        inline uint32_t GetNumBytes() const
         {
             return mDesc.numBytes;
         }
 
-        inline unsigned int GetFlags() const
+        inline uint32_t GetFlags() const
         {
             return mDesc.flags;
         }
 
-        inline unsigned int GetTextureStart() const
+        inline uint32_t GetTextureStart() const
         {
             return mDesc.textureStart;
         }
 
-        inline unsigned int GetTextureNumSlots() const
+        inline uint32_t GetTextureNumSlots() const
         {
             return mDesc.textureNumSlots;
         }
 
-        inline unsigned int GetSamplerStart() const
+        inline uint32_t GetSamplerStart() const
         {
             return mDesc.samplerStart;
         }
 
-        inline unsigned int GetSamplerNumSlots() const
+        inline uint32_t GetSamplerNumSlots() const
         {
             return mDesc.samplerNumSlots;
         }
 
-        inline std::vector<unsigned char> const& GetDefaultValue() const
+        inline std::vector<uint8_t> const& GetDefaultValue() const
         {
             return mDesc.defaultValue;
         }

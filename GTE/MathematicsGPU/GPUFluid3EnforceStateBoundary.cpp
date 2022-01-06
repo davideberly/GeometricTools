@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid3EnforceStateBoundary.h>
@@ -11,26 +11,26 @@ using namespace gte;
 
 GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int zSize, int numXThreads, int numYThreads, int numZThreads)
+    int32_t xSize, int32_t ySize, int32_t zSize, int32_t numXThreads, int32_t numYThreads, int32_t numZThreads)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads),
     mNumZGroups(zSize / numZThreads)
 {
     mXMin = std::make_shared<Texture2>(DF_R32G32_FLOAT, ySize, zSize);
-    mXMin->SetUsage(Resource::SHADER_OUTPUT);
+    mXMin->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mXMax = std::make_shared<Texture2>(DF_R32G32_FLOAT, ySize, zSize);
-    mXMax->SetUsage(Resource::SHADER_OUTPUT);
+    mXMax->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mYMin = std::make_shared<Texture2>(DF_R32G32_FLOAT, xSize, zSize);
-    mYMin->SetUsage(Resource::SHADER_OUTPUT);
+    mYMin->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mYMax = std::make_shared<Texture2>(DF_R32G32_FLOAT, xSize, zSize);
-    mYMax->SetUsage(Resource::SHADER_OUTPUT);
+    mYMax->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mZMin = std::make_shared<Texture2>(DF_R32G32_FLOAT, xSize, ySize);
-    mZMin->SetUsage(Resource::SHADER_OUTPUT);
+    mZMin->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mZMax = std::make_shared<Texture2>(DF_R32G32_FLOAT, xSize, ySize);
-    mZMax->SetUsage(Resource::SHADER_OUTPUT);
+    mZMax->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("USE_COPY_X_FACE", 1);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -38,7 +38,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mCopyXFace = factory->CreateFromSource(*msSource[api]);
     if (mCopyXFace)
     {
-        auto cshader = mCopyXFace->GetComputeShader();
+        auto const& cshader = mCopyXFace->GetComputeShader();
         cshader->Set("xMin", mXMin);
         cshader->Set("xMax", mXMax);
     }
@@ -50,7 +50,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mWriteXFace = factory->CreateFromSource(*msSource[api]);
     if (mWriteXFace)
     {
-        auto cshader = mWriteXFace->GetComputeShader();
+        auto const& cshader = mWriteXFace->GetComputeShader();
         cshader->Set("xMin", mXMin);
         cshader->Set("xMax", mXMax);
     }
@@ -62,7 +62,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mCopyYFace = factory->CreateFromSource(*msSource[api]);
     if (mCopyYFace)
     {
-        auto cshader = mCopyYFace->GetComputeShader();
+        auto const& cshader = mCopyYFace->GetComputeShader();
         cshader->Set("yMin", mYMin);
         cshader->Set("yMax", mYMax);
     }
@@ -74,7 +74,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mWriteYFace = factory->CreateFromSource(*msSource[api]);
     if (mWriteYFace)
     {
-        auto cshader = mWriteYFace->GetComputeShader();
+        auto const& cshader = mWriteYFace->GetComputeShader();
         cshader->Set("yMin", mYMin);
         cshader->Set("yMax", mYMax);
     }
@@ -86,7 +86,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mCopyZFace = factory->CreateFromSource(*msSource[api]);
     if (mCopyZFace)
     {
-        auto cshader = mCopyZFace->GetComputeShader();
+        auto const& cshader = mCopyZFace->GetComputeShader();
         cshader->Set("zMin", mZMin);
         cshader->Set("zMax", mZMax);
     }
@@ -98,7 +98,7 @@ GPUFluid3EnforceStateBoundary::GPUFluid3EnforceStateBoundary(
     mWriteZFace = factory->CreateFromSource(*msSource[api]);
     if (mWriteZFace)
     {
-        auto cshader = mWriteZFace->GetComputeShader();
+        auto const& cshader = mWriteZFace->GetComputeShader();
         cshader->Set("zMin", mZMin);
         cshader->Set("zMax", mZMax);
     }

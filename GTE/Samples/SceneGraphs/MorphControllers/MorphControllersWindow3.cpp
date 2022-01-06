@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MorphControllersWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -26,10 +26,10 @@ MorphControllersWindow3::MorphControllersWindow3(Parameters& parameters)
     }
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     mEngine->SetClearColor({ 0.75f, 0.75f, 0.75f, 1.0f });
@@ -57,7 +57,7 @@ void MorphControllersWindow3::OnIdle()
 
     if (mDrawTargets)
     {
-        auto saveRState = mEngine->GetRasterizerState();
+        auto const& saveRState = mEngine->GetRasterizerState();
         mEngine->SetRasterizerState(mNoCullWireState);
         for (auto const& visual : mMorphTarget)
         {
@@ -74,7 +74,7 @@ void MorphControllersWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MorphControllersWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MorphControllersWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -120,16 +120,16 @@ void MorphControllersWindow3::CreateScene()
 {
     // Start with a disk that is to be morphed.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::DYNAMIC_UPDATE);
-    unsigned int const numShellSamples = 16;
-    unsigned int const numRadialSamples = 16;
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
+    uint32_t const numShellSamples = 16;
+    uint32_t const numRadialSamples = 16;
     float const radius = 1.0f;
     mMorphDisk = mf.CreateDisk(numShellSamples, numRadialSamples, radius);
-    auto diskVBuffer = mMorphDisk->GetVertexBuffer();
+    auto const& diskVBuffer = mMorphDisk->GetVertexBuffer();
     Vertex* diskVertices = diskVBuffer->Get<Vertex>();
 
     // Create the morph controller.
@@ -139,7 +139,7 @@ void MorphControllersWindow3::CreateScene()
     mMorphController = std::make_shared<MorphController>(
         numTargets, numVertices, numTimes, mUpdater);
 
-    mMorphController->repeat = Controller::RT_CYCLE;
+    mMorphController->repeat = Controller::RepeatType::CYCLE;
     mMorphController->minTime = 0.0;
     mMorphController->maxTime = 1.0;
     mMorphController->phase = 0.0;
@@ -159,9 +159,9 @@ void MorphControllersWindow3::CreateScene()
     // Visualize the morph targets.
     mMorphTarget.resize(numTargets);
     vformat.Reset();
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::IMMUTABLE);
+    mf.SetVertexBufferUsage(Resource::Usage::IMMUTABLE);
 
     std::default_random_engine dre;
     std::uniform_real_distribution<float> urd(0.7f, 0.9f);
@@ -228,7 +228,8 @@ void MorphControllersWindow3::CreateScene()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mMorphDisk->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mMorphDisk->worldTransform, effect->GetPVWMatrixConstant());

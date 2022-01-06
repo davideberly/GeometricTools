@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -35,7 +35,7 @@ namespace gte
 
         void operator()(
             size_t numVertices, Vector3<Real> const* vertices,
-            size_t numTriangles, unsigned int const* indices,
+            size_t numTriangles, uint32_t const* indices,
             Real singularityThreshold)
         {
             mNormals.resize(numVertices);
@@ -48,13 +48,13 @@ namespace gte
             // area-weighted sum of the triangles sharing a vertex.
             Vector3<Real> vzero{ (Real)0, (Real)0, (Real)0 };
             std::fill(mNormals.begin(), mNormals.end(), vzero);
-            unsigned int const* currentIndex = indices;
+            uint32_t const* currentIndex = indices;
             for (size_t i = 0; i < numTriangles; ++i)
             {
                 // Get vertex indices.
-                unsigned int v0 = *currentIndex++;
-                unsigned int v1 = *currentIndex++;
-                unsigned int v2 = *currentIndex++;
+                uint32_t v0 = *currentIndex++;
+                uint32_t v1 = *currentIndex++;
+                uint32_t v2 = *currentIndex++;
 
                 // Compute the normal (length provides a weighted sum).
                 Vector3<Real> edge1 = vertices[v1] - vertices[v0];
@@ -81,16 +81,16 @@ namespace gte
             for (size_t i = 0; i < numTriangles; ++i)
             {
                 // Get vertex indices.
-                unsigned int v[3];
+                uint32_t v[3];
                 v[0] = *currentIndex++;
                 v[1] = *currentIndex++;
                 v[2] = *currentIndex++;
 
                 for (size_t j = 0; j < 3; j++)
                 {
-                    unsigned int v0 = v[j];
-                    unsigned int v1 = v[(j + 1) % 3];
-                    unsigned int v2 = v[(j + 2) % 3];
+                    uint32_t v0 = v[j];
+                    uint32_t v1 = v[(j + 1) % 3];
+                    uint32_t v2 = v[(j + 2) % 3];
 
                     // Compute the edge direction from vertex v0 to vertex v1,
                     // project it to the tangent plane of vertex v0 and
@@ -98,9 +98,9 @@ namespace gte
                     Vector3<Real> E = vertices[v1] - vertices[v0];
                     Vector3<Real> W = E - Dot(E, mNormals[v0]) * mNormals[v0];
                     Vector3<Real> D = mNormals[v1] - mNormals[v0];
-                    for (int row = 0; row < 3; ++row)
+                    for (int32_t row = 0; row < 3; ++row)
                     {
-                        for (int col = 0; col < 3; ++col)
+                        for (int32_t col = 0; col < 3; ++col)
                         {
                             WWTrn[v0](row, col) += W[row] * W[col];
                             DWTrn[v0](row, col) += D[row] * W[col];
@@ -113,9 +113,9 @@ namespace gte
                     E = vertices[v2] - vertices[v0];
                     W = E - Dot(E, mNormals[v0]) * mNormals[v0];
                     D = mNormals[v2] - mNormals[v0];
-                    for (int row = 0; row < 3; ++row)
+                    for (int32_t row = 0; row < 3; ++row)
                     {
-                        for (int col = 0; col < 3; ++col)
+                        for (int32_t col = 0; col < 3; ++col)
                         {
                             WWTrn[v0](row, col) += W[row] * W[col];
                             DWTrn[v0](row, col) += D[row] * W[col];
@@ -129,9 +129,9 @@ namespace gte
             // implementation.  Compute the matrix of normal derivatives.
             for (size_t i = 0; i < numVertices; ++i)
             {
-                for (int row = 0; row < 3; ++row)
+                for (int32_t row = 0; row < 3; ++row)
                 {
-                    for (int col = 0; col < 3; ++col)
+                    for (int32_t col = 0; col < 3; ++col)
                     {
                         WWTrn[i](row, col) = (Real)0.5 * WWTrn[i](row, col) +
                             mNormals[i][row] * mNormals[i][col];
@@ -142,9 +142,9 @@ namespace gte
                 // Compute the max-abs entry of D*W^T.  If this entry is
                 // (nearly) zero, flag the DNormal matrix as singular.
                 Real maxAbs = (Real)0;
-                for (int row = 0; row < 3; ++row)
+                for (int32_t row = 0; row < 3; ++row)
                 {
-                    for (int col = 0; col < 3; ++col)
+                    for (int32_t col = 0; col < 3; ++col)
                     {
                         Real absEntry = std::fabs(DWTrn[i](row, col));
                         if (absEntry > maxAbs)
@@ -243,7 +243,7 @@ namespace gte
 
         void operator()(
             std::vector<Vector3<Real>> const& vertices,
-            std::vector<unsigned int> const& indices,
+            std::vector<uint32_t> const& indices,
             Real singularityThreshold)
         {
             operator()(vertices.size(), vertices.data(), indices.size() / 3,

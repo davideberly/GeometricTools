@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,8 +21,8 @@ namespace gte
     {
     public:
         // Construction.
-        VertexCollapseMesh(int numPositions, Vector3<Real> const* positions,
-            int numIndices, int const* indices)
+        VertexCollapseMesh(int32_t numPositions, Vector3<Real> const* positions,
+            int32_t numIndices, int32_t const* indices)
             :
             mNumPositions(numPositions),
             mPositions(positions),
@@ -36,13 +36,13 @@ namespace gte
             }
 
             // Build the manifold mesh from the inputs.
-            int numTriangles = numIndices / 3;
-            int const* current = indices;
-            for (int t = 0; t < numTriangles; ++t)
+            int32_t numTriangles = numIndices / 3;
+            int32_t const* current = indices;
+            for (int32_t t = 0; t < numTriangles; ++t)
             {
-                int v0 = *current++;
-                int v1 = *current++;
-                int v2 = *current++;
+                int32_t v0 = *current++;
+                int32_t v1 = *current++;
+                int32_t v2 = *current++;
                 mMesh.Insert(v0, v1, v2);
             }
 
@@ -53,7 +53,7 @@ namespace gte
                 auto edge = eelement.second.get();
                 if (!edge->T[1])
                 {
-                    for (int i = 0; i < 2; ++i)
+                    for (int32_t i = 0; i < 2; ++i)
                     {
                         auto velement = vmap.find(edge->V[i]);
                         auto vertex = static_cast<VCVertex*>(velement->second.get());
@@ -63,7 +63,7 @@ namespace gte
             }
 
             // Build the priority queue of weights for the interior vertices.
-            mMinHeap.Reset((int)vmap.size());
+            mMinHeap.Reset((int32_t)vmap.size());
             for (auto const& velement : vmap)
             {
                 auto vertex = static_cast<VCVertex*>(velement.second.get());
@@ -86,12 +86,20 @@ namespace gte
         // Decimate the mesh using vertex collapses
         struct Record
         {
+            Record()
+                :
+                vertex(0),
+                removed{},
+                inserted{}
+            {
+            }
+
             // The index of the interior vertex that is removed from the mesh.
             // The triangles adjacent to the vertex are 'removed' from the
             // mesh.  The polygon boundary of the adjacent triangles is
             // triangulated and the new triangles are 'inserted' into the
             // mesh.
-            int vertex;
+            int32_t vertex;
             std::vector<TriangleKey<true>> removed;
             std::vector<TriangleKey<true>> inserted;
         };
@@ -118,7 +126,7 @@ namespace gte
 
             while (mMinHeap.GetNumElements() > 0)
             {
-                int v = -1;
+                int32_t v = -1;
                 Real weight = std::numeric_limits<Real>::max();
                 mMinHeap.GetMinimum(v, weight);
                 if (weight == std::numeric_limits<Real>::max())
@@ -137,8 +145,8 @@ namespace gte
 
                 auto vertex = static_cast<VCVertex*>(velement->second.get());
                 std::vector<TriangleKey<true>> removed, inserted;
-                std::vector<int> linkVertices;
-                int result = TriangulateLink(vertex, removed, inserted, linkVertices);
+                std::vector<int32_t> linkVertices;
+                int32_t result = TriangulateLink(vertex, removed, inserted, linkVertices);
                 if (result == VCM_UNEXPECTED_ERROR)
                 {
                     return false;
@@ -221,7 +229,7 @@ namespace gte
     private:
         struct VCVertex : public VETManifoldMesh::Vertex
         {
-            VCVertex(int v)
+            VCVertex(int32_t v)
                 :
                 VETManifoldMesh::Vertex(v),
                 normal(Vector3<Real>::Zero()),
@@ -229,7 +237,7 @@ namespace gte
             {
             }
 
-            static std::unique_ptr<Vertex> Create(int v)
+            static std::unique_ptr<Vertex> Create(int32_t v)
             {
                 return std::make_unique<VCVertex>(v);
             }
@@ -253,7 +261,7 @@ namespace gte
                 }
                 Normalize(normal);
 
-                for (int index : VAdjacent)
+                for (int32_t index : VAdjacent)
                 {
                     Vector3<Real> diff = positions[index] - positions[V];
                     weight += std::fabs(Dot(normal, diff));
@@ -309,8 +317,8 @@ namespace gte
             VCM_UNEXPECTED_ERROR
         };
 
-        int TriangulateLink(VCVertex* vertex, std::vector<TriangleKey<true>>& removed,
-            std::vector<TriangleKey<true>>& inserted, std::vector<int>& linkVertices) const
+        int32_t TriangulateLink(VCVertex* vertex, std::vector<TriangleKey<true>>& removed,
+            std::vector<TriangleKey<true>>& inserted, std::vector<int32_t>& linkVertices) const
         {
             // Create the (CCW) polygon boundary of the link of the vertex.
             // The incoming vertex is interior, so the number of triangles
@@ -320,13 +328,13 @@ namespace gte
 
             // Get the edges of the link that are opposite the incoming
             // vertex.
-            int const numVertices = static_cast<int>(vertex->TAdjacent.size());
+            int32_t const numVertices = static_cast<int32_t>(vertex->TAdjacent.size());
             removed.resize(numVertices);
-            int j = 0;
-            std::map<int, int> edgeMap;
+            int32_t j = 0;
+            std::map<int32_t, int32_t> edgeMap;
             for (auto tri : vertex->TAdjacent)
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     if (tri->V[i] == vertex->V)
                     {
@@ -344,7 +352,7 @@ namespace gte
             // Connect the edges into a polygon.
             linkVertices.resize(numVertices);
             auto iter = edgeMap.begin();
-            for (int i = 0; i < numVertices; ++i)
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 linkVertices[i] = iter->first;
                 iter = edgeMap.find(iter->second);
@@ -366,8 +374,8 @@ namespace gte
             basis[0] = vertex->normal;
             ComputeOrthogonalComplement(1, basis);
             std::vector<Vector2<Real>> projected(numVertices);
-            std::vector<int> indices(numVertices);
-            for (int i = 0; i < numVertices; ++i)
+            std::vector<int32_t> indices(numVertices);
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 Vector3<Real> diff = mPositions[linkVertices[i]] - center;
                 projected[i][0] = Dot(basis[1], diff);
@@ -387,9 +395,9 @@ namespace gte
                     return VCM_UNEXPECTED_ERROR;
                 }
 
-                int const numTriangles = static_cast<int>(triangles.size());
+                int32_t const numTriangles = static_cast<int32_t>(triangles.size());
                 inserted.resize(numTriangles);
-                for (int t = 0; t < numTriangles; ++t)
+                for (int32_t t = 0; t < numTriangles; ++t)
                 {
                     inserted[t] = TriangleKey<true>(
                         linkVertices[triangles[t][0]],
@@ -404,8 +412,8 @@ namespace gte
             }
         }
 
-        int Collapsed(std::vector<TriangleKey<true>> const& removed,
-            std::vector<TriangleKey<true>> const& inserted, std::vector<int> const& linkVertices)
+        int32_t Collapsed(std::vector<TriangleKey<true>> const& removed,
+            std::vector<TriangleKey<true>> const& inserted, std::vector<int32_t> const& linkVertices)
         {
             // The triangles that were disconnected from the link edges are
             // guaranteed to allow manifold reconnection to 'inserted'
@@ -420,7 +428,7 @@ namespace gte
             std::set<EdgeKey<false>> edges;
             for (auto const& tri : inserted)
             {
-                for (int k0 = 2, k1 = 0; k1 < 3; k0 = k1++)
+                for (int32_t k0 = 2, k1 = 0; k1 < 3; k0 = k1++)
                 {
                     EdgeKey<false> edge(tri.V[k0], tri.V[k1]);
                     if (edges.find(edge) == edges.end())
@@ -490,7 +498,7 @@ namespace gte
 
                 if (edge->T[0] && !edge->T[1])
                 {
-                    for (int k = 0; k < 2; ++k)
+                    for (int32_t k = 0; k < 2; ++k)
                     {
                         auto velement = vmap.find(edge->V[k]);
                         if (velement == vmap.end())
@@ -507,11 +515,11 @@ namespace gte
             return VCM_ALLOWED;
         }
 
-        int mNumPositions;
+        int32_t mNumPositions;
         Vector3<Real> const* mPositions;
         VETManifoldMesh mMesh;
 
-        MinHeap<int, Real> mMinHeap;
-        std::map<int, typename MinHeap<int, Real>::Record*> mHeapRecords;
+        MinHeap<int32_t, Real> mMinHeap;
+        std::map<int32_t, typename MinHeap<int32_t, Real>::Record*> mHeapRecords;
     };
 }

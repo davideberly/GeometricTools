@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Mathematics/Vector4.h>
 #include <Graphics/DrawingState.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -61,22 +62,21 @@ namespace gte
             ALWAYS
         };
 
-        // Construction.
         SamplerState();
 
         // Member access.  The members are intended to be write-once before
         // you create an associated graphics state.
-        Filter filter;
-        Mode mode[3];
-        float mipLODBias;
-        unsigned int maxAnisotropy;
-        Comparison comparison;
-        Vector4<float> borderColor;
-        float minLOD;
-        float maxLOD;
+        Filter filter;              // default: MIN_P_MAG_P_MIP_P
+        std::array<Mode, 3> mode;   // default: { CLAMP, CLAMP, CLAMP }
+        float mipLODBias;           // default: 0
+        uint32_t maxAnisotropy;     // default: 1
+        Comparison comparison;      // default: NEVER
+        Vector4<float> borderColor; // default: { 0, 0, 0, 0 }
+        float minLOD;               // default: -FLT_MAX
+        float maxLOD;               // default: +FLT_MAX
 
     public:
         // For use by the Shader class for storing reflection information.
-        static int const shaderDataLookup = 6;
+        static int32_t constexpr shaderDataLookup = 6;
     };
 }

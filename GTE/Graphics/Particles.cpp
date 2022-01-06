@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Particles.h>
@@ -16,23 +16,23 @@ Particles::Particles(std::vector<Vector4<float>> const& positionSize,
     :
     mPositionSize(positionSize),
     mSizeAdjust(sizeAdjust),
-    mNumActive(static_cast<unsigned int>(positionSize.size()))
+    mNumActive(static_cast<uint32_t>(positionSize.size()))
 {
-    unsigned int texOffset = IsValid(vformat);
-    if (texOffset == std::numeric_limits<unsigned int>::max())
+    uint32_t texOffset = IsValid(vformat);
+    if (texOffset == std::numeric_limits<uint32_t>::max())
     {
         // IsValid(...) will generate logging messages depending on the
         // specific failure condition.
         return;
     }
 
-    unsigned int numParticles = mNumActive;
-    unsigned int numVertices = 4 * numParticles;
+    uint32_t numParticles = mNumActive;
+    uint32_t numVertices = 4 * numParticles;
     mVBuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    mVBuffer->SetUsage(Resource::DYNAMIC_UPDATE);
-    unsigned int vertexSize = vformat.GetVertexSize();
-    int index = vformat.GetIndex(VA_TEXCOORD, 0);
-    unsigned int offset = vformat.GetOffset(index);
+    mVBuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    uint32_t vertexSize = vformat.GetVertexSize();
+    int32_t index = vformat.GetIndex(VASemantic::TEXCOORD, 0);
+    uint32_t offset = vformat.GetOffset(index);
     char* tcoords = mVBuffer->GetData() + offset;
     std::array<Vector2<float>, 4> commonTCD =
     {
@@ -41,9 +41,9 @@ Particles::Particles(std::vector<Vector4<float>> const& positionSize,
         Vector2<float>{ 1.0f, 1.0f },
         Vector2<float>{ 0.0f, 1.0f }
     };
-    for (unsigned int i = 0; i < numParticles; ++i)
+    for (uint32_t i = 0; i < numParticles; ++i)
     {
-        for (unsigned int j = 0; j < 4; ++j)
+        for (uint32_t j = 0; j < 4; ++j)
         {
             Vector2<float>& tcoord = *reinterpret_cast<Vector2<float>*>(tcoords);
             tcoord = commonTCD[j];
@@ -51,14 +51,14 @@ Particles::Particles(std::vector<Vector4<float>> const& positionSize,
         }
     }
 
-    mIBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2 * numParticles, sizeof(unsigned int));
-    auto* indices = mIBuffer->Get<unsigned int>();
-    for (unsigned int i = 0; i < numParticles; ++i)
+    mIBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2 * numParticles, sizeof(uint32_t));
+    auto* indices = mIBuffer->Get<uint32_t>();
+    for (uint32_t i = 0; i < numParticles; ++i)
     {
-        unsigned int iFI = 4 * i;
-        unsigned int iFIp1 = iFI + 1;
-        unsigned int iFIp2 = iFI + 2;
-        unsigned int iFIp3 = iFI + 3;
+        uint32_t iFI = 4 * i;
+        uint32_t iFIp1 = iFI + 1;
+        uint32_t iFIp2 = iFI + 2;
+        uint32_t iFIp3 = iFI + 3;
         *indices++ = iFI;
         *indices++ = iFIp1;
         *indices++ = iFIp2;
@@ -76,9 +76,9 @@ void Particles::SetSizeAdjust(float sizeAdjust)
     mSizeAdjust = sizeAdjust;
 }
 
-void Particles::SetNumActive(unsigned int numActive)
+void Particles::SetNumActive(uint32_t numActive)
 {
-    unsigned int numParticles = static_cast<unsigned int>(mPositionSize.size());
+    uint32_t numParticles = static_cast<uint32_t>(mPositionSize.size());
     if (numActive <= numParticles)
     {
         mNumActive = numActive;
@@ -96,7 +96,7 @@ void Particles::GenerateParticles(std::shared_ptr<Camera> const& camera)
 {
     // Get access to the positions.
     VertexFormat vformat = mVBuffer->GetFormat();
-    unsigned int vertexSize = vformat.GetVertexSize();
+    uint32_t vertexSize = vformat.GetVertexSize();
     char* vertices = mVBuffer->GetData();
 
     // Get camera axis directions in model space of particles.
@@ -105,7 +105,7 @@ void Particles::GenerateParticles(std::shared_ptr<Camera> const& camera)
     Vector4<float> UmR = inverse * (camera->GetUVector() - camera->GetRVector());
 
     // Generate quadrilaterals as pairs of triangles.
-    for (unsigned int i = 0; i < mNumActive; ++i)
+    for (uint32_t i = 0; i < mNumActive; ++i)
     {
         Vector4<float> posSize = mPositionSize[i];
         Vector3<float> position{ posSize[0], posSize[1], posSize[2] };
@@ -133,69 +133,69 @@ void Particles::GenerateParticles(std::shared_ptr<Camera> const& camera)
     UpdateModelBound();
 }
 
-unsigned int Particles::IsValid(VertexFormat const& vformat) const
+uint32_t Particles::IsValid(VertexFormat const& vformat) const
 {
     // Validate the vertex position.
-    int index = vformat.GetIndex(VA_POSITION, 0);
+    int32_t index = vformat.GetIndex(VASemantic::POSITION, 0);
     if (index < 0)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
-        LogError("Vertex format does not have VA_POSITION.");
+        LogError("Vertex format does not have VASemantic::POSITION.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 
-    DFType posType = vformat.GetType(index);
+    uint32_t posType = vformat.GetType(index);
     if (posType != DF_R32G32B32_FLOAT && posType != DF_R32G32B32A32_FLOAT)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
         LogError("Invalid position type.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 
-    unsigned int offset = vformat.GetOffset(index);
+    uint32_t offset = vformat.GetOffset(index);
     if (offset != 0)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
         LogError("Position offset must be 0.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 
     // Validate the vertex texture coordinate that is used for drawing the
     // billboards.
-    index = vformat.GetIndex(VA_TEXCOORD, 0);
+    index = vformat.GetIndex(VASemantic::TEXCOORD, 0);
     if (index < 0)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
-        LogError("Vertex format does not have VA_TEXCOORD.");
+        LogError("Vertex format does not have VASemantic::TEXCOORD.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 
-    DFType texType = vformat.GetType(index);
+    uint32_t texType = vformat.GetType(index);
     if (texType != DF_R32G32_FLOAT)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
         LogError("Invalid texture coordinate type.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 
-    unsigned int texOffset = (posType == DF_R32G32B32_FLOAT ? 3 * sizeof(float) : 4 * sizeof(float));
+    uint32_t texOffset = (posType == DF_R32G32B32_FLOAT ? 3 * sizeof(float) : 4 * sizeof(float));
     offset = vformat.GetOffset(index);
     if (offset != texOffset)
     {
 #if defined(GTE_THROW_ON_PARTICLES_INVALID)
         LogError("Texture coordinate must immediately follow position.");
 #else
-        return std::numeric_limits<unsigned int>::max();
+        return std::numeric_limits<uint32_t>::max();
 #endif
     }
 

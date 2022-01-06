@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,9 +18,9 @@ public:
     GeodesicHeightFieldWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
     virtual bool OnMouseClick(MouseButton button, MouseState state,
-        int x, int y, unsigned int modifiers) override;
+        int32_t x, int32_t y, uint32_t modifiers) override;
 
 private:
     bool SetEnvironment();
@@ -32,7 +32,7 @@ private:
         Vector2<float> tcoord;
     };
 
-    std::function<void(int, int)> mDrawCallback;
+    std::function<void(int32_t, int32_t)> mDrawCallback;
 
     std::shared_ptr<RasterizerState> mNoCullState, mNoCullWireState;
     std::shared_ptr<Visual> mMesh;
@@ -43,11 +43,11 @@ private:
     std::unique_ptr<BSplineSurface<3, double>> mSurface;
     std::unique_ptr<BSplineGeodesic<double>> mGeodesic;
 
-    int mSelected;
-    std::array<int, 2> mXIntr, mYIntr;
+    int32_t mSelected;
+    std::array<int32_t, 2> mXIntr, mYIntr;
     std::array<GVector<double>, 2> mPoint;
     std::vector<GVector<double>> mPath;
-    int mPathQuantity;
+    int32_t mPathQuantity;
     double mDistance, mCurvature;
 
     std::array<float, 4> mTextColor;

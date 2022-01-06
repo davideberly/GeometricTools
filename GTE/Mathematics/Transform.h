@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -264,9 +264,9 @@ namespace gte
         void SetRotation(Matrix3x3<Real> const& rotate)
         {
             mMatrix.MakeIdentity();
-            for (int r = 0; r < 3; ++r)
+            for (int32_t r = 0; r < 3; ++r)
             {
-                for (int c = 0; c < 3; ++c)
+                for (int32_t c = 0; c < 3; ++c)
                 {
                     mMatrix(r, c) = rotate(r, c);
                 }
@@ -280,9 +280,9 @@ namespace gte
         void GetRotation(Matrix3x3<Real>& rotate) const
         {
             LogAssert(mIsRSMatrix, "Transform is not rotation-scale.");
-            for (int r = 0; r < 3; ++r)
+            for (int32_t r = 0; r < 3; ++r)
             {
-                for (int c = 0; c < 3; ++c)
+                for (int32_t c = 0; c < 3; ++c)
                 {
                     rotate(r, c) = mMatrix(r, c);
                 }

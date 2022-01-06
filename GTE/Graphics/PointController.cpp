@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PointController.h>
@@ -11,6 +11,7 @@
 #include <Graphics/Visual.h>
 #include <Mathematics/Logger.h>
 #include <Mathematics/Rotation.h>
+#include <cstdint>
 using namespace gte;
 
 PointController::PointController(BufferUpdater const& postUpdate)
@@ -47,28 +48,28 @@ void PointController::SetObject(ControlledObject* object)
     auto visual = dynamic_cast<Visual*>(object);
     LogAssert(visual != nullptr, "Object is not of type Visual.");
 
-    auto ibuffer = visual->GetIndexBuffer();
-    IPType primitiveType = ibuffer->GetPrimitiveType();
+    auto const& ibuffer = visual->GetIndexBuffer();
+    uint32_t primitiveType = ibuffer->GetPrimitiveType();
     LogAssert(primitiveType == IP_POLYPOINT, "Geometric primitive must be points.");
 
     // The vertex buffer for a Visual controlled by a PointController must
     // have 3-tuple or 4-tuple float-valued position that occurs at the
     // beginning (offset 0) of the vertex structure.
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     VertexFormat vformat = vbuffer->GetFormat();
-    int index = vformat.GetIndex(VA_POSITION, 0);
-    LogAssert(index >= 0, "Vertex format does not have VA_POSITION.");
+    int32_t index = vformat.GetIndex(VASemantic::POSITION, 0);
+    LogAssert(index >= 0, "Vertex format does not have VASemantic::POSITION.");
 
-    DFType type = vformat.GetType(index);
+    uint32_t type = vformat.GetType(index);
     LogAssert(type == DF_R32G32B32_FLOAT || type == DF_R32G32B32A32_FLOAT, "Invalid position type.");
 
-    unsigned int offset = vformat.GetOffset(index);
+    uint32_t offset = vformat.GetOffset(index);
     LogAssert(offset == 0, "Position offset must be 0.");
 
     // If the vertex buffer for a Visual controlled by a PointController has
     // normal vectors, they must be 3-tuple or 4-tuple float-valued that
     // occurs at an offset >= sizeof(Vector3<float>>).
-    index = vformat.GetIndex(VA_NORMAL, 0);
+    index = vformat.GetIndex(VASemantic::NORMAL, 0);
     if (index >= 0)
     {
         type = vformat.GetType(index);
@@ -111,13 +112,13 @@ void PointController::UpdateSystemMotion(float ctrlTime)
 void PointController::UpdatePointMotion(float ctrlTime)
 {
     auto visual = static_cast<Visual*>(mObject);
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     VertexFormat vformat = vbuffer->GetFormat();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    uint32_t numVertices = vbuffer->GetNumElements();
     char* vertices = vbuffer->GetData();
     size_t vertexSize = static_cast<size_t>(vformat.GetVertexSize());
 
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& position = *reinterpret_cast<Vector3<float>*>(vertices);
         float distance = ctrlTime * mPointLinearSpeed[i];
@@ -126,12 +127,12 @@ void PointController::UpdatePointMotion(float ctrlTime)
         vertices += vertexSize;
     }
 
-    int index = vformat.GetIndex(VA_NORMAL, 0);
+    int32_t index = vformat.GetIndex(VASemantic::NORMAL, 0);
     if (index >= 0)
     {
-        unsigned int offset = vformat.GetOffset(index);
+        uint32_t offset = vformat.GetOffset(index);
         vertices = vbuffer->GetData() + offset;
-        for (unsigned int i = 0; i < numVertices; ++i)
+        for (uint32_t i = 0; i < numVertices; ++i)
         {
             Vector3<float>& normal = *reinterpret_cast<Vector3<float>*>(vertices);
             Normalize(normal);

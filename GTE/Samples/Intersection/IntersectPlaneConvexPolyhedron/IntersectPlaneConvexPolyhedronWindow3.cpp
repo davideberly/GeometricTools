@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2020.04.08
+// Version: 6.0.2022.01.06
 
 #include "IntersectPlaneConvexPolyhedronWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -31,23 +31,23 @@ IntersectPlaneConvexPolyhedronWindow3::IntersectPlaneConvexPolyhedronWindow3(
 {
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     mDepthReadNoWriteState = std::make_shared<DepthStencilState>();
     mDepthReadNoWriteState->depthEnable = true;
-    mDepthReadNoWriteState->writeMask = DepthStencilState::MASK_ZERO;
+    mDepthReadNoWriteState->writeMask = DepthStencilState::WriteMask::ZERO;
 
     mNoCullSolidState = std::make_shared<RasterizerState>();
-    mNoCullSolidState->fillMode = RasterizerState::FILL_SOLID;
-    mNoCullSolidState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullSolidState->fill = RasterizerState::Fill::SOLID;
+    mNoCullSolidState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullSolidState);
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
 
     CreateQueryObjects();
     CreateScene();
@@ -74,7 +74,7 @@ void IntersectPlaneConvexPolyhedronWindow3::OnIdle()
         mEngine->Draw(mPolygonCurve);
     }
 
-    auto previousBlendState = mEngine->GetBlendState();
+    auto const& previousBlendState = mEngine->GetBlendState();
     mEngine->SetBlendState(mBlendState);
     mEngine->SetDepthStencilState(mDepthReadNoWriteState);
     {
@@ -102,7 +102,7 @@ void IntersectPlaneConvexPolyhedronWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectPlaneConvexPolyhedronWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectPlaneConvexPolyhedronWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -177,21 +177,21 @@ void IntersectPlaneConvexPolyhedronWindow3::CreateQueryObjects()
 {
     // Create the convex polyhedron to use in query.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto visual = mf.CreateDodecahedron();
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vector3<float>>();
-    auto ibuffer = visual->GetIndexBuffer();
-    auto triangles = ibuffer->Get<std::array<int, 3>>();
+    auto const& ibuffer = visual->GetIndexBuffer();
+    auto triangles = ibuffer->Get<std::array<int32_t, 3>>();
 
     mPolyhedron.configuration = CM::CFG_POLYHEDRON;
 
     mPolyhedron.vertices.resize(vbuffer->GetNumElements());
     for (size_t i = 0; i < mPolyhedron.vertices.size(); ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             mPolyhedron.vertices[i][j] = vertices[i][j];
         }
@@ -221,12 +221,12 @@ void IntersectPlaneConvexPolyhedronWindow3::CreateScene()
     uint32_t const maxNumVertices = 75;
     uint32_t const maxNumTriangles = 72;
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     auto vbufferPos = std::make_shared<VertexBuffer>(vformat, maxNumVertices);
-    vbufferPos->SetUsage(Resource::DYNAMIC_UPDATE);
-    auto ibufferPos = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int));
-    ibufferPos->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbufferPos->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    auto ibufferPos = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int32_t));
+    ibufferPos->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto effectPos = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 1.0f, 0.0f, 0.0f, mAlpha });
     mPosPolyMesh = std::make_shared<Visual>(vbufferPos, ibufferPos, effectPos);
@@ -234,9 +234,9 @@ void IntersectPlaneConvexPolyhedronWindow3::CreateScene()
     mTrackBall.Attach(mPosPolyMesh);
 
     auto vbufferNeg = std::make_shared<VertexBuffer>(vformat, maxNumVertices);
-    vbufferNeg->SetUsage(Resource::DYNAMIC_UPDATE);
-    auto ibufferNeg = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int));
-    ibufferNeg->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbufferNeg->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    auto ibufferNeg = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int32_t));
+    ibufferNeg->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto effectNeg = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 0.0f, 0.0f, 1.0f, mAlpha });
     mNegPolyMesh = std::make_shared<Visual>(vbufferNeg, ibufferNeg, effectNeg);
@@ -244,7 +244,7 @@ void IntersectPlaneConvexPolyhedronWindow3::CreateScene()
     mTrackBall.Attach(mNegPolyMesh);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, maxNumVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_CONTIGUOUS,
         maxNumTriangles);
     auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
@@ -254,9 +254,9 @@ void IntersectPlaneConvexPolyhedronWindow3::CreateScene()
     mTrackBall.Attach(mPolygonCurve);
 
     vbuffer = std::make_shared<VertexBuffer>(vformat, maxNumVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
-    ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int));
-    ibuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, maxNumTriangles, sizeof(int32_t));
+    ibuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     effect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 0.0f, 1.0f, 0.0f, mAlpha });
     mPolygonMesh = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -283,11 +283,11 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
     if (mValidPosPolyMesh)
     {
         CM const& poly = mResult.positivePolyhedron;
-        auto vbuffer = mPosPolyMesh->GetVertexBuffer();
+        auto const& vbuffer = mPosPolyMesh->GetVertexBuffer();
         auto vertices = vbuffer->Get<Vector3<float>>();
         for (size_t i = 0; i < poly.vertices.size(); ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 vertices[i][j] = poly.vertices[i][j];
             }
@@ -296,9 +296,9 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
         vbuffer->SetNumActiveElements(numVertices);
         mEngine->Update(vbuffer);
 
-        auto ibuffer = mPosPolyMesh->GetIndexBuffer();
-        auto indices = ibuffer->Get<int>();
-        size_t const numBytes = poly.triangles.size() * sizeof(std::array<int, 3>);
+        auto const& ibuffer = mPosPolyMesh->GetIndexBuffer();
+        auto indices = ibuffer->Get<int32_t>();
+        size_t const numBytes = poly.triangles.size() * sizeof(std::array<int32_t, 3>);
         std::memcpy(indices, poly.triangles.data(), numBytes);
         uint32_t const numTriangles = static_cast<uint32_t>(poly.triangles.size());
         ibuffer->SetNumActivePrimitives(numTriangles);
@@ -309,11 +309,11 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
     if (mValidNegPolyMesh)
     {
         CM const& poly = mResult.negativePolyhedron;
-        auto vbuffer = mNegPolyMesh->GetVertexBuffer();
+        auto const& vbuffer = mNegPolyMesh->GetVertexBuffer();
         auto vertices = vbuffer->Get<Vector3<float>>();
         for (size_t i = 0; i < poly.vertices.size(); ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 vertices[i][j] = poly.vertices[i][j];
             }
@@ -322,9 +322,9 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
         vbuffer->SetNumActiveElements(numVertices);
         mEngine->Update(vbuffer);
 
-        auto ibuffer = mNegPolyMesh->GetIndexBuffer();
-        auto indices = ibuffer->Get<int>();
-        size_t const numBytes = poly.triangles.size() * sizeof(std::array<int, 3>);
+        auto const& ibuffer = mNegPolyMesh->GetIndexBuffer();
+        auto indices = ibuffer->Get<int32_t>();
+        size_t const numBytes = poly.triangles.size() * sizeof(std::array<int32_t, 3>);
         std::memcpy(indices, poly.triangles.data(), numBytes);
         uint32_t const numTriangles = static_cast<uint32_t>(poly.triangles.size());
         ibuffer->SetNumActivePrimitives(numTriangles);
@@ -336,16 +336,16 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
     mValidPolygonCurve = (numPolyVertices > 0);
     if (mValidPolygonCurve)
     {
-        auto vbuffer = mPolygonCurve->GetVertexBuffer();
+        auto const& vbuffer = mPolygonCurve->GetVertexBuffer();
         auto vertices = vbuffer->Get<Vector3<float>>();
         for (size_t i = 0; i < numPolyVertices; ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 vertices[i][j] = polyVertices[i][j];
             }
         }
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[numPolyVertices][j] = polyVertices[0][j];
         }
@@ -359,11 +359,11 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
     mValidPolygonMesh = (imesh.vertices.size() > 0);
     if (mValidPolygonMesh)
     {
-        auto vbuffer = mPolygonMesh->GetVertexBuffer();
+        auto const& vbuffer = mPolygonMesh->GetVertexBuffer();
         auto vertices = vbuffer->Get<Vector3<float>>();
         for (size_t i = 0; i < imesh.vertices.size(); ++i)
         {
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 vertices[i][j] = imesh.vertices[i][j];
             }
@@ -372,9 +372,9 @@ void IntersectPlaneConvexPolyhedronWindow3::DoQuery()
         vbuffer->SetNumActiveElements(numVertices);
         mEngine->Update(vbuffer);
 
-        auto ibuffer = mPolygonMesh->GetIndexBuffer();
-        auto indices = ibuffer->Get<int>();
-        size_t const numBytes = imesh.triangles.size() * sizeof(std::array<int, 3>);
+        auto const& ibuffer = mPolygonMesh->GetIndexBuffer();
+        auto indices = ibuffer->Get<int32_t>();
+        size_t const numBytes = imesh.triangles.size() * sizeof(std::array<int32_t, 3>);
         std::memcpy(indices, imesh.triangles.data(), numBytes);
         uint32_t const numTriangles = static_cast<uint32_t>(imesh.triangles.size());
         ibuffer->SetNumActivePrimitives(numTriangles);
@@ -390,10 +390,10 @@ void IntersectPlaneConvexPolyhedronWindow3::UpdatePlane()
     Vector3<float> normal = { cs0 * sn1, sn0 * sn1, cs1 };
     center = mDistance * normal;
 
-    Vector3<float> basis[3];
+    std::array<Vector3<float>, 3> basis{};
     basis[0] = normal;
-    ComputeOrthogonalComplement(1, basis);
-    Matrix3x3<float> rotate;
+    ComputeOrthogonalComplement(1, basis.data());
+    Matrix3x3<float> rotate{};
     rotate.SetCol(0, basis[1]);
     rotate.SetCol(1, basis[2]);
     rotate.SetCol(2, basis[0]);

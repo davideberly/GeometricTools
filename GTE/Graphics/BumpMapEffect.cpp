@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BumpMapEffect.h>
@@ -11,13 +11,13 @@ using namespace gte;
 
 BumpMapEffect::BumpMapEffect(std::shared_ptr<ProgramFactory> const& factory,
     std::shared_ptr<Texture2> const& baseTexture,
-    std::shared_ptr<Texture2> const& normalTexture, SamplerState::Filter filter,
-    SamplerState::Mode mode0, SamplerState::Mode mode1)
+    std::shared_ptr<Texture2> const& normalTexture,
+    SamplerState::Filter filter, SamplerState::Mode mode0, SamplerState::Mode mode1)
     :
     mBaseTexture(baseTexture),
     mNormalTexture(normalTexture)
 {
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     mProgram = factory->CreateFromSources(*msVSSource[api], *msPSSource[api], "");
     if (mProgram)
     {
@@ -26,8 +26,8 @@ BumpMapEffect::BumpMapEffect(std::shared_ptr<ProgramFactory> const& factory,
         mCommonSampler->mode[0] = mode0;
         mCommonSampler->mode[1] = mode1;
 
-        auto vshader = mProgram->GetVertexShader();
-        auto pshader = mProgram->GetPixelShader();
+        auto const& vshader = mProgram->GetVertexShader();
+        auto const& pshader = mProgram->GetPixelShader();
         vshader->Set("PVWMatrix", mPVWMatrixConstant);
         pshader->Set("baseTexture", mBaseTexture, "baseSampler", mCommonSampler);
         pshader->Set("normalTexture", mNormalTexture, "normalSampler", mCommonSampler);
@@ -75,38 +75,38 @@ void BumpMapEffect::ComputeLightVectors(std::shared_ptr<Visual> const& mesh,
     // yet been computed.  The probability that a light vector is actually
     // (0,0,0) should be small, so the flag system should save computation
     // time overall.
-    auto vbuffer = mesh->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mesh->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto* vertices = vbuffer->Get<Vertex>();
     Vector3<float> const zero{ 0.0f, 0.0f, 0.0f };
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].lightDirection = zero;
     }
 
 
-    auto ibuffer = mesh->GetIndexBuffer();
-    unsigned int numTriangles = ibuffer->GetNumPrimitives();
-    auto* indices = ibuffer->Get<unsigned int>();
-    for (unsigned int t = 0; t < numTriangles; ++t)
+    auto const& ibuffer = mesh->GetIndexBuffer();
+    uint32_t numTriangles = ibuffer->GetNumPrimitives();
+    auto* indices = ibuffer->Get<uint32_t>();
+    for (uint32_t t = 0; t < numTriangles; ++t)
     {
         // Get the triangle vertices and attributes.
-        unsigned int v[3];
+        std::array<uint32_t, 3> v{};
         v[0] = *indices++;
         v[1] = *indices++;
         v[2] = *indices++;
 
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
-            int v0 = v[i];
+            int32_t v0 = v[i];
             if (vertices[v0].lightDirection != zero)
             {
                 continue;
             }
 
-            int iP = (i == 0) ? 2 : i - 1;
-            int iN = (i + 1) % 3;
-            int v1 = v[iN], v2 = v[iP];
+            int32_t iP = (i == 0) ? 2 : i - 1;
+            int32_t iN = (i + 1) % 3;
+            int32_t v1 = v[iN], v2 = v[iP];
 
             Vector3<float> const& pos0 = vertices[v0].position;
             Vector2<float> const& tcd0 = vertices[v0].baseTCoord;

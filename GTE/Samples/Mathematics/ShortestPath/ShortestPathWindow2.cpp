@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ShortestPathWindow2.h"
 #include <Mathematics/ImageUtility2.h>
@@ -34,8 +34,8 @@ ShortestPathWindow2::ShortestPathWindow2(Parameters& parameters)
 #endif
 
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, ISIZE,
-        ISIZE, ISIZE, ISIZE, SamplerState::MIN_P_MAG_P_MIP_P,
-        SamplerState::CLAMP, SamplerState::CLAMP, true);
+        ISIZE, ISIZE, ISIZE, SamplerState::Filter::MIN_P_MAG_P_MIP_P,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay->SetTexture(mWeights);
 }
 
@@ -43,7 +43,7 @@ void ShortestPathWindow2::OnDisplay()
 {
     GenerateWeights();
 
-    std::stack<std::pair<int, int>> path;
+    std::stack<std::pair<int32_t, int32_t>> path;
 #if defined(USE_CPU_SHORTEST_PATH)
     mCpuShortestPath->Compute(path);
 #else
@@ -95,17 +95,17 @@ bool ShortestPathWindow2::CreateWeightsShader()
     std::uniform_real_distribution<float> rnd(0.1f, 0.5f);
     mRandom = std::make_shared<Texture2>(DF_R32_FLOAT, ISIZE, ISIZE);
     float* random = mRandom->Get<float>();
-    for (int i = 0; i < ISIZE*ISIZE; ++i)
+    for (int32_t i = 0; i < ISIZE*ISIZE; ++i)
     {
         random[i] += rnd(mte);
     }
 
     mWeights = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, ISIZE, ISIZE);
-    mWeights->SetUsage(Resource::SHADER_OUTPUT);
-    mWeights->SetCopyType(Resource::COPY_BIDIRECTIONAL);
+    mWeights->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mWeights->SetCopy(Resource::Copy::BIDIRECTIONAL);
 
     std::string csPath = mEnvironment.GetPath(mEngine->GetShaderName("WeightsShader.cs"));
-    int const numThreads = 8;
+    int32_t const numThreads = 8;
     mNumGroups = ISIZE / numThreads;
     mProgramFactory->defines.Set("NUM_X_THREADS", numThreads);
     mProgramFactory->defines.Set("NUM_Y_THREADS", numThreads);
@@ -115,7 +115,7 @@ bool ShortestPathWindow2::CreateWeightsShader()
     {
         return false;
     }
-    auto cshader = mWeightsProgram->GetComputeShader();
+    auto const& cshader = mWeightsProgram->GetComputeShader();
     cshader->Set("ControlPoints", CreateBicubicMatrix());
     cshader->Set("random", mRandom);
     cshader->Set("weights", mWeights);
@@ -138,17 +138,19 @@ std::shared_ptr<ConstantBuffer> ShortestPathWindow2::CreateBicubicMatrix()
     // Generate random samples for the bicubic Bezier surface.
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.05f, 1.0f);
-    float P[4][4];
-    for (int r = 0; r < 4; ++r)
+    std::array<std::array<float, 4>, 4> P{};
+    //float P[4][4];
+    for (int32_t r = 0; r < 4; ++r)
     {
-        for (int c = 0; c < 4; ++c)
+        for (int32_t c = 0; c < 4; ++c)
         {
             P[r][c] = rnd(mte);
         }
     }
 
     // Construct the control points from the samples.
-    float control[4][4];
+    std::array<std::array<float, 4>, 4> control{};
+    //float control[4][4];
     control[0][0] = P[0][0];
     control[0][1] = (
         -5.0f * P[0][0] + 18.0f * P[0][1] - 9.0f * P[0][2] + 2.0f * P[0][3]
@@ -204,10 +206,10 @@ std::shared_ptr<ConstantBuffer> ShortestPathWindow2::CreateBicubicMatrix()
 
     auto controlBuffer = std::make_shared<ConstantBuffer>(4 * sizeof(Vector4<float>), false);
     auto data = controlBuffer->Get<Vector4<float>>();
-    for (int r = 0; r < 4; ++r)
+    for (int32_t r = 0; r < 4; ++r)
     {
         auto& trg = data[r];
-        for (int c = 0; c < 4; ++c)
+        for (int32_t c = 0; c < 4; ++c)
         {
             trg[c] = control[r][c];
         }
@@ -216,19 +218,19 @@ std::shared_ptr<ConstantBuffer> ShortestPathWindow2::CreateBicubicMatrix()
     return controlBuffer;
 }
 
-void ShortestPathWindow2::DrawPath(std::stack<std::pair<int, int>>& path)
+void ShortestPathWindow2::DrawPath(std::stack<std::pair<int32_t, int32_t>>& path)
 {
     auto texels = mWeights->Get<Vector4<float>>();
-    std::pair<int, int> loc0 = path.top();
+    std::pair<int32_t, int32_t> loc0 = path.top();
     path.pop();
     while (path.size() > 0)
     {
-        std::pair<int, int> loc1 = path.top();
+        std::pair<int32_t, int32_t> loc1 = path.top();
         path.pop();
 
         ImageUtility2::DrawLine(
             loc0.first, loc0.second, loc1.first, loc1.second,
-            [this, texels](int x, int y)
+            [texels](int32_t x, int32_t y)
         {
             texels[x + ISIZE * y] = { 1.0f, 0.0f, 0.0f, 1.0f };
         }

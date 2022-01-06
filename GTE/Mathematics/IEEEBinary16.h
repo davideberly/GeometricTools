@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.02.12
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -561,12 +561,12 @@ namespace std
         return static_cast<gte::IEEEBinary16>(std::fmod(static_cast<float>(x), static_cast<float>(y)));
     }
 
-    inline gte::IEEEBinary16 frexp(gte::IEEEBinary16 x, int* exponent)
+    inline gte::IEEEBinary16 frexp(gte::IEEEBinary16 x, int32_t* exponent)
     {
         return static_cast<gte::IEEEBinary16>(std::frexp(static_cast<float>(x), exponent));
     }
 
-    inline gte::IEEEBinary16 ldexp(gte::IEEEBinary16 x, int exponent)
+    inline gte::IEEEBinary16 ldexp(gte::IEEEBinary16 x, int32_t exponent)
     {
         return static_cast<gte::IEEEBinary16>(std::ldexp(static_cast<float>(x), exponent));
     }
@@ -649,7 +649,7 @@ namespace gte
         return static_cast<IEEEBinary16>(invsqrt(static_cast<float>(x)));
     }
 
-    inline int isign(IEEEBinary16 x)
+    inline int32_t isign(IEEEBinary16 x)
     {
         return isign(static_cast<float>(x));
     }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -41,29 +41,29 @@ namespace gte
             // to decide how to interpret the t[] and P[] values.
 
             // No interesection.
-            static int constexpr isEmpty = 0;
+            static int32_t constexpr isEmpty = 0;
 
             // t[0] is finite, t[1] is set to t[0], P[0] is the point of
             // intersection, P[1] is set to P[0].
-            static int constexpr isPoint = 1;
+            static int32_t constexpr isPoint = 1;
 
             // t[0] and t[1] are finite with t[0] < t[1], P[0] and P[1] are
             // the endpoints of the segment of intersection.
-            static int constexpr isSegment = 2;
+            static int32_t constexpr isSegment = 2;
 
             // Dot(line.direction, cone.ray.direction) > 0:
             // t[0] is finite, t[1] is +infinity (set to +1), P[0] is the ray
             // origin, P[1] is the ray direction (set to line.direction).
             // NOTE: The ray starts at P[0] and you walk away from it in the
             // line direction.
-            static int constexpr isRayPositive = 3;
+            static int32_t constexpr isRayPositive = 3;
 
             // Dot(line.direction, cone.ray.direction) < 0:
             // t[0] is -infinity (set to -1), t[1] is finite, P[0] is the ray
             // endpoint, P[1] is the ray direction (set to line.direction).
             // NOTE: The ray ends at P[1] and you walk towards it in the line
             // direction.
-            static int constexpr isRayNegative = 4;
+            static int32_t constexpr isRayNegative = 4;
 
             Result()
                 :
@@ -79,35 +79,35 @@ namespace gte
                 switch (type)
                 {
                 case Result::isEmpty:
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         P[0][i] = QFN1();
                         P[1][i] = P[0][i];
                     }
                     break;
                 case Result::isPoint:
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         P[0][i] = origin[i] + direction[i] * t[0];
                         P[1][i] = P[0][i];
                     }
                     break;
                 case Result::isSegment:
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         P[0][i] = origin[i] + direction[i] * t[0];
                         P[1][i] = origin[i] + direction[i] * t[1];
                     }
                     break;
                 case Result::isRayPositive:
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         P[0][i] = origin[i] + direction[i] * t[0];
                         P[1][i] = QFN1(direction[i], 0, t[0].d);
                     }
                     break;
                 case Result::isRayNegative:
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         P[0][i] = origin[i] + direction[i] * t[1];
                         P[1][i] = QFN1(direction[i], 0, t[1].d);
@@ -128,14 +128,14 @@ namespace gte
             template <typename OutputType>
             static void Convert(Vector3<QFN1> const& input, Vector3<OutputType>& output)
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     output[i] = static_cast<Real>(input[i]);
                 }
             }
 
             bool intersect;
-            int type;
+            int32_t type;
             std::array<QFN1, 2> t;
             std::array<Vector3<QFN1>, 2> P;
         };

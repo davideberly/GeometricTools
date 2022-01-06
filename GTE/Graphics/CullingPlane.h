@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.08
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -118,7 +118,7 @@ namespace gte
         // plane normal is directed.  The "negative side" is the other half
         // space.  The function returns +1 when P is on the positive side,
         // -1 when P is on the negative side, or 0 when P is on the plane.
-        int WhichSide(Vector4<Real> const& P) const
+        int32_t WhichSide(Vector4<Real> const& P) const
         {
             Real distance = Dot(mTuple, P);
             return (distance > (Real)0 ? +1 : (distance < (Real)0 ? -1 : 0));

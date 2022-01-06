@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -37,11 +37,11 @@ namespace gte
         virtual bool CopyCpuToGpu() override;
         virtual bool CopyGpuToCpu() override;
 
-        bool Update(unsigned int item, unsigned int level);
-        bool CopyCpuToGpu(unsigned int item, unsigned int level);
-        bool CopyGpuToCpu(unsigned int item, unsigned int level);
+        bool Update(uint32_t item, uint32_t level);
+        bool CopyCpuToGpu(uint32_t item, uint32_t level);
+        bool CopyGpuToCpu(uint32_t item, uint32_t level);
 
-        void CopyLevelGpuToGpu(GL45TextureArray* target, unsigned int item, unsigned int level)
+        void CopyLevelGpuToGpu(GL45TextureArray* target, uint32_t item, uint32_t level)
         {
             (void)target;
             (void)item;
@@ -58,7 +58,7 @@ namespace gte
 
     protected:
         // Called by Update and CopyCpuToGpu.
-        bool DoCopyCpuToGpu(unsigned int item, unsigned int level);
+        bool DoCopyCpuToGpu(uint32_t item, uint32_t level);
 
         // Should be called in constructor when CopyType is any value but
         // COPY_NONE.
@@ -67,7 +67,7 @@ namespace gte
         // This is called to copy the data from the CPU buffer to the GPU
         // for the specified level.  If a pixel unpack buffer is being used
         // then data needs to be passed as 0 which is used as an offset.
-        virtual void LoadTextureLevel(unsigned int item, unsigned int level, void const* data) = 0;
+        virtual void LoadTextureLevel(uint32_t item, uint32_t level, void const* data) = 0;
 
         // Conversions from GTEngine values to GL4 values.
         static GLenum const msCubeFaceTarget[6];

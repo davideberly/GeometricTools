@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Resource.h>
@@ -15,12 +15,12 @@ Resource::~Resource()
     DestroyStorage();
 }
 
-Resource::Resource(unsigned int numElements, size_t elementSize, bool createStorage)
+Resource::Resource(uint32_t numElements, size_t elementSize, bool createStorage)
     :
     mNumElements(numElements),
-    mElementSize(static_cast<unsigned int>(elementSize)),
-    mUsage(IMMUTABLE),
-    mCopyType(COPY_NONE),
+    mElementSize(static_cast<uint32_t>(elementSize)),
+    mUsage(Usage::IMMUTABLE),
+    mCopy(Copy::NONE),
     mOffset(0),
     mData(nullptr)
 {
@@ -85,7 +85,7 @@ void Resource::DestroyStorage()
     }
 }
 
-void Resource::SetOffset(unsigned int offset)
+void Resource::SetOffset(uint32_t offset)
 {
     if (offset < mNumElements)
     {
@@ -100,7 +100,7 @@ void Resource::SetOffset(unsigned int offset)
     }
 }
 
-void Resource::SetNumActiveElements(unsigned int numActiveElements)
+void Resource::SetNumActiveElements(uint32_t numActiveElements)
 {
     if (numActiveElements + mOffset <= mNumElements)
     {
@@ -108,7 +108,7 @@ void Resource::SetNumActiveElements(unsigned int numActiveElements)
     }
     else
     {
-        mNumActiveElements = static_cast<unsigned int>(mNumElements - mOffset);
+        mNumActiveElements = static_cast<uint32_t>(mNumElements - mOffset);
         std::string message = "Invalid number of active elements (" +
             std::to_string(numActiveElements) + ") for " + mName +
             "; offset = " + std::to_string(mOffset) + ", total elements = " +

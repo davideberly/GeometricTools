@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,7 +19,7 @@ namespace gte
     {
     public:
         // Abstract base class.
-        PdeFilter1(int xBound, Real xSpacing, Real const* data, int const* mask,
+        PdeFilter1(int32_t xBound, Real xSpacing, Real const* data, int32_t const* mask,
             Real borderValue, typename PdeFilter<Real>::ScaleType scaleType)
             :
             PdeFilter<Real>(xBound, data, borderValue, scaleType),
@@ -35,12 +35,12 @@ namespace gte
             mHasMask(mask != nullptr)
         {
             // The mBuffer[] are ping-pong buffers for filtering.
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 mBuffer[i].resize(static_cast<size_t>(xBound) + 2);
             }
 
-            for (int x = 0, xp = 1, i = 0; x < mXBound; ++x, ++xp, ++i)
+            for (int32_t x = 0, xp = 1, i = 0; x < mXBound; ++x, ++xp, ++i)
             {
                 mBuffer[mSrc][xp] = this->mOffset + (data[i] - this->mMin) * this->mScale;
                 mBuffer[mDst][xp] = (Real)0;
@@ -81,7 +81,7 @@ namespace gte
         // thick border to support filtering on the image boundary.  These
         // images are of size (xbound+2).  The correct lookups into the padded
         // arrays are handled internally.
-        inline int GetXBound() const
+        inline int32_t GetXBound() const
         {
             return mXBound;
         }
@@ -96,25 +96,25 @@ namespace gte
         // the 3-tuple neighborhood of (x), where 0 <= x < xbound.  TODO: If
         // larger neighborhoods are desired at a later date, the padding and
         // associated code must be adjusted accordingly.
-        Real GetU(int x) const
+        Real GetU(int32_t x) const
         {
             auto const& F = mBuffer[mSrc];
             return F[static_cast<size_t>(x) + 1];
         }
 
-        Real GetUx(int x) const
+        Real GetUx(int32_t x) const
         {
             auto const& F = mBuffer[mSrc];
             return mHalfInvDx * (F[static_cast<size_t>(x) + 2] - F[x]);
         }
 
-        Real GetUxx(int x) const
+        Real GetUxx(int32_t x) const
         {
             auto const& F = mBuffer[mSrc];
             return mInvDxDx * (F[static_cast<size_t>(x) + 2] - (Real)2 * F[static_cast<size_t>(x) + 1] + F[x]);
         }
 
-        int GetMask(int x) const
+        int32_t GetMask(int32_t x) const
         {
             return mMask[static_cast<size_t>(x) + 1];
         }
@@ -123,7 +123,7 @@ namespace gte
         // Assign values to the 1-pixel image border.
         void AssignDirichletImageBorder()
         {
-            int xBp1 = mXBound + 1;
+            int32_t xBp1 = mXBound + 1;
 
             // vertex (0,0)
             mBuffer[mSrc][0] = this->mBorderValue;
@@ -144,7 +144,7 @@ namespace gte
 
         void AssignNeumannImageBorder()
         {
-            int xBp1 = mXBound + 1;
+            int32_t xBp1 = mXBound + 1;
             Real duplicate;
 
             // vertex (0,0)
@@ -169,14 +169,14 @@ namespace gte
         // Assign values to the 1-pixel mask border.
         void AssignDirichletMaskBorder()
         {
-            for (int x = 1; x <= mXBound; ++x)
+            for (int32_t x = 1; x <= mXBound; ++x)
             {
                 if (mMask[x])
                 {
                     continue;
                 }
 
-                for (int i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
+                for (int32_t i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
                 {
                     if (mMask[j0])
                     {
@@ -193,16 +193,16 @@ namespace gte
             // Recompute the values just outside the masked region.  This
             // guarantees that derivative estimations use the current values
             // around the boundary.
-            for (int x = 1; x <= mXBound; ++x)
+            for (int32_t x = 1; x <= mXBound; ++x)
             {
                 if (mMask[x])
                 {
                     continue;
                 }
 
-                int count = 0;
+                int32_t count = 0;
                 Real average = (Real)0;
-                for (int i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
+                for (int32_t i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
                 {
                     if (mMask[j0])
                     {
@@ -239,7 +239,7 @@ namespace gte
         // that is not masked out.
         virtual void OnUpdate() override
         {
-            for (int x = 1; x <= mXBound; ++x)
+            for (int32_t x = 1; x <= mXBound; ++x)
             {
                 if (!mHasMask || mMask[x])
                 {
@@ -258,10 +258,10 @@ namespace gte
 
         // The per-pixel processing depends on the PDE algorithm.  The (x)
         // must be in padded coordinates: 1 <= x <= xbound.
-        virtual void OnUpdate(int x) = 0;
+        virtual void OnUpdate(int32_t x) = 0;
 
         // Copy source data to temporary storage.
-        void LookUp3(int x)
+        void LookUp3(int32_t x)
         {
             auto const& F = mBuffer[mSrc];
             mUm = F[static_cast<size_t>(x) - 1];
@@ -270,7 +270,7 @@ namespace gte
         }
 
         // Image parameters.
-        int mXBound;
+        int32_t mXBound;
         Real mXSpacing;       // dx
         Real mInvDx;          // 1/dx
         Real mHalfInvDx;      // 1/(2*dx)
@@ -283,8 +283,8 @@ namespace gte
 
         // Successive iterations toggle between two buffers.
         std::array<std::vector<Real>, 2> mBuffer;
-        int mSrc, mDst;
-        std::vector<int> mMask;
+        int32_t mSrc, mDst;
+        std::vector<int32_t> mMask;
         bool mHasMask;
     };
 }

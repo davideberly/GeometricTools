@@ -1,12 +1,13 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
+#include <cstdint>
 #include <functional>
 
 // Compute a root of a function F(t) on an interval [t0, t1].  The caller
@@ -29,8 +30,8 @@ namespace gte
     {
     public:
         // Use this function when F(t0) and F(t1) are not already known.
-        static unsigned int Find(std::function<Real(Real)> const& F, Real t0,
-            Real t1, unsigned int maxIterations, Real& root)
+        static uint32_t Find(std::function<Real(Real)> const& F, Real t0,
+            Real t1, uint32_t maxIterations, Real& root)
         {
             // Set 'root' initially to avoid "potentially uninitialized
             // variable" warnings by a compiler.
@@ -59,7 +60,7 @@ namespace gte
                     return 0;
                 }
 
-                unsigned int i;
+                uint32_t i;
                 for (i = 2; i <= maxIterations; ++i)
                 {
                     root = (Real)0.5 * (t0 + t1);
@@ -100,8 +101,8 @@ namespace gte
         // bisector.  This is useful when |f0| or |f1| is infinite, and you
         // can pass sign(f0) or sign(f1) rather than then infinity because
         // the bisector cares only about the signs of f.
-        static unsigned int Find(std::function<Real(Real)> const& F, Real t0,
-            Real t1, Real f0, Real f1, unsigned int maxIterations, Real& root)
+        static uint32_t Find(std::function<Real(Real)> const& F, Real t0,
+            Real t1, Real f0, Real f1, uint32_t maxIterations, Real& root)
         {
             // Set 'root' initially to avoid "potentially uninitialized
             // variable" warnings by a compiler.
@@ -128,7 +129,7 @@ namespace gte
                     return 0;
                 }
 
-                unsigned int i;
+                uint32_t i;
                 root = t0;
                 for (i = 2; i <= maxIterations; ++i)
                 {

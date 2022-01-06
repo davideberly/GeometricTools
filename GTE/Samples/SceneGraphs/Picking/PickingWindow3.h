@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,12 +17,12 @@ public:
     PickingWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnMouseClick(MouseButton button, MouseState state, int x, int y, unsigned int modifiers) override;
+    virtual bool OnMouseClick(MouseButton button, MouseState state, int32_t x, int32_t y, uint32_t modifiers) override;
 
 private:
     bool SetEnvironment();
     void CreateScene();
-    void DoPick(int x, int y);
+    void DoPick(int32_t x, int32_t y);
 
     struct Vertex
     {
@@ -35,8 +35,8 @@ private:
     std::shared_ptr<Visual> mDodecahedron;
     std::shared_ptr<Visual> mPoints;
     std::shared_ptr<Visual> mSegments;
-    enum { SPHERE_BUDGET = 16 };
+    static int32_t constexpr SPHERE_BUDGET = 16;
     std::shared_ptr<Visual> mSphere[SPHERE_BUDGET];
-    int mNumActiveSpheres;
+    int32_t mNumActiveSpheres;
     Picker mPicker;
 };

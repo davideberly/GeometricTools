@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,7 +20,7 @@ namespace gte
         // Construction.  The initial velocity is zero and the initial density
         // is randomly generated with values in [0,1].
         GPUFluid2InitializeState(std::shared_ptr<ProgramFactory> const& factory,
-            int xSize, int ySize, int numXThreads, int numYThreads);
+            int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads);
 
         // Member access. The texels are (velocity.x, velocity.y, 0, density).
         // The third component is unused in the simulation; a 3D simulation
@@ -40,7 +40,7 @@ namespace gte
         void Execute(std::shared_ptr<GraphicsEngine> const& engine);
 
     private:
-        int mNumXGroups, mNumYGroups;
+        int32_t mNumXGroups, mNumYGroups;
         std::shared_ptr<ComputeProgram> mInitializeState;
         std::shared_ptr<Texture2> mDensity;
         std::shared_ptr<Texture2> mVelocity;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -16,10 +16,10 @@
 // Delaunay2.
 //
 // The TriangleMesh interface must support the following:
-//   bool GetIndices(int, std::array<int, 3>&) const;
-//   bool GetBarycentrics(int, Vector2<Real> const&,
+//   bool GetIndices(int32_t, std::array<int32_t, 3>&) const;
+//   bool GetBarycentrics(int32_t, Vector2<Real> const&,
 //       std::array<Real, 3>&) const;
-//   int GetContainingTriangle(Vector2<Real> const&) const;
+//   int32_t GetContainingTriangle(Vector2<Real> const&) const;
 
 namespace gte
 {
@@ -41,7 +41,7 @@ namespace gte
         // which case the interpolation is valid.
         bool operator()(Vector2<Real> const& P, Real& F) const
         {
-            int t = mMesh->GetContainingTriangle(P);
+            int32_t t = mMesh->GetContainingTriangle(P);
             if (t == -1)
             {
                 // The point is outside the triangulation.
@@ -59,7 +59,7 @@ namespace gte
             }
 
             // The result is a barycentric combination of function values.
-            std::array<int, 3> indices{ 0, 0, 0 };
+            std::array<int32_t, 3> indices{ 0, 0, 0 };
             mMesh->GetIndices(t, indices);
             F = bary[0] * mF[indices[0]] + bary[1] * mF[indices[1]] + bary[2] * mF[indices[2]];
             return true;

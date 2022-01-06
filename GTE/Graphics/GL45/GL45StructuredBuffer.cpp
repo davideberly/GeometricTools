@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45StructuredBuffer.h>
@@ -49,7 +49,7 @@ bool GL45StructuredBuffer::CopyCounterValueToBuffer(GL45Buffer* targetBuffer, GL
     }
 
     auto buffer = GetStructuredBuffer();
-    if (StructuredBuffer::CT_NONE == buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE == buffer->GetCounterType())
     {
         return false;
     }
@@ -68,7 +68,7 @@ bool GL45StructuredBuffer::CopyCounterValueFromBuffer(GL45Buffer* sourceBuffer, 
     }
 
     auto buffer = GetStructuredBuffer();
-    if (StructuredBuffer::CT_NONE == buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE == buffer->GetCounterType())
     {
         return false;
     }
@@ -82,7 +82,7 @@ bool GL45StructuredBuffer::CopyCounterValueFromBuffer(GL45Buffer* sourceBuffer, 
 bool GL45StructuredBuffer::GetNumActiveElements()
 {
     auto buffer = GetStructuredBuffer();
-    if (StructuredBuffer::CT_NONE == buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE == buffer->GetCounterType())
     {
         return false;
     }
@@ -103,7 +103,7 @@ bool GL45StructuredBuffer::GetNumActiveElements()
 bool GL45StructuredBuffer::SetNumActiveElements()
 {
     auto buffer = GetStructuredBuffer();
-    if (StructuredBuffer::CT_NONE == buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE == buffer->GetCounterType())
     {
         return false;
     }
@@ -127,7 +127,7 @@ bool GL45StructuredBuffer::CopyGpuToCpu()
 
     // Need to read number of active elements first if there is a counter
     // attached to this structured buffer.
-    if (StructuredBuffer::CT_NONE != buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE != buffer->GetCounterType())
     {
         if (!GetNumActiveElements())
         {
@@ -143,7 +143,7 @@ void GL45StructuredBuffer::Initialize()
     auto buffer = GetStructuredBuffer();
 
     // Regular structured buffer (no counter)?
-    if (StructuredBuffer::CT_NONE == buffer->GetCounterType())
+    if (StructuredBuffer::CounterType::NONE == buffer->GetCounterType())
     {
         GL45Buffer::Initialize();
     }

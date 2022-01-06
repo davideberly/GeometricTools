@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,7 +19,7 @@ public:
     Interpolation2DWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
@@ -48,11 +48,9 @@ private:
 
     // For use by Bilinear, Bicubic, Akima, ThinPlateSpline.  The grid size
     // is SAMPLE_BOUND-by-SAMPLE_BOUND.
-    enum
-    {
-        SAMPLE_BOUND = 8,
-        SAMPLE_BOUNDSQR = SAMPLE_BOUND * SAMPLE_BOUND
-    };
+    static int32_t constexpr SAMPLE_BOUND = 8;
+    static int32_t constexpr SAMPLE_BOUNDSQR = SAMPLE_BOUND * SAMPLE_BOUND;
+
     std::vector<float> mFSample;
     typedef BSNumber<UIntegerAP32> Numeric;
     typedef BSRational<UIntegerAP32> Rational;
@@ -65,24 +63,24 @@ private:
     public:
         SimpleMesh();
 
-        int GetNumVertices() const;
-        int GetNumTriangles() const;
+        int32_t GetNumVertices() const;
+        int32_t GetNumTriangles() const;
         Vector2<float> const* GetVertices() const;
-        int const* GetIndices() const;
-        bool GetVertices(int t, std::array<Vector2<float>, 3>& vertices) const;
-        bool GetIndices(int t, std::array<int, 3>& indices) const;
-        bool GetAdjacencies(int t, std::array<int, 3>& adjacencies) const;
-        bool GetBarycentrics(int t, Vector2<float> const& P, std::array<float, 3>& bary) const;
-        int GetContainingTriangle(Vector2<float> const& P) const;
+        int32_t const* GetIndices() const;
+        bool GetVertices(int32_t t, std::array<Vector2<float>, 3>& vertices) const;
+        bool GetIndices(int32_t t, std::array<int32_t, 3>& indices) const;
+        bool GetAdjacencies(int32_t t, std::array<int32_t, 3>& adjacencies) const;
+        bool GetBarycentrics(int32_t t, Vector2<float> const& P, std::array<float, 3>& bary) const;
+        int32_t GetContainingTriangle(Vector2<float> const& P) const;
 
-        inline int GetInvalidIndex() const
+        inline int32_t GetInvalidIndex() const
         {
             return -1;
         }
     private:
         std::array<Vector2<float>, 6> mVertices;
-        std::array<int, 12> mIndices;
-        std::array<int, 12> mAdjacencies;
+        std::array<int32_t, 12> mIndices;
+        std::array<int32_t, 12> mAdjacencies;
     };
 
     SimpleMesh mSimpleMesh;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
     {
     public:
         // Construction.
-        IntpTrilinear3(int xBound, int yBound, int zBound, Real xMin,
+        IntpTrilinear3(int32_t xBound, int32_t yBound, int32_t zBound, Real xMin,
             Real xSpacing, Real yMin, Real ySpacing, Real zMin, Real zSpacing, Real const* F)
             :
             mXBound(xBound),
@@ -58,22 +58,22 @@ namespace gte
         }
 
         // Member access.
-        inline int GetXBound() const
+        inline int32_t GetXBound() const
         {
             return mXBound;
         }
 
-        inline int GetYBound() const
+        inline int32_t GetYBound() const
         {
             return mYBound;
         }
 
-        inline int GetZBound() const
+        inline int32_t GetZBound() const
         {
             return mZBound;
         }
 
-        inline int GetQuantity() const
+        inline int32_t GetQuantity() const
         {
             return mQuantity;
         }
@@ -140,7 +140,7 @@ namespace gte
         {
             // Compute x-index and clamp to image.
             Real xIndex = (x - mXMin) * mInvXSpacing;
-            int ix = static_cast<int>(xIndex);
+            int32_t ix = static_cast<int32_t>(xIndex);
             if (ix < 0)
             {
                 ix = 0;
@@ -152,7 +152,7 @@ namespace gte
 
             // Compute y-index and clamp to image.
             Real yIndex = (y - mYMin) * mInvYSpacing;
-            int iy = static_cast<int>(yIndex);
+            int32_t iy = static_cast<int32_t>(yIndex);
             if (iy < 0)
             {
                 iy = 0;
@@ -164,7 +164,7 @@ namespace gte
 
             // Compute z-index and clamp to image.
             Real zIndex = (z - mZMin) * mInvZSpacing;
-            int iz = static_cast<int>(zIndex);
+            int32_t iz = static_cast<int32_t>(zIndex);
             if (iz < 0)
             {
                 iz = 0;
@@ -188,12 +188,12 @@ namespace gte
 
             // Compute P = M*U, Q = M*V, R = M*W.
             std::array<Real, 2> P, Q, R;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
                 P[row] = (Real)0;
                 Q[row] = (Real)0;
                 R[row] = (Real)0;
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
                     P[row] += mBlend[row][col] * U[col];
                     Q[row] += mBlend[row][col] * V[col];
@@ -204,25 +204,25 @@ namespace gte
             // compute the tensor product (M*U)(M*V)(M*W)*D where D is the 2x2x2
             // subimage containing (x,y,z)
             Real result = (Real)0;
-            for (int slice = 0; slice < 2; ++slice)
+            for (int32_t slice = 0; slice < 2; ++slice)
             {
-                int zClamp = iz + slice;
+                int32_t zClamp = iz + slice;
                 if (zClamp >= mZBound)
                 {
                     zClamp = mZBound - 1;
                 }
 
-                for (int row = 0; row < 2; ++row)
+                for (int32_t row = 0; row < 2; ++row)
                 {
-                    int yClamp = iy + row;
+                    int32_t yClamp = iy + row;
                     if (yClamp >= mYBound)
                     {
                         yClamp = mYBound - 1;
                     }
 
-                    for (int col = 0; col < 2; ++col)
+                    for (int32_t col = 0; col < 2; ++col)
                     {
-                        int xClamp = ix + col;
+                        int32_t xClamp = ix + col;
                         if (xClamp >= mXBound)
                         {
                             xClamp = mXBound - 1;
@@ -237,11 +237,11 @@ namespace gte
             return result;
         }
 
-        Real operator()(int xOrder, int yOrder, int zOrder, Real x, Real y, Real z) const
+        Real operator()(int32_t xOrder, int32_t yOrder, int32_t zOrder, Real x, Real y, Real z) const
         {
             // Compute x-index and clamp to image.
             Real xIndex = (x - mXMin) * mInvXSpacing;
-            int ix = static_cast<int>(xIndex);
+            int32_t ix = static_cast<int32_t>(xIndex);
             if (ix < 0)
             {
                 ix = 0;
@@ -253,7 +253,7 @@ namespace gte
 
             // Compute y-index and clamp to image.
             Real yIndex = (y - mYMin) * mInvYSpacing;
-            int iy = static_cast<int>(yIndex);
+            int32_t iy = static_cast<int32_t>(yIndex);
             if (iy < 0)
             {
                 iy = 0;
@@ -265,7 +265,7 @@ namespace gte
 
             // Compute z-index and clamp to image.
             Real zIndex = (z - mZMin) * mInvZSpacing;
-            int iz = static_cast<int>(zIndex);
+            int32_t iz = static_cast<int32_t>(zIndex);
             if (iz < 0)
             {
                 iz = 0;
@@ -337,12 +337,12 @@ namespace gte
 
             // Compute P = M*U, Q = M*V, and R = M*W.
             std::array<Real, 2> P, Q, R;
-            for (int row = 0; row < 2; ++row)
+            for (int32_t row = 0; row < 2; ++row)
             {
                 P[row] = (Real)0;
                 Q[row] = (Real)0;
                 R[row] = (Real)0;
-                for (int col = 0; col < 2; ++col)
+                for (int32_t col = 0; col < 2; ++col)
                 {
                     P[row] += mBlend[row][col] * U[col];
                     Q[row] += mBlend[row][col] * V[col];
@@ -353,25 +353,25 @@ namespace gte
             // Compute the tensor product (M*U)(M*V)(M*W)*D where D is the 2x2x2
             // subimage containing (x,y,z).
             Real result = (Real)0;
-            for (int slice = 0; slice < 2; ++slice)
+            for (int32_t slice = 0; slice < 2; ++slice)
             {
-                int zClamp = iz + slice;
+                int32_t zClamp = iz + slice;
                 if (zClamp >= mZBound)
                 {
                     zClamp = mZBound - 1;
                 }
 
-                for (int row = 0; row < 2; ++row)
+                for (int32_t row = 0; row < 2; ++row)
                 {
-                    int yClamp = iy + row;
+                    int32_t yClamp = iy + row;
                     if (yClamp >= mYBound)
                     {
                         yClamp = mYBound - 1;
                     }
 
-                    for (int col = 0; col < 2; ++col)
+                    for (int32_t col = 0; col < 2; ++col)
                     {
-                        int xClamp = ix + col;
+                        int32_t xClamp = ix + col;
                         if (xClamp >= mXBound)
                         {
                             xClamp = mXBound - 1;
@@ -388,7 +388,7 @@ namespace gte
         }
 
     private:
-        int mXBound, mYBound, mZBound, mQuantity;
+        int32_t mXBound, mYBound, mZBound, mQuantity;
         Real mXMin, mXMax, mXSpacing, mInvXSpacing;
         Real mYMin, mYMax, mYSpacing, mInvYSpacing;
         Real mZMin, mZMax, mZSpacing, mInvZSpacing;

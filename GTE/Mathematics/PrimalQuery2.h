@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -32,7 +32,7 @@ namespace gte
         {
         }
 
-        PrimalQuery2(int numVertices, Vector2<Real> const* vertices)
+        PrimalQuery2(int32_t numVertices, Vector2<Real> const* vertices)
             :
             mNumVertices(numVertices),
             mVertices(vertices)
@@ -40,13 +40,13 @@ namespace gte
         }
 
         // Member access.
-        inline void Set(int numVertices, Vector2<Real> const* vertices)
+        inline void Set(int32_t numVertices, Vector2<Real> const* vertices)
         {
             mNumVertices = numVertices;
             mVertices = vertices;
         }
 
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
@@ -71,12 +71,12 @@ namespace gte
         //    double     | BSNumber     | 132
         //    float      | BSRational   |  35
         //    double     | BSRational   | 263
-        int ToLine(int i, int v0, int v1) const
+        int32_t ToLine(int32_t i, int32_t v0, int32_t v1) const
         {
             return ToLine(mVertices[i], v0, v1);
         }
 
-        int ToLine(Vector2<Real> const& test, int v0, int v1) const
+        int32_t ToLine(Vector2<Real> const& test, int32_t v0, int32_t v1) const
         {
             Vector2<Real> const& vec0 = mVertices[v0];
             Vector2<Real> const& vec1 = mVertices[v1];
@@ -114,12 +114,12 @@ namespace gte
         //    double     | BSRational   | 263
         // This is the same as the first-listed ToLine calls because the
         // worst-case path has the same computational complexity.
-        int ToLine(int i, int v0, int v1, int& order) const
+        int32_t ToLine(int32_t i, int32_t v0, int32_t v1, int32_t& order) const
         {
             return ToLine(mVertices[i], v0, v1, order);
         }
 
-        int ToLine(Vector2<Real> const& test, int v0, int v1, int& order) const
+        int32_t ToLine(Vector2<Real> const& test, int32_t v0, int32_t v1, int32_t& order) const
         {
             Vector2<Real> const& vec0 = mVertices[v0];
             Vector2<Real> const& vec1 = mVertices[v1];
@@ -193,26 +193,26 @@ namespace gte
         //    double     | BSRational   |  263
         // The query involves three calls to ToLine, so the numbers match
         // those of ToLine.
-        int ToTriangle(int i, int v0, int v1, int v2) const
+        int32_t ToTriangle(int32_t i, int32_t v0, int32_t v1, int32_t v2) const
         {
             return ToTriangle(mVertices[i], v0, v1, v2);
         }
 
-        int ToTriangle(Vector2<Real> const& test, int v0, int v1, int v2) const
+        int32_t ToTriangle(Vector2<Real> const& test, int32_t v0, int32_t v1, int32_t v2) const
         {
-            int sign0 = ToLine(test, v1, v2);
+            int32_t sign0 = ToLine(test, v1, v2);
             if (sign0 > 0)
             {
                 return +1;
             }
 
-            int sign1 = ToLine(test, v0, v2);
+            int32_t sign1 = ToLine(test, v0, v2);
             if (sign1 < 0)
             {
                 return +1;
             }
 
-            int sign2 = ToLine(test, v0, v1);
+            int32_t sign2 = ToLine(test, v0, v1);
             if (sign2 > 0)
             {
                 return +1;
@@ -236,12 +236,12 @@ namespace gte
         //    double     | BSRational   | 788
         // The query involves three calls of ToLine, so the numbers match
         // those of ToLine.
-        int ToCircumcircle(int i, int v0, int v1, int v2) const
+        int32_t ToCircumcircle(int32_t i, int32_t v0, int32_t v1, int32_t v2) const
         {
             return ToCircumcircle(mVertices[i], v0, v1, v2);
         }
 
-        int ToCircumcircle(Vector2<Real> const& test, int v0, int v1, int v2) const
+        int32_t ToCircumcircle(Vector2<Real> const& test, int32_t v0, int32_t v1, int32_t v2) const
         {
             Vector2<Real> const& vec0 = mVertices[v0];
             Vector2<Real> const& vec1 = mVertices[v1];
@@ -394,7 +394,7 @@ namespace gte
         }
 
     private:
-        int mNumVertices;
+        int32_t mNumVertices;
         Vector2<Real> const* mVertices;
     };
 }

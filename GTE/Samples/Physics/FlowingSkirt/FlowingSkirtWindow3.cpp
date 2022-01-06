@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FlowingSkirtWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -32,10 +32,10 @@ FlowingSkirtWindow3::FlowingSkirtWindow3(Parameters& parameters)
     mEngine->SetClearColor({ 0.75f, 0.75f, 0.75f, 1.0f });
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mWireNoCullState = std::make_shared<RasterizerState>();
-    mWireNoCullState->cullMode = RasterizerState::CULL_NONE;
-    mWireNoCullState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireNoCullState->cull = RasterizerState::Cull::NONE;
+    mWireNoCullState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullState);
 
     CreateScene();
@@ -71,7 +71,7 @@ void FlowingSkirtWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool FlowingSkirtWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FlowingSkirtWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -129,19 +129,19 @@ void FlowingSkirtWindow3::CreateScene()
     // curve objects make a copy of the input points.  The vertex storage is
     // then used for the skirt mesh vertices themselves.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     // Use random numbers for the frequencies.
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.5f, 1.0f);
 
-    unsigned int numVertices = 2 * mNumCtrl;
+    uint32_t numVertices = 2 * mNumCtrl;
     std::vector<Vector3<float>> positions(numVertices);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
-    int i, j;
+    int32_t i, j;
     for (i = 0, j = mNumCtrl; i < mNumCtrl; ++i, ++j)
     {
         float ratio = static_cast<float>(i) / static_cast<float>(mNumCtrl);
@@ -182,10 +182,10 @@ void FlowingSkirtWindow3::CreateScene()
     mSkirtBottom = std::make_unique<BSplineCurve<3, float>>(bfInput, positions.data() + mNumCtrl);
 
     // Generate the triangle connectivity (cylinder connectivity).
-    unsigned int numTriangles = numVertices;
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    auto indices = ibuffer->Get<unsigned int>();
-    int i0 = 0, i1 = 1, i2 = mNumCtrl, i3 = mNumCtrl + 1;
+    uint32_t numTriangles = numVertices;
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    auto indices = ibuffer->Get<uint32_t>();
+    int32_t i0 = 0, i1 = 1, i2 = mNumCtrl, i3 = mNumCtrl + 1;
     for (i = 0; i1 < mNumCtrl; i0 = i1++, i2 = i3++)
     {
         indices[i++] = i0;
@@ -206,7 +206,7 @@ void FlowingSkirtWindow3::CreateScene()
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     mSkirt = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mSkirt->UpdateModelBound();
@@ -220,9 +220,9 @@ void FlowingSkirtWindow3::CreateScene()
 
 void FlowingSkirtWindow3::UpdateSkirt()
 {
-    auto vbuffer = mSkirt->GetVertexBuffer();
+    auto const& vbuffer = mSkirt->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vertex>();
-    for (int i = 0, j = mNumCtrl; i < mNumCtrl; ++i, ++j)
+    for (int32_t i = 0, j = mNumCtrl; i < mNumCtrl; ++i, ++j)
     {
         float t = static_cast<float>(i) / static_cast<float>(mNumCtrl);
         Vector3<float> values[4];
@@ -241,7 +241,7 @@ void FlowingSkirtWindow3::ModifyCurves()
 {
     // Perturb the skirt bottom.
     float time = static_cast<float>(mAnimTimer.GetSeconds());
-    for (int i = 0; i < mNumCtrl; ++i)
+    for (int32_t i = 0; i < mNumCtrl; ++i)
     {
         float ratio = static_cast<float>(i) / static_cast<float>(mNumCtrl);
         float angle = ratio * static_cast<float>(GTE_C_TWO_PI);

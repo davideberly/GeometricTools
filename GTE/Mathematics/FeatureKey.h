@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.11.16
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -13,7 +13,7 @@
 
 namespace gte
 {
-    template <int N, bool Ordered>
+    template <int32_t N, bool Ordered>
     class FeatureKey
     {
     protected:
@@ -100,6 +100,6 @@ namespace gte
             return v0 == v1;
         }
 
-        std::array<int, N> V;
+        std::array<int32_t, N> V;
     };
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.25
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -26,7 +26,7 @@ namespace gte
     class SortEigenstuff
     {
     public:
-        void operator()(int sortType, bool isRotation,
+        void operator()(int32_t sortType, bool isRotation,
             std::array<T, 3>& eval, std::array<std::array<T, 3>, 3>& evec)
         {
             if (sortType != 0)
@@ -134,8 +134,8 @@ namespace gte
         // orthonormal set.  The return value is the number of iterations
         // used by the algorithm.
 
-        int operator()(T const& a00, T const& a01, T const& a02, T const& a11,
-            T const& a12, T const& a22, bool aggressive, int sortType,
+        int32_t operator()(T const& a00, T const& a01, T const& a02, T const& a11,
+            T const& a12, T const& a22, bool aggressive, int32_t sortType,
             std::array<T, 3>& eval, std::array<std::array<T, 3>, 3>& evec) const
         {
             // Compute the Householder reflection H0 and B = H0*A*H0, where
@@ -170,8 +170,8 @@ namespace gte
 
             // The smallest subnormal number is 2^{-alpha}. The value alpha is
             // 149 for 'float' and 1074 for 'double'.
-            int constexpr alpha = std::numeric_limits<T>::digits - std::numeric_limits<T>::min_exponent;
-            int i = 0, imax = 0, power = 0;
+            int32_t constexpr alpha = std::numeric_limits<T>::digits - std::numeric_limits<T>::min_exponent;
+            int32_t i = 0, imax = 0, power = 0;
             T c2 = zero, s2 = zero;
 
             if (std::fabs(b12) <= std::fabs(b01))
@@ -389,7 +389,7 @@ namespace gte
         // eigenvalues are sorted in ascending order: eval0 <= eval1 <= eval2.
 
         void operator()(T a00, T a01, T a02, T a11, T a12, T a22,
-            int sortType, std::array<T, 3>& eval, std::array<std::array<T, 3>, 3>& evec) const
+            int32_t sortType, std::array<T, 3>& eval, std::array<std::array<T, 3>, 3>& evec) const
         {
             // Precondition the matrix by factoring out the maximum absolute
             // value of the components.  This guards against floating-point
@@ -595,7 +595,7 @@ namespace gte
             T d2 = Dot(r1xr2, r1xr2);
 
             T dmax = d0;
-            int imax = 0;
+            int32_t imax = 0;
             if (d1 > dmax)
             {
                 dmax = d1;

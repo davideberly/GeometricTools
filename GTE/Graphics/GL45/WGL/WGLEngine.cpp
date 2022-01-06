@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/WGL/WGLEngine.h>
@@ -11,8 +11,8 @@ using namespace gte;
 
 extern "C"
 {
-    extern int __stdcall wglSwapIntervalEXT(int interval);
-    extern int __stdcall wglGetSwapIntervalEXT(void);
+    extern int32_t __stdcall wglSwapIntervalEXT(int32_t interval);
+    extern int32_t __stdcall wglGetSwapIntervalEXT(void);
 }
 extern void InitializeWGL();
 
@@ -21,7 +21,7 @@ WGLEngine::~WGLEngine()
     Terminate();
 }
 
-WGLEngine::WGLEngine(HWND handle, bool useDepth24Stencil8, bool saveDriverInfo, int requiredMajor, int requiredMinor)
+WGLEngine::WGLEngine(HWND handle, bool useDepth24Stencil8, bool saveDriverInfo, int32_t requiredMajor, int32_t requiredMinor)
     :
     GL45Engine(),
     mHandle(handle),
@@ -32,7 +32,7 @@ WGLEngine::WGLEngine(HWND handle, bool useDepth24Stencil8, bool saveDriverInfo, 
     Initialize(requiredMajor, requiredMinor, useDepth24Stencil8, saveDriverInfo);
 }
 
-WGLEngine::WGLEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredMajor, int requiredMinor)
+WGLEngine::WGLEngine(bool useDepth24Stencil8, bool saveDriverInfo, int32_t requiredMajor, int32_t requiredMinor)
     :
     GL45Engine(),
     mHandle(nullptr),
@@ -43,7 +43,7 @@ WGLEngine::WGLEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
     mComputeWindowClass = L"GL4ComputeWindowClass" +
         std::to_wstring(reinterpret_cast<uint64_t>(this));
 
-    WNDCLASS wc;
+    WNDCLASS wc{};
     wc.style = CS_OWNDC;
     wc.lpfnWndProc = DefWindowProc;
     wc.cbClsExtra = 0;
@@ -60,8 +60,8 @@ WGLEngine::WGLEngine(bool useDepth24Stencil8, bool saveDriverInfo, int requiredM
     RECT rect = { 0, 0, 15, 15 };
     if (AdjustWindowRect(&rect, style, FALSE) != FALSE)
     {
-        int xSize = static_cast<int>(rect.right - rect.left + 1);
-        int ySize = static_cast<int>(rect.bottom - rect.top + 1);
+        int32_t xSize = static_cast<int32_t>(rect.right - rect.left + 1);
+        int32_t ySize = static_cast<int32_t>(rect.bottom - rect.top + 1);
         mHandle = CreateWindow(mComputeWindowClass.c_str(), L"", style,
             0, 0, xSize, ySize, nullptr, nullptr, nullptr, nullptr);
         Initialize(requiredMajor, requiredMinor, useDepth24Stencil8, saveDriverInfo);
@@ -86,13 +86,13 @@ void WGLEngine::MakeActive()
     }
 }
 
-void WGLEngine::DisplayColorBuffer(unsigned int syncInterval)
+void WGLEngine::DisplayColorBuffer(uint32_t syncInterval)
 {
     wglSwapIntervalEXT(syncInterval > 0 ? 1 : 0);
     SwapBuffers(mDevice);
 }
 
-bool WGLEngine::Initialize(int requiredMajor, int requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo)
+bool WGLEngine::Initialize(int32_t requiredMajor, int32_t requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo)
 {
     if (!mHandle)
     {
@@ -107,8 +107,8 @@ bool WGLEngine::Initialize(int requiredMajor, int requiredMinor, bool useDepth24
 
     RECT rect;
     BOOL result = GetClientRect(mHandle, &rect); (void)result;
-    mXSize = static_cast<unsigned int>(rect.right - rect.left);
-    mYSize = static_cast<unsigned int>(rect.bottom - rect.top);
+    mXSize = static_cast<uint32_t>(rect.right - rect.left);
+    mYSize = static_cast<uint32_t>(rect.bottom - rect.top);
 
     // Select the format for the drawing surface.
     PIXELFORMATDESCRIPTOR pfd;
@@ -138,7 +138,7 @@ bool WGLEngine::Initialize(int requiredMajor, int requiredMinor, bool useDepth24
     }
 
     // Set the pixel format for the rendering context.
-    int pixelFormat = ChoosePixelFormat(mDevice, &pfd);
+    int32_t pixelFormat = ChoosePixelFormat(mDevice, &pfd);
     if (pixelFormat == 0)
     {
         LogError("ChoosePixelFormat failed.");
@@ -174,16 +174,19 @@ void WGLEngine::Terminate()
 {
     GL45Engine::Terminate();
 
-    if (mHandle && mDevice && mImmediate)
+    if (mHandle)
     {
-        wglMakeCurrent(mDevice, nullptr);
-        wglDeleteContext(mImmediate);
-        ReleaseDC(mHandle, mDevice);
-    }
+        if (mDevice && mImmediate)
+        {
+            wglMakeCurrent(mDevice, nullptr);
+            wglDeleteContext(mImmediate);
+            ReleaseDC(mHandle, mDevice);
+        }
 
-    if (mComputeWindowAtom)
-    {
-        DestroyWindow(mHandle);
-        UnregisterClass(mComputeWindowClass.c_str(), 0);
+        if (mComputeWindowAtom)
+        {
+            DestroyWindow(mHandle);
+            UnregisterClass(mComputeWindowClass.c_str(), 0);
+        }
     }
 }

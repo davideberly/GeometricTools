@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DrawTarget.h>
@@ -18,11 +18,12 @@ DX11DrawTarget::DX11DrawTarget(DrawTarget const* target,
     mDSTexture(dsTexture),
     mRTViews(target->GetNumTargets()),
     mDSView(nullptr),
+    mSaveViewport{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f },
     mSaveRTViews(target->GetNumTargets()),
     mSaveDSView(nullptr)
 {
-    unsigned int const numTargets = mTarget->GetNumTargets();
-    for (unsigned int i = 0; i < numTargets; ++i)
+    uint32_t const numTargets = mTarget->GetNumTargets();
+    for (uint32_t i = 0; i < numTargets; ++i)
     {
         mRTViews[i] = mRTTextures[i]->GetRTView();
         mSaveRTViews[i] = nullptr;
@@ -61,7 +62,7 @@ void DX11DrawTarget::Enable (ID3D11DeviceContext* context)
     UINT const numTargets = (UINT)mTarget->GetNumTargets();
     context->OMGetRenderTargets(numTargets, &mSaveRTViews[0], &mSaveDSView);
 
-    D3D11_VIEWPORT viewport;
+    D3D11_VIEWPORT viewport{};
     viewport.Width = static_cast<float>(mTarget->GetWidth());
     viewport.Height = static_cast<float>(mTarget->GetHeight());
     viewport.TopLeftX = 0.0f;
@@ -79,7 +80,7 @@ void DX11DrawTarget::Disable (ID3D11DeviceContext* context)
 
     UINT const numTargets = (UINT)mTarget->GetNumTargets();
     context->OMSetRenderTargets(numTargets, &mSaveRTViews[0], mSaveDSView);
-    for (unsigned int i = 0; i < numTargets; ++i)
+    for (uint32_t i = 0; i < numTargets; ++i)
     {
         if (mSaveRTViews[i])
         {

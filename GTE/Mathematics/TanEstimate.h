@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,7 +24,7 @@ namespace gte
         // The input constraint is x in [-pi/4,pi/4].  For example,
         //   float x; // in [-pi/4,pi/4]
         //   float result = TanEstimate<float>::Degree<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real Degree(Real x)
         {
             return Evaluate(degree<D>(), x);
@@ -39,7 +39,7 @@ namespace gte
         // becomes infinite.  For example,
         //   float x;  // x any real number
         //   float result = TanEstimate<float>::DegreeRR<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real DegreeRR(Real x)
         {
             Real y;
@@ -63,7 +63,7 @@ namespace gte
     private:
         // Metaprogramming and private implementation to allow specialization
         // of a template member function.
-        template <int D> struct degree {};
+        template <int32_t D> struct degree {};
 
         inline static Real Evaluate(degree<3>, Real x)
         {

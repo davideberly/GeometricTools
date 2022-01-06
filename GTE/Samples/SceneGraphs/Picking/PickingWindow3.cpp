@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include "PickingWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -42,7 +42,7 @@ void PickingWindow3::OnIdle()
     mEngine->Draw(mDodecahedron);
     mEngine->Draw(mPoints);
     mEngine->Draw(mSegments);
-    for (int i = 0; i < mNumActiveSpheres; ++i)
+    for (int32_t i = 0; i < mNumActiveSpheres; ++i)
     {
         mEngine->Draw(mSphere[i]);
     }
@@ -52,8 +52,8 @@ void PickingWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool PickingWindow3::OnMouseClick(MouseButton button, MouseState state, int x,
-    int y, unsigned int modifiers)
+bool PickingWindow3::OnMouseClick(MouseButton button, MouseState state, int32_t x,
+    int32_t y, uint32_t modifiers)
 {
     if (!Window3::OnMouseClick(button, state, x, y, modifiers))
     {
@@ -92,8 +92,8 @@ void PickingWindow3::CreateScene()
     mScene = std::make_shared<Node>();
 
     VertexFormat vformat0;
-    vformat0.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat0.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat0.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat0.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     // The torus and dodecahedron are created by the mesh factory in which
     // the 'visual' model bounds are computed.  The points and segments
@@ -104,21 +104,21 @@ void PickingWindow3::CreateScene()
 
     mTorus = mf.CreateTorus(16, 16, 4.0f, 1.0f);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mTorus->SetEffect(effect);
     mPVWMatrices.Subscribe(mTorus->worldTransform, effect->GetPVWMatrixConstant());
     mScene->AttachChild(mTorus);
 
     mDodecahedron = mf.CreateDodecahedron();
     effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP,
-        SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP);
     mDodecahedron->SetEffect(effect);
     mPVWMatrices.Subscribe(mDodecahedron->worldTransform, effect->GetPVWMatrixConstant());
     mScene->AttachChild(mDodecahedron);
 
     VertexFormat vformat1;
-    vformat1.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat1.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat1, 4);
     auto* vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { 1.0f, 1.0f, 4.0f };
@@ -139,7 +139,7 @@ void PickingWindow3::CreateScene()
     vertices[1] = { -1.0f, -2.0f, 5.0f };
     vertices[2] = { -2.0f, -1.0f, 6.0f };
     vertices[3] = { -2.0f, -2.0f, 7.0f };
-    ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_CONTIGUOUS, 3, sizeof(int));
+    ibuffer = std::make_shared<IndexBuffer>(IP_POLYSEGMENT_CONTIGUOUS, 3, sizeof(int32_t));
     ibuffer->SetSegment(0, 0, 1);
     ibuffer->SetSegment(1, 1, 2);
     ibuffer->SetSegment(2, 2, 3);
@@ -150,7 +150,7 @@ void PickingWindow3::CreateScene()
     mPVWMatrices.Subscribe(mSegments->worldTransform, cceffect->GetPVWMatrixConstant());
     mScene->AttachChild(mSegments);
 
-    for (int i = 0; i < SPHERE_BUDGET; ++i)
+    for (int32_t i = 0; i < SPHERE_BUDGET; ++i)
     {
         mSphere[i] = mf.CreateSphere(8, 8, 0.125f);
         cceffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
@@ -164,15 +164,16 @@ void PickingWindow3::CreateScene()
     mTrackBall.Update();
 }
 
-void PickingWindow3::DoPick(int x, int y)
+void PickingWindow3::DoPick(int32_t x, int32_t y)
 {
-    int viewX, viewY, viewW, viewH;
+    int32_t viewX, viewY, viewW, viewH;
     mEngine->GetViewport(viewX, viewY, viewW, viewH);
     Vector4<float> origin, direction;
     if (mCamera->GetPickLine(viewX, viewY, viewW, viewH, x, y, origin, direction))
     {
         // Use a ray for picking.
-        float tmin = 0.0f, tmax = std::numeric_limits<float>::max();
+        float tmin = 0.0f;
+        float constexpr tmax = std::numeric_limits<float>::max();
 
         // Set the distance tolerance for point and segment primitives.
         mPicker.SetMaxDistance(0.0625f);
@@ -181,12 +182,12 @@ void PickingWindow3::DoPick(int x, int y)
         // in the scene have the same model space, so we can set the sphere
         // centers in model-space coordinates.
         mPicker(mScene, origin, direction, tmin, tmax);
-        mNumActiveSpheres = std::min((int)mPicker.records.size(), (int)SPHERE_BUDGET);
+        mNumActiveSpheres = std::min((int32_t)mPicker.records.size(), (int32_t)SPHERE_BUDGET);
         if (mNumActiveSpheres > 0)
         {
             // Place spheres at the picked locations.
             Matrix4x4<float> const& invWMatrix = mScene->worldTransform.GetHInverse();
-            for (int i = 0; i < mNumActiveSpheres; ++i)
+            for (int32_t i = 0; i < mNumActiveSpheres; ++i)
             {
                 Vector4<float> modelPosition = DoTransform(invWMatrix, mPicker.records[i].primitivePoint);
                 mSphere[i]->localTransform.SetTranslation(modelPosition);

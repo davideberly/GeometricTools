@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MultipleRenderTargetsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -160,7 +160,7 @@ void MultipleRenderTargetsWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MultipleRenderTargetsWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MultipleRenderTargetsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -241,7 +241,7 @@ bool MultipleRenderTargetsWindow3::CreateScene()
     auto cbuffer = std::make_shared<ConstantBuffer>(sizeof(Matrix4x4<float>), true);
     program->GetVertexShader()->Set("PVWMatrix", cbuffer);
 
-    auto pshader = program->GetPixelShader();
+    auto const& pshader = program->GetPixelShader();
     auto farNearRatio = std::make_shared<ConstantBuffer>(sizeof(float), false);
     pshader->Set("FarNearRatio", farNearRatio);
     farNearRatio->SetMember("farNearRatio", mCamera->GetDMax() / mCamera->GetDMin());
@@ -250,9 +250,9 @@ bool MultipleRenderTargetsWindow3::CreateScene()
     auto baseTexture = WICFileIO::Load(path, true);
     baseTexture->AutogenerateMipmaps();
     auto baseSampler = std::make_shared<SamplerState>();
-    baseSampler->filter = SamplerState::MIN_L_MAG_L_MIP_L;
-    baseSampler->mode[0] = SamplerState::CLAMP;
-    baseSampler->mode[1] = SamplerState::CLAMP;
+    baseSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_L;
+    baseSampler->mode[0] = SamplerState::Mode::CLAMP;
+    baseSampler->mode[1] = SamplerState::Mode::CLAMP;
     pshader->Set("baseTexture", baseTexture, "baseSampler", baseSampler);
 
     auto effect = std::make_shared<VisualEffect>(program);
@@ -266,8 +266,8 @@ bool MultipleRenderTargetsWindow3::CreateScene()
         Vector2<float> tcoord;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     Vertex* vertex = vbuffer->Get<Vertex>();
 #if defined(GTE_USE_OPENGL)
@@ -309,8 +309,8 @@ void MultipleRenderTargetsWindow3::CreateOverlays()
     mDrawTarget = std::make_shared<DrawTarget>(2, DF_R32G32B32A32_FLOAT,
         mXSize, mYSize, true, true, DF_D32_FLOAT, true);
     mDrawTarget->AutogenerateRTMipmaps();
-    mDrawTarget->GetRTTexture(0)->SetUsage(Resource::SHADER_OUTPUT);
-    mDrawTarget->GetDSTexture()->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mDrawTarget->GetRTTexture(0)->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mDrawTarget->GetDSTexture()->SetCopy(Resource::Copy::STAGING_TO_CPU);
     mEngine->Bind(mDrawTarget);
 
     // Display mSquare that was rendered to a draw target with mipmaps
@@ -318,19 +318,19 @@ void MultipleRenderTargetsWindow3::CreateOverlays()
     // depth.  The mipmap selection is the standard algorithm used in the
     // HLSL Texture2D.Sample function.
     mOverlay[0] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
-        mYSize, mXSize, mYSize, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP, true);
+        mYSize, mXSize, mYSize, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay[0]->SetTexture(mDrawTarget->GetRTTexture(0));
 
     // Display mSquare using only miplevel i and using nearest-neighbor
     // sampling.
-    int api = mProgramFactory->GetAPI();
+    int32_t api = mProgramFactory->GetAPI();
     std::shared_ptr<Shader> pshader;
     auto nearestSampler = std::make_shared<SamplerState>();
-    nearestSampler->filter = SamplerState::MIN_P_MAG_P_MIP_P;
-    nearestSampler->mode[0] = SamplerState::CLAMP;
-    nearestSampler->mode[1] = SamplerState::CLAMP;
-    for (int i = 1; i < 5; ++i)
+    nearestSampler->filter = SamplerState::Filter::MIN_P_MAG_P_MIP_P;
+    nearestSampler->mode[0] = SamplerState::Mode::CLAMP;
+    nearestSampler->mode[1] = SamplerState::Mode::CLAMP;
+    for (int32_t i = 1; i < 5; ++i)
     {
         mOverlay[i] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
             mYSize, mXSize, mYSize, *msOverlayPSSource[i][api]);
@@ -340,14 +340,14 @@ void MultipleRenderTargetsWindow3::CreateOverlays()
 
     // Display mSquare using linearized depth.
     mLinearDepth = std::make_shared<Texture2>(DF_R32_FLOAT, mXSize, mYSize);
-    mLinearDepth->SetUsage(Resource::SHADER_OUTPUT);
-    mLinearDepth->SetCopyType(Resource::COPY_CPU_TO_STAGING);
+    mLinearDepth->SetUsage(Resource::Usage::SHADER_OUTPUT);
+    mLinearDepth->SetCopy(Resource::Copy::CPU_TO_STAGING);
     mOverlay[5] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, mXSize, mYSize, *msOverlayPSSource[0][api]);
     std::shared_ptr<SamplerState> linearSampler = std::make_shared<SamplerState>();
-    linearSampler->filter = SamplerState::MIN_L_MAG_L_MIP_L;
-    linearSampler->mode[0] = SamplerState::CLAMP;
-    linearSampler->mode[1] = SamplerState::CLAMP;
+    linearSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_L;
+    linearSampler->mode[0] = SamplerState::Mode::CLAMP;
+    linearSampler->mode[1] = SamplerState::Mode::CLAMP;
     pshader = mOverlay[5]->GetProgram()->GetPixelShader();
     pshader->Set("positionTexture", mDrawTarget->GetRTTexture(1), "positionSampler", linearSampler);
     pshader->Set("depthTexture", mLinearDepth);
@@ -355,8 +355,8 @@ void MultipleRenderTargetsWindow3::CreateOverlays()
 
     // Display the UAV color texture that is written by mOverlay[5].
     mOverlay[6] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
-        mYSize, mXSize, mYSize, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::CLAMP, SamplerState::CLAMP, true);
+        mYSize, mXSize, mYSize, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay[6]->SetTexture(mDrawTarget->GetRTTexture(0));
 }
 

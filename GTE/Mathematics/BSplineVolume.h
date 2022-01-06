@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class BSplineVolume
     {
     public:
@@ -27,7 +27,7 @@ namespace gte
             :
             mConstructed(false)
         {
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 mNumControls[i] = input[i].numControls;
                 mBasisFunction[i].Create(input[i]);
@@ -35,7 +35,7 @@ namespace gte
 
             // The replication of control points for periodic splines is
             // avoided by wrapping the i-loop index in Evaluate.
-            int numControls = mNumControls[0] * mNumControls[1] * mNumControls[2];
+            int32_t numControls = mNumControls[0] * mNumControls[1] * mNumControls[2];
             mControls.resize(numControls);
             if (controls)
             {
@@ -58,22 +58,22 @@ namespace gte
         }
 
         // Member access.  The index 'dim' must be in {0,1,2}.
-        inline BasisFunction<Real> const& GetBasisFunction(int dim) const
+        inline BasisFunction<Real> const& GetBasisFunction(int32_t dim) const
         {
             return mBasisFunction[dim];
         }
 
-        inline Real GetMinDomain(int dim) const
+        inline Real GetMinDomain(int32_t dim) const
         {
             return mBasisFunction[dim].GetMinDomain();
         }
 
-        inline Real GetMaxDomain(int dim) const
+        inline Real GetMaxDomain(int32_t dim) const
         {
             return mBasisFunction[dim].GetMaxDomain();
         }
 
-        inline int GetNumControls(int dim) const
+        inline int32_t GetNumControls(int32_t dim) const
         {
             return mNumControls[dim];
         }
@@ -88,7 +88,7 @@ namespace gte
             return mControls.data();
         }
 
-        void SetControl(int i0, int i1, int i2, Vector<N, Real> const& control)
+        void SetControl(int32_t i0, int32_t i1, int32_t i2, Vector<N, Real> const& control)
         {
             if (0 <= i0 && i0 < GetNumControls(0)
                 && 0 <= i1 && i1 < GetNumControls(1)
@@ -98,7 +98,7 @@ namespace gte
             }
         }
 
-        Vector<N, Real> const& GetControl(int i0, int i1, int i2) const
+        Vector<N, Real> const& GetControl(int32_t i0, int32_t i1, int32_t i2) const
         {
             if (0 <= i0 && i0 < GetNumControls(0)
                 && 0 <= i1 && i1 < GetNumControls(1)
@@ -122,19 +122,19 @@ namespace gte
         // derivatives d2X/du2, d2X/dv2, d2X/dw2, d2X/dudv, d2X/dudw,
         // d2X/dvdw.
         enum { SUP_ORDER = 10 };
-        void Evaluate(Real u, Real v, Real w, unsigned int order, Vector<N, Real>* jet) const
+        void Evaluate(Real u, Real v, Real w, uint32_t order, Vector<N, Real>* jet) const
         {
             if (!mConstructed || order >= SUP_ORDER)
             {
                 // Return a zero-valued jet for invalid state.
-                for (unsigned int i = 0; i < SUP_ORDER; ++i)
+                for (uint32_t i = 0; i < SUP_ORDER; ++i)
                 {
                     jet[i].MakeZero();
                 }
                 return;
             }
 
-            int iumin, iumax, ivmin, ivmax, iwmin, iwmax;
+            int32_t iumin, iumax, ivmin, ivmax, iwmin, iwmax;
             mBasisFunction[0].Evaluate(u, order, iumin, iumax);
             mBasisFunction[1].Evaluate(v, order, ivmin, ivmax);
             mBasisFunction[2].Evaluate(w, order, iwmin, iwmax);
@@ -162,32 +162,32 @@ namespace gte
 
     private:
         // Support for Evaluate(...).
-        Vector<N, Real> Compute(unsigned int uOrder, unsigned int vOrder,
-            unsigned int wOrder, int iumin, int iumax, int ivmin, int ivmax,
-            int iwmin, int iwmax) const
+        Vector<N, Real> Compute(uint32_t uOrder, uint32_t vOrder,
+            uint32_t wOrder, int32_t iumin, int32_t iumax, int32_t ivmin, int32_t ivmax,
+            int32_t iwmin, int32_t iwmax) const
         {
             // The j*-indices introduce a tiny amount of overhead in order to
             // handle both aperiodic and periodic splines.  For aperiodic
             // splines, j* = i* always.
 
-            int const numControls0 = mNumControls[0];
-            int const numControls1 = mNumControls[1];
-            int const numControls2 = mNumControls[2];
+            int32_t const numControls0 = mNumControls[0];
+            int32_t const numControls1 = mNumControls[1];
+            int32_t const numControls2 = mNumControls[2];
             Vector<N, Real> result;
             result.MakeZero();
-            for (int iw = iwmin; iw <= iwmax; ++iw)
+            for (int32_t iw = iwmin; iw <= iwmax; ++iw)
             {
                 Real tmpw = mBasisFunction[2].GetValue(wOrder, iw);
-                int jw = (iw >= numControls2 ? iw - numControls2 : iw);
-                for (int iv = ivmin; iv <= ivmax; ++iv)
+                int32_t jw = (iw >= numControls2 ? iw - numControls2 : iw);
+                for (int32_t iv = ivmin; iv <= ivmax; ++iv)
                 {
                     Real tmpv = mBasisFunction[1].GetValue(vOrder, iv);
                     Real tmpvw = tmpv * tmpw;
-                    int jv = (iv >= numControls1 ? iv - numControls1 : iv);
-                    for (int iu = iumin; iu <= iumax; ++iu)
+                    int32_t jv = (iv >= numControls1 ? iv - numControls1 : iv);
+                    for (int32_t iu = iumin; iu <= iumax; ++iu)
                     {
                         Real tmpu = mBasisFunction[0].GetValue(uOrder, iu);
-                        int ju = (iu >= numControls0 ? iu - numControls0 : iu);
+                        int32_t ju = (iu >= numControls0 ? iu - numControls0 : iu);
                         result += (tmpu * tmpvw) *
                             mControls[ju + static_cast<size_t>(numControls0) * (jv + static_cast<size_t>(numControls1) * jw)];
                     }
@@ -197,7 +197,7 @@ namespace gte
         }
 
         std::array<BasisFunction<Real>, 3> mBasisFunction;
-        std::array<int, 3> mNumControls;
+        std::array<int32_t, 3> mNumControls;
         std::vector<Vector<N, Real>> mControls;
         bool mConstructed;
     };

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -35,7 +35,7 @@ namespace gte
 {
     // Support templates for number of dimensions known at compile time or
     // known only at run time.
-    template <typename T, int... Dimensions>
+    template <typename T, int32_t... Dimensions>
     class LCPSolver {};
 
 
@@ -47,7 +47,7 @@ namespace gte
         // provided because there are no required side effects when destroying
         // objects from the derived classes.  The member mMaxIterations is set
         // by this call to the default value n*n.
-        LCPSolverShared(int n)
+        LCPSolverShared(int32_t n)
             :
             mNumIterations(0),
             mVarBasic(nullptr),
@@ -77,7 +77,7 @@ namespace gte
         // zero and of one to be used when manipulating the polynomials of the
         // base class. In particular, this is needed to select the correct
         // zero and correct one for QFNumber objects.
-        LCPSolverShared(int n, T const& zero, T const& one)
+        LCPSolverShared(int32_t n, T const& zero, T const& one)
             :
             mNumIterations(0),
             mVarBasic(nullptr),
@@ -111,18 +111,18 @@ namespace gte
         // number of n*n (chosen arbitrarily).  You can set the number
         // yourself, perhaps when a call to Solve fails--increase the number
         // of iterations and call and solve again.
-        inline void SetMaxIterations(int maxIterations)
+        inline void SetMaxIterations(int32_t maxIterations)
         {
             mMaxIterations = (maxIterations > 0 ? maxIterations : mDimension * mDimension);
         }
 
-        inline int GetMaxIterations() const
+        inline int32_t GetMaxIterations() const
         {
             return mMaxIterations;
         }
 
         // Access the actual number of iterations used in a call to Solve.
-        inline int GetNumIterations() const
+        inline int32_t GetNumIterations() const
         {
             return mNumIterations;
         }
@@ -157,8 +157,8 @@ namespace gte
             }
 
             char name;
-            int index;
-            int complementary;
+            int32_t index;
+            int32_t complementary;
             T* tuple;
         };
 
@@ -181,7 +181,7 @@ namespace gte
             // represented as an array of n+1 coefficients.  The coefficient
             // with index r+1 is 1 and the coefficients with indices larger
             // than r+1 are 0.
-            for (int r = 0; r < mDimension; ++r)
+            for (int32_t r = 0; r < mDimension; ++r)
             {
                 mPoly[r] = &Augmented(r, mDimension + 1);
                 MakeZero(mPoly[r]);
@@ -191,8 +191,8 @@ namespace gte
 
             // Determine whether there is the trivial solution w = z = 0.
             Copy(mPoly[0], mQMin);
-            int basic = 0;
-            for (int r = 1; r < mDimension; ++r)
+            int32_t basic = 0;
+            for (int32_t r = 1; r < mDimension; ++r)
             {
                 if (LessThan(mPoly[r], mQMin))
                 {
@@ -203,7 +203,7 @@ namespace gte
 
             if (!LessThanZero(mQMin))
             {
-                for (int r = 0; r < mDimension; ++r)
+                for (int32_t r = 0; r < mDimension; ++r)
                 {
                     w[r] = q[r];
                     z[r] = mZero;
@@ -217,9 +217,9 @@ namespace gte
             }
 
             // Initialize the remainder of the augmented matrix with M and U.
-            for (int r = 0; r < mDimension; ++r)
+            for (int32_t r = 0; r < mDimension; ++r)
             {
-                for (int c = 0; c < mDimension; ++c)
+                for (int32_t c = 0; c < mDimension; ++c)
                 {
                     Augmented(r, c) = M[c + mDimension * r];
                 }
@@ -228,7 +228,7 @@ namespace gte
 
             // Keep track of when the variables enter and exit the dictionary,
             // including where complementary variables are relocated.
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 mVarBasic[i].name = 'w';
                 mVarBasic[i].index = i;
@@ -245,12 +245,12 @@ namespace gte
             // and pivoting with w[basic].  The last column of M remains all
             // 1-values for this initial step, so no algebraic computations
             // occur for M[r][n].
-            int driving = mDimension;
-            for (int r = 0; r < mDimension; ++r)
+            int32_t driving = mDimension;
+            for (int32_t r = 0; r < mDimension; ++r)
             {
                 if (r != basic)
                 {
-                    for (int c = 0; c < mNumCols; ++c)
+                    for (int32_t c = 0; c < mNumCols; ++c)
                     {
                         if (c != mDimension)
                         {
@@ -260,7 +260,7 @@ namespace gte
                 }
             }
 
-            for (int c = 0; c < mNumCols; ++c)
+            for (int32_t c = 0; c < mNumCols; ++c)
             {
                 if (c != mDimension)
                 {
@@ -269,25 +269,25 @@ namespace gte
             }
 
             mNumIterations = 0;
-            for (int i = 0; i < mMaxIterations; ++i, ++mNumIterations)
+            for (int32_t i = 0; i < mMaxIterations; ++i, ++mNumIterations)
             {
                 // The basic variable of equation 'basic' exited the
                 // dictionary, so/ its complementary (nonbasic) variable must
                 // become the next driving variable in order for it to enter
                 // the dictionary.
-                int nextDriving = mVarBasic[basic].complementary;
+                int32_t nextDriving = mVarBasic[basic].complementary;
                 mVarNonbasic[nextDriving].complementary = driving;
                 std::swap(mVarBasic[basic], mVarNonbasic[driving]);
                 if (mVarNonbasic[driving].index == mDimension)
                 {
                     // The algorithm has converged.
-                    for (int r = 0; r < mDimension; ++r)
+                    for (int32_t r = 0; r < mDimension; ++r)
                     {
                         mVarBasic[r].tuple[mVarBasic[r].index] = mPoly[r][0];
                     }
-                    for (int c = 0; c <= mDimension; ++c)
+                    for (int32_t c = 0; c <= mDimension; ++c)
                     {
-                        int index = mVarNonbasic[c].index;
+                        int32_t index = mVarNonbasic[c].index;
                         if (index < mDimension)
                         {
                             mVarNonbasic[c].tuple[index] = mZero;
@@ -305,7 +305,7 @@ namespace gte
                 // M(r,driving) < 0.
                 driving = nextDriving;
                 basic = -1;
-                for (int r = 0; r < mDimension; ++r)
+                for (int32_t r = 0; r < mDimension; ++r)
                 {
                     if (Augmented(r, driving) < mZero)
                     {
@@ -324,7 +324,7 @@ namespace gte
                     // The coefficients of z[driving] in all the equations are
                     // nonnegative, so the z[driving] variable cannot leave
                     // the dictionary.  There is no solution to the LCP.
-                    for (int r = 0; r < mDimension; ++r)
+                    for (int32_t r = 0; r < mDimension; ++r)
                     {
                         w[r] = mZero;
                         z[r] = mZero;
@@ -340,12 +340,12 @@ namespace gte
                 // Solve the basic equation so that z[driving] enters the
                 // dictionary and w[basic] exits the dictionary.
                 T invDenom = mOne / Augmented(basic, driving);
-                for (int r = 0; r < mDimension; ++r)
+                for (int32_t r = 0; r < mDimension; ++r)
                 {
                     if (r != basic && Augmented(r, driving) != mZero)
                     {
                         T multiplier = Augmented(r, driving) * invDenom;
-                        for (int c = 0; c < mNumCols; ++c)
+                        for (int32_t c = 0; c < mNumCols; ++c)
                         {
                             if (c != driving)
                             {
@@ -359,7 +359,7 @@ namespace gte
                     }
                 }
 
-                for (int c = 0; c < mNumCols; ++c)
+                for (int32_t c = 0; c < mNumCols; ++c)
                 {
                     if (c != driving)
                     {
@@ -409,12 +409,12 @@ namespace gte
         }
 
         // Access mAugmented as a 2-dimensional array.
-        inline T const& Augmented(int row, int col) const
+        inline T const& Augmented(int32_t row, int32_t col) const
         {
             return mAugmented[col + mNumCols * row];
         }
 
-        inline T& Augmented(int row, int col)
+        inline T& Augmented(int32_t row, int32_t col)
         {
             return mAugmented[col + mNumCols * row];
         }
@@ -423,7 +423,7 @@ namespace gte
         // than n.
         void MakeZero(T* poly)
         {
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 poly[i] = mZero;
             }
@@ -431,7 +431,7 @@ namespace gte
 
         void Copy(T const* poly0, T* poly1)
         {
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 poly1[i] = poly0[i];
             }
@@ -439,7 +439,7 @@ namespace gte
 
         bool LessThan(T const* poly0, T const* poly1)
         {
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 if (poly0[i] < poly1[i])
                 {
@@ -457,7 +457,7 @@ namespace gte
 
         bool LessThanZero(T const* poly)
         {
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 if (poly[i] < mZero)
                 {
@@ -475,15 +475,15 @@ namespace gte
 
         void Multiply(T const* poly, T scalar, T* product)
         {
-            for (int i = 0; i <= mDimension; ++i)
+            for (int32_t i = 0; i <= mDimension; ++i)
             {
                 product[i] = poly[i] * scalar;
             }
         }
 
-        int mDimension;
-        int mMaxIterations;
-        int mNumIterations;
+        int32_t mDimension;
+        int32_t mMaxIterations;
+        int32_t mNumIterations;
 
         // These pointers are set by the derived-class constructors to arrays
         // that have the correct number of elements.  The arrays mVarBasic,
@@ -493,7 +493,7 @@ namespace gte
         // mPoly has n elements.
         Variable* mVarBasic;
         Variable* mVarNonbasic;
-        int mNumCols;
+        int32_t mNumCols;
         T* mAugmented;
         T* mQMin;
         T* mMinRatio;
@@ -503,7 +503,7 @@ namespace gte
     };
 
 
-    template <typename T, int n>
+    template <typename T, int32_t n>
     class LCPSolver<T, n> : public LCPSolverShared<T>
     {
     public:
@@ -568,7 +568,7 @@ namespace gte
     public:
         // Construction.  The member mMaxIterations is set by this call to the
         // default value n*n.
-        LCPSolver(int n)
+        LCPSolver(int32_t n)
             :
             LCPSolverShared<T>(n)
         {
@@ -603,8 +603,8 @@ namespace gte
             std::vector<T>& w, std::vector<T>& z,
             typename LCPSolverShared<T>::Result* result = nullptr)
         {
-            if (this->mDimension > static_cast<int>(q.size())
-                || this->mDimension * this->mDimension > static_cast<int>(M.size()))
+            if (this->mDimension > static_cast<int32_t>(q.size())
+                || this->mDimension * this->mDimension > static_cast<int32_t>(M.size()))
             {
                 if (result)
                 {
@@ -613,12 +613,12 @@ namespace gte
                 return false;
             }
 
-            if (this->mDimension > static_cast<int>(w.size()))
+            if (this->mDimension > static_cast<int32_t>(w.size()))
             {
                 w.resize(this->mDimension);
             }
 
-            if (this->mDimension > static_cast<int>(z.size()))
+            if (this->mDimension > static_cast<int32_t>(z.size()))
             {
                 z.resize(this->mDimension);
             }

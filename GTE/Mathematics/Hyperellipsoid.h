@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -41,7 +41,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class Hyperellipsoid
     {
     public:
@@ -51,7 +51,7 @@ namespace gte
         Hyperellipsoid()
         {
             center.MakeZero();
-            for (int d = 0; d < N; ++d)
+            for (int32_t d = 0; d < N; ++d)
             {
                 axis[d].MakeUnit(d);
                 extent[d] = (Real)1;
@@ -72,7 +72,7 @@ namespace gte
         void GetM(Matrix<N, N, Real>& M) const
         {
             M.MakeZero();
-            for (int d = 0; d < N; ++d)
+            for (int32_t d = 0; d < N; ++d)
             {
                 Vector<N, Real> ratio = axis[d] / extent[d];
                 M += OuterProduct<N, N, Real>(ratio, ratio);
@@ -83,7 +83,7 @@ namespace gte
         void GetMInverse(Matrix<N, N, Real>& MInverse) const
         {
             MInverse.MakeZero();
-            for (int d = 0; d < N; ++d)
+            for (int32_t d = 0; d < N; ++d)
             {
                 Vector<N, Real> product = axis[d] * extent[d];
                 MInverse += OuterProduct<N, N, Real>(product, product);
@@ -92,37 +92,41 @@ namespace gte
 
         // Construct the coefficients in the quadratic equation that represents
         // the hyperellipsoid.
-        void ToCoefficients(std::array<Real, (N + 1) * (N + 2) / 2> & coeff) const
+        void ToCoefficients(std::array<Real, (N + 1) * (N + 2) / 2>& coeff) const
         {
-            int const numCoefficients = (N + 1) * (N + 2) / 2;
-            Matrix<N, N, Real> A;
-            Vector<N, Real> B;
-            Real C;
+            int32_t const numCoefficients = (N + 1) * (N + 2) / 2;
+            Matrix<N, N, Real> A{};
+            Vector<N, Real> B{};
+            Real C{};
             ToCoefficients(A, B, C);
             Convert(A, B, C, coeff);
 
             // Arrange for one of the coefficients of the quadratic terms
             // to be 1.
-            int quadIndex = numCoefficients - 1;
-            int maxIndex = quadIndex;
+            int32_t quadIndex = numCoefficients - 1;
+            int32_t maxIndex = quadIndex;
             Real maxValue = std::fabs(coeff[quadIndex]);
             // NOTE: When N = 2, MSVS 2019 16+ generates:
             //   warning C6294: Ill-defined for-loop: initial condition does
             //   not satisfy test. Loop body not executed.
             // This is the correct behavior for N = 2.
-            for (int d = 2; d < N; ++d)
+            int32_t localN = N;
+            if (localN >= 3)
             {
-                quadIndex -= d;
-                Real absValue = std::fabs(coeff[quadIndex]);
-                if (absValue > maxValue)
+                for (int32_t d = 2; d < localN; ++d)
                 {
-                    maxIndex = quadIndex;
-                    maxValue = absValue;
+                    quadIndex -= d;
+                    Real absValue = std::fabs(coeff[quadIndex]);
+                    if (absValue > maxValue)
+                    {
+                        maxIndex = quadIndex;
+                        maxValue = absValue;
+                    }
                 }
             }
 
             Real invMaxValue = (Real)1 / maxValue;
-            for (int i = 0; i < numCoefficients; ++i)
+            for (int32_t i = 0; i < numCoefficients; ++i)
             {
                 if (i != maxIndex)
                 {
@@ -149,9 +153,9 @@ namespace gte
         // data members are undefined.
         bool FromCoefficients(std::array<Real, (N + 1) * (N + 2) / 2> const& coeff)
         {
-            Matrix<N, N, Real> A;
-            Vector<N, Real> B;
-            Real C;
+            Matrix<N, N, Real> A{};
+            Vector<N, Real> B{};
+            Real C{};
             Convert(coeff, A, B, C);
             return FromCoefficients(A, B, C);
         }
@@ -159,7 +163,7 @@ namespace gte
         bool FromCoefficients(Matrix<N, N, Real> const& A, Vector<N, Real> const& B, Real C)
         {
             // Compute the center K = -A^{-1}*B/2.
-            bool invertible;
+            bool invertible{};
             Matrix<N, N, Real> invA = Inverse(A, &invertible);
             if (!invertible)
             {
@@ -194,7 +198,7 @@ namespace gte
                 rotation.SetCol(N - 1, negLast);
             }
 
-            for (int d = 0; d < N; ++d)
+            for (int32_t d = 0; d < N; ++d)
             {
                 if (diagonal[d] <= (Real)0)
                 {
@@ -217,17 +221,18 @@ namespace gte
         static void Convert(std::array<Real, (N + 1) * (N + 2) / 2> const& coeff,
             Matrix<N, N, Real>& A, Vector<N, Real>& B, Real& C)
         {
-            int i = 0;
+            size_t i = 0;
             C = coeff[i++];
 
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j, ++i)
             {
-                B[j] = coeff[i++];
+                B[j] = coeff[i];
             }
-
-            for (int r = 0; r < N; ++r)
+            
+            i = N + 1;
+            for (int32_t r = 0; r < N; ++r)
             {
-                for (int c = 0; c < r; ++c)
+                for (int32_t c = 0; c < r; ++c)
                 {
                     A(r, c) = A(c, r);
                 }
@@ -245,11 +250,11 @@ namespace gte
                 // coeff[]. However, the loop after the assignment starts at
                 // c = N and the loop body is not executed, after which the
                 // r-loop terminates.
-                A(r, r) = coeff[i++];
-
-                for (int c = r + 1; c < N; ++c)
+                A(r, r) = coeff[i];
+                ++i;
+                for (int32_t c = r + 1; c < N; ++c, ++i)
                 {
-                    A(r, c) = coeff[i++] * (Real)0.5;
+                    A(r, c) = coeff[i] * (Real)0.5;
                 }
             }
         }
@@ -257,33 +262,25 @@ namespace gte
         static void Convert(Matrix<N, N, Real> const& A, Vector<N, Real> const& B,
             Real C, std::array<Real, (N + 1) * (N + 2) / 2> & coeff)
         {
-            int i = 0;
+            size_t i = 0;
             coeff[i++] = C;
 
-            for (int j = 0; j < N; ++j)
+            for (int32_t j = 0; j < N; ++j, ++i)
             {
-                coeff[i++] = B[j];
+                coeff[i] = B[j];
             }
 
-            for (int r = 0; r < N; ++r)
+            // The structure of the following code avoids incorrect warnings
+            // C28020 when using MSVS 2019 16.* on the previous implementation
+            // of this function.
+            i = N + 1;
+            for (int32_t r = 0; r < N; ++r)
             {
-                // NOTE: MSVS 2019 16+ generates for N = 2:
-                //   warning C28020: The expression
-                //   '0 <= _Param_(1)&&_Param(1)<=6-1' is not true at this
-                //   call.
-                // A similar warning occurs for N = 3 (upper bound is 10-1).
-                // The warning is incorrect.
-                //
-                // When r = N-1, i = (N+1)*(N+2)/2 - 1 which corresponds to
-                // the last element of coeff[]. The assignment is valid. After
-                // the assignment, i is incremented and now out of range for
-                // coeff[]. However, the loop after the assignment starts at
-                // c = N and the loop body is not executed, after which the
-                // r-loop terminates.
-                coeff[i++] = A(r, r);
-                for (int c = r + 1; c < N; ++c)
+                coeff[i] = A(r, r);
+                ++i;
+                for (int32_t c = r + 1; c < N && i < coeff.size(); ++c, ++i)
                 {
-                    coeff[i++] = A(r, c) * (Real)2;
+                    coeff[i] = A(r, c) * (Real)2;
                 }
             }
         }

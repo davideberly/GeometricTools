@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -15,8 +15,8 @@ namespace gte
     class CurvatureFlow3 : public PdeFilter3<Real>
     {
     public:
-        CurvatureFlow3(int xBound, int yBound, int zBound, Real xSpacing,
-            Real ySpacing, Real zSpacing, Real const* data, int const* mask,
+        CurvatureFlow3(int32_t xBound, int32_t yBound, int32_t zBound, Real xSpacing,
+            Real ySpacing, Real zSpacing, Real const* data, int32_t const* mask,
             Real borderValue, typename PdeFilter<Real>::ScaleType scaleType)
             :
             PdeFilter3<Real>(xBound, yBound, zBound, xSpacing, ySpacing,
@@ -29,7 +29,7 @@ namespace gte
         }
 
     protected:
-        virtual void OnUpdateSingle(int x, int y, int z) override
+        virtual void OnUpdateSingle(int32_t x, int32_t y, int32_t z) override
         {
             this->LookUp27(x, y, z);
 

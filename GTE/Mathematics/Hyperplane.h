@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.01
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -36,7 +36,7 @@
 
 namespace gte
 {
-    template <int N, typename T>
+    template <int32_t N, typename T>
     class Hyperplane
     {
     public:
@@ -137,12 +137,12 @@ namespace gte
 
     private:
         // For use in the Hyperplane(std::array<*>) constructor when N > 3.
-        template <int Dimension = N>
+        template <int32_t Dimension = N>
         typename std::enable_if<Dimension != 3, void>::type
         ComputeFromPoints(std::array<Vector<Dimension, T>, Dimension> const& p)
         {
             Matrix<Dimension, Dimension - 1, T> edge{};
-            for (int i0 = 0, i1 = 1; i1 < Dimension; i0 = i1++)
+            for (int32_t i0 = 0, i1 = 1; i1 < Dimension; i0 = i1++)
             {
                 edge.SetCol(i0, p[i1] - p[0]);
             }
@@ -158,7 +158,7 @@ namespace gte
         }
 
         // For use in the Hyperplane(std::array<*>) constructor when N == 3.
-        template <int Dimension = N>
+        template <int32_t Dimension = N>
         typename std::enable_if<Dimension == 3, void>::type
         ComputeFromPoints(std::array<Vector<Dimension, T>, Dimension> const& p)
         {

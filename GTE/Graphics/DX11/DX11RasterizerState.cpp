@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11RasterizerState.h>
@@ -15,8 +15,8 @@ DX11RasterizerState::DX11RasterizerState(ID3D11Device* device, RasterizerState c
 {
     // Specify the rasterizer state description.
     D3D11_RASTERIZER_DESC desc;
-    desc.FillMode = msFillMode[rasterizerState->fillMode];
-    desc.CullMode = msCullMode[rasterizerState->cullMode];
+    desc.FillMode = msFillMode[rasterizerState->fill];
+    desc.CullMode = msCullMode[rasterizerState->cull];
     desc.FrontCounterClockwise = (rasterizerState->frontCCW ? TRUE : FALSE);
     desc.DepthBias = rasterizerState->depthBias;
     desc.DepthBiasClamp = rasterizerState->depthBiasClamp;

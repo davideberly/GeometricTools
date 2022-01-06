@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.12
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ namespace gte
         // the eigenvectors are ordered accordingly, and {evec[0], evec[1]}
         // is guaranteed to be a right-handed orthonormal set.
 
-        void operator()(Real a00, Real a01, Real a11, int sortType,
+        void operator()(Real a00, Real a01, Real a11, int32_t sortType,
             std::array<Real, 2>& eval, std::array<std::array<Real, 2>, 2>& evec) const
         {
             // Normalize (c2,s2) robustly, avoiding floating-point overflow

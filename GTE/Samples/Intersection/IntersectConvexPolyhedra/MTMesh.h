@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,7 +22,7 @@
 class MTMesh
 {
 public:
-    MTMesh(int numVertices = 0, int numEdges = 0, int numTriangles = 0)
+    MTMesh(int32_t numVertices = 0, int32_t numEdges = 0, int32_t numTriangles = 0)
         :
         mVertices(numVertices),
         mEdges(numEdges),
@@ -34,7 +34,7 @@ public:
 
     virtual ~MTMesh() = default;
 
-    void Reset(int numVertices = 0, int numEdges = 0, int numTriangles = 0)
+    void Reset(int32_t numVertices = 0, int32_t numEdges = 0, int32_t numTriangles = 0)
     {
         mVertices.Reset(numVertices);
         mEdges.Reset(numEdges);
@@ -46,103 +46,103 @@ public:
         mTMap.clear();
     }
 
-    inline int GetNumVertices() const
+    inline int32_t GetNumVertices() const
     {
         return mVertices.GetNumElements();
     }
 
-    inline int V(int label) const
+    inline int32_t V(int32_t label) const
     {
         auto iter = mVMap.find(label);
         return (iter != mVMap.end() ? iter->second : -1);
     }
 
-    inline MTVertex const& GetVertex(int vIndex) const
+    inline MTVertex const& GetVertex(int32_t vIndex) const
     {
         return mVertices[vIndex];
     }
 
-    inline int GetVLabel(int vIndex) const
+    inline int32_t GetVLabel(int32_t vIndex) const
     {
         return mVertices[vIndex].GetLabel();
     }
 
-    inline int GetNumEdges() const
+    inline int32_t GetNumEdges() const
     {
         return mEdges.GetNumElements();
     }
 
-    inline int E(int label0, int label1) const
+    inline int32_t E(int32_t label0, int32_t label1) const
     {
         auto iter = mEMap.find(gte::EdgeKey<false>(label0, label1));
         return (iter != mEMap.end() ? iter->second : -1);
     }
 
-    inline MTEdge const& GetEdge(int eIndex) const
+    inline MTEdge const& GetEdge(int32_t eIndex) const
     {
         return mEdges[eIndex];
     }
 
-    inline int GetELabel(int eIndex) const
+    inline int32_t GetELabel(int32_t eIndex) const
     {
         return mEdges[eIndex].GetLabel();
     }
 
-    inline void SetELabel(int eIndex, int label)
+    inline void SetELabel(int32_t eIndex, int32_t label)
     {
         mEdges[eIndex].SetLabel(label);
     }
 
-    inline int GetNumTriangles() const
+    inline int32_t GetNumTriangles() const
     {
         return mTriangles.GetNumElements();
     }
 
-    inline int T(int label0, int label1, int label2) const
+    inline int32_t T(int32_t label0, int32_t label1, int32_t label2) const
     {
         auto iter = mTMap.find(gte::TriangleKey<false>(label0, label1, label2));
         return (iter != mTMap.end() ? iter->second : -1);
     }
 
-    inline MTTriangle const& GetTriangle(int tIndex) const
+    inline MTTriangle const& GetTriangle(int32_t tIndex) const
     {
         return mTriangles[tIndex];
     }
 
-    inline int GetTLabel(int tIndex) const
+    inline int32_t GetTLabel(int32_t tIndex) const
     {
         return mTriangles[tIndex].GetLabel();
     }
 
-    inline void SetTLabel(int tIndex, int label)
+    inline void SetTLabel(int32_t tIndex, int32_t label)
     {
         mTriangles[tIndex].SetLabel(label);
     }
 
-    inline int GetInitialELabel() const
+    inline int32_t GetInitialELabel() const
     {
         return mInitialELabel;
     }
 
-    inline void SetInitialELabel(int label)
+    inline void SetInitialELabel(int32_t label)
     {
         mInitialELabel = label;
     }
 
-    inline int GetInitialTLabel() const
+    inline int32_t GetInitialTLabel() const
     {
         return mInitialTLabel;
     }
 
-    inline void SetInitialTLabel(int label)
+    inline void SetInitialTLabel(int32_t label)
     {
         mInitialTLabel = label;
     }
 
-    bool Insert(int label0, int label1, int label2)
+    bool Insert(int32_t label0, int32_t label1, int32_t label2)
     {
         // Insert the triangle.
-        int t = InsertTriangle(label0, label1, label2);
+        int32_t t = InsertTriangle(label0, label1, label2);
         if (t == -1)
         {
             // The triangle already exists.
@@ -150,14 +150,14 @@ public:
         }
 
         // Insert the vertices of the triangle.
-        int v0 = InsertVertex(label0);
-        int v1 = InsertVertex(label1);
-        int v2 = InsertVertex(label2);
+        int32_t v0 = InsertVertex(label0);
+        int32_t v1 = InsertVertex(label1);
+        int32_t v2 = InsertVertex(label2);
 
         // Insert the edges of the triangle.
-        int e0 = InsertEdge(label0, label1);
-        int e1 = InsertEdge(label1, label2);
-        int e2 = InsertEdge(label2, label0);
+        int32_t e0 = InsertEdge(label0, label1);
+        int32_t e1 = InsertEdge(label1, label2);
+        int32_t e2 = InsertEdge(label2, label0);
 
         // Set the connections among the components.
         MTTriangle& triangle = mTriangles[t];
@@ -197,7 +197,7 @@ public:
         return true;
     }
 
-    bool Remove(int label0, int label1, int label2)
+    bool Remove(int32_t label0, int32_t label1, int32_t label2)
     {
         auto iter = mTMap.find(gte::TriangleKey<false>(label0, label1, label2));
         if (iter == mTMap.end())
@@ -205,14 +205,14 @@ public:
             // The triangle does not exist.
             return false;
         }
-        int t = iter->second;
+        int32_t t = iter->second;
 
         MTTriangle& triangle = mTriangles[t];
 
         // Detach triangle from edges.
-        int e0 = triangle.GetEdge(0);
-        int e1 = triangle.GetEdge(1);
-        int e2 = triangle.GetEdge(2);
+        int32_t e0 = triangle.GetEdge(0);
+        int32_t e1 = triangle.GetEdge(1);
+        int32_t e2 = triangle.GetEdge(2);
         MTEdge& edge0 = mEdges[e0];
         MTEdge& edge1 = mEdges[e1];
         MTEdge& edge2 = mEdges[e2];
@@ -221,15 +221,15 @@ public:
         DetachTriangleFromEdge(t, triangle, 2, e2, edge2);
 
         // Detach triangle from vertices.
-        int v0 = triangle.GetVertex(0);
+        int32_t v0 = triangle.GetVertex(0);
         MTVertex& vertex0 = mVertices[v0];
         vertex0.RemoveTriangle(t);
 
-        int v1 = triangle.GetVertex(1);
+        int32_t v1 = triangle.GetVertex(1);
         MTVertex& vertex1 = mVertices[v1];
         vertex1.RemoveTriangle(t);
 
-        int v2 = triangle.GetVertex(2);
+        int32_t v2 = triangle.GetVertex(2);
         MTVertex& vertex2 = mVertices[v2];
         vertex2.RemoveTriangle(t);
 
@@ -301,9 +301,9 @@ public:
         return true;
     }
 
-    bool SubdivideCentroid(int label0, int label1, int label2, int& nextLabel)
+    bool SubdivideCentroid(int32_t label0, int32_t label1, int32_t label2, int32_t& nextLabel)
     {
-        int t = T(label0, label1, label2);
+        int32_t t = T(label0, label1, label2);
         if (t == -1)
         {
             return false;
@@ -325,11 +325,11 @@ public:
         return true;
     }
 
-    bool SubdivideCentroidAll(int& nextLabel)
+    bool SubdivideCentroidAll(int32_t& nextLabel)
     {
         // Verify that the next-label range is valid.
-        int const tMax = mTriangles.GetNumElements();
-        int t, tempLabel;
+        int32_t const tMax = mTriangles.GetNumElements();
+        int32_t t, tempLabel;
         for (t = 0, tempLabel = nextLabel; t < tMax; ++t, ++tempLabel)
         {
             if (mVMap.find(tempLabel) != mVMap.end())
@@ -350,20 +350,20 @@ public:
         // subtriangles are added to the mesh.  The third subtriangle is
         // calculated in the already existing memory that stored the original
         // triangle.  To avoid the infinite recursion induced by a growing
-        // array, the original size of the triangle array is stored int tMax.
+        // array, the original size of the triangle array is stored int32_t tMax.
         // This guarantees that only the original triangles are subdivided and
         // that newly added triangles are not.
         for (t = 0; t < tMax; ++t, ++nextLabel)
         {
             // The triangle to subdivide.
             MTTriangle& triangle = mTriangles[t];
-            int label0 = GetVLabel(triangle.GetVertex(0));
-            int label1 = GetVLabel(triangle.GetVertex(1));
-            int label2 = GetVLabel(triangle.GetVertex(2));
+            int32_t label0 = GetVLabel(triangle.GetVertex(0));
+            int32_t label1 = GetVLabel(triangle.GetVertex(1));
+            int32_t label2 = GetVLabel(triangle.GetVertex(2));
 
             // Detach the triangle from two edges.
-            int e1 = triangle.GetEdge(1);
-            int e2 = triangle.GetEdge(2);
+            int32_t e1 = triangle.GetEdge(1);
+            int32_t e2 = triangle.GetEdge(2);
             MTEdge& edge1 = mEdges[e1];
             MTEdge& edge2 = mEdges[e2];
             DetachTriangleFromEdge(t, triangle, 1, e1, edge1);
@@ -380,8 +380,8 @@ public:
 
             // Stitch the third subtriangle to the other subtriangles.
             MTTriangle& triangleN = mTriangles[t];
-            int subE1 = E(label1, nextLabel);
-            int subE2 = E(label0, nextLabel);
+            int32_t subE1 = E(label1, nextLabel);
+            int32_t subE2 = E(label0, nextLabel);
             MTEdge& subEdge1 = mEdges[subE1];
             MTEdge& subEdge2 = mEdges[subE2];
             AttachTriangleToEdge(t, triangleN, 1, subE1, subEdge1);
@@ -390,9 +390,9 @@ public:
         return true;
     }
 
-    bool SubdivideEdge(int label0, int label1, int& nextLabel)
+    bool SubdivideEdge(int32_t label0, int32_t label1, int32_t& nextLabel)
     {
-        int e = E(label0, label1);
+        int32_t e = E(label0, label1);
         if (e == -1)
         {
             return false;
@@ -406,9 +406,9 @@ public:
 
         // Split the triangles sharing the edge.
         MTEdge& edge = mEdges[e];
-        int t0 = edge.GetTriangle(0);
-        int t1 = edge.GetTriangle(1);
-        int t0v0, t0v1, t0v2, t1v0, t1v1, t1v2, t0e0, t0e1, t1e0, t1e1;
+        int32_t t0 = edge.GetTriangle(0);
+        int32_t t1 = edge.GetTriangle(1);
+        int32_t t0v0, t0v1, t0v2, t1v0, t1v1, t1v2, t0e0, t0e1, t1e0, t1e1;
         if (t0 >= 0 && t1 == -1)
         {
             // The edge is shared only by T0.
@@ -438,7 +438,7 @@ public:
         }
         else if (t1 >= 0 && t0 == -1)
         {
-            // The edge is shared only by T1.  The Remove(int,int,int) call is
+            // The edge is shared only by T1.  The Remove(int32_t,int32_t,int32_t) call is
             // not factored outside the conditional statements to avoid
             // potential reallocation side effects that would invalidate the
             // reference 'triangle1'.
@@ -532,10 +532,10 @@ public:
 
     virtual void Print(std::ofstream& output) const
     {
-        int v, e, t;
+        int32_t v, e, t;
 
         // Print the vertex information.
-        int const numVertices = mVertices.GetNumElements();
+        int32_t const numVertices = mVertices.GetNumElements();
         output << "vertex quantity = " << numVertices << std::endl;
         for (v = 0; v < numVertices; ++v)
         {
@@ -544,14 +544,14 @@ public:
             output << "vertex<" << v << ">" << std::endl;
             output << "    l: " << vertex.GetLabel() << std::endl;
             output << "    e: ";
-            const int numEdges = vertex.GetNumEdges();
+            const int32_t numEdges = vertex.GetNumEdges();
             for (e = 0; e < numEdges; ++e)
             {
                 output << vertex.GetEdge(e) << ' ';
             }
             output << std::endl;
             output << "    t: ";
-            const int numTriangles = vertex.GetNumTriangles();
+            const int32_t numTriangles = vertex.GetNumTriangles();
             for (t = 0; t < numTriangles; ++t)
             {
                 output << vertex.GetTriangle(t) << ' ';
@@ -561,7 +561,7 @@ public:
         output << std::endl;
 
         // Print the edge information.
-        int const numEdges = mEdges.GetNumElements();
+        int32_t const numEdges = mEdges.GetNumElements();
         output << "edge quantity = " << numEdges << std::endl;
         for (e = 0; e < numEdges; ++e)
         {
@@ -576,7 +576,7 @@ public:
         output << std::endl;
 
         // Print the triangle information.
-        int const numTriangles = mTriangles.GetNumElements();
+        int32_t const numTriangles = mTriangles.GetNumElements();
         output << "triangle quantity = " << numTriangles << std::endl;
         for (t = 0; t < numTriangles; ++t)
         {
@@ -612,11 +612,11 @@ public:
     }
 
 protected:
-    typedef std::map<int, int> VMap;
-    typedef std::map<gte::EdgeKey<false>, int> EMap;
-    typedef std::map<gte::TriangleKey<false>, int> TMap;
+    typedef std::map<int32_t, int32_t> VMap;
+    typedef std::map<gte::EdgeKey<false>, int32_t> EMap;
+    typedef std::map<gte::TriangleKey<false>, int32_t> TMap;
 
-    void AttachTriangleToEdge(int t, MTTriangle& triangle, int i, int e, MTEdge& edge)
+    void AttachTriangleToEdge(int32_t t, MTTriangle& triangle, int32_t i, int32_t e, MTEdge& edge)
     {
         if (edge.GetTriangle(0) == -1)
         {
@@ -624,10 +624,10 @@ protected:
         }
         else
         {
-            int a = edge.GetTriangle(0);
+            int32_t a = edge.GetTriangle(0);
             MTTriangle& adjacent = mTriangles[a];
             triangle.SetAdjacent(i, a);
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 if (adjacent.GetEdge(j) == e)
                 {
@@ -649,9 +649,9 @@ protected:
         triangle.SetEdge(i, e);
     }
 
-    int InsertVertex(int label)
+    int32_t InsertVertex(int32_t label)
     {
-        int v;
+        int32_t v;
 
         auto iter = mVMap.find(label);
         if (iter != mVMap.end())
@@ -669,10 +669,10 @@ protected:
         return v;
     }
 
-    int InsertEdge(int label0, int label1)
+    int32_t InsertEdge(int32_t label0, int32_t label1)
     {
         gte::EdgeKey<false> edge(label0, label1);
-        int e;
+        int32_t e;
 
         auto iter = mEMap.find(edge);
         if (iter != mEMap.end())
@@ -690,10 +690,10 @@ protected:
         return e;
     }
 
-    int InsertTriangle(int label0, int label1, int label2)
+    int32_t InsertTriangle(int32_t label0, int32_t label1, int32_t label2)
     {
         gte::TriangleKey<false> triangle(label0, label1, label2);
-        int t;
+        int32_t t;
 
         auto iter = mTMap.find(triangle);
         if (iter != mTMap.end())
@@ -711,7 +711,7 @@ protected:
         return t;
     }
 
-    void DetachTriangleFromEdge(int t, MTTriangle& triangle, int i, int e, MTEdge& edge)
+    void DetachTriangleFromEdge(int32_t t, MTTriangle& triangle, int32_t i, int32_t e, MTEdge& edge)
     {
         // This function leaves T only partially complete.  The edge E is no
         // longer referenced by T, even though the vertices of T reference the
@@ -720,12 +720,12 @@ protected:
 
         if (edge.GetTriangle(0) == t)
         {
-            int a = edge.GetTriangle(1);
+            int32_t a = edge.GetTriangle(1);
             if (a != -1)
             {
                 // T and TAdj share E, update adjacency information for both
                 MTTriangle& adjacent = mTriangles[a];
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     if (adjacent.GetEdge(j) == e)
                     {
@@ -740,7 +740,7 @@ protected:
         {
             // T and TAdj share E, update adjacency information for both
             MTTriangle& adjacent = mTriangles[edge.GetTriangle(0)];
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 if (adjacent.GetEdge(j) == e)
                 {
@@ -761,7 +761,7 @@ protected:
         triangle.SetAdjacent(i, -1);
     }
 
-    void RemoveVertex(int label)
+    void RemoveVertex(int32_t label)
     {
         // Get array location of vertex.
         auto iter = mVMap.find(label);
@@ -770,10 +770,10 @@ protected:
             LogError("Vertex does not exist.");
             return;
         }
-        int v = iter->second;
+        int32_t v = iter->second;
 
         // Remove the vertex from the array and from the map.
-        int vOld, vNew;
+        int32_t vOld, vNew;
         mVertices.RemoveAt(v, &vOld, &vNew);
         mVMap.erase(iter);
 
@@ -785,14 +785,14 @@ protected:
             MTVertex& vertex = mVertices[vNew];
 
             // Inform edges about location change.
-            for (int e = 0; e < vertex.GetNumEdges(); ++e)
+            for (int32_t e = 0; e < vertex.GetNumEdges(); ++e)
             {
                 MTEdge& edge = mEdges[vertex.GetEdge(e)];
                 edge.ReplaceVertex(vOld, vNew);
             }
 
             // Inform triangles about location change.
-            for (int t = 0; t < vertex.GetNumTriangles(); ++t)
+            for (int32_t t = 0; t < vertex.GetNumTriangles(); ++t)
             {
                 MTTriangle& triangle = mTriangles[vertex.GetTriangle(t)];
                 triangle.ReplaceVertex(vOld, vNew);
@@ -804,7 +804,7 @@ protected:
         }
     }
 
-    void RemoveEdge(int label0, int label1)
+    void RemoveEdge(int32_t label0, int32_t label1)
     {
         // Get array location of edge.
         auto iter = mEMap.find(gte::EdgeKey<false>(label0, label1));
@@ -813,10 +813,10 @@ protected:
             LogError("Edge does not exist.");
             return;
         }
-        int e = iter->second;
+        int32_t e = iter->second;
 
         // Remove the edge from the array and from the map.
-        int eOld, eNew;
+        int32_t eOld, eNew;
         mEdges.RemoveAt(e, &eOld, &eNew);
         mEMap.erase(iter);
 
@@ -834,9 +834,9 @@ protected:
             vertex1.ReplaceEdge(eOld, eNew);
 
             // Inform triangles about location change.
-            for (int t = 0; t < 2; ++t)
+            for (int32_t t = 0; t < 2; ++t)
             {
-                int tIndex = edge.GetTriangle(t);
+                int32_t tIndex = edge.GetTriangle(t);
                 if (tIndex != -1)
                 {
                     MTTriangle& triangle = mTriangles[tIndex];
@@ -850,7 +850,7 @@ protected:
         }
     }
 
-    void RemoveTriangle(int label0, int label1, int label2)
+    void RemoveTriangle(int32_t label0, int32_t label1, int32_t label2)
     {
         // Get array location of triangle.
         auto iter = mTMap.find(gte::TriangleKey<false>(label0, label1, label2));
@@ -859,10 +859,10 @@ protected:
             LogError("Triangle does not exist.");
             return;
         }
-        int t = iter->second;
+        int32_t t = iter->second;
 
         // Remove the triangle from the array and from the map.
-        int tOld, tNew;
+        int32_t tOld, tNew;
         mTriangles.RemoveAt(t, &tOld, &tNew);
         mTMap.erase(iter);
 
@@ -882,16 +882,16 @@ protected:
             vertex2.ReplaceTriangle(tOld, tNew);
 
             // Inform edges about location change.
-            for (int e = 0; e < 3; ++e)
+            for (int32_t e = 0; e < 3; ++e)
             {
                 MTEdge& edge = mEdges[triangle.GetEdge(e)];
                 edge.ReplaceTriangle(tOld, tNew);
             }
 
             // Inform adjacents about location change.
-            for (int a = 0; a < 3; ++a)
+            for (int32_t a = 0; a < 3; ++a)
             {
-                int aIndex = triangle.GetAdjacent(a);
+                int32_t aIndex = triangle.GetAdjacent(a);
                 if (aIndex != -1)
                 {
                     MTTriangle& adjacent = mTriangles[aIndex];
@@ -909,8 +909,8 @@ protected:
     UnorderedSet<MTVertex> mVertices;
     UnorderedSet<MTEdge> mEdges;
     UnorderedSet<MTTriangle> mTriangles;
-    int mInitialELabel;
-    int mInitialTLabel;
+    int32_t mInitialELabel;
+    int32_t mInitialTLabel;
     VMap mVMap;
     EMap mEMap;
     TMap mTMap;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -33,8 +33,8 @@ private:
 
         // Compute v0+v1 and store in this buffer.
         auto outputBuffer = std::make_shared<StructuredBuffer>(1, sizeof(Real));
-        outputBuffer->SetUsage(Resource::SHADER_OUTPUT);
-        outputBuffer->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+        outputBuffer->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        outputBuffer->SetCopy(Resource::Copy::STAGING_TO_CPU);
         Real* output = outputBuffer->Get<Real>();
         output[0] = (Real)0;
 
@@ -44,7 +44,7 @@ private:
         {
             LogError("Cannot load or compile cshader.");
         }
-        auto cshader = cprogram->GetComputeShader();
+        auto const& cshader = cprogram->GetComputeShader();
         cshader->Set("inBuffer", inputBuffer);
         cshader->Set("outBuffer", outputBuffer);
 

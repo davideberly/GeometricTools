@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid2SolvePoisson.h>
@@ -11,19 +11,19 @@ using namespace gte;
 
 GPUFluid2SolvePoisson::GPUFluid2SolvePoisson(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int numXThreads, int numYThreads,
-    std::shared_ptr<ConstantBuffer> const& parameters, int numIterations)
+    int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads,
+    std::shared_ptr<ConstantBuffer> const& parameters, int32_t numIterations)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads),
     mNumIterations(numIterations)
 {
     mPoisson0 = std::make_shared<Texture2>(DF_R32_FLOAT, xSize, ySize);
-    mPoisson0->SetUsage(Resource::SHADER_OUTPUT);
+    mPoisson0->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mPoisson1 = std::make_shared<Texture2>(DF_R32_FLOAT, xSize, ySize);
-    mPoisson1->SetUsage(Resource::SHADER_OUTPUT);
+    mPoisson1->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("NUM_X_THREADS", numXThreads);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -59,13 +59,13 @@ void GPUFluid2SolvePoisson::Execute(
     std::shared_ptr<GraphicsEngine> const& engine,
     std::shared_ptr<Texture2> const& divergence)
 {
-    auto solve = mSolvePoisson->GetComputeShader();
-    auto xwrite = mWriteXEdge->GetComputeShader();
-    auto ywrite = mWriteYEdge->GetComputeShader();
+    auto const& solve = mSolvePoisson->GetComputeShader();
+    auto const& xwrite = mWriteXEdge->GetComputeShader();
+    auto const& ywrite = mWriteYEdge->GetComputeShader();
 
     solve->Set("divergence", divergence);
     engine->Execute(mZeroPoisson, mNumXGroups, mNumYGroups, 1);
-    for (int i = 0; i < mNumIterations; ++i)
+    for (int32_t i = 0; i < mNumIterations; ++i)
     {
         // Take one step of the Poisson solver.
         solve->Set("poisson", mPoisson0);

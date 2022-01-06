@@ -1,14 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/ProgramFactory.h>
 #include <Graphics/GL45/GL45.h>
+#include <cstdint>
+#include <string>
 
 namespace gte
 {
@@ -25,7 +27,7 @@ namespace gte
         static std::string defaultPSEntry;  // "main"
         static std::string defaultGSEntry;  // "main"
         static std::string defaultCSEntry;  // "main"
-        static unsigned int defaultFlags;   // 0
+        static uint32_t defaultFlags;   // 0
 
         // Construction.  The 'version' member is set to 'defaultVersion'.  The
         // 'defines' are empty.
@@ -33,7 +35,7 @@ namespace gte
 
         // The returned value is used as a lookup index into arrays of strings
         // corresponding to shader programs.
-        inline virtual int GetAPI() const override
+        inline virtual int32_t GetAPI() const override
         {
             return PF_GLSL;
         }

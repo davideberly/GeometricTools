@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11BlendState.h>
@@ -17,7 +17,7 @@ DX11BlendState::DX11BlendState (ID3D11Device* device, BlendState const* blendSta
     D3D11_BLEND_DESC desc;
     desc.AlphaToCoverageEnable = (blendState->enableAlphaToCoverage ? TRUE : FALSE);
     desc.IndependentBlendEnable = (blendState->enableIndependentBlend ? TRUE : FALSE);
-    for (unsigned int i = 0; i < BlendState::NUM_TARGETS; ++i)
+    for (uint32_t i = 0; i < BlendState::NUM_TARGETS; ++i)
     {
         D3D11_RENDER_TARGET_BLEND_DESC& out = desc.RenderTarget[i];
         BlendState::Target const& in = blendState->target[i];

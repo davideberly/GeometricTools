@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Texture.h>
@@ -23,11 +23,11 @@ DX11Texture::DX11Texture(Texture const* gtTexture)
 {
 }
 
-bool DX11Texture::Update(ID3D11DeviceContext* context, unsigned int sri)
+bool DX11Texture::Update(ID3D11DeviceContext* context, uint32_t sri)
 {
     Texture* texture = GetTexture();
     LogAssert(sri < texture->GetNumSubresources(), "Subresource index out of range.");
-    LogAssert(texture->GetUsage() == Resource::DYNAMIC_UPDATE, "Texture must be dynamic-update.");
+    LogAssert(texture->GetUsage() == Resource::Usage::DYNAMIC_UPDATE, "Texture must be dynamic-update.");
 
     // Map the texture.
     ID3D11Resource* dxTexture = GetDXResource();
@@ -36,7 +36,7 @@ bool DX11Texture::Update(ID3D11DeviceContext* context, unsigned int sri)
 
     // Copy from CPU memory.
     auto sr = texture->GetSubresource(sri);
-    unsigned int numDimensions = texture->GetNumDimensions();
+    uint32_t numDimensions = texture->GetNumDimensions();
     if (numDimensions == 1)
     {
         std::memcpy(sub.pData, sr.data, texture->GetNumBytesFor(sr.level));
@@ -59,8 +59,8 @@ bool DX11Texture::Update(ID3D11DeviceContext* context, unsigned int sri)
 bool DX11Texture::Update(ID3D11DeviceContext* context)
 {
     Texture* texture = GetTexture();
-    unsigned int const numSubresources = texture->GetNumSubresources();
-    for (unsigned int index = 0; index < numSubresources; ++index)
+    uint32_t const numSubresources = texture->GetNumSubresources();
+    for (uint32_t index = 0; index < numSubresources; ++index)
     {
         if (!Update(context, index))
         {
@@ -70,7 +70,7 @@ bool DX11Texture::Update(ID3D11DeviceContext* context)
     return true;
 }
 
-bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context, unsigned int sri)
+bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context, uint32_t sri)
 {
     Texture* texture = GetTexture();
     LogAssert(sri < texture->GetNumSubresources(), "Subresource index out of range.");
@@ -82,7 +82,7 @@ bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context, unsigned int sri)
 
     // Copy from CPU memory to staging texture.
     auto sr = texture->GetSubresource(sri);
-    unsigned int numDimensions = texture->GetNumDimensions();
+    uint32_t numDimensions = texture->GetNumDimensions();
     if (numDimensions == 1)
     {
         std::memcpy(sub.pData, sr.data, texture->GetNumBytesFor(sr.level));
@@ -110,8 +110,8 @@ bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context, unsigned int sri)
 bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context)
 {
     Texture* texture = GetTexture();
-    unsigned int const numSubresources = texture->GetNumSubresources();
-    for (unsigned int index = 0; index < numSubresources; ++index)
+    uint32_t const numSubresources = texture->GetNumSubresources();
+    for (uint32_t index = 0; index < numSubresources; ++index)
     {
         if (!CopyCpuToGpu(context, index))
         {
@@ -127,7 +127,7 @@ bool DX11Texture::CopyCpuToGpu(ID3D11DeviceContext* context)
     return true;
 }
 
-bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context, unsigned int sri)
+bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context, uint32_t sri)
 {
     Texture* texture = GetTexture();
     LogAssert(sri < texture->GetNumSubresources(), "Subresource index out of range.");
@@ -143,7 +143,7 @@ bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context, unsigned int sri)
 
     // Copy from staging texture to CPU memory.
     auto sr = texture->GetSubresource(sri);
-    unsigned int numDimensions = texture->GetNumDimensions();
+    uint32_t numDimensions = texture->GetNumDimensions();
     if (numDimensions == 1)
     {
         std::memcpy(sr.data, sub.pData, texture->GetNumBytesFor(sr.level));
@@ -166,8 +166,8 @@ bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context, unsigned int sri)
 bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context)
 {
     Texture* texture = GetTexture();
-    unsigned int const numSubresources = texture->GetNumSubresources();
-    for (unsigned int index = 0; index < numSubresources; ++index)
+    uint32_t const numSubresources = texture->GetNumSubresources();
+    for (uint32_t index = 0; index < numSubresources; ++index)
     {
         if (!CopyGpuToCpu(context, index))
         {
@@ -178,7 +178,7 @@ bool DX11Texture::CopyGpuToCpu(ID3D11DeviceContext* context)
 }
 
 void DX11Texture::CopyGpuToGpu(ID3D11DeviceContext* context,
-    ID3D11Resource* target, unsigned int sri)
+    ID3D11Resource* target, uint32_t sri)
 {
     Texture* texture = GetTexture();
     LogAssert(sri < texture->GetNumSubresources(), "Subresource index out of range.");
@@ -191,8 +191,8 @@ void DX11Texture::CopyGpuToGpu(ID3D11DeviceContext* context,
 void DX11Texture::CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* target)
 {
     Texture* texture = GetTexture();
-    unsigned int const numSubresources = texture->GetNumSubresources();
-    for (unsigned int index = 0; index < numSubresources; ++index)
+    uint32_t const numSubresources = texture->GetNumSubresources();
+    for (uint32_t index = 0; index < numSubresources; ++index)
     {
         CopyGpuToGpu(context, target, index);
     }
@@ -205,22 +205,23 @@ void DX11Texture::SetName(std::string const& name)
     DX11Log(DX11::SetPrivateName(mUAView, name));
 }
 
-void DX11Texture::CopyPitched2(unsigned int numRows, unsigned int srcRowPitch,
-    void const* srcData, unsigned int trgRowPitch, void* trgData)
+void DX11Texture::CopyPitched2(uint32_t numRows, uint32_t srcRowPitch,
+    void const* srcData, uint32_t trgRowPitch, void* trgData)
 {
     if (srcRowPitch == trgRowPitch)
     {
         // The memory is contiguous.
-        std::memcpy(trgData, srcData, trgRowPitch * numRows);
+        std::memcpy(trgData, srcData,
+            static_cast<size_t>(trgRowPitch) * static_cast<size_t>(numRows));
     }
     else
     {
         // Padding was added to each row of the texture, so we must
         // copy a row at a time to compensate for differing pitches.
-        unsigned int numRowBytes = std::min(srcRowPitch, trgRowPitch);
+        uint32_t numRowBytes = std::min(srcRowPitch, trgRowPitch);
         char const* srcRow = static_cast<char const*>(srcData);
         char* trgRow = static_cast<char*>(trgData);
-        for (unsigned int row = 0; row < numRows; ++row)
+        for (uint32_t row = 0; row < numRows; ++row)
         {
             std::memcpy(trgRow, srcRow, numRowBytes);
             srcRow += srcRowPitch;
@@ -229,28 +230,29 @@ void DX11Texture::CopyPitched2(unsigned int numRows, unsigned int srcRowPitch,
     }
 }
 
-void DX11Texture::CopyPitched3(unsigned int numRows,
-    unsigned int numSlices, unsigned int srcRowPitch,
-    unsigned int srcSlicePitch, void const* srcData, unsigned int trgRowPitch,
-    unsigned int trgSlicePitch, void* trgData)
+void DX11Texture::CopyPitched3(uint32_t numRows,
+    uint32_t numSlices, uint32_t srcRowPitch,
+    uint32_t srcSlicePitch, void const* srcData, uint32_t trgRowPitch,
+    uint32_t trgSlicePitch, void* trgData)
 {
     if (srcRowPitch == trgRowPitch && srcSlicePitch == trgSlicePitch)
     {
         // The memory is contiguous.
-        std::memcpy(trgData, srcData, trgSlicePitch * numSlices);
+        std::memcpy(trgData, srcData,
+            static_cast<size_t>(trgSlicePitch) * static_cast<size_t>(numSlices));
     }
     else
     {
         // Padding was added to each row and/or slice of the texture, so
         // we must copy the data to compensate for differing pitches.
-        unsigned int numRowBytes = std::min(srcRowPitch, trgRowPitch);
+        uint32_t numRowBytes = std::min(srcRowPitch, trgRowPitch);
         char const* srcSlice = static_cast<char const*>(srcData);
         char* trgSlice = static_cast<char*>(trgData);
-        for (unsigned int slice = 0; slice < numSlices; ++slice)
+        for (uint32_t slice = 0; slice < numSlices; ++slice)
         {
             char const* srcRow = srcSlice;
             char* trgRow = trgSlice;
-            for (unsigned int row = 0; row < numRows; ++row)
+            for (uint32_t row = 0; row < numRows; ++row)
             {
                 std::memcpy(trgRow, srcRow, numRowBytes);
                 srcRow += srcRowPitch;

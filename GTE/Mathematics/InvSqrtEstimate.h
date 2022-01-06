@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,7 +22,7 @@ namespace gte
         // The input constraint is x in [1,2].  For example,
         //   float x; // in [1,2]
         //   float result = InvSqrtEstimate<float>::Degree<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real Degree(Real x)
         {
             Real t = x - (Real)1;  // t in (0,1]
@@ -34,11 +34,11 @@ namespace gte
         // the proper exponent to obtain the approximation.  For example,
         //   float x;  // x > 0
         //   float result = InvSqrtEstimate<float>::DegreeRR<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real DegreeRR(Real x)
         {
             Real adj, y;
-            int p;
+            int32_t p;
             Reduce(x, adj, y, p);
             Real poly = Degree<D>(y);
             Real result = Combine(adj, poly, p);
@@ -48,7 +48,7 @@ namespace gte
     private:
         // Metaprogramming and private implementation to allow specialization
         // of a template member function.
-        template <int D> struct degree {};
+        template <int32_t D> struct degree {};
 
         inline static Real Evaluate(degree<1>, Real t)
         {
@@ -143,7 +143,7 @@ namespace gte
         }
 
         // Support for range reduction.
-        inline static void Reduce(Real x, Real& adj, Real& y, int& p)
+        inline static void Reduce(Real x, Real& adj, Real& y, int32_t& p)
         {
             y = std::frexp(x, &p);  // y in [1/2,1)
             y = ((Real)2) * y;  // y in [1,2)
@@ -152,7 +152,7 @@ namespace gte
             p = -(p >> 1);
         }
 
-        inline static Real Combine(Real adj, Real y, int p)
+        inline static Real Combine(Real adj, Real y, int32_t p)
         {
             return adj * std::ldexp(y, p);
         }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -44,7 +44,7 @@ public:
         {
         }
 
-        unsigned int number;
+        uint32_t number;
         std::vector<VideoStream::Frame> frames;
         int64_t microseconds;
     };
@@ -79,7 +79,7 @@ public:
     // from a call to ResetPerformanceMeasurements().
     void ResetPerformanceMeasurements();
 
-    inline unsigned int GetPerformanceFrames() const
+    inline uint32_t GetPerformanceFrames() const
     {
         return mPerformanceFrames;
     }
@@ -114,21 +114,31 @@ protected:
     // The timer is used to compute how long it takes to produce the frame.
     // The current frame counter is used for the Frame.number member.
     gte::Timer mProductionTimer;
-    unsigned int mCurrentFrame;
+    uint32_t mCurrentFrame;
 
     // Support for triggered capture.
     struct Trigger
     {
+        Trigger()
+            :
+            timer{},
+            microsecondsPerFrame(0),
+            running(false),
+            triggerThread{}
+        {
+        }
+
         gte::Timer timer;
         int64_t microsecondsPerFrame;
         bool running;
         std::unique_ptr<std::thread> triggerThread;
     };
+
     std::unique_ptr<Trigger> mTrigger;
 
     // Performance measurements.
     gte::Timer mPerformanceTimer;
-    unsigned int mPerformanceFrames;
+    uint32_t mPerformanceFrames;
     int64_t mPerformanceMicroseconds;
     int64_t mAccumulatedVSMMicroseconds;
     std::vector<int64_t> mAccumulatedVSMicroseconds;

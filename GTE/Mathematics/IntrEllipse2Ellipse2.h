@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -122,7 +122,7 @@ namespace gte
                 // The special case of common centers must be handled
                 // separately.  It is not possible for the ellipses to be
                 // separated.
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     T invD = one / D[i];
                     if (invD < minSqrDistance)
@@ -164,7 +164,7 @@ namespace gte
             if (param[0].first > param[1].first)
             {
                 // d0 > d1
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     if (param[i].second > zero)
                     {
@@ -183,7 +183,7 @@ namespace gte
             }
 
             size_t numValid = valid.size();
-            int numRoots = 0;
+            int32_t numRoots = 0;
             std::array<T, 4> roots{};
             if (numValid == 2)
             {
@@ -197,7 +197,7 @@ namespace gte
             // else: numValid cannot be zero because we already handled case
             // K = 0
 
-            for (int i = 0; i < numRoots; ++i)
+            for (int32_t i = 0; i < numRoots; ++i)
             {
                 T s = roots[i];
                 T p0 = d0 * K[0] * s / (d0 * s - (T)1);
@@ -217,7 +217,7 @@ namespace gte
         }
 
     private:
-        void GetRoots(T d0, T c0, int& numRoots, T* roots)
+        void GetRoots(T d0, T c0, int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 - 1
             T const one = (T)1;
@@ -228,7 +228,7 @@ namespace gte
             roots[1] = (one + temp) * inv;
         }
 
-        void GetRoots(T d0, T d1, T c0, T c1, int& numRoots, T* roots)
+        void GetRoots(T d0, T d1, T c0, T c1, int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 + d1*c1/(d1*s-1)^2 - 1 with d0 > d1
 
@@ -259,10 +259,10 @@ namespace gte
                 return df;
             };
 
-            unsigned int const maxIterations = static_cast<unsigned int>(
+            uint32_t const maxIterations = static_cast<uint32_t>(
                 3 + std::numeric_limits<T>::digits -
                 std::numeric_limits<T>::min_exponent);
-            unsigned int iterations;
+            uint32_t iterations;
             numRoots = 0;
 
             T invD0 = one / d0;
@@ -420,7 +420,7 @@ namespace gte
             // that number of elements of 'points' are valid.  If the ellipses
             // are the same, numPoints is set to maxInt and 'points' is
             // invalid.
-            int numPoints;
+            int32_t numPoints;
             std::array<Vector2<T>, 4> points;
             std::array<bool, 4> isTransverse;
         };
@@ -607,7 +607,7 @@ namespace gte
         void DoRootFinding(Result& result)
         {
             bool allZero = true;
-            for (int i = 0; i < 5; ++i)
+            for (int32_t i = 0; i < 5; ++i)
             {
                 mD[i] = mA[i] - mB[i];
                 if (mD[i] != mZero)
@@ -618,7 +618,7 @@ namespace gte
             if (allZero)
             {
                 result.intersect = false;
-                result.numPoints = std::numeric_limits<int>::max();
+                result.numPoints = std::numeric_limits<int32_t>::max();
                 return;
             }
 
@@ -680,7 +680,7 @@ namespace gte
                 mC[2] * d4d4 + e2e2  // > 0
             };
 
-            std::map<T, int> rmMap;
+            std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2],
                 f[3], f[4], rmMap);
 
@@ -735,7 +735,7 @@ namespace gte
                 mC[2] + h[1] * h[1]  // > 0
             };
 
-            std::map<T, int> rmMap;
+            std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
             for (auto const& rm : rmMap)
             {
@@ -760,7 +760,7 @@ namespace gte
                 mE[2] * mE[2]  // > 0
             };
 
-            std::map<T, int> rmMap;
+            std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3],
                 f[4], rmMap);
             for (auto const& rm : rmMap)
@@ -784,7 +784,7 @@ namespace gte
                 mC[2] * d2d2 + mE[1] * mE[1]
             };
 
-            std::map<T, int> rmMap;
+            std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
             for (auto const& rm : rmMap)
             {
@@ -1115,7 +1115,7 @@ namespace gte
             }
         }
 
-        void Area2(EllipseInfo const& E0, EllipseInfo const& E1, int i0, int i1, AreaResult& ar)
+        void Area2(EllipseInfo const& E0, EllipseInfo const& E1, int32_t i0, int32_t i1, AreaResult& ar)
         {
             ar.configuration = AreaResult::Configuration::ONE_CHORD_REGION;
 
@@ -1161,8 +1161,8 @@ namespace gte
             // a duplicate intersection, even though the intersections are all
             // labeled as transverse.  [See the comment in the function
             // SpecialIntersection.]
-            std::multimap<T, int> ordering;
-            int i;
+            std::multimap<T, int32_t> ordering;
+            int32_t i;
             for (i = 0; i < 4; ++i)
             {
                 Vector2<T> PmC = ar.findResult.points[i] - E0.center;
@@ -1172,7 +1172,7 @@ namespace gte
                 ordering.insert(std::make_pair(theta, i));
             }
 
-            std::array<int, 4> permute{ 0, 0, 0, 0 };
+            std::array<int32_t, 4> permute{ 0, 0, 0, 0 };
             i = 0;
             for (auto const& element : ordering)
             {
@@ -1189,7 +1189,7 @@ namespace gte
             // Visit each pair of consecutive points.  The selection of
             // ellipse for the chord-region area calculation uses the "most
             // counterclockwise" tangent vector.
-            for (int i0 = 3, i1 = 0; i1 < 4; i0 = i1++)
+            for (int32_t i0 = 3, i1 = 0; i1 < 4; i0 = i1++)
             {
                 // Get a pair of consecutive points.
                 Vector2<T> const& P0 = ar.findResult.points[permute[i0]];
@@ -1274,7 +1274,7 @@ namespace gte
         // arithmetic).
         T mZero, mOne, mTwo, mPi, mTwoPi;
 
-        // Various polynomial coefficients.  The short names are meant to
+        // Various polynomial coefficients.  The names are intended to
         // match the variable names used in the PDF documentation.
         std::array<T, 5> mA, mB, mD, mF;
         std::array<T, 3> mC, mE;

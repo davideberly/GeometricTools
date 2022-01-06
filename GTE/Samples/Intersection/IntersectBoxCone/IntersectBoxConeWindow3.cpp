@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include "IntersectBoxConeWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -13,19 +13,19 @@ IntersectBoxConeWindow3::IntersectBoxConeWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
     mEngine->SetBlendState(mBlendState);
 
     CreateScene();
@@ -65,7 +65,7 @@ void IntersectBoxConeWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectBoxConeWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectBoxConeWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const delta = 0.1f;
 
@@ -149,7 +149,7 @@ bool IntersectBoxConeWindow3::OnCharPress(unsigned char key, int x, int y)
 void IntersectBoxConeWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -163,11 +163,11 @@ void IntersectBoxConeWindow3::CreateScene()
     float const maxRadius = mCone.GetMaxHeight() * tanAngle;
     mConeH0Mesh = mf.CreateDisk(16, 16, maxRadius);
     mConeH0Mesh->localTransform.SetTranslation(mCone.ray.origin);
-    auto vbuffer = mConeH0Mesh->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    std::shared_ptr<VertexBuffer> vbuffer = mConeH0Mesh->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vector3<float>>();
     float cotAngle = mCone.cosAngle / mCone.sinAngle;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& P = vertices[i];
         P[2] = cotAngle * std::sqrt(P[0] * P[0] + P[1] * P[1]);
@@ -179,17 +179,17 @@ void IntersectBoxConeWindow3::CreateScene()
     mPVWMatrices.Subscribe(mConeH0Mesh->worldTransform, effect->GetPVWMatrixConstant());
 
     // Create a visual representation of the cone with heights in [4,16].
-    unsigned int const numAxial = 16;
-    unsigned int const numRadial = 16;
+    uint32_t const numAxial = 16;
+    uint32_t const numRadial = 16;
     mConeH4Mesh = mf.CreateCylinderOpen(numAxial, numRadial, 1.0f, 1.0f);
     mConeH4Mesh->localTransform.SetTranslation(mCone.ray.origin);
     vbuffer = mConeH4Mesh->GetVertexBuffer();
     vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int row = 0, i = 0; row < numAxial; ++row)
+    for (uint32_t row = 0, i = 0; row < numAxial; ++row)
     {
         float const height = 4.0f + 12.0f * static_cast<float>(row) / static_cast<float>(numAxial - 1);
         float const radius = height * tanAngle;
-        for (unsigned int col = 0; col <= numRadial; ++col, ++i)
+        for (uint32_t col = 0; col <= numRadial; ++col, ++i)
         {
             Vector3<float>& P = vertices[i];
             float stretch = radius / std::sqrt(P[0] * P[0] + P[1] * P[1]);
@@ -243,7 +243,7 @@ void IntersectBoxConeWindow3::CreateScene()
     mTrackBall.Update();
 }
 
-void IntersectBoxConeWindow3::Translate(int direction, float delta)
+void IntersectBoxConeWindow3::Translate(int32_t direction, float delta)
 {
 #if defined(USE_ORIENTED_BOX)
     mBox.center[direction] += delta;
@@ -258,12 +258,12 @@ void IntersectBoxConeWindow3::Translate(int direction, float delta)
     mPVWMatrices.Update();
 }
 
-void IntersectBoxConeWindow3::Rotate(int direction, float delta)
+void IntersectBoxConeWindow3::Rotate(int32_t direction, float delta)
 {
 #if defined(USE_ORIENTED_BOX)
     Quaternion<float> incr = Rotation<3, float>(
         AxisAngle<3, float>(mBox.axis[direction], delta));
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
         if (i != direction)
         {

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -42,7 +42,7 @@ namespace gte
         };
 
         template <typename WindowType>
-        void MessagePump(std::shared_ptr<WindowType> const& window, unsigned int flags);
+        void MessagePump(std::shared_ptr<WindowType> const& window, uint32_t flags);
 
     private:
         // Window creation and destruction.
@@ -84,7 +84,7 @@ namespace gte
     }
 
     template <typename WindowType>
-    void WindowSystem::MessagePump(std::shared_ptr<WindowType> const& window, unsigned int flags)
+    void WindowSystem::MessagePump(std::shared_ptr<WindowType> const& window, uint32_t flags)
     {
         if (window)
         {
@@ -92,7 +92,7 @@ namespace gte
 
             for (;;)
             {
-                int result = window->ProcessedEvent();
+                int32_t result = window->ProcessedEvent();
                 if (result == Window::EVT_QUIT)
                 {
                     return;

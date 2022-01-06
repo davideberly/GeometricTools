@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -33,7 +33,7 @@ namespace gte
         // each be 2 or larger so that there is at least one image square to
         // process.  The inputPixels must be nonnull and point to contiguous
         // storage that contains at least xBound * yBound elements.
-        CurveExtractorSquares(int xBound, int yBound, T const* inputPixels)
+        CurveExtractorSquares(int32_t xBound, int32_t yBound, T const* inputPixels)
             :
             CurveExtractor<T, Real>(xBound, yBound, inputPixels)
         {
@@ -54,15 +54,15 @@ namespace gte
 
             vertices.clear();
             edges.clear();
-            for (int y = 0, yp = 1; yp < this->mYBound; ++y, ++yp)
+            for (int32_t y = 0, yp = 1; yp < this->mYBound; ++y, ++yp)
             {
-                for (int x = 0, xp = 1; xp < this->mXBound; ++x, ++xp)
+                for (int32_t x = 0, xp = 1; xp < this->mXBound; ++x, ++xp)
                 {
                     // Get the image values at the corners of the square.
-                    int i00 = x + this->mXBound * y;
-                    int i10 = i00 + 1;
-                    int i01 = i00 + this->mXBound;
-                    int i11 = i10 + this->mXBound;
+                    int32_t i00 = x + this->mXBound * y;
+                    int32_t i10 = i00 + 1;
+                    int32_t i01 = i00 + this->mXBound;
+                    int32_t i11 = i10 + this->mXBound;
                     int64_t f00 = this->mPixels[i00];
                     int64_t f10 = this->mPixels[i10];
                     int64_t f01 = this->mPixels[i01];
@@ -70,7 +70,7 @@ namespace gte
 
                     // Construct the vertices and edges of the level curve in
                     // the square.  The x, xp, y and yp values are implicitly
-                    // converted from int to int64_t (which is guaranteed to
+                    // converted from int32_t to int64_t (which is guaranteed to
                     // be correct).
                     ProcessSquare(vertices, edges, x, xp, y, yp, f00, f10, f11, f01);
                 }

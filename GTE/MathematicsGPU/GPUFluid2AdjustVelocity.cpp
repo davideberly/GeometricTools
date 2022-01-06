@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid2AdjustVelocity.h>
@@ -11,13 +11,13 @@ using namespace gte;
 
 GPUFluid2AdjustVelocity::GPUFluid2AdjustVelocity(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int numXThreads, int numYThreads,
+    int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads,
     std::shared_ptr<ConstantBuffer> const& parameters)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads)
 {
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("NUM_X_THREADS", numXThreads);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
@@ -38,7 +38,7 @@ void GPUFluid2AdjustVelocity::Execute(
     std::shared_ptr<Texture2> const& outState)
 
 {
-    auto cshader = mAdjustVelocity->GetComputeShader();
+    auto const& cshader = mAdjustVelocity->GetComputeShader();
     cshader->Set("inState", inState);
     cshader->Set("poisson", poisson);
     cshader->Set("outState", outState);

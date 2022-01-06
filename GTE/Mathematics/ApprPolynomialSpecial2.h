@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,14 +25,14 @@ namespace gte
     public:
         // Initialize the model parameters to zero.  The degrees must be
         // nonnegative and strictly increasing.
-        ApprPolynomialSpecial2(std::vector<int> const& degrees)
+        ApprPolynomialSpecial2(std::vector<int32_t> const& degrees)
             :
             mDegrees(degrees),
             mParameters(degrees.size(), (Real)0)
         {
 #if !defined(GTE_NO_LOGGER)
             LogAssert(mDegrees.size() > 0, "The input array must have elements.");
-            int lastDegree = -1;
+            int32_t lastDegree = -1;
             for (auto degree : mDegrees)
             {
                 LogAssert(degree > lastDegree, "Degrees must be increasing.");
@@ -60,7 +60,7 @@ namespace gte
         // functions that you can call.
         virtual bool FitIndexed(
             size_t numObservations, std::array<Real, 2> const* observations,
-            size_t numIndices, int const* indices) override
+            size_t numIndices, int32_t const* indices) override
         {
             if (this->ValidIndices(numObservations, observations, numIndices, indices))
             {
@@ -120,15 +120,15 @@ namespace gte
             x = (Real)-1 + (Real)2 * mScale[0] * (x - mXDomain[0]);
 
             // Compute relevant powers of x.
-            int jmax = mDegrees.back();
-            for (int j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
+            int32_t jmax = mDegrees.back();
+            for (int32_t j = 1, jm1 = 0; j <= jmax; ++j, ++jm1)
             {
                 mXPowers[j] = mXPowers[jm1] * x;
             }
 
             Real w = (Real)0;
-            int isup = static_cast<int>(mDegrees.size());
-            for (int i = 0; i < isup; ++i)
+            int32_t isup = static_cast<int32_t>(mDegrees.size());
+            for (int32_t i = 0; i < isup; ++i)
             {
                 Real xp = mXPowers[mDegrees[i]];
                 w += mParameters[i] * xp;
@@ -142,15 +142,15 @@ namespace gte
     private:
         // Transform the (x,w) values to (x',w') in [-1,1]^2.
         void Transform(std::array<Real, 2> const* observations, size_t numIndices,
-            int const* indices, std::vector<std::array<Real, 2>>& transformed)
+            int32_t const* indices, std::vector<std::array<Real, 2>>& transformed)
         {
-            int numSamples = static_cast<int>(numIndices);
+            int32_t numSamples = static_cast<int32_t>(numIndices);
             transformed.resize(numSamples);
 
             std::array<Real, 2> omin = observations[indices[0]];
             std::array<Real, 2> omax = omin;
             std::array<Real, 2> obs;
-            int s, i;
+            int32_t s, i;
             for (s = 1; s < numSamples; ++s)
             {
                 obs = observations[indices[s]];
@@ -192,21 +192,21 @@ namespace gte
         {
             // Set up a linear system A*X = B, where X are the polynomial
             // coefficients.
-            int size = static_cast<int>(mDegrees.size());
+            int32_t size = static_cast<int32_t>(mDegrees.size());
             GMatrix<Real> A(size, size);
             A.MakeZero();
             GVector<Real> B(size);
             B.MakeZero();
 
-            int numSamples = static_cast<int>(transformed.size());
-            int twoMaxXDegree = 2 * mDegrees.back();
-            int row, col;
-            for (int i = 0; i < numSamples; ++i)
+            int32_t numSamples = static_cast<int32_t>(transformed.size());
+            int32_t twoMaxXDegree = 2 * mDegrees.back();
+            int32_t row, col;
+            for (int32_t i = 0; i < numSamples; ++i)
             {
                 // Compute relevant powers of x.
                 Real x = transformed[i][0];
                 Real w = transformed[i][1];
-                for (int j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
+                for (int32_t j = 1, jm1 = 0; j <= twoMaxXDegree; ++j, ++jm1)
                 {
                     mXPowers[j] = mXPowers[jm1] * x;
                 }
@@ -243,7 +243,7 @@ namespace gte
             // Solve for the polynomial coefficients.
             GVector<Real> coefficients = Inverse(A) * B;
             bool hasNonzero = false;
-            for (int i = 0; i < size; ++i)
+            for (int32_t i = 0; i < size; ++i)
             {
                 mParameters[i] = coefficients[i];
                 if (coefficients[i] != (Real)0)
@@ -254,7 +254,7 @@ namespace gte
             return hasNonzero;
         }
 
-        std::vector<int> mDegrees;
+        std::vector<int32_t> mDegrees;
         std::vector<Real> mParameters;
 
         // Support for evaluation. The coefficients were generated for the

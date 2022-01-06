@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -126,9 +126,9 @@ namespace gte
 
         void InitializeFrame()
         {
-            for (unsigned int r = 0, i = 0; r < this->mDescription.numRows; ++r)
+            for (uint32_t r = 0, i = 0; r < this->mDescription.numRows; ++r)
             {
-                for (unsigned int c = 0; c < this->mDescription.numCols; ++c, ++i)
+                for (uint32_t c = 0; c < this->mDescription.numCols; ++c, ++i)
                 {
                     Vector2<Real> tcoord = this->TCoord(i);
                     Vector3<Real> values[6];

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include "IntersectSphereConeWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -22,19 +22,19 @@ IntersectSphereConeWindow3::IntersectSphereConeWindow3(Parameters& parameters)
     mCone.MakeConeFrustum(4.0f, 16.0f);
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
     mEngine->SetBlendState(mBlendState);
 
     CreateScene();
@@ -65,7 +65,7 @@ void IntersectSphereConeWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectSphereConeWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectSphereConeWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const trnDelta = 0.1f;
     float const rotDelta = 0.01f;
@@ -143,7 +143,7 @@ void IntersectSphereConeWindow3::CreateScene()
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 1.0f, 0.0f, 0.0f, mAlpha });
 
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mGreenEffect[i] = std::make_shared<ConstantColorEffect>(mProgramFactory,
             Vector4<float>{ 0.0f, 1.0f, 0.0f, mAlpha });
@@ -154,21 +154,21 @@ void IntersectSphereConeWindow3::CreateScene()
 
     // Create a visual representation of the cone with heights in [4,16].
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    unsigned int const numAxial = 16;
-    unsigned int const numRadial = 16;
+    uint32_t const numAxial = 16;
+    uint32_t const numRadial = 16;
     mConeMesh = mf.CreateCylinderOpen(numAxial, numRadial, 1.0f, 1.0f);
     mConeMesh->localTransform.SetTranslation(mCone.ray.origin);
-    auto vbuffer = mConeMesh->GetVertexBuffer();
+    auto const& vbuffer = mConeMesh->GetVertexBuffer();
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int row = 0, i = 0; row < numAxial; ++row)
+    for (uint32_t row = 0, i = 0; row < numAxial; ++row)
     {
         float const height = mCone.GetMinHeight() + (mCone.GetMaxHeight() - mCone.GetMinHeight())
             * static_cast<float>(row) / static_cast<float>(numAxial - 1);
         float const radius = height * mCone.tanAngle;
-        for (unsigned int col = 0; col <= numRadial; ++col, ++i)
+        for (uint32_t col = 0; col <= numRadial; ++col, ++i)
         {
             Vector3<float>& P = vertices[i];
             float stretch = radius / std::sqrt(P[0] * P[0] + P[1] * P[1]);
@@ -206,7 +206,7 @@ void IntersectSphereConeWindow3::CreateScene()
     mTrackBall.Update();
 }
 
-void IntersectSphereConeWindow3::Translate(int direction, float delta)
+void IntersectSphereConeWindow3::Translate(int32_t direction, float delta)
 {
     mCone.ray.origin[direction] += delta;
     mConeMesh->localTransform.SetTranslation(mCone.ray.origin);
@@ -216,7 +216,7 @@ void IntersectSphereConeWindow3::Translate(int direction, float delta)
     TestIntersection();
 }
 
-void IntersectSphereConeWindow3::Rotate(int direction, float delta)
+void IntersectSphereConeWindow3::Rotate(int32_t direction, float delta)
 {
     Quaternion<float> incr = Rotation<3, float>(
         AxisAngle<3, float>(Vector3<float>::Unit(direction), delta));

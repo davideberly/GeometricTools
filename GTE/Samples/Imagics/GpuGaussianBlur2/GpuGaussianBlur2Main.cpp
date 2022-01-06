@@ -1,15 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.12
+// Version: 6.0.2022.01.06
 
 #include "GpuGaussianBlur2Window2.h"
 #include <Applications/Command.h>
 #include <iostream>
 
-int main(int numArguments, char* arguments[])
+int32_t main(int32_t numArguments, char* arguments[])
 {
     try
     {

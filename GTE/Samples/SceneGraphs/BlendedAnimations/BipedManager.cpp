@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include "BipedManager.h"
 #include <Applications/WICFileIO.h>
@@ -16,19 +16,20 @@ BipedManager::BipedManager(std::string const& rootPath, std::string const& bname
     std::shared_ptr<ProgramFactory> const& factory, BufferUpdater const& postUpdate)
 {
     // Vertex format shared by the two skins.
-    mVFormat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    mVFormat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    mVFormat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     // Create the texture effects for the two skins.
     std::shared_ptr<Texture2> texture[2];
     std::shared_ptr<Texture2Effect> effect[2];
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         std::string name = rootPath + "Skins/Skins" + std::to_string(i) + ".texture.png";
         texture[i] = WICFileIO::Load(name, true);
         texture[i]->AutogenerateMipmaps();
         effect[i] = std::make_shared<Texture2Effect>(factory, texture[i],
-            SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+            SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+            SamplerState::Mode::WRAP);
     }
 
     PreSpatialArray preSpatialArray;
@@ -93,7 +94,7 @@ BipedManager::BipedManager(std::string const& rootPath, std::string const& bname
             begin = line.find("<");
             end = line.find(">");
             name = line.substr(begin + 1, end - 1 - begin);
-            int suffix = name[name.length() - 1] - '0';
+            int32_t suffix = name[name.length() - 1] - '0';
             auto preSpatial = LoadMesh(rootPath, name, effect[suffix]);
             preSpatialArray.push_back(preSpatial);
             spatialMap[name] = preSpatial->Associate;
@@ -112,7 +113,7 @@ BipedManager::BipedManager(std::string const& rootPath, std::string const& bname
     {
         std::shared_ptr<SkinController> ctrl = preSkin->Associate;
         std::vector<std::weak_ptr<Node>>& bones = ctrl->GetBones();
-        int i = 0;
+        int32_t i = 0;
         for (auto const& boneName : preSkin->BoneNames)
         {
             auto iter = spatialMap.find(boneName);
@@ -164,10 +165,10 @@ BipedManager::BipedManager(std::string const& rootPath, std::string const& bname
     mRoot = std::static_pointer_cast<Node>(preSpatialArray[0]->Associate);
 
     // Create the blend controllers.
-    int const numControllers = static_cast<int>(mIdleArray.size());
+    int32_t const numControllers = static_cast<int32_t>(mIdleArray.size());
     mIdleWalkArray.resize(numControllers);
     mWalkRunArray.resize(numControllers);
-    for (int i = 0; i < numControllers; ++i)
+    for (int32_t i = 0; i < numControllers; ++i)
     {
         NodeCtrl const& nc0 = mIdleArray[i];
         NodeCtrl const& nc1 = mWalkArray[i];
@@ -183,16 +184,16 @@ BipedManager::BipedManager(std::string const& rootPath, std::string const& bname
     }
 }
 
-void BipedManager::Initialize(int idleWalkCount, int walkCount,
-    int walkRunCount)
+void BipedManager::Initialize(int32_t idleWalkCount, int32_t walkCount,
+    int32_t walkRunCount)
 {
-    mState = ANIM_IDLE;
+    mState = Animation::IDLE;
     mCount = 0;
-    mCountMax[ANIM_IDLE] = 0;
-    mCountMax[ANIM_IDLE_WALK] = idleWalkCount;
-    mCountMax[ANIM_WALK] = mCountMax[ANIM_IDLE_WALK] + walkCount;
-    mCountMax[ANIM_WALK_RUN] = mCountMax[ANIM_WALK] + walkRunCount;
-    mCountMax[ANIM_RUN] = mCountMax[ANIM_WALK_RUN];
+    mCountMax[Animation::IDLE] = 0;
+    mCountMax[Animation::IDLE_WALK] = idleWalkCount;
+    mCountMax[Animation::WALK] = mCountMax[Animation::IDLE_WALK] + walkCount;
+    mCountMax[Animation::WALK_RUN] = mCountMax[Animation::WALK] + walkRunCount;
+    mCountMax[Animation::RUN] = mCountMax[Animation::WALK_RUN];
     mWeight = 0.0f;
     mDeltaWeight0 = 1.0f / static_cast<float>(idleWalkCount);
     mDeltaWeight1 = 1.0f / static_cast<float>(walkRunCount);
@@ -204,16 +205,16 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
 {
     if (blendIdleToWalk)
     {
-        if (mState == ANIM_IDLE)
+        if (mState == Animation::IDLE)
         {
             TransitionIdleToIdleWalk();
             mCount = 1;
             return;
         }
 
-        if (mState == ANIM_IDLE_WALK)
+        if (mState == Animation::IDLE_WALK)
         {
-            if (mCount++ < mCountMax[ANIM_IDLE_WALK])
+            if (mCount++ < mCountMax[Animation::IDLE_WALK])
             {
                 ContinueIdleWalk();
             }
@@ -224,11 +225,11 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_WALK)
+        if (mState == Animation::WALK)
         {
             if (blendWalkToRun)
             {
-                if (mCount++ == mCountMax[ANIM_WALK])
+                if (mCount++ == mCountMax[Animation::WALK])
                 {
                     TransitionWalkToWalkRun();
                 }
@@ -240,11 +241,11 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_WALK_RUN)
+        if (mState == Animation::WALK_RUN)
         {
             if (blendWalkToRun)
             {
-                if (mCount++ < mCountMax[ANIM_WALK_RUN])
+                if (mCount++ < mCountMax[Animation::WALK_RUN])
                 {
                     ContinueWalkRun();
                 }
@@ -255,7 +256,7 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             }
             else
             {
-                if (--mCount > mCountMax[ANIM_WALK])
+                if (--mCount > mCountMax[Animation::WALK])
                 {
                     ContinueRunWalk();
                 }
@@ -267,7 +268,7 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_RUN)
+        if (mState == Animation::RUN)
         {
             if (blendWalkToRun)
             {
@@ -283,16 +284,16 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
     }
     else
     {
-        if (mState == ANIM_RUN)
+        if (mState == Animation::RUN)
         {
             --mCount;
             TransitionRunToRunWalk();
             return;
         }
 
-        if (mState == ANIM_WALK_RUN)
+        if (mState == Animation::WALK_RUN)
         {
-            if (--mCount > mCountMax[ANIM_WALK])
+            if (--mCount > mCountMax[Animation::WALK])
             {
                 ContinueRunWalk();
             }
@@ -303,9 +304,9 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_WALK)
+        if (mState == Animation::WALK)
         {
-            if (--mCount == mCountMax[ANIM_IDLE_WALK])
+            if (--mCount == mCountMax[Animation::IDLE_WALK])
             {
                 TransitionWalkToWalkIdle();
             }
@@ -316,9 +317,9 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_IDLE_WALK)
+        if (mState == Animation::IDLE_WALK)
         {
-            if (--mCount > mCountMax[ANIM_IDLE])
+            if (--mCount > mCountMax[Animation::IDLE])
             {
                 ContinueWalkIdle();
             }
@@ -329,7 +330,7 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
             return;
         }
 
-        if (mState == ANIM_IDLE)
+        if (mState == Animation::IDLE)
         {
             // continue idle
             return;
@@ -340,7 +341,7 @@ void BipedManager::Update(bool blendIdleToWalk, bool blendWalkToRun)
 float BipedManager::GetSpeed() const
 {
     return
-        static_cast<float>(mCount) / static_cast<float>(mCountMax[ANIM_RUN]);
+        static_cast<float>(mCount) / static_cast<float>(mCountMax[Animation::RUN]);
 }
 
 std::shared_ptr<BipedManager::PreSpatial> BipedManager::LoadNode(
@@ -353,13 +354,13 @@ std::shared_ptr<BipedManager::PreSpatial> BipedManager::LoadNode(
     std::string filename = rootPath + "Bones/" + name + ".node.raw";
     std::ifstream input(filename, std::ios::binary);
 
-    int numChildren;
+    int32_t numChildren{};
     input.read((char*)&numChildren, sizeof(numChildren));
-    for (int i = 0; i < numChildren; ++i)
+    for (int32_t i = 0; i < numChildren; ++i)
     {
-        int length;
+        int32_t length{};
         input.read((char*)&length, sizeof(length));
-        std::vector<char> text(length + 1);
+        std::vector<char> text(static_cast<size_t>(length) + 1);
         input.read(text.data(), sizeof(char) * length);
         text[length] = 0;
         preSpatial->ChildNames.push_back(std::string(text.data()));
@@ -382,26 +383,26 @@ std::shared_ptr<BipedManager::PreSpatial> BipedManager::LoadMesh(std::string con
         Vector2<float> tcoord;
     };
 
-    unsigned int numVertices;
+    uint32_t numVertices{};
     input.read((char*)&numVertices, sizeof(numVertices));
     std::vector<VertexOnDisk> temp(numVertices);
     input.read((char*)temp.data(), numVertices * sizeof(VertexOnDisk));
 
     std::shared_ptr<VertexBuffer> vbuffer = std::make_shared<VertexBuffer>(
         mVFormat, numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     Vertex* vertex = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertex[i].position = temp[i].position;
         vertex[i].tcoord = temp[i].tcoord;
     }
 
-    int numIndices;
+    int32_t numIndices{};
     input.read((char*)&numIndices, sizeof(numIndices));
     std::shared_ptr<IndexBuffer> ibuffer = std::make_shared<IndexBuffer>(
-        IP_TRIMESH, numIndices / 3, sizeof(int));
-    input.read(ibuffer->GetData(), numIndices * sizeof(int));
+        IP_TRIMESH, numIndices / 3, sizeof(int32_t));
+    input.read(ibuffer->GetData(), numIndices * sizeof(int32_t));
     input.close();
 
     std::shared_ptr<Visual> mesh = std::make_shared<Visual>(vbuffer, ibuffer, effect);
@@ -418,8 +419,8 @@ std::shared_ptr<BipedManager::PreSkin> BipedManager::LoadSkinController(
     std::string filename = rootPath + "Skins/" + name + ".skinctrl.raw";
     std::ifstream input(filename, std::ios::binary);
 
-    int repeatType, active;
-    double minTime, maxTime, phase, frequency;
+    int32_t repeatType{}, active{};
+    double minTime{}, maxTime{}, phase{}, frequency{};
     input.read((char*)&repeatType, sizeof(repeatType));
     input.read((char*)&minTime, sizeof(minTime));
     input.read((char*)&maxTime, sizeof(maxTime));
@@ -427,7 +428,7 @@ std::shared_ptr<BipedManager::PreSkin> BipedManager::LoadSkinController(
     input.read((char*)&frequency, sizeof(frequency));
     input.read((char*)&active, sizeof(active));
 
-    int numVertices, numBones;
+    int32_t numVertices{}, numBones{};
     input.read((char*)&numVertices, sizeof(numVertices));
     input.read((char*)&numBones, sizeof(numBones));
 
@@ -444,12 +445,12 @@ std::shared_ptr<BipedManager::PreSkin> BipedManager::LoadSkinController(
     ctrl->frequency = frequency;
     ctrl->active = (active > 0);
 
-    int b, v;
+    int32_t b, v;
     for (b = 0; b < numBones; ++b)
     {
-        int length;
+        int32_t length{};
         input.read((char*)&length, sizeof(length));
-        std::vector<char> text(length + 1);
+        std::vector<char> text(static_cast<size_t>(length) + 1);
         input.read(text.data(), sizeof(char) * length);
         text[length] = 0;
         preSkin->BoneNames.push_back(std::string(text.data()));
@@ -461,7 +462,7 @@ std::shared_ptr<BipedManager::PreSkin> BipedManager::LoadSkinController(
     {
         for (b = 0; b < numBones; ++b)
         {
-            float weight;
+            float weight{};
             input.read((char*)&weight, sizeof(weight));
             *weights++ = weight;
         }
@@ -488,12 +489,12 @@ std::shared_ptr<TransformController> BipedManager::LoadTransformController(
         name + ".xfrmctrl.raw";
     std::ifstream input(filename, std::ios::binary);
 
-    int isKeyframeController;
+    int32_t isKeyframeController{};
     input.read((char*)&isKeyframeController, sizeof(isKeyframeController));
 
     std::shared_ptr<TransformController> ctrl;
-    int repeatType, active;
-    double minTime, maxTime, phase, frequency;
+    int32_t repeatType{}, active{};
+    double minTime{}, maxTime{}, phase{}, frequency{};
     input.read((char*)&repeatType, sizeof(repeatType));
     input.read((char*)&minTime, sizeof(minTime));
     input.read((char*)&maxTime, sizeof(maxTime));
@@ -501,11 +502,13 @@ std::shared_ptr<TransformController> BipedManager::LoadTransformController(
     input.read((char*)&frequency, sizeof(frequency));
     input.read((char*)&active, sizeof(active));
 
-    float mat[9], trn[3], sca[3];
-    char isIdentity, isRSMatrix, isUniformScale, dummy;
-    input.read((char*)mat, 9 * sizeof(float));
-    input.read((char*)trn, 3 * sizeof(float));
-    input.read((char*)sca, 3 * sizeof(float));
+    std::array<float, 9> mat{};
+    std::array<float, 3> trn{};
+    std::array<float, 3> sca{};
+    char isIdentity{}, isRSMatrix{}, isUniformScale{}, dummy{};
+    input.read((char*)mat.data(), 9 * sizeof(float));
+    input.read((char*)trn.data(), 3 * sizeof(float));
+    input.read((char*)sca.data(), 3 * sizeof(float));
     input.read((char*)&isIdentity, sizeof(isIdentity));
     input.read((char*)&isRSMatrix, sizeof(isRSMatrix));
     input.read((char*)&isUniformScale, sizeof(isUniformScale));
@@ -561,7 +564,7 @@ std::shared_ptr<TransformController> BipedManager::LoadTransformController(
 
     if (isKeyframeController)
     {
-        int numTranslations, numRotations, numScales;
+        int32_t numTranslations{}, numRotations{}, numScales{};
         input.read((char*)&numTranslations, sizeof(numTranslations));
         input.read((char*)&numRotations, sizeof(numRotations));
         input.read((char*)&numScales, sizeof(numScales));
@@ -629,7 +632,7 @@ std::shared_ptr<TransformController> BipedManager::LoadTransformController(
     }
 
     ctrl->name = name;
-    ctrl->repeat = Controller::RT_WRAP;
+    ctrl->repeat = Controller::RepeatType::WRAP;
     ctrl->minTime = minTime;
     ctrl->maxTime = maxTime;
     ctrl->phase = phase;
@@ -684,7 +687,7 @@ void BipedManager::DoAnimation(NodeCtrlArray& ncArray)
 {
     for (auto& nc : ncArray)
     {
-        nc.second->repeat = Controller::RT_WRAP;
+        nc.second->repeat = Controller::RepeatType::WRAP;
         nc.first->DetachAllControllers();
         nc.first->AttachController(nc.second);
     }
@@ -732,7 +735,7 @@ void BipedManager::ContinueWalkIdle()
 
 void BipedManager::TransitionIdleToIdleWalk()
 {
-    mState = ANIM_IDLE_WALK;
+    mState = Animation::IDLE_WALK;
     DoIdleWalk();
     SetIdleWalk(0.0f);
     mWeight = mDeltaWeight0;
@@ -740,13 +743,13 @@ void BipedManager::TransitionIdleToIdleWalk()
 
 void BipedManager::TransitionIdleWalkToWalk()
 {
-    mState = ANIM_WALK;
+    mState = Animation::WALK;
     DoWalk();
 }
 
 void BipedManager::TransitionWalkToWalkRun()
 {
-    mState = ANIM_WALK_RUN;
+    mState = Animation::WALK_RUN;
     DoWalkRun();
     SetWalkRun(0.0f);
     mWeight = mDeltaWeight1;
@@ -754,13 +757,13 @@ void BipedManager::TransitionWalkToWalkRun()
 
 void BipedManager::TransitionWalkRunToRun()
 {
-    mState = ANIM_RUN;
+    mState = Animation::RUN;
     DoRun();
 }
 
 void BipedManager::TransitionRunToRunWalk()
 {
-    mState = ANIM_WALK_RUN;
+    mState = Animation::WALK_RUN;
     DoWalkRun();
     SetWalkRun(1.0f);
     mWeight = 1.0f - mDeltaWeight1;
@@ -768,13 +771,13 @@ void BipedManager::TransitionRunToRunWalk()
 
 void BipedManager::TransitionRunWalkToWalk()
 {
-    mState = ANIM_WALK;
+    mState = Animation::WALK;
     DoWalk();
 }
 
 void BipedManager::TransitionWalkToWalkIdle()
 {
-    mState = ANIM_IDLE_WALK;
+    mState = Animation::IDLE_WALK;
     DoIdleWalk();
     SetIdleWalk(1.0f);
     mWeight = 1.0f - mDeltaWeight0;
@@ -782,6 +785,6 @@ void BipedManager::TransitionWalkToWalkIdle()
 
 void BipedManager::TransitionWalkIdleToIdle()
 {
-    mState = ANIM_IDLE;
+    mState = Animation::IDLE;
     DoIdle();
 }

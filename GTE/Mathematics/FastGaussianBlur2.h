@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -47,7 +47,7 @@
 
 namespace gte
 {
-    // The image type must be one of short, int, float or double.  The
+    // The image type must be one of int16_t, int32_t, float or double.  The
     // computations are performed using double.  The input and output images
     // must both have xBound*yBound elements and be stored in lexicographical
     // order.  The indexing is i = x + xBound * y.
@@ -56,7 +56,7 @@ namespace gte
     class FastGaussianBlur2
     {
     public:
-        void Execute(int xBound, int yBound, T const* input, T* output,
+        void Execute(int32_t xBound, int32_t yBound, T const* input, T* output,
             double scale, double logBase)
         {
             mXBound = xBound;
@@ -64,20 +64,20 @@ namespace gte
             mInput = input;
             mOutput = output;
 
-            int xBoundM1 = xBound - 1, yBoundM1 = yBound - 1;
-            for (int y = 0; y < yBound; ++y)
+            int32_t xBoundM1 = xBound - 1, yBoundM1 = yBound - 1;
+            for (int32_t y = 0; y < yBound; ++y)
             {
                 double ryps = static_cast<double>(y) + scale;
                 double ryms = static_cast<double>(y) - scale;
-                int yp1 = static_cast<int>(std::floor(ryps));
-                int ym1 = static_cast<int>(std::ceil(ryms));
+                int32_t yp1 = static_cast<int32_t>(std::floor(ryps));
+                int32_t ym1 = static_cast<int32_t>(std::ceil(ryms));
 
-                for (int x = 0; x < xBound; ++x)
+                for (int32_t x = 0; x < xBound; ++x)
                 {
                     double rxps = x + scale;
                     double rxms = x - scale;
-                    int xp1 = static_cast<int>(std::floor(rxps));
-                    int xm1 = static_cast<int>(std::ceil(rxms));
+                    int32_t xp1 = static_cast<int32_t>(std::floor(rxps));
+                    int32_t xm1 = static_cast<int32_t>(std::ceil(rxms));
 
                     double center = Input(x, y);
                     double xsum = -2.0 * center, ysum = xsum;
@@ -143,17 +143,17 @@ namespace gte
         }
 
     private:
-        inline double Input(int x, int y) const
+        inline double Input(int32_t x, int32_t y) const
         {
             return static_cast<double>(mInput[x + mXBound * y]);
         }
 
-        inline T& Output(int x, int y)
+        inline T& Output(int32_t x, int32_t y)
         {
             return mOutput[x + mXBound * y];
         }
 
-        int mXBound, mYBound;
+        int32_t mXBound, mYBound;
         T const* mInput;
         T* mOutput;
     };

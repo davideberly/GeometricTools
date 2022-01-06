@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/CubeMapEffect.h>
@@ -18,7 +18,7 @@ CubeMapEffect::CubeMapEffect(std::shared_ptr<ProgramFactory> const& factory,
     mDepthRangeIs01(factory->GetAPI() == ProgramFactory::PF_HLSL),
     mDynamicUpdates(false)
 {
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     mProgram = factory->CreateFromSources(*msVSSource[api], *msPSSource[api], "");
     if (mProgram)
     {
@@ -37,8 +37,8 @@ CubeMapEffect::CubeMapEffect(std::shared_ptr<ProgramFactory> const& factory,
         mCubeSampler->mode[0] = mode0;
         mCubeSampler->mode[1] = mode1;
 
-        auto vshader = mProgram->GetVertexShader();
-        auto pshader = mProgram->GetPixelShader();
+        auto const& vshader = mProgram->GetVertexShader();
+        auto const& pshader = mProgram->GetPixelShader();
         vshader->Set("PVWMatrix", mPVWMatrixConstant);
         vshader->Set("WMatrix", mWMatrixConstant);
         vshader->Set("CameraWorldPosition", mCameraWorldPositionConstant);
@@ -61,7 +61,7 @@ void CubeMapEffect::UseDynamicUpdates(float dmin, float dmax)
     mTarget = std::make_shared<DrawTarget>(1, mCubeTexture->GetFormat(),
         mCubeTexture->GetLength(), mCubeTexture->GetLength(), true);
     mTarget->AutogenerateRTMipmaps();
-    mTarget->GetRTTexture(0)->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mTarget->GetRTTexture(0)->SetCopy(Resource::Copy::STAGING_TO_CPU);
 
     mDynamicUpdates = true;
 }
@@ -110,7 +110,7 @@ void CubeMapEffect::UpdateFaces(std::shared_ptr<GraphicsEngine> const& engine,
     // The camera is oriented six times along the coordinate axes and using
     // a frustum with a 90-degree field of view and an aspect ratio of 1 (the
     // cube faces are squares).
-    for (unsigned int face = 0; face < 6; ++face)
+    for (uint32_t face = 0; face < 6; ++face)
     {
         mCamera->SetFrame(envOrigin, dVector[face], uVector[face], rVector[face]);
         culler.ComputeVisibleSet(mCamera, scene);
@@ -158,19 +158,19 @@ void CubeMapEffect::UpdateFaces(std::shared_ptr<GraphicsEngine> const& engine,
             // "*Face.png" cube-map images of this sample.  TODO: Hide this
             // somehow in the graphics engine code to avoid exposing dependency
             // on the graphics API.
-            unsigned int const numLevels = texture->GetNumLevels();
-            for (unsigned int level = 0; level < numLevels; ++level)
+            uint32_t const numLevels = texture->GetNumLevels();
+            for (uint32_t level = 0; level < numLevels; ++level)
             {
-                unsigned int uSize = texture->GetDimensionFor(level, 0);
-                unsigned int vSize = texture->GetDimensionFor(level, 1);
-                auto input = reinterpret_cast<unsigned int const*>(texture->GetDataFor(level));
-                auto output = reinterpret_cast<unsigned int*>(mCubeTexture->GetDataFor(face, level));
-                for (unsigned int u = 0, uReflect = uSize - 1; u < uSize; ++u, --uReflect)
+                uint32_t uSize = texture->GetDimensionFor(level, 0);
+                uint32_t vSize = texture->GetDimensionFor(level, 1);
+                auto input = reinterpret_cast<uint32_t const*>(texture->GetDataFor(level));
+                auto output = reinterpret_cast<uint32_t*>(mCubeTexture->GetDataFor(face, level));
+                for (uint32_t u = 0, uReflect = uSize - 1; u < uSize; ++u, --uReflect)
                 {
-                    for (unsigned int v = 0; v < vSize; ++v)
+                    for (uint32_t v = 0; v < vSize; ++v)
                     {
-                        unsigned int src = u + uSize * v;
-                        unsigned int trg = uReflect + uSize * v;
+                        uint32_t src = u + uSize * v;
+                        uint32_t trg = uReflect + uSize * v;
                         output[trg] = input[src];
                     }
                 }

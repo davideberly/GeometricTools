@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace gte
             }
 
             bool intersect;
-            int separating;
+            int32_t separating;
         };
 
         Result operator()(OrientedBox2<T> const& box0, OrientedBox2<T> const& box1)
@@ -147,7 +147,7 @@ namespace gte
                 box1.axis[1], -box1.axis[0], box1.axis[0], -box1.axis[1]
             };
 
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 if (Outside(vertex[i], normal[i], result.polygon))
                 {
@@ -172,10 +172,10 @@ namespace gte
         {
             // Determine whether the polygon vertices are outside the polygon,
             // inside the polygon, or on the polygon boundary.
-            int const numVertices = static_cast<int>(polygon.size());
+            int32_t const numVertices = static_cast<int32_t>(polygon.size());
             std::vector<T> distance(numVertices);
-            int positive = 0, negative = 0, positiveIndex = -1;
-            for (int i = 0; i < numVertices; ++i)
+            int32_t positive = 0, negative = 0, positiveIndex = -1;
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 distance[i] = Dot(normal, polygon[i] - origin);
                 if (distance[i] > (T)0)
@@ -209,7 +209,7 @@ namespace gte
             // The line transversely intersects the polygon. Clip the polygon.
             std::vector<Vector2<T>> clipPolygon;
             Vector2<T> vertex;
-            int curr, prev;
+            int32_t curr, prev;
             T t;
 
             if (positiveIndex > 0)

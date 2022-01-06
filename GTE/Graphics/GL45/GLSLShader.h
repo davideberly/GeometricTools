@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Shader.h>
 #include <Graphics/GL45/GLSLReflection.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -18,7 +19,7 @@ namespace gte
         // Constructon for shaders corresponding to GLSL. The 'glslType'
         // parameter in the constructor is one of the enumerates in
         // GLSLReflection: ST_VERTEX, ST_GEOMETRY, ST_PIXEL, ST_COMPUTE.
-        GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type, int glslType);
+        GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type, uint32_t glslType);
 
         virtual void Set(std::string const& textureName,
             std::shared_ptr<TextureSingle> const& texture,

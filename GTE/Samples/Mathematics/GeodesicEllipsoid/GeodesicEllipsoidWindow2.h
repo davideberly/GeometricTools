@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,27 +18,27 @@ public:
 
     virtual void OnDisplay() override;
     virtual void DrawScreenOverlay() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     void ComputeTruePath();
     void ComputeApprPath(bool subdivide);
     void ComputeApprLength();
-    void ParamToXY(GVector<float> const& param, int& x, int& y);
-    void XYToParam(int x, int y, GVector<float>& param);
+    void ParamToXY(GVector<float> const& param, int32_t& x, int32_t& y);
+    void XYToParam(int32_t x, int32_t y, GVector<float>& param);
 
-    int mSize;
+    int32_t mSize;
     EllipsoidGeodesic<float> mGeodesic;
     GVector<float> mParam0, mParam1;
     float mXMin, mXMax, mXDelta;
     float mYMin, mYMax, mYDelta;
 
-    int mNumTruePoints;
+    int32_t mNumTruePoints;
     std::vector<GVector<float>> mTruePoints;
-    int mNumApprPoints;
+    int32_t mNumApprPoints;
     std::vector<GVector<float>> mApprPoints;
 
-    int mCurrNumApprPoints;
+    int32_t mCurrNumApprPoints;
     float mTrueDistance;
     float mApprDistance;
     float mApprCurvature;

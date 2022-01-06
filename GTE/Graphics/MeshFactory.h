@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Visual.h>
 #include <Mathematics/Mesh.h>
+#include <cstdint>
 
 // This class is a factory for Visual objects corresponding to common
 // geometric primitives.  Triangle mesh primitives are generated.  Each mesh
@@ -28,8 +29,8 @@ namespace gte
     {
     public:
         // Construction and destruction.
-        ~MeshFactory() = default;
         MeshFactory();
+        ~MeshFactory() = default;
 
         // Specify the vertex format.
         inline void SetVertexFormat(VertexFormat const& format)
@@ -38,23 +39,23 @@ namespace gte
         }
 
         // Specify the usage for the vertex buffer data.  The default is
-        // Resource::IMMUTABLE.
+        // Resource::Usage::IMMUTABLE.
         inline void SetVertexBufferUsage(Resource::Usage usage)
         {
             mVBUsage = usage;
         }
 
         // Specify the type of indices and where the index buffer data should
-        // be stored.  For 'unsigned int' indices, set 'use32Bit' to 'true';
-        // for 'unsigned short' indices, set 'use32Bit' to false.  The default
-        // is 'unsigned int'.
+        // be stored.  For 'uint32_t' indices, set 'use32Bit' to 'true';
+        // for 'uint16_t' indices, set 'use32Bit' to false.  The default
+        // is 'uint32_t'.
         inline void SetIndexFormat(bool use32Bit)
         {
-            mIndexSize = (use32Bit ? sizeof(unsigned int) : sizeof(unsigned short));
+            mIndexSize = (use32Bit ? sizeof(uint32_t) : sizeof(uint16_t));
         }
 
         // Specify the usage for the index buffer data.  The default is
-        // Resource::IMMUTABLE.
+        // Resource::Usage::IMMUTABLE.
         inline void SetIndexBufferUsage(Resource::Usage usage)
         {
             mIBUsage = usage;
@@ -78,15 +79,15 @@ namespace gte
         // (-xExtent, +yExtent, 0), and (+xExtent, +yExtent, 0).  The mesh has
         // numXSamples vertices in the x-direction and numYSamples vertices in
         // the y-direction for a total of numXSamples*numYSamples vertices.
-        std::shared_ptr<Visual> CreateRectangle(unsigned int numXSamples,
-            unsigned int numYSamples, float xExtent, float yExtent);
+        std::shared_ptr<Visual> CreateRectangle(uint32_t numXSamples,
+            uint32_t numYSamples, float xExtent, float yExtent);
 
         // The triangle is in the plane z = 0 and is visible to an observer
         // who is on the side of the plane to which the normal (0,0,1) points.
         // It has vertices (0, 0, 0), (xExtent, 0, 0), and (0, yExtent, 0).
         // The mesh has numSamples vertices along each of the x- and y-axes
         // for a total of numSamples*(numSamples+1)/2 vertices.
-        std::shared_ptr<Visual> CreateTriangle(unsigned int numSamples,
+        std::shared_ptr<Visual> CreateTriangle(uint32_t numSamples,
             float xExtent, float yExtent);
 
         // The circular disk is in the plane z = 0 and is visible to an
@@ -96,8 +97,8 @@ namespace gte
         // along rays whose common origin is the center.  There are
         // numRadialSamples rays.  Along each ray the mesh has
         // numShellSamples vertices.
-        std::shared_ptr<Visual> CreateDisk(unsigned int numShellSamples,
-            unsigned int numRadialSamples, float radius);
+        std::shared_ptr<Visual> CreateDisk(uint32_t numShellSamples,
+            uint32_t numRadialSamples, float radius);
 
         // The box has center (0,0,0); unit-length axes (1,0,0), (0,1,0), and
         // (0,0,1); and extents (half-lengths) xExtent, yExtent, and zExtent.
@@ -116,11 +117,11 @@ namespace gte
         // vertex at the center of the polygon and decomposing the polygon
         // into triangles that all share the center vertex and each triangle
         // containing an edge of the polygon.
-        std::shared_ptr<Visual> CreateCylinderOpen(unsigned int numAxisSamples,
-            unsigned int numRadialSamples, float radius, float height);
+        std::shared_ptr<Visual> CreateCylinderOpen(uint32_t numAxisSamples,
+            uint32_t numRadialSamples, float radius, float height);
 
-        std::shared_ptr<Visual> CreateCylinderClosed(unsigned int numAxisSamples,
-            unsigned int numRadialSamples, float radius, float height);
+        std::shared_ptr<Visual> CreateCylinderClosed(uint32_t numAxisSamples,
+            uint32_t numRadialSamples, float radius, float height);
 
         // The sphere has center (0,0,0) and the specified radius.  The north
         // pole is at (0,0,radius) and the south pole is at (0,0,-radius).
@@ -129,16 +130,16 @@ namespace gte
         // edges) and is then stitched to the north and south poles.  The
         // triangles are unevenly distributed.  If you want a more even
         // distribution, create an icosahedron and subdivide it.
-        std::shared_ptr<Visual> CreateSphere(unsigned int numZSamples,
-            unsigned int numRadialSamples, float radius);
+        std::shared_ptr<Visual> CreateSphere(uint32_t numZSamples,
+            uint32_t numRadialSamples, float radius);
 
         // The torus has center (0,0,0).  If you observe the torus along the
         // line with direction (0,0,1), you will see an annulus.  The circle
         // that is the center of the annulus has radius 'outerRadius'.  The
         // distance from this circle to the boundaries of the annulus is the
         // 'inner radius'.
-        std::shared_ptr<Visual> CreateTorus(unsigned int numCircleSamples,
-            unsigned int numRadialSamples, float outerRadius, float innerRadius);
+        std::shared_ptr<Visual> CreateTorus(uint32_t numCircleSamples,
+            uint32_t numRadialSamples, float outerRadius, float innerRadius);
 
         // Platonic solids, all inscribed in a unit sphere centered at
         // (0,0,0).
@@ -150,44 +151,44 @@ namespace gte
 
     private:
         // Support for creating vertex and index buffers.
-        std::shared_ptr<VertexBuffer> CreateVBuffer(unsigned int numVertices);
-        std::shared_ptr<IndexBuffer> CreateIBuffer(unsigned int numTriangles);
+        std::shared_ptr<VertexBuffer> CreateVBuffer(uint32_t numVertices);
+        std::shared_ptr<IndexBuffer> CreateIBuffer(uint32_t numTriangles);
 
         // Support for vertex buffers.
         char* GetGeometricChannel(std::shared_ptr<VertexBuffer> const& vbuffer,
             VASemantic semantic, float w);
 
-        inline Vector3<float>& Position(unsigned int i)
+        inline Vector3<float>& Position(uint32_t i)
         {
-            return *reinterpret_cast<Vector3<float>*>(mPositions + i * mVFormat.GetVertexSize());
+            return *reinterpret_cast<Vector3<float>*>(mPositions + static_cast<size_t>(i) * mVFormat.GetVertexSize());
         }
 
-        inline Vector3<float>& Normal(unsigned int i)
+        inline Vector3<float>& Normal(uint32_t i)
         {
-            return *reinterpret_cast<Vector3<float>*>(mNormals + i * mVFormat.GetVertexSize());
+            return *reinterpret_cast<Vector3<float>*>(mNormals + static_cast<size_t>(i) * mVFormat.GetVertexSize());
         }
 
-        inline Vector3<float>& Tangent(unsigned int i)
+        inline Vector3<float>& Tangent(uint32_t i)
         {
-            return *reinterpret_cast<Vector3<float>*>(mTangents + i * mVFormat.GetVertexSize());
+            return *reinterpret_cast<Vector3<float>*>(mTangents + static_cast<size_t>(i) * mVFormat.GetVertexSize());
         }
 
-        inline Vector3<float>& Bitangent(unsigned int i)
+        inline Vector3<float>& Bitangent(uint32_t i)
         {
-            return *reinterpret_cast<Vector3<float>*>(mBitangents + i * mVFormat.GetVertexSize());
+            return *reinterpret_cast<Vector3<float>*>(mBitangents + static_cast<size_t>(i) * mVFormat.GetVertexSize());
         }
 
-        inline Vector2<float>& TCoord(unsigned int unit, unsigned int i)
+        inline Vector2<float>& TCoord(uint32_t unit, uint32_t i)
         {
-            return *reinterpret_cast<Vector2<float>*>(mTCoords[unit] + i * mVFormat.GetVertexSize());
+            return *reinterpret_cast<Vector2<float>*>(mTCoords[unit] + static_cast<size_t>(i) * mVFormat.GetVertexSize());
         }
 
-        inline void SetPosition(unsigned int i, Vector3<float> const& pos)
+        inline void SetPosition(uint32_t i, Vector3<float> const& pos)
         {
             Position(i) = pos;
         }
 
-        void SetNormal(unsigned int i, Vector3<float> const& nor)
+        void SetNormal(uint32_t i, Vector3<float> const& nor)
         {
             if (mNormals)
             {
@@ -195,7 +196,7 @@ namespace gte
             }
         }
 
-        void SetTangent(unsigned int i, Vector3<float> const& tan)
+        void SetTangent(uint32_t i, Vector3<float> const& tan)
         {
             if (mTangents)
             {
@@ -203,7 +204,7 @@ namespace gte
             }
         }
 
-        void SetBitangent(unsigned int i, Vector3<float> const& bin)
+        void SetBitangent(uint32_t i, Vector3<float> const& bin)
         {
             if (mBitangents)
             {
@@ -211,9 +212,9 @@ namespace gte
             }
         }
 
-        void SetTCoord(unsigned int i, Vector2<float> const& tcd)
+        void SetTCoord(uint32_t i, Vector2<float> const& tcd)
         {
-            for (unsigned int unit = 0; unit < VA_MAX_TCOORD_UNITS; ++unit)
+            for (uint32_t unit = 0; unit < VAConstant::MAX_TCOORD_UNITS; ++unit)
             {
                 if (mAssignTCoords[unit])
                 {
@@ -222,7 +223,7 @@ namespace gte
             }
         }
 
-        void SetPlatonicTCoord(unsigned int i, Vector3<float> const& pos);
+        void SetPlatonicTCoord(uint32_t i, Vector3<float> const& pos);
 
         // Support for index buffers.
         void ReverseTriangleOrder(IndexBuffer* ibuffer);
@@ -231,12 +232,12 @@ namespace gte
         size_t mIndexSize;
         Resource::Usage mVBUsage, mIBUsage;
         bool mOutside;
-        bool mAssignTCoords[VA_MAX_TCOORD_UNITS];
+        std::array<bool, VAConstant::MAX_TCOORD_UNITS> mAssignTCoords;
 
         char* mPositions;
         char* mNormals;
         char* mTangents;
         char* mBitangents;
-        char* mTCoords[VA_MAX_TCOORD_UNITS];
+        std::array<char*, VAConstant::MAX_TCOORD_UNITS> mTCoords;
     };
 }

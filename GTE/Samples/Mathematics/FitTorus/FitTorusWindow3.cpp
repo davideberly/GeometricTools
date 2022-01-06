@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FitTorusWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -18,19 +18,19 @@ FitTorusWindow3::FitTorusWindow3(Parameters& parameters)
     mTextColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 
     mNoCullSolidState = std::make_shared<RasterizerState>();
-    mNoCullSolidState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullSolidState->fillMode = RasterizerState::FILL_SOLID;
+    mNoCullSolidState->cull = RasterizerState::Cull::NONE;
+    mNoCullSolidState->fill = RasterizerState::Fill::SOLID;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullSolidState);
 
     mBlendState = std::make_shared<BlendState>();
     mBlendState->target[0].enable = true;
-    mBlendState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mBlendState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mBlendState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mBlendState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mBlendState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mBlendState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
 
     CreateScene();
 
@@ -55,11 +55,11 @@ void FitTorusWindow3::OnIdle()
     mEngine->Draw(mPoints);
 
     mEngine->SetBlendState(mBlendState);
-    if (mGNTorus->culling == CullingMode::CULL_NEVER)
+    if (mGNTorus->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mGNTorus);
     }
-    if (mLMTorus->culling == CullingMode::CULL_NEVER)
+    if (mLMTorus->culling == CullingMode::NEVER)
     {
         mEngine->Draw(mLMTorus);
     }
@@ -74,7 +74,7 @@ void FitTorusWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool FitTorusWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FitTorusWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -90,23 +90,23 @@ bool FitTorusWindow3::OnCharPress(unsigned char key, int x, int y)
         }
         return true;
     case '0':
-        if (mGNTorus->culling == CullingMode::CULL_NEVER)
+        if (mGNTorus->culling == CullingMode::NEVER)
         {
-            mGNTorus->culling = CullingMode::CULL_ALWAYS;
+            mGNTorus->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mGNTorus->culling = CullingMode::CULL_NEVER;
+            mGNTorus->culling = CullingMode::NEVER;
         }
         return true;
     case '1':
-        if (mLMTorus->culling == CullingMode::CULL_NEVER)
+        if (mLMTorus->culling == CullingMode::NEVER)
         {
-            mLMTorus->culling = CullingMode::CULL_ALWAYS;
+            mLMTorus->culling = CullingMode::ALWAYS;
         }
         else
         {
-            mLMTorus->culling = CullingMode::CULL_NEVER;
+            mLMTorus->culling = CullingMode::NEVER;
         }
         return true;
     }
@@ -126,9 +126,9 @@ void FitTorusWindow3::CreateScene()
     double r0 = 1.0;
     double r1 = 0.25;
 
-    unsigned int const numPoints = 1024;
+    uint32_t const numPoints = 1024;
     std::vector<Vector3<double>> X(numPoints);
-    for (unsigned int i = 0; i < numPoints; ++i)
+    for (uint32_t i = 0; i < numPoints; ++i)
     {
         double angle0 = GTE_C_PI * rnd(dre);  // in [-pi,pi)
         double angle1 = GTE_C_PI * rnd(dre);  // in [-pi,pi)
@@ -158,13 +158,13 @@ void FitTorusWindow3::CreateScene()
 void FitTorusWindow3::CreatePoints(std::vector<Vector3<double>> const& X)
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    unsigned int numVertices = static_cast<unsigned int>(X.size());
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    uint32_t numVertices = static_cast<uint32_t>(X.size());
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[i][j] = static_cast<float>(X[i][j]);
         }
@@ -190,7 +190,7 @@ void FitTorusWindow3::CreateGNTorus(std::vector<Vector3<double>> const& X,
     double const errorDifferenceTolerance = 1e-08;
     bool useTorusInputAsInitialGuess = false;
 
-    auto result = fitter(static_cast<int>(X.size()), X.data(),
+    auto result = fitter(static_cast<int32_t>(X.size()), X.data(),
         maxIterations, updateLengthTolerance, errorDifferenceTolerance,
         useTorusInputAsInitialGuess, C, N, r0, r1);
     (void)result;
@@ -208,7 +208,7 @@ void FitTorusWindow3::CreateLMTorus(std::vector<Vector3<double>> const& X,
     size_t const maxAdjustments = 8;
     bool useTorusInputAsInitialGuess = false;
 
-    auto result = fitter(static_cast<int>(X.size()), X.data(),
+    auto result = fitter(static_cast<int32_t>(X.size()), X.data(),
         maxIterations, updateLengthTolerance, errorDifferenceTolerance,
         lambdaFactor, lambdaAdjust, maxAdjustments, useTorusInputAsInitialGuess,
         C, N, r0, r1);
@@ -220,29 +220,29 @@ std::shared_ptr<Visual> FitTorusWindow3::CreateTorusMesh(
     Vector4<float> const& color)
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
-    unsigned int const numCircleSamples = 16;
-    unsigned int const numRadialSamples = 16;
+    uint32_t const numCircleSamples = 16;
+    uint32_t const numRadialSamples = 16;
     auto torus = mf.CreateTorus(numCircleSamples, numRadialSamples,
         static_cast<float>(r0), static_cast<float>(r1));
-    torus->culling = CullingMode::CULL_ALWAYS;
+    torus->culling = CullingMode::ALWAYS;
 
     Vector3<float> center;
-    for (int j = 0; j < 3; ++j)
+    for (int32_t j = 0; j < 3; ++j)
     {
         center[j] = static_cast<float>(C[j]);
     }
     torus->localTransform.SetTranslation(-center);
 
-    Vector3<float> basis[3];
-    for (int j = 0; j < 3; ++j)
+    std::array<Vector3<float>, 3> basis{};
+    for (int32_t j = 0; j < 3; ++j)
     {
         basis[0][j] = static_cast<float>(N[j]);
     }
-    ComputeOrthogonalComplement(1, basis);
+    ComputeOrthogonalComplement(1, basis.data());
     Matrix3x3<float> rotate;
     rotate.SetCol(0, basis[1]);
     rotate.SetCol(1, basis[2]);

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ShaderReflectionConsole.h"
 
@@ -18,15 +18,18 @@
 
 ShaderReflectionConsole::ShaderReflectionConsole(Parameters& parameters)
     :
-    Console(parameters)
-{
+    Console(parameters),
 #if defined(GTE_USE_DIRECTX)
-    mCompileFlags =
-        D3DCOMPILE_ENABLE_STRICTNESS |
-        D3DCOMPILE_IEEE_STRICTNESS |
-        D3DCOMPILE_PACK_MATRIX_ROW_MAJOR |
-        D3DCOMPILE_OPTIMIZATION_LEVEL3;
+    mCompileFlags(D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_IEEE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3),
 #endif
+    mIOPath(""),
+    mExt("")
+{
+    if (!SetEnvironment())
+    {
+        parameters.created = false;
+        return;
+    }
 }
 
 void ShaderReflectionConsole::Execute()
@@ -40,19 +43,63 @@ void ShaderReflectionConsole::Execute()
     ReflectAppendConsume();
 }
 
+bool ShaderReflectionConsole::SetEnvironment()
+{
+    std::string path = GetGTEPath();
+    if (path == "")
+    {
+        return false;
+    }
+
+    mIOPath = path + "/Samples/Graphics/ShaderReflection/Shaders/";
+    mEnvironment.Insert(mIOPath);
+
+#if defined(GTE_USE_DIRECTX)
+    mExt = ".hlsl";
+#else
+    mExt = ".glsl";
+#endif
+
+    std::vector<std::string> inputs =
+    {
+        "AppendConsume.cs" + mExt,
+        "Billboards.gs" + mExt,
+        "Billboards.ps" + mExt,
+        "Billboards.vs" + mExt,
+        "NestedStruct.cs" + mExt,
+        "SimpleBuffers.cs" + mExt,
+        "TextureArrays.ps" + mExt,
+        "TextureArrays.vs" + mExt,
+        "Texturing.ps" + mExt,
+        "Texturing.vs" + mExt,
+        "VertexColoring.ps" + mExt,
+        "VertexColoring.vs" + mExt
+    };
+
+    for (auto const& input : inputs)
+    {
+        if (mEnvironment.GetPath(input) == "")
+        {
+            LogError("Cannot find file " + input);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void ShaderReflectionConsole::ReflectVertexColoring()
 {
+    std::string vsPath = mIOPath + "VertexColoring.vs" + mExt;
+    std::string psPath = mIOPath + "VertexColoring.ps" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection vshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/VertexColoring.vs.hlsl",
-        "VSMain",
-        "vs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        vsPath, "VSMain", "vs_5_0", ProgramDefines(), mCompileFlags);
 
     if (vshader.IsValid())
     {
-        std::ofstream vsout("Shaders/VertexColoring.vsreflect.txt");
+        std::ofstream vsout(mIOPath + "VertexColoring.vsreflect.txt");
         if (vsout)
         {
             vshader.Print(vsout);
@@ -61,15 +108,11 @@ void ShaderReflectionConsole::ReflectVertexColoring()
     }
 
     HLSLReflection pshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/VertexColoring.ps.hlsl",
-        "PSMain",
-        "ps_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        psPath, "PSMain", "ps_5_0", ProgramDefines(), mCompileFlags);
 
     if (pshader.IsValid())
     {
-        std::ofstream psout("Shaders/VertexColoring.psreflect.txt");
+        std::ofstream psout(mIOPath + "VertexColoring.psreflect.txt");
         if (psout)
         {
             pshader.Print(psout);
@@ -79,11 +122,11 @@ void ShaderReflectionConsole::ReflectVertexColoring()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(mProgramFactory->CreateFromFiles(
-        "Shaders/VertexColoring.vs.glsl", "Shaders/VertexColoring.ps.glsl", ""));
+    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(
+        mProgramFactory->CreateFromFiles(vsPath, psPath, ""));
     if (program)
     {
-        std::ofstream out("Shaders/VertexColoring.glslreflect.txt");
+        std::ofstream out(mIOPath + "VertexColoring.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -96,17 +139,16 @@ void ShaderReflectionConsole::ReflectVertexColoring()
 
 void ShaderReflectionConsole::ReflectTexturing()
 {
+    std::string vsPath = mIOPath + "Texturing.vs" + mExt;
+    std::string psPath = mIOPath + "Texturing.ps" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection vshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/Texturing.vs.hlsl",
-        "VSMain",
-        "vs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        vsPath, "VSMain", "vs_5_0", ProgramDefines(), mCompileFlags);
 
     if (vshader.IsValid())
     {
-        std::ofstream vsout("Shaders/Texturing.vsreflect.txt");
+        std::ofstream vsout(mIOPath + "Texturing.vsreflect.txt");
         if (vsout)
         {
             vshader.Print(vsout);
@@ -115,15 +157,11 @@ void ShaderReflectionConsole::ReflectTexturing()
     }
 
     HLSLReflection pshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/Texturing.ps.hlsl",
-        "PSMain",
-        "ps_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        psPath, "PSMain", "ps_5_0", ProgramDefines(), mCompileFlags);
 
     if (pshader.IsValid())
     {
-        std::ofstream psout("Shaders/Texturing.psreflect.txt");
+        std::ofstream psout(mIOPath + "Texturing.psreflect.txt");
         if (psout)
         {
             pshader.Print(psout);
@@ -133,11 +171,11 @@ void ShaderReflectionConsole::ReflectTexturing()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(mProgramFactory->CreateFromFiles(
-        "Shaders/Texturing.vs.glsl", "Shaders/Texturing.ps.glsl", ""));
+    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(
+        mProgramFactory->CreateFromFiles(vsPath, psPath, ""));
     if (program)
     {
-        std::ofstream out("Shaders/Texturing.glslreflect.txt");
+        std::ofstream out(mIOPath + "Texturing.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -150,13 +188,13 @@ void ShaderReflectionConsole::ReflectTexturing()
 
 void ShaderReflectionConsole::ReflectBillboards()
 {
+    std::string vsPath = mIOPath + "Billboards.vs" + mExt;
+    std::string gsPath = mIOPath + "Billboards.gs" + mExt;
+    std::string psPath = mIOPath + "Billboards.ps" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection vshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/Billboards.vs.hlsl",
-        "VSMain",
-        "vs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        vsPath, "VSMain", "vs_5_0", ProgramDefines(), mCompileFlags);
 
     if (vshader.IsValid())
     {
@@ -169,11 +207,7 @@ void ShaderReflectionConsole::ReflectBillboards()
     }
 
     HLSLReflection gshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/Billboards.gs.hlsl",
-        "GSMain",
-        "gs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        gsPath, "GSMain", "gs_5_0", ProgramDefines(), mCompileFlags);
 
     if (gshader.IsValid())
     {
@@ -186,11 +220,7 @@ void ShaderReflectionConsole::ReflectBillboards()
     }
 
     HLSLReflection pshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/Billboards.ps.hlsl",
-        "PSMain",
-        "ps_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        psPath, "PSMain", "ps_5_0", ProgramDefines(), mCompileFlags);
 
     if (pshader.IsValid())
     {
@@ -204,11 +234,11 @@ void ShaderReflectionConsole::ReflectBillboards()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(mProgramFactory->CreateFromFiles(
-        "Shaders/Billboards.vs.glsl", "Shaders/Billboards.ps.glsl", "Shaders/Billboards.gs.glsl"));
+    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(
+        mProgramFactory->CreateFromFiles(vsPath, psPath, gsPath));
     if (program)
     {
-        std::ofstream out("Shaders/Billboards.glslreflect.txt");
+        std::ofstream out(mIOPath + "Billboards.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -221,17 +251,15 @@ void ShaderReflectionConsole::ReflectBillboards()
 
 void ShaderReflectionConsole::ReflectNestedStruct()
 {
+    std::string csPath = mIOPath + "NestedStruct.cs" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection cshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/NestedStruct.cs.hlsl",
-        "CSMain",
-        "cs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        csPath, "CSMain", "cs_5_0", ProgramDefines(), mCompileFlags);
 
     if (cshader.IsValid())
     {
-        std::ofstream csout("Shaders/NestedStruct.csreflect.txt");
+        std::ofstream csout(mIOPath + "NestedStruct.csreflect.txt");
         if (csout)
         {
             cshader.Print(csout);
@@ -241,11 +269,11 @@ void ShaderReflectionConsole::ReflectNestedStruct()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(mProgramFactory->CreateFromFile(
-        "Shaders/NestedStruct.cs.glsl"));
+    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(
+        mProgramFactory->CreateFromFile(csPath));
     if (program)
     {
-        std::ofstream out("Shaders/NestedStruct.glslreflect.txt");
+        std::ofstream out(mIOPath + "NestedStruct.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -258,17 +286,16 @@ void ShaderReflectionConsole::ReflectNestedStruct()
 
 void ShaderReflectionConsole::ReflectTextureArrays()
 {
+    std::string vsPath = mIOPath + "TextureArrays.vs" + mExt;
+    std::string psPath = mIOPath + "TextureArrays.ps" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection vshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/TextureArrays.vs.hlsl",
-        "VSMain",
-        "vs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        vsPath, "VSMain", "vs_5_0", ProgramDefines(), mCompileFlags);
 
     if (vshader.IsValid())
     {
-        std::ofstream vsout("Shaders/TextureArrays.vsreflect.txt");
+        std::ofstream vsout(mIOPath + "TextureArrays.vsreflect.txt");
         if (vsout)
         {
             vshader.Print(vsout);
@@ -277,15 +304,11 @@ void ShaderReflectionConsole::ReflectTextureArrays()
     }
 
     HLSLReflection pshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/TextureArrays.ps.hlsl",
-        "PSMain",
-        "ps_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        psPath, "PSMain", "ps_5_0", ProgramDefines(), mCompileFlags);
 
     if (pshader.IsValid())
     {
-        std::ofstream psout("Shaders/TextureArrays.psreflect.txt");
+        std::ofstream psout(mIOPath + "TextureArrays.psreflect.txt");
         if (psout)
         {
             pshader.Print(psout);
@@ -295,11 +318,11 @@ void ShaderReflectionConsole::ReflectTextureArrays()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(mProgramFactory->CreateFromFiles(
-        "Shaders/TextureArrays.vs.glsl", "Shaders/TextureArrays.ps.glsl", ""));
+    auto program = std::dynamic_pointer_cast<GLSLVisualProgram>(
+        mProgramFactory->CreateFromFiles(vsPath, psPath, ""));
     if (program)
     {
-        std::ofstream out("Shaders/TextureArrays.glslreflect.txt");
+        std::ofstream out(mIOPath + "TextureArrays.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -312,17 +335,15 @@ void ShaderReflectionConsole::ReflectTextureArrays()
 
 void ShaderReflectionConsole::ReflectSimpleBuffers()
 {
+    std::string csPath = mIOPath + "SimpleBuffers.cs" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection cshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/SimpleBuffers.cs.hlsl",
-        "CSMain",
-        "cs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        csPath, "CSMain", "cs_5_0", ProgramDefines(), mCompileFlags);
 
     if (cshader.IsValid())
     {
-        std::ofstream csout("Shaders/SimpleBuffers.csreflect.txt");
+        std::ofstream csout(mIOPath + "SimpleBuffers.csreflect.txt");
         if (csout)
         {
             cshader.Print(csout);
@@ -332,11 +353,11 @@ void ShaderReflectionConsole::ReflectSimpleBuffers()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(mProgramFactory->CreateFromFile(
-        "Shaders/SimpleBuffers.cs.glsl"));
+    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(
+        mProgramFactory->CreateFromFile(csPath));
     if (program)
     {
-        std::ofstream out("Shaders/SimpleBuffers.glslreflect.txt");
+        std::ofstream out(mIOPath + "SimpleBuffers.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();
@@ -349,17 +370,15 @@ void ShaderReflectionConsole::ReflectSimpleBuffers()
 
 void ShaderReflectionConsole::ReflectAppendConsume()
 {
+    std::string csPath = mIOPath + "AppendConsume.cs" + mExt;
+
 #if defined(GTE_USE_DIRECTX)
     HLSLReflection cshader = HLSLShaderFactory::CreateFromFile(
-        "Shaders/AppendConsume.cs.hlsl",
-        "CSMain",
-        "cs_5_0",
-        ProgramDefines(),
-        mCompileFlags);
+        csPath, "CSMain", "cs_5_0", ProgramDefines(), mCompileFlags);
 
     if (cshader.IsValid())
     {
-        std::ofstream csout("Shaders/AppendConsume.csreflect.txt");
+        std::ofstream csout(mIOPath + "AppendConsume.csreflect.txt");
         if (csout)
         {
             cshader.Print(csout);
@@ -369,11 +388,11 @@ void ShaderReflectionConsole::ReflectAppendConsume()
 #endif
 
 #if defined(GTE_USE_OPENGL)
-    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(mProgramFactory->CreateFromFile(
-        "Shaders/AppendConsume.cs.glsl"));
+    auto program = std::dynamic_pointer_cast<GLSLComputeProgram>(
+        mProgramFactory->CreateFromFile(csPath));
     if (program)
     {
-        std::ofstream out("Shaders/AppendConsume.glslreflect.txt");
+        std::ofstream out(mIOPath + "AppendConsume.glslreflect.txt");
         if (out)
         {
             auto& reflection = program->GetReflector();

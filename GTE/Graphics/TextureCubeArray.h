@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/TextureArray.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -17,17 +18,17 @@ namespace gte
         // Construction.  Cube maps must be square; the 'length' parameter is
         // the shared value for width and height of a face.  The 'numCubes' is
         // the number of 6-tuples of cube maps.
-        TextureCubeArray(unsigned int numCubes, DFType format, unsigned int length,
+        TextureCubeArray(uint32_t numCubes, uint32_t format, uint32_t length,
             bool hasMipmaps = false, bool createStorage = true);
 
         // Member access.
-        inline unsigned int GetNumCubes() const
+        inline uint32_t GetNumCubes() const
         {
             return mNumCubes;
         }
 
         // The texture width and height are the same value.
-        inline unsigned int GetLength() const
+        inline uint32_t GetLength() const
         {
             return TextureArray::GetDimension(0);
         }
@@ -36,57 +37,57 @@ namespace gte
         // array so GetNumItems() will return a number that is the same as
         // 6*GetNumCubes().  These methods allow mapping between the array
         // itemIndex and the corresponding (cubeIndex, faceIndex) pair.
-        inline unsigned int GetItemIndexFor(unsigned int cube, unsigned int face) const
+        inline uint32_t GetItemIndexFor(uint32_t cube, uint32_t face) const
         {
-            return cube * 6 + face;
+            return cube * cubeFaceCount + face;
         }
 
-        inline unsigned int GetCubeIndexFor(unsigned int item) const
+        inline uint32_t GetCubeIndexFor(uint32_t item) const
         {
-            return item / 6;
+            return item / cubeFaceCount;
         }
 
-        inline unsigned int GetFaceIndexFor(unsigned int item) const
+        inline uint32_t GetFaceIndexFor(uint32_t item) const
         {
-            return item % 6;
+            return item % cubeFaceCount;
         }
 
         // Mipmap information.
-        inline unsigned int GetOffsetFor(unsigned int cube, unsigned int face, unsigned int level) const
+        inline uint32_t GetOffsetFor(uint32_t cube, uint32_t face, uint32_t level) const
         {
             return TextureArray::GetOffsetFor(GetItemIndexFor(cube, face), level);
         }
 
-        inline char const* GetDataFor(unsigned int cube, unsigned int face, unsigned int level) const
+        inline char const* GetDataFor(uint32_t cube, uint32_t face, uint32_t level) const
         {
             return TextureArray::GetDataFor(GetItemIndexFor(cube, face), level);
         }
 
-        inline char* GetDataFor(unsigned int cube, unsigned int face, unsigned int level)
+        inline char* GetDataFor(uint32_t cube, uint32_t face, uint32_t level)
         {
             return TextureArray::GetDataFor(GetItemIndexFor(cube, face), level);
         }
 
         template <typename T>
-        inline T const* GetFor(unsigned int cube, unsigned int face, unsigned int level) const
+        inline T const* GetFor(uint32_t cube, uint32_t face, uint32_t level) const
         {
             return TextureArray::GetFor<T>(GetItemIndexFor(cube, face), level);
         }
 
         template <typename T>
-        inline T* GetFor(unsigned int cube, unsigned int face, unsigned int level)
+        inline T* GetFor(uint32_t cube, uint32_t face, uint32_t level)
         {
             return TextureArray::GetFor<T>(GetItemIndexFor(cube, face), level);
         }
 
         // Subresource indexing:  index = numLevels*item + level
         // where item = cube*6 + face
-        inline unsigned int GetIndex(unsigned int cube, unsigned int face, unsigned int level) const
+        inline uint32_t GetIndex(uint32_t cube, uint32_t face, uint32_t level) const
         {
-            return mNumLevels * (6 * cube + face) + level;
+            return mNumLevels * (cubeFaceCount * cube + face) + level;
         }
 
     private:
-        unsigned int mNumCubes;
+        uint32_t mNumCubes;
     };
 }

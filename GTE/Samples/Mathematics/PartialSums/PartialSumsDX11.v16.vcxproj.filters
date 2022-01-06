@@ -27,8 +27,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PartialSums.cs.hlsl">
-      <Filter>Shader Files</Filter>
-    </FxCompile>
+    <None Include="Shaders\PartialSums.cs.hlsl" />
   </ItemGroup>
 </Project>

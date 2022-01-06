@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -50,20 +50,20 @@ namespace gte
         // constructor fails, the internal vertex pointer is set to null, the
         // index array has no elements, and the orientation is set to
         // clockwise.
-        Polygon2(Vector2<Real> const* vertexPool, int numIndices,
-            int const* indices, bool counterClockwise)
+        Polygon2(Vector2<Real> const* vertexPool, int32_t numIndices,
+            int32_t const* indices, bool counterClockwise)
             :
             mVertexPool(vertexPool),
             mCounterClockwise(counterClockwise)
         {
             if (numIndices >= 3 && vertexPool && indices)
             {
-                for (int i = 0; i < numIndices; ++i)
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
                     mVertices.insert(indices[i]);
                 }
 
-                if (numIndices == static_cast<int>(mVertices.size()))
+                if (numIndices == static_cast<int32_t>(mVertices.size()))
                 {
                     mIndices.resize(numIndices);
                     std::copy(indices, indices + numIndices, mIndices.begin());
@@ -94,12 +94,12 @@ namespace gte
             return mVertexPool;
         }
 
-        inline std::set<int> const& GetVertices() const
+        inline std::set<int32_t> const& GetVertices() const
         {
             return mVertices;
         }
 
-        inline std::vector<int> const& GetIndices() const
+        inline std::vector<int32_t> const& GetIndices() const
         {
             return mIndices;
         }
@@ -115,7 +115,7 @@ namespace gte
             Vector2<Real> average = Vector2<Real>::Zero();
             if (mVertexPool)
             {
-                for (int index : mVertices)
+                for (int32_t index : mVertices)
                 {
                     average += mVertexPool[index];
                 }
@@ -130,7 +130,7 @@ namespace gte
             if (mVertexPool)
             {
                 Vector2<Real> v0 = mVertexPool[mIndices.back()];
-                for (int index : mIndices)
+                for (int32_t index : mIndices)
                 {
                     Vector2<Real> v1 = mVertexPool[index];
                     length += Length(v1 - v0);
@@ -148,7 +148,7 @@ namespace gte
                 size_t const numIndices = mIndices.size();
                 Vector2<Real> v0 = mVertexPool[mIndices[numIndices - 2]];
                 Vector2<Real> v1 = mVertexPool[mIndices[numIndices - 1]];
-                for (int index : mIndices)
+                for (int32_t index : mIndices)
                 {
                     Vector2<Real> v2 = mVertexPool[index];
                     area += v1[0] * (v2[1] - v0[1]);
@@ -174,7 +174,7 @@ namespace gte
 
             // For mVertexPool to be nonnull, the number of indices is
             // guaranteed to be at least 3.
-            int const numIndices = static_cast<int>(mIndices.size());
+            int32_t const numIndices = static_cast<int32_t>(mIndices.size());
             if (numIndices == 3)
             {
                 // The polygon is a triangle.
@@ -195,7 +195,7 @@ namespace gte
 
             // For mVertexPool to be nonnull, the number of indices is
             // guaranteed to be at least 3.
-            int const numIndices = static_cast<int>(mIndices.size());
+            int32_t const numIndices = static_cast<int32_t>(mIndices.size());
             if (numIndices == 3)
             {
                 // The polygon is a triangle.
@@ -215,18 +215,18 @@ namespace gte
             TIQuery<Real, Segment2<Real>, Segment2<Real>> query;
             typename TIQuery<Real, Segment2<Real>, Segment2<Real>>::Result result;
 
-            int const numIndices = static_cast<int>(mIndices.size());
-            for (int i0 = 0; i0 < numIndices; ++i0)
+            int32_t const numIndices = static_cast<int32_t>(mIndices.size());
+            for (int32_t i0 = 0; i0 < numIndices; ++i0)
             {
-                int i0p1 = (i0 + 1) % numIndices;
+                int32_t i0p1 = (i0 + 1) % numIndices;
                 seg0.p[0] = mVertexPool[mIndices[i0]];
                 seg0.p[1] = mVertexPool[mIndices[i0p1]];
 
-                int i1min = (i0 + 2) % numIndices;
-                int i1max = (i0 - 2 + numIndices) % numIndices;
-                for (int i1 = i1min; i1 <= i1max; ++i1)
+                int32_t i1min = (i0 + 2) % numIndices;
+                int32_t i1max = (i0 - 2 + numIndices) % numIndices;
+                for (int32_t i1 = i1min; i1 <= i1max; ++i1)
                 {
-                    int i1p1 = (i1 + 1) % numIndices;
+                    int32_t i1p1 = (i1 + 1) % numIndices;
                     seg1.p[0] = mVertexPool[mIndices[i1]];
                     seg1.p[1] = mVertexPool[mIndices[i1p1]];
 
@@ -243,11 +243,11 @@ namespace gte
         bool IsConvexInternal() const
         {
             Real sign = (mCounterClockwise ? (Real)1 : (Real)-1);
-            int const numIndices = static_cast<int>(mIndices.size());
-            for (int i = 0; i < numIndices; ++i)
+            int32_t const numIndices = static_cast<int32_t>(mIndices.size());
+            for (int32_t i = 0; i < numIndices; ++i)
             {
-                int iPrev = (i + numIndices - 1) % numIndices;
-                int iNext = (i + 1) % numIndices;
+                int32_t iPrev = (i + numIndices - 1) % numIndices;
+                int32_t iNext = (i + 1) % numIndices;
                 Vector2<Real> vPrev = mVertexPool[mIndices[iPrev]];
                 Vector2<Real> vCurr = mVertexPool[mIndices[i]];
                 Vector2<Real> vNext = mVertexPool[mIndices[iNext]];
@@ -263,8 +263,8 @@ namespace gte
         }
 
         Vector2<Real> const* mVertexPool;
-        std::set<int> mVertices;
-        std::vector<int> mIndices;
+        std::set<int32_t> mVertices;
+        std::vector<int32_t> mIndices;
         bool mCounterClockwise;
     };
 }

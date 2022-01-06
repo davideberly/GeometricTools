@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -26,7 +26,7 @@ namespace gte
     {
     public:
         // Construction and destruction.
-        IntpAkimaUniform2(int xBound, int yBound, Real xMin, Real xSpacing,
+        IntpAkimaUniform2(int32_t xBound, int32_t yBound, Real xMin, Real xSpacing,
             Real yMin, Real ySpacing, Real const* F)
             :
             mXBound(xBound),
@@ -66,17 +66,17 @@ namespace gte
         ~IntpAkimaUniform2() = default;
 
         // Member access.
-        inline int GetXBound() const
+        inline int32_t GetXBound() const
         {
             return mXBound;
         }
 
-        inline int GetYBound() const
+        inline int32_t GetYBound() const
         {
             return mYBound;
         }
 
-        inline int GetQuantity() const
+        inline int32_t GetQuantity() const
         {
             return mQuantity;
         }
@@ -127,18 +127,18 @@ namespace gte
         {
             x = std::min(std::max(x, mXMin), mXMax);
             y = std::min(std::max(y, mYMin), mYMax);
-            int ix, iy;
+            int32_t ix, iy;
             Real dx, dy;
             XLookup(x, ix, dx);
             YLookup(y, iy, dy);
             return mPoly[iy][ix](dx, dy);
         }
 
-        Real operator()(int xOrder, int yOrder, Real x, Real y) const
+        Real operator()(int32_t xOrder, int32_t yOrder, Real x, Real y) const
         {
             x = std::min(std::max(x, mXMin), mXMax);
             y = std::min(std::max(y, mYMin), mYMax);
-            int ix, iy;
+            int32_t ix, iy;
             Real dx, dy;
             XLookup(x, ix, dx);
             YLookup(y, iy, dy);
@@ -159,7 +159,7 @@ namespace gte
 
             // P(x,y) = (1,x,x^2,x^3)*A*(1,y,y^2,y^3).  The matrix term A[ix][iy]
             // corresponds to the polynomial term x^{ix} y^{iy}.
-            Real& A(int ix, int iy)
+            Real& A(int32_t ix, int32_t iy)
             {
                 return mCoeff[ix][iy];
             }
@@ -167,7 +167,7 @@ namespace gte
             Real operator()(Real x, Real y) const
             {
                 std::array<Real, 4> B;
-                for (int i = 0; i <= 3; ++i)
+                for (int32_t i = 0; i <= 3; ++i)
                 {
                     B[i] = mCoeff[i][0] + y * (mCoeff[i][1] + y * (mCoeff[i][2] + y * mCoeff[i][3]));
                 }
@@ -175,7 +175,7 @@ namespace gte
                 return B[0] + x * (B[1] + x * (B[2] + x * B[3]));
             }
 
-            Real operator()(int xOrder, int yOrder, Real x, Real y) const
+            Real operator()(int32_t xOrder, int32_t yOrder, Real x, Real y) const
             {
                 std::array<Real, 4> xPow;
                 switch (xOrder)
@@ -260,7 +260,7 @@ namespace gte
         {
             Array2<Real> slope(static_cast<size_t>(mXBound) + 3, mYBound);
             Real invDX = (Real)1 / mXSpacing;
-            int ix, iy;
+            int32_t ix, iy;
             for (iy = 0; iy < mYBound; ++iy)
             {
                 for (ix = 0; ix < mXBound - 1; ++ix)
@@ -287,7 +287,7 @@ namespace gte
         {
             Array2<Real> slope(static_cast<size_t>(mYBound) + 3, mXBound);
             Real invDY = (Real)1 / mYSpacing;
-            int ix, iy;
+            int32_t ix, iy;
             for (ix = 0; ix < mXBound; ++ix)
             {
                 for (iy = 0; iy < mYBound - 1; ++iy)
@@ -312,11 +312,11 @@ namespace gte
 
         void GetFXY(Array2<Real> const& F, Array2<Real>& FXY)
         {
-            int xBoundM1 = mXBound - 1;
-            int yBoundM1 = mYBound - 1;
-            int ix0 = xBoundM1, ix1 = ix0 - 1, ix2 = ix1 - 1;
-            int iy0 = yBoundM1, iy1 = iy0 - 1, iy2 = iy1 - 1;
-            int ix, iy;
+            int32_t xBoundM1 = mXBound - 1;
+            int32_t yBoundM1 = mYBound - 1;
+            int32_t ix0 = xBoundM1, ix1 = ix0 - 1, ix2 = ix1 - 1;
+            int32_t iy0 = yBoundM1, iy1 = iy0 - 1, iy2 = iy1 - 1;
+            int32_t ix, iy;
 
             Real invDXDY = (Real)1 / (mXSpacing * mYSpacing);
 
@@ -407,11 +407,11 @@ namespace gte
         void GetPolynomials(Array2<Real> const& F, Array2<Real> const& FX,
             Array2<Real> const& FY, Array2<Real> const& FXY)
         {
-            int xBoundM1 = mXBound - 1;
-            int yBoundM1 = mYBound - 1;
-            for (int iy = 0; iy < yBoundM1; ++iy)
+            int32_t xBoundM1 = mXBound - 1;
+            int32_t yBoundM1 = mYBound - 1;
+            for (int32_t iy = 0; iy < yBoundM1; ++iy)
             {
-                for (int ix = 0; ix < xBoundM1; ++ix)
+                for (int32_t ix = 0; ix < xBoundM1; ++ix)
                 {
                     // Note the 'transposing' of the 2x2 blocks (to match
                     // notation used in the polynomial definition).
@@ -524,9 +524,9 @@ namespace gte
         }
 
         // Support for evaluation.
-        void XLookup(Real x, int& xIndex, Real& dx) const
+        void XLookup(Real x, int32_t& xIndex, Real& dx) const
         {
-            int xIndexP1;
+            int32_t xIndexP1;
             for (xIndex = 0, xIndexP1 = 1; xIndexP1 < mXBound; ++xIndex, ++xIndexP1)
             {
                 if (x < mXMin + mXSpacing * static_cast<Real>(xIndexP1))
@@ -540,9 +540,9 @@ namespace gte
             dx = x - (mXMin + mXSpacing * xIndex);
         }
 
-        void YLookup(Real y, int& yIndex, Real& dy) const
+        void YLookup(Real y, int32_t& yIndex, Real& dy) const
         {
-            int yIndexP1;
+            int32_t yIndexP1;
             for (yIndex = 0, yIndexP1 = 1; yIndexP1 < mYBound; ++yIndex, ++yIndexP1)
             {
                 if (y < mYMin + mYSpacing * static_cast<Real>(yIndexP1))
@@ -556,7 +556,7 @@ namespace gte
             dy = y - (mYMin + mYSpacing * yIndex);
         }
 
-        int mXBound, mYBound, mQuantity;
+        int32_t mXBound, mYBound, mQuantity;
         Real mXMin, mXMax, mXSpacing;
         Real mYMin, mYMax, mYSpacing;
         Real const* mF;

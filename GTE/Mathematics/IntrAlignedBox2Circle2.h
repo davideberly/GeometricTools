@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -79,7 +79,7 @@ namespace gte
             //      intersectionType = +1
             //      contactTime = first time T > 0
             //      contactPoint = corresponding first contact
-            int intersectionType;
+            int32_t intersectionType;
             T contactTime;
             Vector2<T> contactPoint;
 
@@ -107,7 +107,7 @@ namespace gte
             // Change signs on components, if necessary, to transform C to the
             // first quadrant.  Adjust the velocity accordingly.
             std::array<T, 2> sign = { (T)0, (T)0 };
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 if (C[i] >= (T)0)
                 {
@@ -126,7 +126,7 @@ namespace gte
             if (result.intersectionType != 0)
             {
                 // Translate back to the original coordinate system.
-                for (int i = 0; i < 2; ++i)
+                for (int32_t i = 0; i < 2; ++i)
                 {
                     if (sign[i] < (T)0)
                     {
@@ -205,7 +205,7 @@ namespace gte
             result.contactPoint = C;
         }
 
-        void EdgeOverlap(int i0, int i1, Vector2<T> const& K, Vector2<T> const& C,
+        void EdgeOverlap(int32_t i0, int32_t i1, Vector2<T> const& K, Vector2<T> const& C,
             Vector2<T> const& delta, T radius, Result& result)
         {
             result.intersectionType = (delta[i0] < radius ? -1 : 1);
@@ -240,7 +240,7 @@ namespace gte
             }
         }
 
-        void EdgeUnbounded(int i0, int i1, Vector2<T> const& K0, Vector2<T> const& C,
+        void EdgeUnbounded(int32_t i0, int32_t i1, Vector2<T> const& K0, Vector2<T> const& C,
             T radius, Vector2<T> const& delta0, Vector2<T> const& V, Result& result)
         {
             if (V[i0] < (T)0)
@@ -341,7 +341,7 @@ namespace gte
             }
         }
 
-        void IntersectsVertex(int i0, int i1, Vector2<T> const& K,
+        void IntersectsVertex(int32_t i0, int32_t i1, Vector2<T> const& K,
             T q0, T q1, T q2, Result& result)
         {
             result.intersectionType = +1;
@@ -350,7 +350,7 @@ namespace gte
             result.contactPoint[i1] = K[i1];
         }
 
-        void IntersectsEdge(int i0, int i1, Vector2<T> const& K0, Vector2<T> const& C,
+        void IntersectsEdge(int32_t i0, int32_t i1, Vector2<T> const& K0, Vector2<T> const& C,
             T radius, Vector2<T> const& V, Result& result)
         {
             result.intersectionType = +1;

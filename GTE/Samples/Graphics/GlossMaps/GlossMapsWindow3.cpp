@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GlossMapsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -75,9 +75,9 @@ void GlossMapsWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
@@ -94,8 +94,8 @@ void GlossMapsWindow3::CreateScene()
     vertices[3].normal = { 0.0f, 1.0f, 0.0f };
     vertices[3].tcoord = { 0.0f, 1.0f };
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
-    auto* indices = ibuffer->Get<unsigned int>();
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
+    auto* indices = ibuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 1;  indices[2] = 3;
     indices[3] = 3;  indices[4] = 1;  indices[5] = 2;
 
@@ -131,8 +131,8 @@ void GlossMapsWindow3::CreateScene()
     std::string path = mEnvironment.GetPath("Magic.png");
     auto texture = WICFileIO::Load(path, false);
     mGMEffect = std::make_shared<GlossMapEffect>(mProgramFactory, mUpdater,
-        material, lighting, geometry1, texture, SamplerState::MIN_L_MAG_L_MIP_P,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        material, lighting, geometry1, texture, SamplerState::Filter::MIN_L_MAG_L_MIP_P,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mSquareGloss = std::make_shared<Visual>(vbuffer, ibuffer, mGMEffect);
     mSquareGloss->localTransform.SetRotation(aa);
     mSquareGloss->localTransform.SetTranslation(-1.0f, -1.0f, 0.0f);
@@ -149,8 +149,8 @@ void GlossMapsWindow3::UpdateConstants()
     Matrix4x4<float> invWMatrix0 = mSquareNoGloss->worldTransform.GetHInverse();
     Matrix4x4<float> invWMatrix1 = mSquareGloss->worldTransform.GetHInverse();
     Vector4<float> cameraWorldPosition = mCamera->GetPosition();
-    auto geometry0 = mDLEffect->GetGeometry();
-    auto geometry1 = mGMEffect->GetGeometry();
+    auto const& geometry0 = mDLEffect->GetGeometry();
+    auto const& geometry1 = mGMEffect->GetGeometry();
     geometry0->cameraModelPosition = DoTransform(invWMatrix0, cameraWorldPosition);
     geometry0->lightModelDirection = DoTransform(invWMatrix0, mLightWorldDirection);
     geometry1->cameraModelPosition = DoTransform(invWMatrix1, cameraWorldPosition);

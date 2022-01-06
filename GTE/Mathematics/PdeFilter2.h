@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -19,8 +19,8 @@ namespace gte
     {
     public:
         // Abstract base class.
-        PdeFilter2(int xBound, int yBound, Real xSpacing, Real ySpacing,
-            Real const* data, int const* mask, Real borderValue,
+        PdeFilter2(int32_t xBound, int32_t yBound, Real xSpacing, Real ySpacing,
+            Real const* data, int32_t const* mask, Real borderValue,
             typename PdeFilter<Real>::ScaleType scaleType)
             :
             PdeFilter<Real>(xBound * yBound, data, borderValue, scaleType),
@@ -43,15 +43,15 @@ namespace gte
             mMask(static_cast<size_t>(xBound) + 2, static_cast<size_t>(yBound) + 2),
             mHasMask(mask != nullptr)
         {
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 mBuffer[i] = Array2<Real>(static_cast<size_t>(xBound) + 2, static_cast<size_t>(yBound) + 2);
             }
                     
             // The mBuffer[] are ping-pong buffers for filtering.
-            for (int y = 0, yp = 1, i = 0; y < mYBound; ++y, ++yp)
+            for (int32_t y = 0, yp = 1, i = 0; y < mYBound; ++y, ++yp)
             {
-                for (int x = 0, xp = 1; x < mXBound; ++x, ++xp, ++i)
+                for (int32_t x = 0, xp = 1; x < mXBound; ++x, ++xp, ++i)
                 {
                     mBuffer[mSrc][yp][xp] = this->mOffset + (data[i] - this->mMin) * this->mScale;
                     mBuffer[mDst][yp][xp] = (Real)0;
@@ -93,12 +93,12 @@ namespace gte
         // thick border to support filtering on the image boundary.  These
         // images are of size (xbound+2)-by-(ybound+2).  The correct lookups
         // into the padded arrays are handled internally.
-        inline int GetXBound() const
+        inline int32_t GetXBound() const
         {
             return mXBound;
         }
 
-        inline int GetYBound() const
+        inline int32_t GetYBound() const
         {
             return mYBound;
         }
@@ -119,51 +119,51 @@ namespace gte
         // 0 <= y < ybound.  TODO: If larger neighborhoods are desired at a
         // later date, the padding and associated code must be adjusted
         // accordingly.
-        Real GetU(int x, int y) const
+        Real GetU(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp1 = x + 1, yp1 = y + 1;
+            int32_t xp1 = x + 1, yp1 = y + 1;
             return F[yp1][xp1];
         }
 
-        Real GetUx(int x, int y) const
+        Real GetUx(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp2 = x + 2, yp1 = y + 1;
+            int32_t xp2 = x + 2, yp1 = y + 1;
             return mHalfInvDx * (F[yp1][xp2] - F[yp1][x]);
         }
 
-        Real GetUy(int x, int y) const
+        Real GetUy(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp1 = x + 1, yp2 = y + 2;
+            int32_t xp1 = x + 1, yp2 = y + 2;
             return mHalfInvDy * (F[yp2][xp1] - F[y][xp1]);
         }
 
-        Real GetUxx(int x, int y) const
+        Real GetUxx(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp1 = x + 1, xp2 = x + 2, yp1 = y + 1;
+            int32_t xp1 = x + 1, xp2 = x + 2, yp1 = y + 1;
             return mInvDxDx * (F[yp1][xp2] - (Real)2 * F[yp1][xp1] + F[yp1][x]);
         }
 
-        Real GetUxy(int x, int y) const
+        Real GetUxy(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp2 = x + 2, yp2 = y + 2;
+            int32_t xp2 = x + 2, yp2 = y + 2;
             return mFourthInvDxDy * (F[y][x] - F[y][xp2] + F[yp2][xp2] - F[yp2][x]);
         }
 
-        Real GetUyy(int x, int y) const
+        Real GetUyy(int32_t x, int32_t y) const
         {
             auto const& F = mBuffer[mSrc];
-            int xp1 = x + 1, yp1 = y + 1, yp2 = y + 2;
+            int32_t xp1 = x + 1, yp1 = y + 1, yp2 = y + 2;
             return mInvDyDy * (F[yp2][xp1] - (Real)2 * F[yp1][xp1] + F[y][xp1]);
         }
 
-        int GetMask(int x, int y) const
+        int32_t GetMask(int32_t x, int32_t y) const
         {
-            int xp1 = x + 1, yp1 = y + 1;
+            int32_t xp1 = x + 1, yp1 = y + 1;
             return mMask[yp1][xp1];
         }
 
@@ -171,8 +171,8 @@ namespace gte
         // Assign values to the 1-pixel image border.
         void AssignDirichletImageBorder()
         {
-            int xBp1 = mXBound + 1, yBp1 = mYBound + 1;
-            int x, y;
+            int32_t xBp1 = mXBound + 1, yBp1 = mYBound + 1;
+            int32_t x, y;
 
             // vertex (0,0)
             mBuffer[mSrc][0][0] = this->mBorderValue;
@@ -245,8 +245,8 @@ namespace gte
 
         void AssignNeumannImageBorder()
         {
-            int xBp1 = mXBound + 1, yBp1 = mYBound + 1;
-            int x, y;
+            int32_t xBp1 = mXBound + 1, yBp1 = mYBound + 1;
+            int32_t x, y;
             Real duplicate;
 
             // vertex (0,0)
@@ -329,9 +329,9 @@ namespace gte
         // Assign values to the 1-pixel mask border.
         void AssignDirichletMaskBorder()
         {
-            for (int y = 1; y <= mYBound; ++y)
+            for (int32_t y = 1; y <= mYBound; ++y)
             {
-                for (int x = 1; x <= mXBound; ++x)
+                for (int32_t x = 1; x <= mXBound; ++x)
                 {
                     if (mMask[y][x])
                     {
@@ -339,9 +339,9 @@ namespace gte
                     }
 
                     bool found = false;
-                    for (int i1 = 0, j1 = y - 1; i1 < 3 && !found; ++i1, ++j1)
+                    for (int32_t i1 = 0, j1 = y - 1; i1 < 3 && !found; ++i1, ++j1)
                     {
-                        for (int i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
+                        for (int32_t i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
                         {
                             if (mMask[j1][j0])
                             {
@@ -361,20 +361,20 @@ namespace gte
             // Recompute the values just outside the masked region.  This
             // guarantees that derivative estimations use the current values
             // around the boundary.
-            for (int y = 1; y <= mYBound; ++y)
+            for (int32_t y = 1; y <= mYBound; ++y)
             {
-                for (int x = 1; x <= mXBound; ++x)
+                for (int32_t x = 1; x <= mXBound; ++x)
                 {
                     if (mMask[y][x])
                     {
                         continue;
                     }
 
-                    int count = 0;
+                    int32_t count = 0;
                     Real average = (Real)0;
-                    for (int i1 = 0, j1 = y - 1; i1 < 3; ++i1, ++j1)
+                    for (int32_t i1 = 0, j1 = y - 1; i1 < 3; ++i1, ++j1)
                     {
-                        for (int i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
+                        for (int32_t i0 = 0, j0 = x - 1; i0 < 3; ++i0, ++j0)
                         {
                             if (mMask[j1][j0])
                             {
@@ -413,9 +413,9 @@ namespace gte
         // that is not masked out.
         virtual void OnUpdate() override
         {
-            for (int y = 1; y <= mYBound; ++y)
+            for (int32_t y = 1; y <= mYBound; ++y)
             {
-                for (int x = 1; x <= mXBound; ++x)
+                for (int32_t x = 1; x <= mXBound; ++x)
                 {
                     if (!mHasMask || mMask[y][x])
                     {
@@ -436,14 +436,14 @@ namespace gte
         // The per-pixel processing depends on the PDE algorithm.  The (x,y)
         // must be in padded coordinates: 1 <= x <= xbound and
         // 1 <= y <= ybound.
-        virtual void OnUpdateSingle(int x, int y) = 0;
+        virtual void OnUpdateSingle(int32_t x, int32_t y) = 0;
 
         // Copy source data to temporary storage.
-        void LookUp5(int x, int y)
+        void LookUp5(int32_t x, int32_t y)
         {
             auto const& F = mBuffer[mSrc];
-            int xm = x - 1, xp = x + 1;
-            int ym = y - 1, yp = y + 1;
+            int32_t xm = x - 1, xp = x + 1;
+            int32_t ym = y - 1, yp = y + 1;
             mUzm = F[ym][x];
             mUmz = F[y][xm];
             mUzz = F[y][x];
@@ -451,11 +451,11 @@ namespace gte
             mUzp = F[yp][x];
         }
 
-        void LookUp9(int x, int y)
+        void LookUp9(int32_t x, int32_t y)
         {
             auto const& F = mBuffer[mSrc];
-            int xm = x - 1, xp = x + 1;
-            int ym = y - 1, yp = y + 1;
+            int32_t xm = x - 1, xp = x + 1;
+            int32_t ym = y - 1, yp = y + 1;
             mUmm = F[ym][xm];
             mUzm = F[ym][x];
             mUpm = F[ym][xp];
@@ -468,7 +468,7 @@ namespace gte
         }
 
         // Image parameters.
-        int mXBound, mYBound;
+        int32_t mXBound, mYBound;
         Real mXSpacing;       // dx
         Real mYSpacing;       // dy
         Real mInvDx;          // 1/dx
@@ -488,8 +488,8 @@ namespace gte
 
         // Successive iterations toggle between two buffers.
         std::array<Array2<Real>, 2> mBuffer;
-        int mSrc, mDst;
-        Array2<int> mMask;
+        int32_t mSrc, mDst;
+        Array2<int32_t> mMask;
         bool mHasMask;
     };
 }

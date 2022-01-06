@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.25
+// Version: 6.0.2022.01.06
 
 #include "GenerateMeshUVsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -32,10 +32,10 @@ GenerateMeshUVsWindow3::GenerateMeshUVsWindow3(Parameters& parameters)
     }
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
     mEngine->SetRasterizerState(mNoCullState);
 
     CreateScene();
@@ -63,7 +63,7 @@ void GenerateMeshUVsWindow3::OnIdle()
     mEngine->DisplayColorBuffer(0);
 }
 
-bool GenerateMeshUVsWindow3::OnCharPress(unsigned char key, int x, int y)
+bool GenerateMeshUVsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -119,17 +119,17 @@ void GenerateMeshUVsWindow3::CreateMeshOriginal()
 
     // Generate a perturbed hemisphere.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mMeshOriginal = mf.CreateDisk(16, 16, 1.0f);
     float height = 0.25f;
     float radius = std::sqrt(1.0f - height*height);
-    auto vbuffer = mMeshOriginal->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mMeshOriginal->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     Vertex* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         // Start with a hemisphere.
         float x = radius * vertices[i].position[0];
@@ -144,7 +144,7 @@ void GenerateMeshUVsWindow3::CreateMeshOriginal()
     std::string path = mEnvironment.GetPath("MedicineBag.png");
     auto texture = WICFileIO::Load(path, false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mMeshOriginal->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mMeshOriginal->worldTransform, effect->GetPVWMatrixConstant());
@@ -169,16 +169,16 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
 #endif
 
     auto const& vbuffer = mMeshOriginal->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    uint32_t numVertices = vbuffer->GetNumElements();
     Vertex* vertices = vbuffer->Get<Vertex>();
 
     auto const& ibuffer = mMeshOriginal->GetIndexBuffer();
-    int numIndices = (int)ibuffer->GetNumElements();
-    int const* indices = ibuffer->Get<int>();
+    int32_t numIndices = (int32_t)ibuffer->GetNumElements();
+    int32_t const* indices = ibuffer->Get<int32_t>();
     std::vector<Vector3<GPUFloat>> dvertices(numVertices);
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             dvertices[i][j] = static_cast<GPUFloat>(vertices[i].position[j]);
         }
@@ -200,35 +200,35 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
     GPUGenerateMeshUV<GPUFloat> pm(mEngine, mProgramFactory);
 #endif
     std::vector<Vector2<GPUFloat>> tcoords(numVertices);
-    unsigned int numGaussSeidelIterations = 128;
+    uint32_t numGaussSeidelIterations = 128;
     pm(numGaussSeidelIterations, true, numVertices, &dvertices[0], numIndices,
         indices, &tcoords[0]);
 
     // Resample the mesh.
     typedef BSNumber<UIntegerAP32> Numeric;
     typedef BSRational<UIntegerAP32> Rational;
-    int numTriangles = numIndices / 3;
+    int32_t numTriangles = numIndices / 3;
     PlanarMesh<GPUFloat, Numeric, Rational> pmesh(numVertices, &tcoords[0],
         numTriangles, &indices[0]);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int size = 64;
+    int32_t size = 64;
     GPUFloat dsize = static_cast<GPUFloat>(size);
     mMeshResampled = mf.CreateRectangle(size, size, 1.0f, 1.0f);
     vertices = mMeshResampled->GetVertexBuffer()->Get<Vertex>();
 
     Vector2<GPUFloat> P{ static_cast<GPUFloat>(0), static_cast<GPUFloat>(0) };
-    int triangle = 0;
+    int32_t triangle = 0;
     std::array<GPUFloat, 3> bary = { static_cast<GPUFloat>(0), static_cast<GPUFloat>(0), static_cast<GPUFloat>(0) };
-    std::array<int, 3> lookup = { 0, 0, 0 };
-    for (int y = 0; y < size; ++y)
+    std::array<int32_t, 3> lookup = { 0, 0, 0 };
+    for (int32_t y = 0; y < size; ++y)
     {
         P[1] = y / dsize;
-        for (int x = 0; x < size; ++x)
+        for (int32_t x = 0; x < size; ++x)
         {
             P[0] = x / dsize;
             triangle = pmesh.GetContainingTriangle(P, triangle);
@@ -240,7 +240,7 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
                     bary[0] * dvertices[lookup[0]] +
                     bary[1] * dvertices[lookup[1]] +
                     bary[2] * dvertices[lookup[2]];
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     vertices[x + size * y].position[i] = static_cast<float>(resampled[i]);
                 }
@@ -249,7 +249,7 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
             {
                 std::cout << "GetContainingTriangle failed at (" << x << "," << y << ")" << std::endl;
                 triangle = 0;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     vertices[x + size*y].position[i] = 0.0f;
                 }
@@ -260,8 +260,8 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
     std::string path = mEnvironment.GetPath("MedicineBag.png");
     auto texture = WICFileIO::Load(path, false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP,
-        SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP);
     mMeshResampled->SetEffect(effect);
 
     mPVWMatrices.Subscribe(mMeshResampled->worldTransform,  effect->GetPVWMatrixConstant());

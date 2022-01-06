@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,12 +22,12 @@ namespace gte
     class ApprGreatCircle3
     {
     public:
-        void operator()(int numPoints, Vector3<Real> const* points, Vector3<Real>& normal) const
+        void operator()(int32_t numPoints, Vector3<Real> const* points, Vector3<Real>& normal) const
         {
             // Compute the covariance matrix of the vectors.
             Real covar00 = (Real)0, covar01 = (Real)0, covar02 = (Real)0;
             Real covar11 = (Real)0, covar12 = (Real)0, covar22 = (Real)0;
-            for (int i = 0; i < numPoints; i++)
+            for (int32_t i = 0; i < numPoints; i++)
             {
                 Vector3<Real> diff = points[i];
                 covar00 += diff[0] * diff[0];
@@ -69,7 +69,7 @@ namespace gte
     class ApprGreatArc3
     {
     public:
-        void operator()(int numPoints, Vector3<Real> const* points,
+        void operator()(int32_t numPoints, Vector3<Real> const* points,
             Vector3<Real>& normal, Vector3<Real>& arcEnd0,
             Vector3<Real>& arcEnd1) const
         {
@@ -89,7 +89,7 @@ namespace gte
             // instead computing t = atan2(v[i],u[i]).  The items[] represents
             // (u, v, angle).
             std::vector<std::array<Real, 3>> items(numPoints);
-            for (int i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 items[i][0] = Dot(basis[1], points[i]);
                 items[i][1] = Dot(basis[2], points[i]);
@@ -105,10 +105,10 @@ namespace gte
             // Locate the pair of consecutive angles whose difference is a
             // maximum.  Effectively, we are constructing a cone of minimum
             // angle that contains the unit-length vectors.
-            int numPointsM1 = numPoints - 1;
+            int32_t numPointsM1 = numPoints - 1;
             Real maxDiff = (Real)GTE_C_TWO_PI + items[0][2] - items[numPointsM1][2];
-            int end0 = 0, end1 = numPointsM1;
-            for (int i0 = 0, i1 = 1; i0 < numPointsM1; i0 = i1++)
+            int32_t end0 = 0, end1 = numPointsM1;
+            for (int32_t i0 = 0, i1 = 1; i0 < numPointsM1; i0 = i1++)
             {
                 Real diff = items[i1][2] - items[i0][2];
                 if (diff > maxDiff)

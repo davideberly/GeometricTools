@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ namespace gte
         // number.  In the second constructor, the degree is the number of
         // initializers plus 1, but then adjusted so that coefficient[degree]
         // is not zero (unless all initializer values are zero).
-        Polynomial1(unsigned int degree = 0)
+        Polynomial1(uint32_t degree = 0)
             :
             mCoefficient(static_cast<size_t>(degree) + 1, (Real)0)
         {
@@ -44,7 +44,7 @@ namespace gte
         // Support for partial construction, where the default constructor is
         // used when the degree is not yet known.  The coefficients are
         // uninitialized.
-        void SetDegree(unsigned int degree)
+        void SetDegree(uint32_t degree)
         {
             mCoefficient.resize(static_cast<size_t>(degree) + 1);
         }
@@ -56,18 +56,18 @@ namespace gte
         }
 
         // Member access.
-        inline unsigned int GetDegree() const
+        inline uint32_t GetDegree() const
         {
             // By design, mCoefficient.size() > 0.
-            return static_cast<unsigned int>(mCoefficient.size() - 1);
+            return static_cast<uint32_t>(mCoefficient.size() - 1);
         }
 
-        inline Real const& operator[](unsigned int i) const
+        inline Real const& operator[](uint32_t i) const
         {
             return mCoefficient[i];
         }
 
-        inline Real& operator[](unsigned int i)
+        inline Real& operator[](uint32_t i)
         {
             return mCoefficient[i];
         }
@@ -108,7 +108,7 @@ namespace gte
         // function returns zero.
         Real operator()(Real t) const
         {
-            int i = static_cast<int>(mCoefficient.size());
+            int32_t i = static_cast<int32_t>(mCoefficient.size());
             Real result = mCoefficient[--i];
             for (--i; i >= 0; --i)
             {
@@ -121,11 +121,11 @@ namespace gte
         // Compute the derivative of the polynomial.
         Polynomial1 GetDerivative() const
         {
-            unsigned int const degree = GetDegree();
+            uint32_t const degree = GetDegree();
             if (degree > 0)
             {
                 Polynomial1 result(degree - 1);
-                for (unsigned int i0 = 0, i1 = 1; i0 < degree; ++i0, ++i1)
+                for (uint32_t i0 = 0, i1 = 1; i0 < degree; ++i0, ++i1)
                 {
                     result.mCoefficient[i0] = mCoefficient[i1] * (Real)i1;
                 }
@@ -142,9 +142,9 @@ namespace gte
         // Inversion (invpoly[i] = poly[degree-i] for 0 <= i <= degree).
         Polynomial1 GetInversion() const
         {
-            unsigned int const degree = GetDegree();
+            uint32_t const degree = GetDegree();
             Polynomial1 result(degree);
-            for (unsigned int i = 0; i <= degree; ++i)
+            for (uint32_t i = 0; i <= degree; ++i)
             {
                 result.mCoefficient[i] = mCoefficient[degree - i];
             }
@@ -155,9 +155,9 @@ namespace gte
         Polynomial1 GetTranslation(Real t0) const
         {
             Polynomial1<Real> factor{ -t0, (Real)1 };  // f(t) = t - t0
-            unsigned int const degree = GetDegree();
+            uint32_t const degree = GetDegree();
             Polynomial1 result{ mCoefficient[degree] };
-            for (unsigned int i = 1, j = degree - 1; i <= degree; ++i, --j)
+            for (uint32_t i = 1, j = degree - 1; i <= degree; ++i, --j)
             {
                 result = mCoefficient[j] + factor * result;
             }
@@ -179,8 +179,8 @@ namespace gte
             if (size > 1)
             {
                 Real const zero = (Real)0;
-                int leading;
-                for (leading = static_cast<int>(size) - 1; leading > 0; --leading)
+                int32_t leading;
+                for (leading = static_cast<int32_t>(size) - 1; leading > 0; --leading)
                 {
                     if (mCoefficient[leading] != zero)
                     {
@@ -200,8 +200,8 @@ namespace gte
         void Divide(Polynomial1 const& divisor, Polynomial1& quotient, Polynomial1& remainder) const
         {
             Real const zero = (Real)0;
-            int divisorDegree = static_cast<int>(divisor.GetDegree());
-            int quotientDegree = static_cast<int>(GetDegree()) - divisorDegree;
+            int32_t divisorDegree = static_cast<int32_t>(divisor.GetDegree());
+            int32_t quotientDegree = static_cast<int32_t>(GetDegree()) - divisorDegree;
             if (quotientDegree >= 0)
             {
                 quotient.SetDegree(quotientDegree);
@@ -211,9 +211,9 @@ namespace gte
 
                 // Do the division using the Euclidean algorithm.
                 Real inv = ((Real)1) / divisor[divisorDegree];
-                for (int i = quotientDegree; i >= 0; --i)
+                for (int32_t i = quotientDegree; i >= 0; --i)
                 {
-                    int j = divisorDegree + i;
+                    int32_t j = divisorDegree + i;
                     quotient[i] = inv * tmp[j];
                     for (j--; j >= i; j--)
                     {
@@ -224,14 +224,14 @@ namespace gte
                 // Calculate the correct degree for the remainder.
                 if (divisorDegree >= 1)
                 {
-                    int remainderDegree = divisorDegree - 1;
+                    int32_t remainderDegree = divisorDegree - 1;
                     while (remainderDegree > 0 && tmp[remainderDegree] == zero)
                     {
                         --remainderDegree;
                     }
 
                     remainder.SetDegree(remainderDegree);
-                    for (int i = 0; i <= remainderDegree; ++i)
+                    for (int32_t i = 0; i <= remainderDegree; ++i)
                     {
                         remainder[i] = tmp[i];
                     }
@@ -257,10 +257,10 @@ namespace gte
             Real const one(1);
             if (mCoefficient.back() != one)
             {
-                unsigned int degree = GetDegree();
+                uint32_t degree = GetDegree();
                 Real invLeading = one / mCoefficient.back();
                 mCoefficient.back() = one;
-                for (unsigned int i = 0; i < degree; ++i)
+                for (uint32_t i = 0; i < degree; ++i)
                 {
                     mCoefficient[i] *= invLeading;
                 }
@@ -360,9 +360,9 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator-(Polynomial1<Real> const& p)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
-        for (unsigned int i = 0; i <= degree; ++i)
+        for (uint32_t i = 0; i <= degree; ++i)
         {
             result[i] = -p[i];
         }
@@ -373,8 +373,8 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator+(Polynomial1<Real> const& p0, Polynomial1<Real> const& p1)
     {
-        unsigned int const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
-        unsigned int i;
+        uint32_t const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
+        uint32_t i;
         if (p0Degree >= p1Degree)
         {
             Polynomial1<Real> result(p0Degree);
@@ -408,8 +408,8 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator-(Polynomial1<Real> const& p0, Polynomial1<Real> const& p1)
     {
-        unsigned int const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
-        unsigned int i;
+        uint32_t const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
+        uint32_t i;
         if (p0Degree >= p1Degree)
         {
             Polynomial1<Real> result(p0Degree);
@@ -443,12 +443,12 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator*(Polynomial1<Real> const& p0, Polynomial1<Real> const& p1)
     {
-        unsigned int const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
+        uint32_t const p0Degree = p0.GetDegree(), p1Degree = p1.GetDegree();
         Polynomial1<Real> result(p0Degree + p1Degree);
         result.SetCoefficients((Real)0);
-        for (unsigned int i0 = 0; i0 <= p0Degree; ++i0)
+        for (uint32_t i0 = 0; i0 <= p0Degree; ++i0)
         {
-            for (unsigned int i1 = 0; i1 <= p1Degree; ++i1)
+            for (uint32_t i1 = 0; i1 <= p1Degree; ++i1)
             {
                 result[i0 + i1] += p0[i0] * p1[i1];
             }
@@ -459,10 +459,10 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator+(Polynomial1<Real> const& p, Real scalar)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
         result[0] = p[0] + scalar;
-        for (unsigned int i = 1; i <= degree; ++i)
+        for (uint32_t i = 1; i <= degree; ++i)
         {
             result[i] = p[i];
         }
@@ -472,10 +472,10 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator+(Real scalar, Polynomial1<Real> const& p)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
         result[0] = p[0] + scalar;
-        for (unsigned int i = 1; i <= degree; ++i)
+        for (uint32_t i = 1; i <= degree; ++i)
         {
             result[i] = p[i];
         }
@@ -485,10 +485,10 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator-(Polynomial1<Real> const& p, Real scalar)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
         result[0] = p[0] - scalar;
-        for (unsigned int i = 1; i <= degree; ++i)
+        for (uint32_t i = 1; i <= degree; ++i)
         {
             result[i] = p[i];
         }
@@ -498,10 +498,10 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator-(Real scalar, Polynomial1<Real> const& p)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
         result[0] = scalar - p[0];
-        for (unsigned int i = 1; i <= degree; ++i)
+        for (uint32_t i = 1; i <= degree; ++i)
         {
             result[i] = -p[i];
         }
@@ -511,9 +511,9 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator*(Polynomial1<Real> const& p, Real scalar)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
-        for (unsigned int i = 0; i <= degree; ++i)
+        for (uint32_t i = 0; i <= degree; ++i)
         {
             result[i] = scalar * p[i];
         }
@@ -523,9 +523,9 @@ namespace gte
     template <typename Real>
     Polynomial1<Real> operator*(Real scalar, Polynomial1<Real> const& p)
     {
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Polynomial1<Real> result(degree);
-        for (unsigned int i = 0; i <= degree; ++i)
+        for (uint32_t i = 0; i <= degree; ++i)
         {
             result[i] = scalar * p[i];
         }
@@ -537,10 +537,10 @@ namespace gte
     {
         LogAssert(scalar != (Real)0, "Division by zero.");
 
-        unsigned int const degree = p.GetDegree();
+        uint32_t const degree = p.GetDegree();
         Real invScalar = (Real)1 / scalar;
         Polynomial1<Real> result(degree);
-        for (unsigned int i = 0; i <= degree; ++i)
+        for (uint32_t i = 0; i <= degree; ++i)
         {
             result[i] = invScalar * p[i];
         }

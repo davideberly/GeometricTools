@@ -1,29 +1,47 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/OverlayEffect.h>
 #include <Mathematics/Logger.h>
 using namespace gte;
 
-OverlayEffect::OverlayEffect(int windowWidth, int windowHeight)
+OverlayEffect::OverlayEffect(int32_t windowWidth, int32_t windowHeight)
     :
     mWindowWidth(static_cast<float>(windowWidth)),
-    mWindowHeight(static_cast<float>(windowHeight))
+    mWindowHeight(static_cast<float>(windowHeight)),
+    mInvTextureWidth(0.0f),
+    mInvTextureHeight(0.0f),
+    mFactoryAPI(-1),
+    mOverlayRectangle{ 0, 0, 0, 0 },
+    mTextureRectangle{ 0, 0, 0, 0 },
+    mVBuffer{},
+    mIBuffer{},
+    mProgram{},
+    mEffect{}
 {
 }
 
 OverlayEffect::OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
-    int windowWidth, int windowHeight, int textureWidth, int textureHeight,
+    int32_t windowWidth, int32_t windowHeight, int32_t textureWidth, int32_t textureHeight,
     SamplerState::Filter filter, SamplerState::Mode mode0, SamplerState::Mode mode1,
     bool useColorPShader)
     :
     mWindowWidth(static_cast<float>(windowWidth)),
-    mWindowHeight(static_cast<float>(windowHeight))
+    mWindowHeight(static_cast<float>(windowHeight)),
+    mInvTextureWidth(0.0f),
+    mInvTextureHeight(0.0f),
+    mFactoryAPI(-1),
+    mOverlayRectangle{ 0, 0, 0, 0 },
+    mTextureRectangle{ 0, 0, 0, 0 },
+    mVBuffer{},
+    mIBuffer{},
+    mProgram{},
+    mEffect{}
 {
     Initialize(windowWidth, windowHeight, textureWidth, textureHeight);
 
@@ -45,11 +63,20 @@ OverlayEffect::OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
 }
 
 OverlayEffect::OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
-    int windowWidth, int windowHeight, int textureWidth, int textureHeight,
+    int32_t windowWidth, int32_t windowHeight, int32_t textureWidth, int32_t textureHeight,
     std::string const& psSource)
     :
     mWindowWidth(static_cast<float>(windowWidth)),
-    mWindowHeight(static_cast<float>(windowHeight))
+    mWindowHeight(static_cast<float>(windowHeight)),
+    mInvTextureWidth(0.0f),
+    mInvTextureHeight(0.0f),
+    mFactoryAPI(-1),
+    mOverlayRectangle{ 0, 0, 0, 0 },
+    mTextureRectangle{ 0, 0, 0, 0 },
+    mVBuffer{},
+    mIBuffer{},
+    mProgram{},
+    mEffect{}
 {
     mFactoryAPI = factory->GetAPI();
     Initialize(windowWidth, windowHeight, textureWidth, textureHeight);
@@ -62,27 +89,27 @@ OverlayEffect::OverlayEffect(std::shared_ptr<ProgramFactory> const& factory,
     }
 }
 
-void OverlayEffect::SetOverlayRectangle(std::array<int, 4> const& rectangle)
+void OverlayEffect::SetOverlayRectangle(std::array<int32_t, 4> const& rectangle)
 {
     mOverlayRectangle = rectangle;
     UpdateVertexBuffer();
 }
 
-void OverlayEffect::SetTextureRectangle(std::array<int, 4> const& rectangle)
+void OverlayEffect::SetTextureRectangle(std::array<int32_t, 4> const& rectangle)
 {
     mTextureRectangle = rectangle;
     UpdateVertexBuffer();
 }
 
-void OverlayEffect::SetRectangles(std::array<int, 4> const& overlayRectangle,
-    std::array<int, 4> const& textureRectangle)
+void OverlayEffect::SetRectangles(std::array<int32_t, 4> const& overlayRectangle,
+    std::array<int32_t, 4> const& textureRectangle)
 {
     mOverlayRectangle = overlayRectangle;
     mTextureRectangle = textureRectangle;
     UpdateVertexBuffer();
 }
 
-bool OverlayEffect::Contains(int x, int y) const
+bool OverlayEffect::Contains(int32_t x, int32_t y) const
 {
     return mOverlayRectangle[0] <= x
         && x < mOverlayRectangle[0] + mOverlayRectangle[2]
@@ -94,7 +121,7 @@ void OverlayEffect::SetTexture(std::shared_ptr<Texture2> const& texture)
 {
     if (texture)
     {
-        auto pshader = mEffect->GetPixelShader();
+        auto const& pshader = mEffect->GetPixelShader();
         auto sampler = pshader->Get<SamplerState>("imageSampler");
         pshader->Set("imageTexture", texture, "imageSampler", sampler);
     }
@@ -105,7 +132,7 @@ void OverlayEffect::SetTexture(std::string const& textureName,
 {
     if (texture)
     {
-        auto pshader = mEffect->GetPixelShader();
+        auto const& pshader = mEffect->GetPixelShader();
         auto sampler = pshader->Get<SamplerState>("imageSampler");
         pshader->Set(textureName, texture, "imageSampler", sampler);
     }
@@ -125,8 +152,8 @@ void OverlayEffect::SetNormalizedZ(float z)
     mProgram->GetVertexShader()->Set("ZNDC", params);
 }
 
-void OverlayEffect::Initialize(int windowWidth, int windowHeight,
-    int textureWidth, int textureHeight)
+void OverlayEffect::Initialize(int32_t windowWidth, int32_t windowHeight,
+    int32_t textureWidth, int32_t textureHeight)
 {
     LogAssert(windowWidth > 0 && windowHeight > 0 && textureWidth > 0
         && textureHeight > 0, "Invalid input rectangle.");
@@ -146,15 +173,15 @@ void OverlayEffect::Initialize(int windowWidth, int windowHeight,
 
     // Create the vertex buffer.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     mVBuffer = std::make_shared<VertexBuffer>(vformat, 4);
-    mVBuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    mVBuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     UpdateVertexBuffer();
 
     // Create the index buffer.
-    mIBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(unsigned int));
-    auto indices = mIBuffer->Get<unsigned int>();
+    mIBuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, 2, sizeof(uint32_t));
+    auto indices = mIBuffer->Get<uint32_t>();
     indices[0] = 0;  indices[1] = 2;  indices[2] = 3;
     indices[3] = 0;  indices[4] = 3;  indices[5] = 1;
 }

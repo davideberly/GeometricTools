@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -37,10 +37,10 @@ namespace gte
 
     private:
         // Buffers use only subresource 0, so these overrides are stubbed out.
-        virtual bool Update(ID3D11DeviceContext* context, unsigned int sri) override;
-        virtual bool CopyCpuToGpu(ID3D11DeviceContext* context, unsigned int sri) override;
-        virtual bool CopyGpuToCpu(ID3D11DeviceContext* context, unsigned int sri) override;
-        virtual void CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* target, unsigned int sri) override;
+        virtual bool Update(ID3D11DeviceContext* context, uint32_t sri) override;
+        virtual bool CopyCpuToGpu(ID3D11DeviceContext* context, uint32_t sri) override;
+        virtual bool CopyGpuToCpu(ID3D11DeviceContext* context, uint32_t sri) override;
+        virtual void CopyGpuToGpu(ID3D11DeviceContext* context, ID3D11Resource* target, uint32_t sri) override;
 
     protected:
         // Support for creating staging buffers.

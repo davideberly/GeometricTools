@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -30,7 +30,7 @@ public:
         DEFAULT_GROW = 8
     };
 
-    UnorderedSet(int maxNumElements = 0, int grow = 0)
+    UnorderedSet(int32_t maxNumElements = 0, int32_t grow = 0)
         :
         mMaxNumElements(maxNumElements > 0 ? maxNumElements : DEFAULT_GROW),
         mGrow(grow > 0 ? grow : DEFAULT_GROW),
@@ -41,7 +41,7 @@ public:
 
     ~UnorderedSet() = default;
 
-    void Reset(int maxNumElements = 0, int grow = 0)
+    void Reset(int32_t maxNumElements = 0, int32_t grow = 0)
     {
         mMaxNumElements = (maxNumElements > 0 ? maxNumElements : DEFAULT_GROW);
         mGrow = (grow > 0 ? grow : DEFAULT_GROW);
@@ -54,34 +54,34 @@ public:
         mNumElements = 0;
     }
 
-    inline int GetMaxNumElements() const
+    inline int32_t GetMaxNumElements() const
     {
         return mMaxNumElements;
     }
 
-    inline int GetGrow() const
+    inline int32_t GetGrow() const
     {
         return mGrow;
     }
 
-    inline int GetNumElements() const
+    inline int32_t GetNumElements() const
     {
         return mNumElements;
     }
 
-    T const& operator[](int i) const
+    T const& operator[](int32_t i) const
     {
         return mElements[i];
     }
 
-    T& operator[] (int i)
+    T& operator[] (int32_t i)
     {
         return mElements[i];
     }
 
-    int Find(T const& element) const
+    int32_t Find(T const& element) const
     {
-        for (int i = 0; i < mNumElements; ++i)
+        for (int32_t i = 0; i < mNumElements; ++i)
         {
             if (element == mElements[i])
             {
@@ -93,7 +93,7 @@ public:
 
     bool Insert(T const& element)
     {
-        for (int i = 0; i < mNumElements; ++i)
+        for (int32_t i = 0; i < mNumElements; ++i)
         {
             if (element == mElements[i])
             {
@@ -105,17 +105,17 @@ public:
         return true;
     }
 
-    int Append(T const& element)
+    int32_t Append(T const& element)
     {
         GrowArray();
-        int location = mNumElements++;
+        int32_t location = mNumElements++;
         mElements[location] = element;
         return location;
     }
 
-    bool Remove(T const& element, int* oldIndex = nullptr, int* newIndex = nullptr)
+    bool Remove(T const& element, int32_t* oldIndex = nullptr, int32_t* newIndex = nullptr)
     {
-        for (int i = 0; i < mNumElements; i++)
+        for (int32_t i = 0; i < mNumElements; i++)
         {
             if (element == mElements[i])
             {
@@ -135,7 +135,7 @@ public:
         return false;
     }
 
-    bool RemoveAt(int i, int* oldIndex = nullptr, int* newIndex = nullptr)
+    bool RemoveAt(int32_t i, int32_t* oldIndex = nullptr, int32_t* newIndex = nullptr)
     {
         if (0 <= i && i < mNumElements)
         {
@@ -159,7 +159,7 @@ protected:
     {
         if (mNumElements == mMaxNumElements)
         {
-            int newMaxNumElements = mMaxNumElements + mGrow;
+            int32_t newMaxNumElements = mMaxNumElements + mGrow;
             mElements.resize(newMaxNumElements);
             mMaxNumElements = newMaxNumElements;
         }
@@ -173,7 +173,7 @@ protected:
     // point to the last member of mElements before the removal, newIndex
     // stores the index i to which the last member has been copied.  If i does
     // point to the last member, no copy occurs and newIndex is set to -1.
-    void RemoveElement(int i, int* oldIndex, int* newIndex)
+    void RemoveElement(int32_t i, int32_t* oldIndex, int32_t* newIndex)
     {
         --mNumElements;
         if (oldIndex)
@@ -198,6 +198,6 @@ protected:
         }
     }
 
-    int mMaxNumElements, mGrow, mNumElements;
+    int32_t mMaxNumElements, mGrow, mNumElements;
     std::vector<T> mElements;
 };

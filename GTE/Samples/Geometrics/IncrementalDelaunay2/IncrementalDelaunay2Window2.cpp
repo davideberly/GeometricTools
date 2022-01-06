@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.8.2021.05.23
+// Version: 6.0.2022.01.06
 
 #include "IncrementalDelaunay2Window2.h"
 #include <random>
@@ -60,7 +60,7 @@ void IncrementalDelaunay2Window2::OnDisplay()
     std::array<uint32_t, 3> const adjColor = { lime, turquoise, lavender };
     ClearScreen(white);
 
-    int x0, y0, x1, y1, x2, y2;
+    int32_t x0, y0, x1, y1, x2, y2;
     Vector2<float> v0, v1, v2;
 
     // Draw a solid triangle and adjacents when requested.
@@ -207,7 +207,7 @@ void IncrementalDelaunay2Window2::DrawScreenOverlay()
     }
 }
 
-bool IncrementalDelaunay2Window2::OnCharPress(unsigned char key, int x, int y)
+bool IncrementalDelaunay2Window2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -232,8 +232,8 @@ bool IncrementalDelaunay2Window2::OnCharPress(unsigned char key, int x, int y)
     return Window2::OnCharPress(key, x, y);
 }
 
-bool IncrementalDelaunay2Window2::OnMouseClick(int button, int state,
-    int x, int y, unsigned int modifiers)
+bool IncrementalDelaunay2Window2::OnMouseClick(int32_t button, int32_t state,
+    int32_t x, int32_t y, uint32_t modifiers)
 {
     Vector2<float> position
     {

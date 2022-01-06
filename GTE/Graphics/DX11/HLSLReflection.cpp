@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLReflection.h>
@@ -82,7 +82,7 @@ void HLSLReflection::SetCompiledCode(size_t numBytes, void const* buffer)
     std::memcpy(&mCompiledCode[0], buffer, numBytes);
 }
 
-int HLSLReflection::GetShaderTypeIndex() const
+int32_t HLSLReflection::GetShaderTypeIndex() const
 {
     switch (mTarget[0])
     {
@@ -99,8 +99,8 @@ int HLSLReflection::GetShaderTypeIndex() const
     }
 }
 
-void HLSLReflection::SetNumThreads(unsigned int numXThreads,
-    unsigned int numYThreads, unsigned int numZThreads)
+void HLSLReflection::SetNumThreads(uint32_t numXThreads,
+    uint32_t numYThreads, uint32_t numZThreads)
 {
     mNumXThreads = numXThreads;
     mNumYThreads = numYThreads;
@@ -116,7 +116,7 @@ void HLSLReflection::Print(std::ofstream& output) const
 
     output << "Description:" << std::endl;
     output << "creator = " << mDesc.creator << std::endl;
-    int i =  std::min((int)(mDesc.shaderType), 6);
+    int32_t i =  std::min((int32_t)(mDesc.shaderType), 6);
     output << "shader type = " << msShaderType[i] << std::endl;
     output << "shader version = " << mDesc.majorVersion << "." << mDesc.minorVersion << std::endl;
     output << "compile flags =" << std::endl;
@@ -145,8 +145,8 @@ void HLSLReflection::Print(std::ofstream& output) const
     output << "texture bias = " << mDesc.instructions.numTextureBias << std::endl;
     output << "texture gradient = " << mDesc.instructions.numTextureGradient << std::endl;
     output << "float arithmetic = " << mDesc.instructions.numFloatArithmetic << std::endl;
-    output << "signed int arithmetic = " << mDesc.instructions.numSIntArithmetic << std::endl;
-    output << "unsigned int arithmetic = " << mDesc.instructions.numUIntArithmetic << std::endl;
+    output << "signed int32_t arithmetic = " << mDesc.instructions.numSIntArithmetic << std::endl;
+    output << "uint32_t arithmetic = " << mDesc.instructions.numUIntArithmetic << std::endl;
     output << "static flow control = " << mDesc.instructions.numStaticFlowControl << std::endl;
     output << "dynamic flow control = " << mDesc.instructions.numDynamicFlowControl << std::endl;
     output << "macros = " << mDesc.instructions.numMacro << std::endl;
@@ -279,7 +279,7 @@ void HLSLReflection::Print(std::ofstream& output) const
         size_t j = 0;
         for (auto c : mCompiledCode)
         {
-            unsigned int hc = static_cast<unsigned int>(c);
+            uint32_t hc = static_cast<uint32_t>(c);
             output << "0x" << std::setw(2) << std::setfill('0') << hc;
             if ((++j % 16) == 0)
             {

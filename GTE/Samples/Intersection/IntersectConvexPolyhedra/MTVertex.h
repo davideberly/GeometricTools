@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -13,7 +13,7 @@ class MTVertex
 {
 public:
     // Construction and destruction.
-    MTVertex(int label = -1, int eGrow = 0, int tGrow = 0)
+    MTVertex(int32_t label = -1, int32_t eGrow = 0, int32_t tGrow = 0)
         :
         mLabel(label),
         mESet(eGrow, eGrow),
@@ -25,35 +25,35 @@ public:
 
     // Vertex labels are read-only since they are used for maps in the MTMesh
     // class for inverse look-up.
-    inline int GetLabel() const
+    inline int32_t GetLabel() const
     {
         return mLabel;
     }
 
-    inline int GetNumEdges() const
+    inline int32_t GetNumEdges() const
     {
         return mESet.GetNumElements();
     }
 
-    inline int GetEdge(int e) const
+    inline int32_t GetEdge(int32_t e) const
     {
         return mESet[e];
     }
 
-    inline bool InsertEdge(int e)
+    inline bool InsertEdge(int32_t e)
     {
         return mESet.Insert(e);
     }
 
-    inline bool RemoveEdge(int e)
+    inline bool RemoveEdge(int32_t e)
     {
         return mESet.Remove(e);
     }
 
-    bool ReplaceEdge(int eOld, int eNew)
+    bool ReplaceEdge(int32_t eOld, int32_t eNew)
     {
-        int const numElements = mESet.GetNumElements();
-        for (int i = 0; i < numElements; ++i)
+        int32_t const numElements = mESet.GetNumElements();
+        for (int32_t i = 0; i < numElements; ++i)
         {
             if (mESet[i] == eOld)
             {
@@ -64,30 +64,30 @@ public:
         return false;
     }
 
-    inline int GetNumTriangles() const
+    inline int32_t GetNumTriangles() const
     {
         return mTSet.GetNumElements();
     }
 
-    inline int GetTriangle(int t) const
+    inline int32_t GetTriangle(int32_t t) const
     {
         return mTSet[t];
     }
 
-    inline bool InsertTriangle(int t)
+    inline bool InsertTriangle(int32_t t)
     {
         return mTSet.Insert(t);
     }
 
-    inline bool RemoveTriangle(int t)
+    inline bool RemoveTriangle(int32_t t)
     {
         return mTSet.Remove(t);
     }
 
-    bool ReplaceTriangle(int tOld, int tNew)
+    bool ReplaceTriangle(int32_t tOld, int32_t tNew)
     {
-        int const numTriangles = mTSet.GetNumElements();
-        for (int i = 0; i < numTriangles; ++i)
+        int32_t const numTriangles = mTSet.GetNumElements();
+        for (int32_t i = 0; i < numTriangles; ++i)
         {
             if (mTSet[i] == tOld)
             {
@@ -104,6 +104,6 @@ public:
     }
 
 protected:
-    int mLabel;
-    UnorderedSet<int> mESet, mTSet;
+    int32_t mLabel;
+    UnorderedSet<int32_t> mESet, mTSet;
 };

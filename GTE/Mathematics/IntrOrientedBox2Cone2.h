@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -82,11 +82,11 @@ namespace gte
             T b2 = Dot(diff, diff);
             T csSqr = cone.cosAngle * cone.cosAngle;
 
-            for (int i1 = 0; i1 < 2; ++i1)
+            for (int32_t i1 = 0; i1 < 2; ++i1)
             {
                 T sign1 = i1 * (T)2 - (T)1;
                 T y = sign1 * box.extent[1];
-                for (int i0 = 0; i0 < 2; ++i0)
+                for (int32_t i0 = 0; i0 < 2; ++i0)
                 {
                     T sign0 = i0 * (T)2 - (T)1;
                     T x = sign0 * box.extent[0];

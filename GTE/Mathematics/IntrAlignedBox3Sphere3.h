@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -79,7 +79,7 @@ namespace gte
             //      intersectionType = +1
             //      contactTime = first time T > 0
             //      contactPoint = corresponding first contact
-            int intersectionType;
+            int32_t intersectionType;
             T contactTime;
             Vector3<T> contactPoint;
 
@@ -107,7 +107,7 @@ namespace gte
             // Test for no-intersection that leads to an early exit.  The test
             // is fast, using the method of separating axes.
             AlignedBox3<T> superBox;
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 superBox.max[i] = extent[i] + sphere.radius;
                 superBox.min[i] = -superBox.max[i];
@@ -136,7 +136,7 @@ namespace gte
             // first quadrant. Adjust the velocity accordingly.
             Vector3<T> C = inC, V = inV;
             std::array<T, 3> sign = { (T)0, (T)0, (T)0 };
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 if (C[i] >= (T)0)
                 {
@@ -297,7 +297,7 @@ namespace gte
             {
                 // Translate back to the coordinate system of the
                 // tranlated box and sphere.
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     if (sign[i] < (T)0)
                     {
@@ -323,7 +323,7 @@ namespace gte
             result.contactPoint = K;
         }
 
-        void EdgeOverlap(int i0, int i1, int i2, Vector3<T> const& K,
+        void EdgeOverlap(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Result& result)
         {
@@ -334,7 +334,7 @@ namespace gte
             result.contactPoint[i2] = C[i2];
         }
 
-        void FaceOverlap(int i0, int i1, int i2, Vector3<T> const& K,
+        void FaceOverlap(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Result& result)
         {
@@ -354,7 +354,7 @@ namespace gte
             }
         }
 
-        void EdgeSeparated(int i0, int i1, int i2, Vector3<T> const& K,
+        void EdgeSeparated(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Vector3<T> const& V, Result& result)
         {
@@ -372,7 +372,7 @@ namespace gte
                 // Determine the face of the rounded box that is intersected
                 // by the ray C+T*V.
                 T tmax = (radius - delta[0]) / V[0];
-                int j0 = 0;
+                int32_t j0 = 0;
                 T temp = (radius - delta[1]) / V[1];
                 if (temp > tmax)
                 {
@@ -387,13 +387,13 @@ namespace gte
                 }
 
                 // The j0-rounded face is the candidate for intersection.
-                int j1 = (j0 + 1) % 3;
-                int j2 = (j1 + 1) % 3;
+                int32_t j1 = (j0 + 1) % 3;
+                int32_t j2 = (j1 + 1) % 3;
                 DoQueryRayRoundedFace(j0, j1, j2, K, C, radius, delta, V, result);
             }
         }
 
-        void EdgeUnbounded(int i0, int i1, int /* i2 */, Vector3<T> const& K,
+        void EdgeUnbounded(int32_t i0, int32_t i1, int32_t /* i2 */, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Vector3<T> const& V, Result& result)
         {
@@ -402,7 +402,7 @@ namespace gte
                 // Determine the face of the rounded box that is intersected
                 // by the ray C+T*V.
                 T tmax = (radius - delta[i0]) / V[i0];
-                int j0 = i0;
+                int32_t j0 = i0;
                 T temp = (radius - delta[i1]) / V[i1];
                 if (temp > tmax)
                 {
@@ -411,13 +411,13 @@ namespace gte
                 }
 
                 // The j0-rounded face is the candidate for intersection.
-                int j1 = (j0 + 1) % 3;
-                int j2 = (j1 + 1) % 3;
+                int32_t j1 = (j0 + 1) % 3;
+                int32_t j2 = (j1 + 1) % 3;
                 DoQueryRayRoundedFace(j0, j1, j2, K, C, radius, delta, V, result);
             }
         }
 
-        void FaceUnbounded(int i0, int i1, int i2, Vector3<T> const& K,
+        void FaceUnbounded(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Vector3<T> const& V, Result& result)
         {
@@ -448,7 +448,7 @@ namespace gte
             }
         }
 
-        void DoQueryRayRoundedEdge(int i0, int i1, int i2, Vector3<T> const& K,
+        void DoQueryRayRoundedEdge(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Vector3<T> const& V, Result& result)
         {
@@ -504,7 +504,7 @@ namespace gte
             }
         }
 
-        void DoQueryRayRoundedFace(int i0, int i1, int i2, Vector3<T> const& K,
+        void DoQueryRayRoundedFace(int32_t i0, int32_t i1, int32_t i2, Vector3<T> const& K,
             Vector3<T> const& C, T radius, Vector3<T> const& delta,
             Vector3<T> const& V, Result& result)
         {

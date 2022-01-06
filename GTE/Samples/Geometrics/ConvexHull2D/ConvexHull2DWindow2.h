@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.08.30
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,6 +20,6 @@ public:
 
 private:
     std::vector<Vector2<float>> mVertices;
-    std::vector<int> mHull;
+    std::vector<int32_t> mHull;
     ConvexHull2<float> mConvexHull;
 };

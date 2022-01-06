@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,8 +18,8 @@ namespace gte
     // The function gte::reverse supports reverse iteration in range-based
     // for-loops using the auto keyword.  For example,
     //
-    //   std::vector<int> numbers(4);
-    //   int i = 0;
+    //   std::vector<int32_t> numbers(4);
+    //   int32_t i = 0;
     //   for (auto& number : numbers)
     //   {
     //       number = i++;

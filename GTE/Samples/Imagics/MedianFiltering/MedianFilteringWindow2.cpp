@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MedianFilteringWindow2.h"
 #include <random>
@@ -13,7 +13,7 @@ MedianFilteringWindow2::MedianFilteringWindow2(Parameters& parameters)
     Window2(parameters),
     mSelection(0)
 {
-    unsigned int const txWidth = 1024, txHeight = 1024;
+    uint32_t const txWidth = 1024, txHeight = 1024;
     if (!SetEnvironment() || !CreatePrograms(txWidth, txHeight))
     {
         parameters.created = false;
@@ -21,17 +21,17 @@ MedianFilteringWindow2::MedianFilteringWindow2(Parameters& parameters)
     }
 
     mOriginal = std::make_shared<Texture2>(DF_R32_FLOAT, txWidth, txHeight);
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mImage[i] = std::make_shared<Texture2>(DF_R32_FLOAT, txWidth, txHeight);
-        mImage[i]->SetUsage(Resource::SHADER_OUTPUT);
-        mImage[i]->SetCopyType(Resource::COPY_BIDIRECTIONAL);
+        mImage[i]->SetUsage(Resource::Usage::SHADER_OUTPUT);
+        mImage[i]->SetCopy(Resource::Copy::BIDIRECTIONAL);
     }
 
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.0625f, 1.0f);
     auto* data = mOriginal->Get<float>();
-    for (unsigned int i = 0; i < txWidth * txHeight; ++i)
+    for (uint32_t i = 0; i < txWidth * txHeight; ++i)
     {
         data[i] = rnd(mte);
     }
@@ -40,23 +40,23 @@ MedianFilteringWindow2::MedianFilteringWindow2(Parameters& parameters)
 
     // Create two overlays, one for the original image and one for the
     // median-filtered image.
-    std::array<int, 4> rect[2] =
+    std::array<int32_t, 4> rect[2] =
     {
         { 0, 0, mXSize / 2, mYSize },
         { mXSize / 2, 0, mXSize / 2, mYSize }
     };
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mOverlay[i] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, txWidth, txHeight,
-            SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP, false);
+            SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, false);
         mOverlay[i]->SetOverlayRectangle(rect[i]);
     }
     mOverlay[0]->SetTexture(mOriginal);
     mOverlay[1]->SetTexture(mImage[1]);
 
-    for (int i = 0; i < 4; ++i)
+    for (int32_t i = 0; i < 4; ++i)
     {
-        auto cshader = mMedianProgram[i]->GetComputeShader();
+        auto const& cshader = mMedianProgram[i]->GetComputeShader();
         cshader->Set("inImage", mImage[0]);
         cshader->Set("outImage", mImage[1]);
     }
@@ -71,7 +71,7 @@ void MedianFilteringWindow2::OnIdle()
     mEngine->Draw(mOverlay[0]);
     mEngine->Draw(mOverlay[1]);
     std::swap(mImage[0], mImage[1]);
-    auto cshader = mCProgram->GetComputeShader();
+    auto const& cshader = mCProgram->GetComputeShader();
     cshader->Set("inImage", mImage[0]);
     cshader->Set("outImage", mImage[1]);
     mOverlay[1]->SetTexture(mImage[1]);
@@ -83,7 +83,7 @@ void MedianFilteringWindow2::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MedianFilteringWindow2::OnCharPress(unsigned char key, int x, int y)
+bool MedianFilteringWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -155,10 +155,10 @@ bool MedianFilteringWindow2::SetEnvironment()
     return true;
 }
 
-bool MedianFilteringWindow2::CreatePrograms(unsigned int txWidth, unsigned int txHeight)
+bool MedianFilteringWindow2::CreatePrograms(uint32_t txWidth, uint32_t txHeight)
 {
     // Create the shaders.
-    int const numThreads = 8;
+    int32_t const numThreads = 8;
     mNumXGroups = txWidth / numThreads;
     mNumYGroups = txHeight / numThreads;
 

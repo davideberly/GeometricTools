@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GL45Buffer.h>
@@ -21,16 +21,16 @@ GL45Buffer::GL45Buffer(Buffer const* buffer, GLenum type)
 {
     glGenBuffers(1, &mGLHandle);
 
-    Resource::Usage usage = buffer->GetUsage();
-    if (usage == Resource::IMMUTABLE)
+    uint32_t usage = buffer->GetUsage();
+    if (usage == Resource::Usage::IMMUTABLE)
     {
         mUsage = GL_STATIC_DRAW;
     }
-    else if (usage == Resource::DYNAMIC_UPDATE)
+    else if (usage == Resource::Usage::DYNAMIC_UPDATE)
     {
         mUsage = GL_DYNAMIC_DRAW;
     }
-    else  // usage == Resource::SHADER_OUTPUT
+    else  // usage == Resource::Usage::SHADER_OUTPUT
     {
         // TODO: In GLSL, is it possible to write to a buffer other than a
         // vertex buffer?
@@ -66,7 +66,7 @@ void GL45Buffer::Initialize()
 bool GL45Buffer::Update()
 {
     Buffer* buffer = GetBuffer();
-    LogAssert(buffer->GetUsage() == Resource::DYNAMIC_UPDATE,
+    LogAssert(buffer->GetUsage() == Resource::Usage::DYNAMIC_UPDATE,
         "Buffer usage is not DYNAMIC_UPDATE.");
 
     GLuint numActiveBytes = buffer->GetNumActiveBytes();

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GeodesicHeightFieldWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -36,10 +36,10 @@ GeodesicHeightFieldWindow3::GeodesicHeightFieldWindow3(Parameters& parameters)
     mEngine->SetClearColor({ 0.9f, 0.9f, 0.9f, 1.0f });
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.01f,
@@ -52,11 +52,11 @@ GeodesicHeightFieldWindow3::GeodesicHeightFieldWindow3(Parameters& parameters)
 
     // Set the callback for drawing the geodesic curve in a texture that
     // is associated with the mesh of the B-spline height field.
-    mDrawCallback = [this](int x, int y)
+    mDrawCallback = [this](int32_t x, int32_t y)
     {
-        int bound0 = mTexture->GetDimensionFor(0, 0);
+        int32_t bound0 = mTexture->GetDimensionFor(0, 0);
         auto texels = mTexture->GetFor<uint8_t>(0);
-        int index = 4 * (x + bound0 * y);
+        int32_t index = 4 * (x + bound0 * y);
         texels[index++] = 0x00;
         texels[index++] = 0x00;
         texels[index++] = 0x00;
@@ -70,7 +70,7 @@ GeodesicHeightFieldWindow3::GeodesicHeightFieldWindow3(Parameters& parameters)
     mGeodesic->searchRadius = 0.1;
     mGeodesic->refineCallback = [this]()
     {
-        int currQuantity = mGeodesic->GetCurrentQuantity();
+        int32_t currQuantity = mGeodesic->GetCurrentQuantity();
         if (currQuantity == 0)
         {
             currQuantity = mPathQuantity;
@@ -96,7 +96,7 @@ void GeodesicHeightFieldWindow3::OnIdle()
 
     if (mSelected == 2)
     {
-        int currQuantity = mGeodesic->GetCurrentQuantity();
+        int32_t currQuantity = mGeodesic->GetCurrentQuantity();
         if (currQuantity == 0)
         {
             currQuantity = mPathQuantity;
@@ -106,14 +106,14 @@ void GeodesicHeightFieldWindow3::OnIdle()
         std::memset(mTexture->GetDataFor(0), 0xFF, mTexture->GetNumBytesFor(0));
 
         // Draw the approximate path.
-        int bound0 = mTexture->GetDimensionFor(0, 0);
-        int bound1 = mTexture->GetDimensionFor(0, 1);
-        int x0 = static_cast<int>(bound0 * mPath[0][0] + 0.5);
-        int y0 = static_cast<int>(bound1 * mPath[0][1] + 0.5);
-        for (int i = 1; i < currQuantity; ++i)
+        int32_t bound0 = mTexture->GetDimensionFor(0, 0);
+        int32_t bound1 = mTexture->GetDimensionFor(0, 1);
+        int32_t x0 = static_cast<int32_t>(bound0 * mPath[0][0] + 0.5);
+        int32_t y0 = static_cast<int32_t>(bound1 * mPath[0][1] + 0.5);
+        for (int32_t i = 1; i < currQuantity; ++i)
         {
-            int x1 = (int)(bound0*mPath[i][0] + 0.5);
-            int y1 = (int)(bound1*mPath[i][1] + 0.5);
+            int32_t x1 = (int32_t)(bound0*mPath[i][0] + 0.5);
+            int32_t y1 = (int32_t)(bound1*mPath[i][1] + 0.5);
             ImageUtility2::DrawLine(x0, y0, x1, y1, mDrawCallback);
             x0 = x1;
             y0 = y1;
@@ -126,8 +126,8 @@ void GeodesicHeightFieldWindow3::OnIdle()
     mEngine->ClearBuffers();
     mEngine->Draw(mMesh);
 
-    int substep = mGeodesic->GetSubdivisionStep();
-    int refstep = mGeodesic->GetRefinementStep();
+    int32_t substep = mGeodesic->GetSubdivisionStep();
+    int32_t refstep = mGeodesic->GetRefinementStep();
     std::ostringstream oss;
     oss << std::setprecision(12);
     oss << "sub = " << substep << ", ";
@@ -143,7 +143,7 @@ void GeodesicHeightFieldWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool GeodesicHeightFieldWindow3::OnCharPress(unsigned char key, int x, int y)
+bool GeodesicHeightFieldWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -163,7 +163,7 @@ bool GeodesicHeightFieldWindow3::OnCharPress(unsigned char key, int x, int y)
 }
 
 bool GeodesicHeightFieldWindow3::OnMouseClick(MouseButton button, MouseState state,
-    int x, int y, unsigned int modifiers)
+    int32_t x, int32_t y, uint32_t modifiers)
 {
     if ((modifiers & MODIFIER_SHIFT) == 0)
     {
@@ -179,7 +179,7 @@ bool GeodesicHeightFieldWindow3::OnMouseClick(MouseButton button, MouseState sta
     y = mYSize - 1 - y;
 
     // Do a picking operation.
-    int viewX, viewY, viewW, viewH;
+    int32_t viewX, viewY, viewW, viewH;
     mEngine->GetViewport(viewX, viewY, viewW, viewH);
     Vector4<float> origin, direction;
     if (mCamera->GetPickLine(viewX, viewY, viewW, viewH, x, y, origin, direction))
@@ -190,16 +190,16 @@ bool GeodesicHeightFieldWindow3::OnMouseClick(MouseButton button, MouseState sta
             const PickRecord& record = mPicker.GetClosestNonnegative();
 
             // Get the vertex indices for the picked triangle.
-            int i0 = 3 * record.primitiveIndex;
-            int i1 = i0 + 1;
-            int i2 = i0 + 2;
-            auto indices = mMesh->GetIndexBuffer()->Get<int>();
-            int v0 = indices[i0];
-            int v1 = indices[i1];
-            int v2 = indices[i2];
+            int32_t i0 = 3 * record.primitiveIndex;
+            int32_t i1 = i0 + 1;
+            int32_t i2 = i0 + 2;
+            auto indices = mMesh->GetIndexBuffer()->Get<int32_t>();
+            int32_t v0 = indices[i0];
+            int32_t v1 = indices[i1];
+            int32_t v2 = indices[i2];
 
             // Get the texture coordinates for the point of intersection.
-            auto vbuffer = mMesh->GetVertexBuffer();
+            auto const& vbuffer = mMesh->GetVertexBuffer();
             auto vertices = vbuffer->Get<Vertex>();
             Vector2<float> tcoordIntr =
                 vertices[v0].tcoord * record.bary[0] +
@@ -215,18 +215,18 @@ bool GeodesicHeightFieldWindow3::OnMouseClick(MouseButton button, MouseState sta
             std::memset(texels, 0xFF, mTexture->GetNumBytesFor(0));
 
             // Get an endpoint.
-            int bound0 = mTexture->GetDimensionFor(0, 0);
-            int bound1 = mTexture->GetDimensionFor(0, 1);
-            int tx = static_cast<int>(bound0 * tcoordIntr[0] + 0.5f);
-            int ty = static_cast<int>(bound1 * tcoordIntr[1] + 0.5f);
+            int32_t bound0 = mTexture->GetDimensionFor(0, 0);
+            int32_t bound1 = mTexture->GetDimensionFor(0, 1);
+            int32_t tx = static_cast<int32_t>(bound0 * tcoordIntr[0] + 0.5f);
+            int32_t ty = static_cast<int32_t>(bound1 * tcoordIntr[1] + 0.5f);
             mXIntr[mSelected] = tx;
             mYIntr[mSelected] = ty;
             ++mSelected;
 
             // Mark the endpoints in black.
-            for (int i = 0; i < mSelected; ++i)
+            for (int32_t i = 0; i < mSelected; ++i)
             {
-                int index = 4 * (mXIntr[i] + bound0 * mYIntr[i]);
+                int32_t index = 4 * (mXIntr[i] + bound0 * mYIntr[i]);
                 texels[index++] = 0x00;
                 texels[index++] = 0x00;
                 texels[index++] = 0x00;
@@ -270,14 +270,18 @@ void GeodesicHeightFieldWindow3::CreateScene()
     // Create the ground.  It covers a square with vertices (1,1,0), (1,-1,0),
     // (-1,1,0), and (-1,-1,0).
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numXSamples = 64, numYSamples = 64;
-    float const xExtent = 1.0f, yExtent = 1.0f;
+    int32_t const numXSamples = 64;
+    int32_t const numYSamples = 64;
+    float const xExtent = 1.0f;
+    float const yExtent = 1.0f;
+    double const dXExtent = static_cast<double>(xExtent);
+    double const dYExtent = static_cast<double>(yExtent);
     mMesh = mf.CreateRectangle(numXSamples, numYSamples, xExtent, yExtent);
 
     // Create a B-Spline height field.  The heights of the control point are
@@ -290,14 +294,14 @@ void GeodesicHeightFieldWindow3::CreateScene()
     // z[numU-1][0] z[numU-1][1] ... z[numU-1][numV-1]
     std::string path = mEnvironment.GetPath("ControlPoints.txt");
     std::ifstream inFile(path.c_str());
-    int numControls[2], degree[2];
+    std::array<int32_t, 2> numControls{}, degree{};
     inFile >> numControls[0];
     inFile >> numControls[1];
     inFile >> degree[0];
     inFile >> degree[1];
 
     BasisFunctionInput<double> input[2];
-    for (int dim = 0; dim < 2; ++dim)
+    for (int32_t dim = 0; dim < 2; ++dim)
     {
         input[dim].numControls = numControls[dim];
         input[dim].degree = degree[dim];
@@ -307,9 +311,9 @@ void GeodesicHeightFieldWindow3::CreateScene()
         input[dim].uniqueKnots.resize(input[dim].numUniqueKnots);
         input[dim].uniqueKnots[0].t = 0.0;
         input[dim].uniqueKnots[0].multiplicity = degree[dim] + 1;
-        int last = input[dim].numUniqueKnots - 1;
+        int32_t last = input[dim].numUniqueKnots - 1;
         double factor = 1.0 / static_cast<double>(last);
-        for (int i = 1; i < last; ++i)
+        for (int32_t i = 1; i < last; ++i)
         {
             input[dim].uniqueKnots[i].t = factor * static_cast<double>(i);
             input[dim].uniqueKnots[i].multiplicity = 1;
@@ -321,29 +325,31 @@ void GeodesicHeightFieldWindow3::CreateScene()
     mSurface = std::make_unique<BSplineSurface<3, double>>(input, nullptr);
     auto controls = mSurface->GetControls();
 
-    for (int i = 0; i < numControls[0]; ++i)
+    double invN0Cm1 = static_cast<double>(numControls[0]) - 1.0;
+    double invNC1m1 = static_cast<double>(numControls[1]) - 1.0;
+    for (int32_t i = 0; i < numControls[0]; ++i)
     {
-        double u = xExtent * (-1.0 + 2.0 * i / (numControls[0] - 1));
-        for (int j = 0; j < numControls[1]; ++j)
+        double u = dXExtent * (-1.0 + 2.0 * static_cast<double>(i) / invN0Cm1);
+        for (int32_t j = 0; j < numControls[1]; ++j)
         {
-            double v = yExtent * (-1.0 + 2.0 * j / (numControls[1] - 1));
+            double v = dYExtent * (-1.0 + 2.0 * static_cast<double>(j) / invNC1m1);
             double height;
             inFile >> height;
-            controls[i + numControls[0] * j] = { u, v, height };
+            controls[i + static_cast<size_t>(numControls[0]) * j] = { u, v, height };
         }
     }
     inFile.close();
 
-    auto vbuffer = mMesh->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mMesh->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    std::array<Vector<3, double>, 6> jet{};
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         auto& position = vertices[i].position;
-        double u = (position[0] + xExtent) / (2.0 * xExtent);
-        double v = (position[1] + yExtent) / (2.0 * yExtent);
-        Vector<3, double> jet[6];
-        mSurface->Evaluate(u, v, 0, jet);
+        double u = (static_cast<double>(position[0]) + dXExtent) / (2.0 * dXExtent);
+        double v = (static_cast<double>(position[1]) + dYExtent) / (2.0 * dYExtent);
+        mSurface->Evaluate(u, v, 0, jet.data());
         position[2] = static_cast<float>(jet[0][2]);
     }
     mMesh->UpdateModelBound();
@@ -366,12 +372,12 @@ void GeodesicHeightFieldWindow3::CreateScene()
 
     mTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, 512, 512, true);
     mTexture->AutogenerateMipmaps();
-    mTexture->SetCopyType(Resource::COPY_CPU_TO_STAGING);
+    mTexture->SetCopy(Resource::Copy::CPU_TO_STAGING);
     std::memset(mTexture->GetDataFor(0), 0xFF, mTexture->GetNumBytesFor(0));
 
     auto effect = std::make_shared<DirectionalLightTextureEffect>(mProgramFactory,
         mUpdater, material, lighting, geometry, mTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     mMesh->SetEffect(effect);
     mPVWMatrices.Subscribe(mMesh->worldTransform, effect->GetPVWMatrixConstant());

@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DrawingState.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -16,8 +17,8 @@ namespace gte
     public:
         enum WriteMask
         {
-            MASK_ZERO,
-            MASK_ALL
+            ZERO,
+            ALL
         };
 
         enum Comparison
@@ -46,25 +47,33 @@ namespace gte
 
         struct Face
         {
+            Face()
+                :
+                fail(Operation::OP_KEEP),
+                depthFail(Operation::OP_KEEP),
+                pass(Operation::OP_KEEP),
+                comparison(Comparison::ALWAYS)
+            {
+            }
+
             Operation fail;
             Operation depthFail;
             Operation pass;
             Comparison comparison;
         };
 
-        // Construction.
         DepthStencilState();
 
         // Member access.  The members are intended to be write-once before
         // you create an associated graphics state.
-        bool depthEnable;                   // default: true
-        WriteMask writeMask;                // default: MASK_ALL
-        Comparison comparison;              // default: LESS_EQUAL
-        bool stencilEnable;                 // default: false
-        unsigned char stencilReadMask;      // default: 0xFF
-        unsigned char stencilWriteMask;     // default: 0xFF
-        Face frontFace;                     // default: (KEEP,KEEP,KEEP,ALWAYS)
-        Face backFace;                      // default: (KEEP,KEEP,KEEP,ALWAYS)
-        unsigned int reference;             // default: 0
+        bool depthEnable;           // default: true
+        WriteMask writeMask;         // default: ALL
+        Comparison comparison;        // default: LESS_EQUAL
+        bool stencilEnable;         // default: false
+        uint8_t stencilReadMask;    // default: 0xFF
+        uint8_t stencilWriteMask;   // default: 0xFF
+        Face frontFace;             // default: { KEEP, KEEP, KEEP, ALWAYS }
+        Face backFace;              // default: { KEEP, KEEP, KEEP, ALWAYS }
+        uint32_t reference;         // default: 0
     };
 }

@@ -1,13 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/DrawTarget.h>
 #include <Graphics/GL45/GL45DrawTarget.h>
+#include <array>
+#include <cstdint>
 using namespace gte;
 
 GL45DrawTarget::~GL45DrawTarget ()
@@ -21,7 +23,13 @@ GL45DrawTarget::GL45DrawTarget(DrawTarget const* target,
     GEDrawTarget(target),
     mRTTextures(rtTextures),
     mDSTexture(dsTexture),
-    mFrameBuffer(0)
+    mFrameBuffer(0),
+    mSaveViewportX(0),
+    mSaveViewportY(0),
+    mSaveViewportWidth(0),
+    mSaveViewportHeight(0),
+    mSaveViewportNear(0.0),
+    mSaveViewportFar(0.0)
 {
     LogAssert(target->GetNumTargets() <= rtTextures.size(),
         "DrawTargets has more targets than there are RT textures provided.");
@@ -46,10 +54,10 @@ void GL45DrawTarget::Enable()
 {
     // Save the current viewport settings so they can be restored when
     // Disable is called.
-    GLint intVals[4];
-    GLdouble doubleVals[2];
-    glGetIntegerv(GL_VIEWPORT, intVals);
-    glGetDoublev(GL_DEPTH_RANGE, doubleVals);
+    std::array<GLint, 4> intVals{};
+    std::array<GLdouble, 2> doubleVals{};
+    glGetIntegerv(GL_VIEWPORT, intVals.data());
+    glGetDoublev(GL_DEPTH_RANGE, doubleVals.data());
     mSaveViewportX = intVals[0];
     mSaveViewportY = intVals[1];
     mSaveViewportWidth = intVals[2];
@@ -71,8 +79,8 @@ void GL45DrawTarget::Enable()
     // Attach depth buffer if there is one.
     if (mDSTexture)
     {
-        DFType format = mDSTexture->GetTexture()->GetFormat();
-        GLenum attachment;
+        uint32_t format = mDSTexture->GetTexture()->GetFormat();
+        GLenum attachment{};
         if (format == DF_D24_UNORM_S8_UINT)
         {
             attachment = GL_DEPTH_STENCIL_ATTACHMENT;
@@ -88,7 +96,7 @@ void GL45DrawTarget::Enable()
     // drawing to.
     auto const numTargets = mTarget->GetNumTargets();
     std::vector<GLenum> useDrawBuffers(numTargets);
-    for (unsigned i = 0; i < numTargets; ++i)
+    for (uint32_t i = 0; i < numTargets; ++i)
     {
         auto colorTarget = GL_COLOR_ATTACHMENT0 + i;
 
@@ -114,7 +122,7 @@ void GL45DrawTarget::Disable()
     // When done, test each render target texture if it needs to have its
     // mipmaps automatically generated.
     auto const numTargets = mTarget->GetNumTargets();
-    for (unsigned i = 0; i < numTargets; ++i)
+    for (uint32_t i = 0; i < numTargets; ++i)
     {
         auto textureRT = mRTTextures[i];
         if (textureRT->CanAutoGenerateMipmaps())

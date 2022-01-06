@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.09.23
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -59,8 +59,8 @@ namespace gte
         // triangles--as if F[] had all positive or all negative values.
         bool Extract(std::array<Real, 8> const& F, Mesh& mesh) const
         {
-            int entry = 0;
-            for (int i = 0, mask = 1; i < 8; ++i, mask <<= 1)
+            int32_t entry = 0;
+            for (int32_t i = 0, mask = 1; i < 8; ++i, mask <<= 1)
             {
                 if (F[i] < (Real)0)
                 {
@@ -74,10 +74,10 @@ namespace gte
 
             mesh.topology = GetTable(entry);
 
-            for (int i = 0; i < mesh.topology.numVertices; ++i)
+            for (int32_t i = 0; i < mesh.topology.numVertices; ++i)
             {
-                int j0 = mesh.topology.vpair[i][0];
-                int j1 = mesh.topology.vpair[i][1];
+                int32_t j0 = mesh.topology.vpair[i][0];
+                int32_t j1 = mesh.topology.vpair[i][1];
 
                 Real corner0[3];
                 corner0[0] = static_cast<Real>(j0 & 1);
@@ -90,7 +90,7 @@ namespace gte
                 corner1[2] = static_cast<Real>((j1 & 4) >> 2);
 
                 Real invDenom = ((Real)1) / (F[j0] - F[j1]);
-                for (int k = 0; k < 3; ++k)
+                for (int32_t k = 0; k < 3; ++k)
                 {
                     Real numer = F[j0] * corner1[k] - F[j1] * corner0[k];
                     mesh.vertices[i][k] = numer * invDenom;
@@ -105,22 +105,22 @@ namespace gte
         // voxel location (x,y,z) where i = x + bound0 * (y + bound1 * z).
         // The output 'indices' consists indices.size()/3 triangles, each a
         // triple of indices into 'vertices'
-        bool Extract(Real level, std::vector<Vector3<Real>>& vertices, std::vector<int>& indices) const
+        bool Extract(Real level, std::vector<Vector3<Real>>& vertices, std::vector<int32_t>& indices) const
         {
             vertices.clear();
             indices.clear();
 
-            for (int z = 0; z + 1 < mImage.GetDimension(2); ++z)
+            for (int32_t z = 0; z + 1 < mImage.GetDimension(2); ++z)
             {
-                for (int y = 0; y + 1 < mImage.GetDimension(1); ++y)
+                for (int32_t y = 0; y + 1 < mImage.GetDimension(1); ++y)
                 {
-                    for (int x = 0; x + 1 < mImage.GetDimension(0); ++x)
+                    for (int32_t x = 0; x + 1 < mImage.GetDimension(0); ++x)
                     {
                         std::array<size_t, 8> corners;
                         mImage.GetCorners(x, y, z, corners);
 
                         std::array<Real, 8> F;
-                        for (int k = 0; k < 8; ++k)
+                        for (int32_t k = 0; k < 8; ++k)
                         {
                             F[k] = mImage[corners[k]] - level;
                         }
@@ -129,8 +129,8 @@ namespace gte
 
                         if (Extract(F, mesh))
                         {
-                            int vbase = static_cast<int>(vertices.size());
-                            for (int i = 0; i < mesh.topology.numVertices; ++i)
+                            int32_t vbase = static_cast<int32_t>(vertices.size());
+                            for (int32_t i = 0; i < mesh.topology.numVertices; ++i)
                             {
                                 Vector3<Real> position = mesh.vertices[i];
                                 position[0] += static_cast<Real>(x);
@@ -139,9 +139,9 @@ namespace gte
                                 vertices.push_back(position);
                             }
 
-                            for (int i = 0; i < mesh.topology.numTriangles; ++i)
+                            for (int32_t i = 0; i < mesh.topology.numTriangles; ++i)
                             {
-                                for (int j = 0; j < 3; ++j)
+                                for (int32_t j = 0; j < 3; ++j)
                                 {
                                     indices.push_back(vbase + mesh.topology.itriple[i][j]);
                                 }
@@ -162,11 +162,11 @@ namespace gte
 
         // The extraction has duplicate vertices on edges shared by voxels.
         // This function will eliminate the duplication.
-        void MakeUnique(std::vector<Vector3<Real>>& vertices, std::vector<int>& indices) const
+        void MakeUnique(std::vector<Vector3<Real>>& vertices, std::vector<int32_t>& indices) const
         {
             std::vector<Vector3<Real>> outVertices;
-            std::vector<int> outIndices;
-            UniqueVerticesSimplices<Vector3<Real>, int, 3> uvt;
+            std::vector<int32_t> outIndices;
+            UniqueVerticesSimplices<Vector3<Real>, int32_t, 3> uvt;
             uvt.RemoveDuplicateVertices(vertices, indices, outVertices, outIndices);
             vertices = std::move(outVertices);
             indices = std::move(outIndices);
@@ -183,11 +183,11 @@ namespace gte
         // build a table of vertex, edge, and face adjacencies, but the
         // resulting data structure is somewhat expensive to process to
         // reorient triangles.
-        void OrientTriangles(std::vector<Vector3<Real>> const& vertices, std::vector<int>& indices, bool sameDir) const
+        void OrientTriangles(std::vector<Vector3<Real>> const& vertices, std::vector<int32_t>& indices, bool sameDir) const
         {
-            int const numTriangles = static_cast<int>(indices.size() / 3);
-            int* triangle = indices.data();
-            for (int t = 0; t < numTriangles; ++t, triangle += 3)
+            int32_t const numTriangles = static_cast<int32_t>(indices.size() / 3);
+            int32_t* triangle = indices.data();
+            for (int32_t t = 0; t < numTriangles; ++t, triangle += 3)
             {
                 // Get triangle vertices.
                 Vector3<Real> v0 = vertices[triangle[0]];
@@ -231,22 +231,22 @@ namespace gte
         }
 
         // Compute vertex normals for the mesh.
-        void ComputeNormals(std::vector<Vector3<Real>> const& vertices, std::vector<int> const& indices,
+        void ComputeNormals(std::vector<Vector3<Real>> const& vertices, std::vector<int32_t> const& indices,
             std::vector<Vector3<Real>>& normals) const
         {
             // Maintain a running sum of triangle normals at each vertex.
-            int const numVertices = static_cast<int>(vertices.size());
+            int32_t const numVertices = static_cast<int32_t>(vertices.size());
             normals.resize(numVertices);
             Vector3<Real> zero = Vector3<Real>::Zero();
             std::fill(normals.begin(), normals.end(), zero);
 
-            int const numTriangles = static_cast<int>(indices.size() / 3);
-            int const* current = indices.data();
-            for (int i = 0; i < numTriangles; ++i)
+            int32_t const numTriangles = static_cast<int32_t>(indices.size() / 3);
+            int32_t const* current = indices.data();
+            for (int32_t i = 0; i < numTriangles; ++i)
             {
-                int i0 = *current++;
-                int i1 = *current++;
-                int i2 = *current++;
+                int32_t i0 = *current++;
+                int32_t i1 = *current++;
+                int32_t i2 = *current++;
                 Vector3<Real> v0 = vertices[i0];
                 Vector3<Real> v1 = vertices[i1];
                 Vector3<Real> v2 = vertices[i2];
@@ -274,19 +274,19 @@ namespace gte
     protected:
         Vector3<Real> GetGradient(Vector3<Real> position) const
         {
-            int x = static_cast<int>(std::floor(position[0]));
+            int32_t x = static_cast<int32_t>(std::floor(position[0]));
             if (x < 0 || x >= mImage.GetDimension(0) - 1)
             {
                 return Vector3<Real>::Zero();
             }
 
-            int y = static_cast<int>(std::floor(position[1]));
+            int32_t y = static_cast<int32_t>(std::floor(position[1]));
             if (y < 0 || y >= mImage.GetDimension(1) - 1)
             {
                 return Vector3<Real>::Zero();
             }
 
-            int z = static_cast<int>(std::floor(position[2]));
+            int32_t z = static_cast<int32_t>(std::floor(position[2]));
             if (z < 0 || z >= mImage.GetDimension(2) - 1)
             {
                 return Vector3<Real>::Zero();

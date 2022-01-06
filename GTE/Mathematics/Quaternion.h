@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -45,12 +45,12 @@ namespace gte
         }
 
         // Member access.
-        inline Real const& operator[](int i) const
+        inline Real const& operator[](int32_t i) const
         {
             return mTuple[i];
         }
 
-        inline Real& operator[](int i)
+        inline Real& operator[](int32_t i)
         {
             return mTuple[i];
         }
@@ -133,7 +133,7 @@ namespace gte
     Quaternion<Real> operator-(Quaternion<Real> const& q)
     {
         Quaternion<Real> result;
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             result[i] = -q[i];
         }
@@ -179,7 +179,7 @@ namespace gte
     template <typename Real>
     Quaternion<Real>& operator+=(Quaternion<Real>& q0, Quaternion<Real> const& q1)
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             q0[i] += q1[i];
         }
@@ -189,7 +189,7 @@ namespace gte
     template <typename Real>
     Quaternion<Real>& operator-=(Quaternion<Real>& q0, Quaternion<Real> const& q1)
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             q0[i] -= q1[i];
         }
@@ -199,7 +199,7 @@ namespace gte
     template <typename Real>
     Quaternion<Real>& operator*=(Quaternion<Real>& q, Real scalar)
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             q[i] *= scalar;
         }
@@ -211,14 +211,14 @@ namespace gte
     {
         if (scalar != (Real)0)
         {
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 q[i] /= scalar;
             }
         }
         else
         {
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 q[i] = (Real)0;
             }
@@ -231,7 +231,7 @@ namespace gte
     Real Dot(Quaternion<Real> const& q0, Quaternion<Real> const& q1)
     {
         Real dot = q0[0] * q1[0];
-        for (int i = 1; i < 4; ++i)
+        for (int32_t i = 1; i < 4; ++i)
         {
             dot += q0[i] * q1[i];
         }
@@ -254,7 +254,7 @@ namespace gte
         }
         else
         {
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 q[i] = (Real)0;
             }

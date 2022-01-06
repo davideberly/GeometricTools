@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.06
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -202,37 +202,37 @@ namespace gte
             // 1 or 2. When 1, 'overlap' is set to [x,x], which is degenerate
             // and represents the single intersection point x. When 2,
             // 'overlap' is the interval of intersection.
-            int numIntersections;
+            int32_t numIntersections;
             std::array<Real, 2> overlap;
 
             // No intersection.
-            static int const isEmpty = 0;
+            static int32_t const isEmpty = 0;
 
             // Intervals touch at an endpoint, [t0,t0].
-            static int const isPoint = 1;
+            static int32_t const isPoint = 1;
 
             // Finite-length interval of intersection, [t0,t1].
-            static int const isFinite = 2;
+            static int32_t const isFinite = 2;
 
             // Smiinfinite interval of intersection, [t0,+infinity). The
             // result.overlap[0] is t0 and result.overlap[1] is +1 as a
             // message that the right endpoint is +infinity (you still need
             // the result.type to know this interpretation).
-            static int const isPositiveInfinite = 3;
+            static int32_t const isPositiveInfinite = 3;
 
             // Semiinfinite interval of intersection, (-infinity,t1]. The
             // result.overlap[0] is -1 as a message that the left endpoint is
             // -infinity (you still need the result.type to know this
             // interpretation). The result.overlap[1] is t1.
-            static int const isNegativeInfinite = 4;
+            static int32_t const isNegativeInfinite = 4;
 
             // The dynamic queries all set the type to isDynamicQuery because
             // the queries look for time of first and last contact.
-            static int const isDynamicQuery = 5;
+            static int32_t const isDynamicQuery = 5;
 
             // The type is one of isEmpty, isPoint, isFinite,
             // isPositiveInfinite, isNegativeInfinite or isDynamicQuery.
-            int type;
+            int32_t type;
 
             // Dynamic queries (intervals moving with constant speeds). If
             // 'intersect' is true, the contact times are valid and

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.10.17
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace gte
             {
             }
 
-            Parameters(int inMinExponent, int inMaxExponent, int inMaxBits)
+            Parameters(int32_t inMinExponent, int32_t inMaxExponent, int32_t inMaxBits)
                 :
                 minExponent(inMinExponent),
                 maxExponent(inMaxExponent),
@@ -49,12 +49,12 @@ namespace gte
             {
             }
 
-            inline int GetMaxWords() const
+            inline int32_t GetMaxWords() const
             {
                 return maxBits / 32 + ((maxBits % 32) > 0 ? 1 : 0);
             }
 
-            int minExponent, maxExponent, maxBits, maxWords;
+            int32_t minExponent, maxExponent, maxBits, maxWords;
         };
 
         Parameters bsn, bsr;
@@ -90,7 +90,7 @@ namespace gte
             bsr = bsn;
         }
 
-        BSPrecision(int minExponent, int maxExponent, int maxBits)
+        BSPrecision(int32_t minExponent, int32_t maxExponent, int32_t maxBits)
             :
             bsn(minExponent, maxExponent, maxBits),
             bsr(minExponent, maxExponent, maxBits)
@@ -139,9 +139,9 @@ namespace gte
         // parameter computations.
 
         // Compute the parameters for the multiplication.
-        int mulMinExponent = bsp0.bsr.minExponent + bsp1.bsr.minExponent;
-        int mulMaxExponent = bsp0.bsr.maxExponent + bsp1.bsr.maxExponent + 1;
-        int mulMaxBits = bsp0.bsr.maxBits + bsp1.bsr.maxBits;
+        int32_t mulMinExponent = bsp0.bsr.minExponent + bsp1.bsr.minExponent;
+        int32_t mulMaxExponent = bsp0.bsr.maxExponent + bsp1.bsr.maxExponent + 1;
+        int32_t mulMaxBits = bsp0.bsr.maxBits + bsp1.bsr.maxBits;
 
         // Compute the parameters for the addition. The number n0*d1 and n1*d0
         // are in the same arbitrary-precision set.

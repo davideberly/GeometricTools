@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include "TriangulationECWindow2.h"
 
@@ -22,83 +22,83 @@ void TriangulationECWindow2::OnDisplay()
 {
     ClearScreen(0xFFFFFFFF);
 
-    int i, i0, i1, numPositions, x0, y0, x1, y1;
+    int32_t i, i0, i1, numPositions, x0, y0, x1, y1;
 
     // Draw the polygon edges.
     switch (mExample)
     {
     case 0:
-        numPositions = static_cast<int>(mPositions.size());
+        numPositions = static_cast<int32_t>(mPositions.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[i0][0]);
-            y0 = static_cast<int>(mPositions[i0][1]);
-            x1 = static_cast<int>(mPositions[i1][0]);
-            y1 = static_cast<int>(mPositions[i1][1]);
+            x0 = static_cast<int32_t>(mPositions[i0][0]);
+            y0 = static_cast<int32_t>(mPositions[i0][1]);
+            x1 = static_cast<int32_t>(mPositions[i1][0]);
+            y1 = static_cast<int32_t>(mPositions[i1][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
         break;
     case 1:
-        numPositions = static_cast<int>(mOuter.size());
+        numPositions = static_cast<int32_t>(mOuter.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mOuter[i0]][0]);
-            y0 = static_cast<int>(mPositions[mOuter[i0]][1]);
-            x1 = static_cast<int>(mPositions[mOuter[i1]][0]);
-            y1 = static_cast<int>(mPositions[mOuter[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mOuter[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mOuter[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mOuter[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mOuter[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
         break;
     case 2:
-        numPositions = static_cast<int>(mOuter.size());
+        numPositions = static_cast<int32_t>(mOuter.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mOuter[i0]][0]);
-            y0 = static_cast<int>(mPositions[mOuter[i0]][1]);
-            x1 = static_cast<int>(mPositions[mOuter[i1]][0]);
-            y1 = static_cast<int>(mPositions[mOuter[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mOuter[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mOuter[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mOuter[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mOuter[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner0.size());
+        numPositions = static_cast<int32_t>(mInner0.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner0[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner0[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner0[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner0[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner0[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner0[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner0[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner0[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
         break;
 
     case 3:
-        numPositions = static_cast<int>(mOuter.size());
+        numPositions = static_cast<int32_t>(mOuter.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mOuter[i0]][0]);
-            y0 = static_cast<int>(mPositions[mOuter[i0]][1]);
-            x1 = static_cast<int>(mPositions[mOuter[i1]][0]);
-            y1 = static_cast<int>(mPositions[mOuter[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mOuter[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mOuter[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mOuter[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mOuter[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner0.size());
+        numPositions = static_cast<int32_t>(mInner0.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner0[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner0[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner0[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner0[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner0[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner0[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner0[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner0[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner1.size());
+        numPositions = static_cast<int32_t>(mInner1.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner1[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner1[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner1[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner1[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner1[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner1[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner1[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner1[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
         break;
@@ -111,18 +111,18 @@ void TriangulationECWindow2::OnDisplay()
         {
             std::shared_ptr<PolygonTree> tree = treeQueue.front();
             treeQueue.pop();
-            numPositions = static_cast<int>(tree->polygon.size());
-            int const* indices = tree->polygon.data();
+            numPositions = static_cast<int32_t>(tree->polygon.size());
+            int32_t const* indices = tree->polygon.data();
             for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
             {
-                x0 = static_cast<int>(mPositions[indices[i0]][0]);
-                y0 = static_cast<int>(mPositions[indices[i0]][1]);
-                x1 = static_cast<int>(mPositions[indices[i1]][0]);
-                y1 = static_cast<int>(mPositions[indices[i1]][1]);
+                x0 = static_cast<int32_t>(mPositions[indices[i0]][0]);
+                y0 = static_cast<int32_t>(mPositions[indices[i0]][1]);
+                x1 = static_cast<int32_t>(mPositions[indices[i1]][0]);
+                y1 = static_cast<int32_t>(mPositions[indices[i1]][1]);
                 DrawLine(x0, y0, x1, y1, 0xFF000000);
             }
 
-            for (i = 0; i < (int)tree->child.size(); ++i)
+            for (i = 0; i < (int32_t)tree->child.size(); ++i)
             {
                 treeQueue.push(tree->child[i]);
             }
@@ -136,43 +136,43 @@ void TriangulationECWindow2::OnDisplay()
     case 8:
     case 9:
     case 10:
-        numPositions = static_cast<int>(mOuter.size());
+        numPositions = static_cast<int32_t>(mOuter.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mOuter[i0]][0]);
-            y0 = static_cast<int>(mPositions[mOuter[i0]][1]);
-            x1 = static_cast<int>(mPositions[mOuter[i1]][0]);
-            y1 = static_cast<int>(mPositions[mOuter[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mOuter[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mOuter[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mOuter[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mOuter[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner0.size());
+        numPositions = static_cast<int32_t>(mInner0.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner0[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner0[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner0[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner0[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner0[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner0[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner0[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner0[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner1.size());
+        numPositions = static_cast<int32_t>(mInner1.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner1[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner1[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner1[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner1[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner1[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner1[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner1[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner1[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
 
-        numPositions = static_cast<int>(mInner2.size());
+        numPositions = static_cast<int32_t>(mInner2.size());
         for (i0 = numPositions - 1, i1 = 0; i1 < numPositions; i0 = i1++)
         {
-            x0 = static_cast<int>(mPositions[mInner2[i0]][0]);
-            y0 = static_cast<int>(mPositions[mInner2[i0]][1]);
-            x1 = static_cast<int>(mPositions[mInner2[i1]][0]);
-            y1 = static_cast<int>(mPositions[mInner2[i1]][1]);
+            x0 = static_cast<int32_t>(mPositions[mInner2[i0]][0]);
+            y0 = static_cast<int32_t>(mPositions[mInner2[i0]][1]);
+            x1 = static_cast<int32_t>(mPositions[mInner2[i1]][0]);
+            y1 = static_cast<int32_t>(mPositions[mInner2[i1]][1]);
             DrawLine(x0, y0, x1, y1, 0xFF000000);
         }
         break;
@@ -181,32 +181,32 @@ void TriangulationECWindow2::OnDisplay()
     // Flood fill the polygon inside.
     for (auto const& seed : mFillSeeds)
     {
-        DrawFloodFill4(static_cast<int>(seed[0]), static_cast<int>(seed[1]), 0xFFFF0000, 0xFFFFFFFF);
+        DrawFloodFill4(static_cast<int32_t>(seed[0]), static_cast<int32_t>(seed[1]), 0xFFFF0000, 0xFFFFFFFF);
     }
 
     // Draw the triangulation edges.
     for (auto const& tri : mTriangles)
     {
-        int v0 = tri[0];
-        int v1 = tri[1];
-        int v2 = tri[2];
+        int32_t v0 = tri[0];
+        int32_t v1 = tri[1];
+        int32_t v2 = tri[2];
 
-        x0 = static_cast<int>(mPositions[v0][0]);
-        y0 = static_cast<int>(mPositions[v0][1]);
-        x1 = static_cast<int>(mPositions[v1][0]);
-        y1 = static_cast<int>(mPositions[v1][1]);
+        x0 = static_cast<int32_t>(mPositions[v0][0]);
+        y0 = static_cast<int32_t>(mPositions[v0][1]);
+        x1 = static_cast<int32_t>(mPositions[v1][0]);
+        y1 = static_cast<int32_t>(mPositions[v1][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
 
-        x0 = static_cast<int>(mPositions[v1][0]);
-        y0 = static_cast<int>(mPositions[v1][1]);
-        x1 = static_cast<int>(mPositions[v2][0]);
-        y1 = static_cast<int>(mPositions[v2][1]);
+        x0 = static_cast<int32_t>(mPositions[v1][0]);
+        y0 = static_cast<int32_t>(mPositions[v1][1]);
+        x1 = static_cast<int32_t>(mPositions[v2][0]);
+        y1 = static_cast<int32_t>(mPositions[v2][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
 
-        x0 = static_cast<int>(mPositions[v2][0]);
-        y0 = static_cast<int>(mPositions[v2][1]);
-        x1 = static_cast<int>(mPositions[v0][0]);
-        y1 = static_cast<int>(mPositions[v0][1]);
+        x0 = static_cast<int32_t>(mPositions[v2][0]);
+        y0 = static_cast<int32_t>(mPositions[v2][1]);
+        x1 = static_cast<int32_t>(mPositions[v0][0]);
+        y1 = static_cast<int32_t>(mPositions[v0][1]);
         DrawLine(x0, y0, x1, y1, 0xFF000000);
     }
 
@@ -214,7 +214,7 @@ void TriangulationECWindow2::OnDisplay()
     Window2::OnDisplay();
 }
 
-bool TriangulationECWindow2::OnCharPress(unsigned char key, int x, int y)
+bool TriangulationECWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -519,7 +519,7 @@ void TriangulationECWindow2::TreeOfNestedPolygons()
     mTriangles = triangulator.GetTriangles();
 }
 
-void TriangulationECWindow2::FourBoxesThreeNested(int i0, int i1, int i2)
+void TriangulationECWindow2::FourBoxesThreeNested(int32_t i0, int32_t i1, int32_t i2)
 {
     ClearAll();
     mExample = 5;

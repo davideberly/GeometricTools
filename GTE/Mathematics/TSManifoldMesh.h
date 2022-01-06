@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -22,13 +22,13 @@ namespace gte
     public:
         // Triangle data types.
         class Triangle;
-        typedef std::unique_ptr<Triangle>(*TCreator)(int, int, int);
+        typedef std::unique_ptr<Triangle>(*TCreator)(int32_t, int32_t, int32_t);
         typedef std::unordered_map<TriangleKey<false>, std::unique_ptr<Triangle>,
             TriangleKey<false>, TriangleKey<false>> TMap;
 
         // Tetrahedron data types.
         class Tetrahedron;
-        typedef std::unique_ptr<Tetrahedron>(*SCreator)(int, int, int, int);
+        typedef std::unique_ptr<Tetrahedron>(*SCreator)(int32_t, int32_t, int32_t, int32_t);
         typedef std::unordered_map<TetrahedronKey<true>, std::unique_ptr<Tetrahedron>,
             TetrahedronKey<true>, TetrahedronKey<true>> SMap;
 
@@ -38,7 +38,7 @@ namespace gte
         public:
             virtual ~Triangle() = default;
 
-            Triangle(int v0, int v1, int v2)
+            Triangle(int32_t v0, int32_t v1, int32_t v2)
                 :
                 V{ v0, v1, v2 },
                 T{ nullptr, nullptr }
@@ -46,7 +46,7 @@ namespace gte
             }
 
             // Vertices of the face.
-            std::array<int, 3> V;
+            std::array<int32_t, 3> V;
 
             // Tetrahedra sharing the face.
             std::array<Tetrahedron*, 2> T;
@@ -58,7 +58,7 @@ namespace gte
         public:
             virtual ~Tetrahedron() = default;
 
-            Tetrahedron(int v0, int v1, int v2, int v3)
+            Tetrahedron(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
                 :
                 V{ v0, v1, v2, v3 },
                 T{ nullptr, nullptr, nullptr, nullptr },
@@ -69,7 +69,7 @@ namespace gte
             // Vertices, listed in an order so that each face vertices in
             // counterclockwise order when viewed from outside the
             // tetrahedron.
-            std::array<int, 4> V;
+            std::array<int32_t, 4> V;
 
             // Adjacent faces.  T[i] points to the triangle face
             // opposite V[i].
@@ -149,7 +149,7 @@ namespace gte
         // created and returned; otherwise, <v0,v1,v2,v3> is in the mesh and
         // nullptr is returned.  If the insertion leads to a nonmanifold mesh,
         // the call fails with a nullptr returned.
-        Tetrahedron* Insert(int v0, int v1, int v2, int v3)
+        Tetrahedron* Insert(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
             TetrahedronKey<true> skey(v0, v1, v2, v3);
             if (mSMap.find(skey) != mSMap.end())
@@ -164,7 +164,7 @@ namespace gte
             Tetrahedron* tetra = newTetra.get();
 
             // Add the faces to the mesh if they do not already exist.
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 auto const& opposite = TetrahedronKey<true>::GetOppositeFace()[i];
                 TriangleKey<false> tkey(tetra->V[opposite[0]], tetra->V[opposite[1]], tetra->V[opposite[2]]);
@@ -205,7 +205,7 @@ namespace gte
                     // Update the adjacent tetrahedra.
                     auto adjacent = face->T[0];
                     LogAssert(adjacent != nullptr, "Unexpected condition.");
-                    for (int j = 0; j < 4; ++j)
+                    for (int32_t j = 0; j < 4; ++j)
                     {
                         if (adjacent->T[j] == face)
                         {
@@ -227,7 +227,7 @@ namespace gte
         // If <v0,v1,v2,v3> is in the mesh, it is removed and 'true' is
         // returned; otherwise, <v0,v1,v2,v3> is not in the mesh and 'false'
         // is returned.
-        bool Remove(int v0, int v1, int v2, int v3)
+        bool Remove(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
             TetrahedronKey<true> skey(v0, v1, v2, v3);
             auto siter = mSMap.find(skey);
@@ -241,7 +241,7 @@ namespace gte
             Tetrahedron* tetra = siter->second.get();
 
             // Remove the faces and update adjacent tetrahedra if necessary.
-            for (int i = 0; i < 4; ++i)
+            for (int32_t i = 0; i < 4; ++i)
             {
                 // Inform the faces the tetrahedron is being deleted.
                 auto face = tetra->T[i];
@@ -275,7 +275,7 @@ namespace gte
                 auto adjacent = tetra->S[i];
                 if (adjacent)
                 {
-                    for (int j = 0; j < 4; ++j)
+                    for (int32_t j = 0; j < 4; ++j)
                     {
                         if (adjacent->S[j] == tetra)
                         {
@@ -313,7 +313,7 @@ namespace gte
 
     protected:
         // The triangle data and default triangle creation.
-        static std::unique_ptr<Triangle> CreateTriangle(int v0, int v1, int v2)
+        static std::unique_ptr<Triangle> CreateTriangle(int32_t v0, int32_t v1, int32_t v2)
         {
             return std::make_unique<Triangle>(v0, v1, v2);
         }
@@ -322,7 +322,7 @@ namespace gte
         TMap mTMap;
 
         // The tetrahedron data and default tetrahedron creation.
-        static std::unique_ptr<Tetrahedron> CreateTetrahedron(int v0, int v1, int v2, int v3)
+        static std::unique_ptr<Tetrahedron> CreateTetrahedron(int32_t v0, int32_t v1, int32_t v2, int32_t v3)
         {
             return std::make_unique<Tetrahedron>(v0, v1, v2, v3);
         }

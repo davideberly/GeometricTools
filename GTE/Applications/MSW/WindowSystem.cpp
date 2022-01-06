@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.12
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -42,7 +42,7 @@ WindowSystem::WindowSystem()
     mAtom = RegisterClass(&wc);
 }
 
-bool WindowSystem::GetWindowRectangle(int xClientSize, int yClientSize,
+bool WindowSystem::GetWindowRectangle(int32_t xClientSize, int32_t yClientSize,
     DWORD style, RECT& windowRectangle)
 {
     windowRectangle.left = 0;
@@ -81,8 +81,8 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
         style, rectangle);
     if (adjusted)
     {
-        int adjustedXSize = (int)rectangle.right - (int)rectangle.left + 1;
-        int adjustedYSize = (int)rectangle.bottom - (int)rectangle.top + 1;
+        int32_t adjustedXSize = (int32_t)rectangle.right - (int32_t)rectangle.left + 1;
+        int32_t adjustedYSize = (int32_t)rectangle.bottom - (int32_t)rectangle.top + 1;
         parameters.handle = CreateWindow(mWindowClassName,
             parameters.title.c_str(), style, parameters.xOrigin,
             parameters.yOrigin, adjustedXSize, adjustedYSize, nullptr,
@@ -94,8 +94,8 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
         if (parameters.hscrollBar || parameters.vscrollBar)
         {
             GetClientRect(parameters.handle, &rectangle);
-            int clientXSize = (int)rectangle.right - (int)rectangle.left;
-            int clientYSize = (int)rectangle.bottom - (int)rectangle.top;
+            int32_t clientXSize = (int32_t)rectangle.right - (int32_t)rectangle.left;
+            int32_t clientYSize = (int32_t)rectangle.bottom - (int32_t)rectangle.top;
             if (clientXSize != parameters.xSize
                 || clientYSize != parameters.ySize)
             {
@@ -197,16 +197,16 @@ void WindowSystem::CreateEngineAndProgramFactory(Window::Parameters& parameters)
 }
 #endif
 
-void WindowSystem::Extract(LPARAM lParam, int& x, int& y)
+void WindowSystem::Extract(LPARAM lParam, int32_t& x, int32_t& y)
 {
-    x = static_cast<int>(static_cast<short>(lParam & 0xFFFF));
-    y = static_cast<int>(static_cast<short>((lParam & 0xFFFF0000) >> 16));
+    x = static_cast<int32_t>(static_cast<int16_t>(lParam & 0xFFFF));
+    y = static_cast<int32_t>(static_cast<int16_t>((lParam & 0xFFFF0000) >> 16));
 }
 
-void WindowSystem::Extract(WPARAM wParam, int& x, int& y)
+void WindowSystem::Extract(WPARAM wParam, int32_t& x, int32_t& y)
 {
-    x = static_cast<int>(static_cast<short>(wParam & 0xFFFF));
-    y = static_cast<int>(static_cast<short>((wParam & 0xFFFF0000) >> 16));
+    x = static_cast<int32_t>(static_cast<int16_t>(wParam & 0xFFFF));
+    y = static_cast<int32_t>(static_cast<int16_t>((wParam & 0xFFFF0000) >> 16));
 }
 
 LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
@@ -240,7 +240,7 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     {
         // Get the origin of the moved window.  The y-value for window
         // moves is left-handed.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
         window.OnMove(x, y);
         return 0;
@@ -248,7 +248,7 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_SIZE:
     {
         // Get the new size of the window.
-        int xSize, ySize;
+        int32_t xSize, ySize;
         Extract(lParam, xSize, ySize);
 
         if (wParam == SIZE_MINIMIZED)
@@ -271,14 +271,14 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_CHAR:
     {
         // Get thet translated key code.
-        unsigned char key = static_cast<unsigned char>(static_cast<char>(wParam));
+        uint8_t key = static_cast<uint8_t>(static_cast<char>(wParam));
 
         // Get the cursor position in client coordinates.
         POINT point;
         GetCursorPos(&point);
         ScreenToClient(handle, &point);
-        int x = static_cast<int>(point.x);
-        int y = static_cast<int>(point.y);
+        int32_t x = static_cast<int32_t>(point.x);
+        int32_t y = static_cast<int32_t>(point.y);
 
         window.OnCharPress(key, x, y);
         return 0;
@@ -286,14 +286,14 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_KEYDOWN:
     {
         // Get the virtual key code.
-        int key = static_cast<int>(wParam);
+        int32_t key = static_cast<int32_t>(wParam);
 
         // Get the cursor position in client coordinates.
         POINT point;
         GetCursorPos(&point);
         ScreenToClient(handle, &point);
-        int x = static_cast<int>(point.x);
-        int y = static_cast<int>(point.y);
+        int32_t x = static_cast<int32_t>(point.x);
+        int32_t y = static_cast<int32_t>(point.y);
 
         window.OnKeyDown(key, x, y);
         return 0;
@@ -301,14 +301,14 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_KEYUP:
     {
         // Get the virtual key code.
-        int key = static_cast<int>(wParam);
+        int32_t key = static_cast<int32_t>(wParam);
 
         // Get the cursor position in client coordinates.
         POINT point;
         GetCursorPos(&point);
         ScreenToClient(handle, &point);
-        int x = static_cast<int>(point.x);
-        int y = static_cast<int>(point.y);
+        int32_t x = static_cast<int32_t>(point.x);
+        int32_t y = static_cast<int32_t>(point.y);
 
         window.OnKeyUp(key, x, y);
         return 0;
@@ -316,10 +316,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_LBUTTONDOWN:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_LEFT, WindowApplication::MOUSE_DOWN,
@@ -329,10 +329,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_LBUTTONUP:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_LEFT, WindowApplication::MOUSE_UP,
@@ -342,10 +342,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_MBUTTONDOWN:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_MIDDLE, WindowApplication::MOUSE_DOWN,
@@ -355,10 +355,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_MBUTTONUP:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_MIDDLE, WindowApplication::MOUSE_UP,
@@ -368,10 +368,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_RBUTTONDOWN:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_RIGHT, WindowApplication::MOUSE_DOWN,
@@ -381,10 +381,10 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_RBUTTONUP:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
         window.OnMouseClick(WindowApplication::MOUSE_RIGHT, WindowApplication::MOUSE_UP,
@@ -394,13 +394,13 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_MOUSEMOVE:
     {
         // Get the modifier flags.
-        unsigned int modifiers = static_cast<unsigned int>(wParam);
+        uint32_t modifiers = static_cast<uint32_t>(wParam);
 
         // Get the cursor position in client coordinates.
-        int x, y;
+        int32_t x, y;
         Extract(lParam, x, y);
 
-        int button;
+        int32_t button;
         if (wParam & MK_LBUTTON)
         {
             button = WindowApplication::MOUSE_LEFT;
@@ -424,23 +424,23 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     case WM_MOUSEWHEEL:
     {
         // Get the modifier flags and the amount the wheel rotated.
-        int modifiers, delta;
+        int32_t modifiers, delta;
         Extract(wParam, modifiers, delta);
 
         // Get the cursor position in client coordinates.
         POINT point;
         GetCursorPos(&point);
         ScreenToClient(handle, &point);
-        int x = static_cast<int>(point.x);
-        int y = static_cast<int>(point.y);
+        int32_t x = static_cast<int32_t>(point.x);
+        int32_t y = static_cast<int32_t>(point.y);
 
-        window.OnMouseWheel(delta, x, y, (unsigned int)modifiers);
+        window.OnMouseWheel(delta, x, y, (uint32_t)modifiers);
         return 0;
     }
     case WM_HSCROLL:  // 0x0114
     case WM_VSCROLL:  // 0x0115
     {
-        int bar = message - WM_HSCROLL;  // 0 or 1
+        int32_t bar = message - WM_HSCROLL;  // 0 or 1
         switch (LOWORD(wParam))
         {
         case SB_LINELEFT:

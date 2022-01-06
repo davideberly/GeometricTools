@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "VideoStreamsWindow2.h"
 #include <random>
@@ -34,25 +34,25 @@ VideoStreamsWindow2::VideoStreamsWindow2(Parameters& parameters)
     path += "/Samples/Imagics/VideoStreams/Data/";
     mEnvironment.Insert(path);
 
-    int const txWidth = 640, txHeight = 512;
+    int32_t const txWidth = 640, txHeight = 512;
 
     // Generate dummy video files.  This avoids having to post large data
     // files for the sample.  After you have created these the first time,
     // you can change the "#if 1" to "if 0" to reduce program initialization
     // time should you decide to experiment with the code.
-    int const numImages = 16;
-    int const format = static_cast<int>(DF_R8G8B8A8_UNORM);
-    unsigned int colorMask[NUM_VIDEO_STREAMS] =
+    int32_t const numImages = 16;
+    int32_t const format = static_cast<int32_t>(DF_R8G8B8A8_UNORM);
+    uint32_t colorMask[NUM_VIDEO_STREAMS] =
     {
         0xFF0000FF,
         0xFF00FF00,
         0xFFFF0000,
         0xFFFFFFFF
     };
-    std::vector<unsigned int> texels(txWidth * txHeight);
+    std::vector<uint32_t> texels(txWidth * txHeight);
     std::mt19937 mte;
-    std::uniform_int_distribution<unsigned int> rnd(0, 127);
-    for (int i = 0; i < NUM_VIDEO_STREAMS; ++i)
+    std::uniform_int_distribution<uint32_t> rnd(0, 127);
+    for (int32_t i = 0; i < NUM_VIDEO_STREAMS; ++i)
     {
         std::string name = "VideoStream" + std::to_string(i) + ".raw";
         if (mEnvironment.GetPath(name) != "")
@@ -70,15 +70,15 @@ VideoStreamsWindow2::VideoStreamsWindow2(Parameters& parameters)
         output.write((char const*)&format, sizeof(format));
         output.write((char const*)&txWidth, sizeof(txWidth));
         output.write((char const*)&txHeight, sizeof(txHeight));
-        unsigned int mask = colorMask[i];
-        for (int j = 0; j < numImages; ++j)
+        uint32_t mask = colorMask[i];
+        for (int32_t j = 0; j < numImages; ++j)
         {
             // Randomly generate an RGBA image.
             for (auto& texel : texels)
             {
-                unsigned int r = 128 + rnd(mte);
-                unsigned int g = 128 + rnd(mte);
-                unsigned int b = 128 + rnd(mte);
+                uint32_t r = 128 + rnd(mte);
+                uint32_t g = 128 + rnd(mte);
+                uint32_t b = 128 + rnd(mte);
                 texel = mask & (r | (g << 8) | (b << 16) | 0xFF000000);
             }
 
@@ -97,7 +97,7 @@ VideoStreamsWindow2::VideoStreamsWindow2(Parameters& parameters)
 
     mEngine->SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
-    for (int i = 0; i < NUM_VIDEO_STREAMS; ++i)
+    for (int32_t i = 0; i < NUM_VIDEO_STREAMS; ++i)
     {
         std::string name = "VideoStream" + std::to_string(i) + ".raw";
         mVideoStreams[i] = std::make_shared<FileVideoStream>(
@@ -120,7 +120,7 @@ void VideoStreamsWindow2::OnIdle()
     mVideoStreamManager->CaptureFrameSerial();
     if (mVideoStreamManager->GetFrame(mCurrent))
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             mOverlay[i]->SetTexture(mCurrent.frames[i].image);
             mEngine->Draw(mOverlay[i]);
@@ -134,7 +134,7 @@ void VideoStreamsWindow2::OnIdle()
     mVideoStreamManager->CaptureFrameParallel();
     if (mVideoStreamManager->GetFrame(mCurrent))
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             mOverlay[i]->SetTexture(mCurrent.frames[i].image);
             mEngine->Draw(mOverlay[i]);
@@ -147,7 +147,7 @@ void VideoStreamsWindow2::OnIdle()
 #if defined(DO_TRIGGERED_SERIAL) || defined(DO_TRIGGERED_PARALLEL)
     if (mVideoStreamManager->GetFrame(mCurrent))
     {
-        for (int i = 0; i < 4; ++i)
+        for (int32_t i = 0; i < 4; ++i)
         {
             mOverlay[i]->SetTexture(mCurrent.frames[i].image);
             mEngine->Draw(mOverlay[i]);
@@ -158,7 +158,7 @@ void VideoStreamsWindow2::OnIdle()
 #endif
 }
 
-bool VideoStreamsWindow2::OnCharPress(unsigned char key, int x, int y)
+bool VideoStreamsWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     if (key == ' ')
     {
@@ -170,29 +170,29 @@ bool VideoStreamsWindow2::OnCharPress(unsigned char key, int x, int y)
     return Window2::OnCharPress(key, x, y);
 }
 
-bool VideoStreamsWindow2::CreateOverlays(int textureWidth, int textureHeight)
+bool VideoStreamsWindow2::CreateOverlays(int32_t textureWidth, int32_t textureHeight)
 {
     // Use nearest filtering and clamped texture coordinates.
-    SamplerState::Filter filter = SamplerState::MIN_P_MAG_P_MIP_P;
-    SamplerState::Mode mode = SamplerState::CLAMP;
+    SamplerState::Filter filter = SamplerState::Filter::MIN_P_MAG_P_MIP_P;
+    SamplerState::Mode mode = SamplerState::Mode::CLAMP;
     mOverlay[0] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, textureWidth, textureHeight, filter, mode, mode, true);
-    std::array<int, 4> rect0 = { 0, 0, mXSize / 2, mYSize / 2 };
+    std::array<int32_t, 4> rect0 = { 0, 0, mXSize / 2, mYSize / 2 };
     mOverlay[0]->SetOverlayRectangle(rect0);
 
     mOverlay[1] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, textureWidth, textureHeight, filter, mode, mode, true);
-    std::array<int, 4> rect1 = { mXSize / 2, 0, mXSize / 2, mYSize / 2 };
+    std::array<int32_t, 4> rect1 = { mXSize / 2, 0, mXSize / 2, mYSize / 2 };
     mOverlay[1]->SetOverlayRectangle(rect1);
 
     mOverlay[2] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, textureWidth, textureHeight, filter, mode, mode, true);
-    std::array<int, 4> rect2 = { 0, mYSize / 2, mXSize / 2, mYSize / 2 };
+    std::array<int32_t, 4> rect2 = { 0, mYSize / 2, mXSize / 2, mYSize / 2 };
     mOverlay[2]->SetOverlayRectangle(rect2);
 
     mOverlay[3] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
         mYSize, textureWidth, textureHeight, filter, mode, mode, true);
-    std::array<int, 4> rect3 =
+    std::array<int32_t, 4> rect3 =
         { mXSize / 2, mYSize / 2, mXSize / 2, mYSize / 2 };
     mOverlay[3]->SetOverlayRectangle(rect3);
 
@@ -225,7 +225,7 @@ void VideoStreamsWindow2::DrawStatistics()
     mEngine->Draw(8, mYSize - 24, textColor, message);
 
     message = "vs average capture msec: ";
-    for (int i = 0; i < NUM_VIDEO_STREAMS; ++i)
+    for (int32_t i = 0; i < NUM_VIDEO_STREAMS; ++i)
     {
         message += ", vs" + std::to_string(i) +" = " + std::to_string(averageVSTime[i]);
     }

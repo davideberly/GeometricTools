@@ -1,11 +1,13 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
+
+#include <cstdint>
 
 namespace gte
 {
@@ -25,13 +27,19 @@ namespace gte
 
         IP_HAS_POINTS = IP_POLYPOINT,
 
-        IP_HAS_SEGMENTS = IP_POLYSEGMENT_DISJOINT | IP_POLYSEGMENT_CONTIGUOUS
-        | IP_POLYSEGMENT_DISJOINT_ADJ | IP_POLYSEGMENT_CONTIGUOUS_ADJ,
+        IP_HAS_SEGMENTS =
+            IP_POLYSEGMENT_DISJOINT |
+            IP_POLYSEGMENT_CONTIGUOUS |
+            IP_POLYSEGMENT_DISJOINT_ADJ |
+            IP_POLYSEGMENT_CONTIGUOUS_ADJ,
 
-        IP_HAS_TRIANGLES = IP_TRIMESH | IP_TRISTRIP
-        | IP_TRIMESH_ADJ | IP_TRISTRIP_ADJ,
+        IP_HAS_TRIANGLES =
+            IP_TRIMESH |
+            IP_TRISTRIP |
+            IP_TRIMESH_ADJ |
+            IP_TRISTRIP_ADJ,
 
-        IP_NUM_TYPES = 9 // IP_POLYPOINT through IP_TRISTRIP_ADJ
+        // POLYPOINT through TRISTRIP_ADJ
+        IP_NUM_TYPES = 9
     };
-
 }

@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Buffer.h>
 #include <Graphics/VertexFormat.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -19,7 +20,7 @@ namespace gte
     public:
         // This constructor is for standard usage where the vertex buffer is
         // used by the rasterizer to provide vertices to the vertex shader.
-        VertexBuffer(VertexFormat const& vformat, unsigned int numVertices,
+        VertexBuffer(VertexFormat const& vformat, uint32_t numVertices,
             bool createStorage = true);
 
         // This constructor is used for vertex-id-based drawing where the
@@ -32,7 +33,7 @@ namespace gte
         // This constructor is used for vertex-id-based drawing that does not
         // require vertices; for example, the shader itself can generate the
         // positions from the identifiers.
-        VertexBuffer(unsigned int numVertices);
+        VertexBuffer(uint32_t numVertices);
 
         // Member access.  The function StandardUsage() returns 'true' when
         // the first constructor is used or 'false' when the second
@@ -57,7 +58,7 @@ namespace gte
         // a list of required types (OR-ed bit flags).  If you do not care
         // about the type, pass DF_UNKNOWN for the required input.  If the
         // request fails, a null pointer is returned.
-        char* GetChannel(VASemantic semantic, unsigned int unit,
+        char* GetChannel(VASemantic semantic, uint32_t unit,
             std::set<DFType> const& requiredTypes);
 
     protected:

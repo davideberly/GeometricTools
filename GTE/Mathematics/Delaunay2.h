@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -106,7 +106,7 @@ namespace gte
         // positive, the determination is fuzzy--vertices approximately the
         // same point, approximately on a line, or planar.  The return value
         // is 'true' if and only if the hull construction is successful.
-        bool operator()(int numVertices, Vector2<InputType> const* vertices, InputType epsilon)
+        bool operator()(int32_t numVertices, Vector2<InputType> const* vertices, InputType epsilon)
         {
             mEpsilon = std::max(epsilon, (InputType)0);
             mDimension = 0;
@@ -121,7 +121,7 @@ namespace gte
             mAdjacencies.clear();
             mDuplicates.resize(std::max(numVertices, 3));
 
-            int i, j;
+            int32_t i, j;
             if (mNumVertices < 3)
             {
                 // Delaunay2 should be called with at least three points.
@@ -198,7 +198,7 @@ namespace gte
                     mDuplicates[i] = iter->location;
                 }
             }
-            mNumUniqueVertices = static_cast<int>(processed.size());
+            mNumUniqueVertices = static_cast<int32_t>(processed.size());
 
             // Assign integer values to the triangles for use by the caller
             // and copy the triangle information to compact arrays mIndices
@@ -217,7 +217,7 @@ namespace gte
             return mEpsilon;
         }
 
-        inline int GetDimension() const
+        inline int32_t GetDimension() const
         {
             return mDimension;
         }
@@ -228,17 +228,17 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
 
-        inline int GetNumUniqueVertices() const
+        inline int32_t GetNumUniqueVertices() const
         {
             return mNumUniqueVertices;
         }
 
-        inline int GetNumTriangles() const
+        inline int32_t GetNumTriangles() const
         {
             return mNumTriangles;
         }
@@ -258,12 +258,12 @@ namespace gte
             return mGraph;
         }
 
-        inline std::vector<int> const& GetIndices() const
+        inline std::vector<int32_t> const& GetIndices() const
         {
             return mIndices;
         }
 
-        inline std::vector<int> const& GetAdjacencies() const
+        inline std::vector<int32_t> const& GetAdjacencies() const
         {
             return mAdjacencies;
         }
@@ -271,7 +271,7 @@ namespace gte
         // If 'vertices' has no duplicates, GetDuplicates()[i] = i for all i.
         // If vertices[i] is the first occurrence of a vertex and if
         // vertices[j] is found later, then GetDuplicates()[j] = i.
-        inline std::vector<int> const& GetDuplicates() const
+        inline std::vector<int32_t> const& GetDuplicates() const
         {
             return mDuplicates;
         }
@@ -282,13 +282,13 @@ namespace gte
         // an edge is ordered so that they conform to a counterclockwise
         // traversal of the hull.  The return value is 'true' if and only if
         // the dimension is 2.
-        bool GetHull(std::vector<int>& hull) const
+        bool GetHull(std::vector<int32_t>& hull) const
         {
             if (mDimension == 2)
             {
                 // Count the number of edges that are not shared by two
                 // triangles.
-                int numEdges = 0;
+                int32_t numEdges = 0;
                 for (auto adj : mAdjacencies)
                 {
                     if (adj == -1)
@@ -327,22 +327,22 @@ namespace gte
 
         // Copy Delaunay triangles to compact arrays mIndices and
         // mAdjacencies. The array information is accessible via the
-        // functions GetIndices(int, std::array<int, 3>&) and
-        // GetAdjacencies(int, std::array<int, 3>&).
+        // functions GetIndices(int32_t, std::array<int32_t, 3>&) and
+        // GetAdjacencies(int32_t, std::array<int32_t, 3>&).
         void UpdateIndicesAdjacencies()
         {
             // Assign integer values to the triangles.
             auto const& tmap = mGraph.GetTriangles();
-            std::map<Triangle*, int> permute;
-            int i = -1;
+            std::map<Triangle*, int32_t> permute;
+            int32_t i = -1;
             permute[nullptr] = i++;
             for (auto const& element : tmap)
             {
                 permute[element.second.get()] = i++;
             }
 
-            mNumTriangles = static_cast<int>(tmap.size());
-            int numindices = 3 * mNumTriangles;
+            mNumTriangles = static_cast<int32_t>(tmap.size());
+            int32_t numindices = 3 * mNumTriangles;
             if (numindices > 0)
             {
                 mIndices.resize(numindices);
@@ -364,11 +364,11 @@ namespace gte
         // when the dimension is 2 and i is a valid triangle index, in which
         // case the vertices are valid; otherwise, the function returns
         // 'false' and the vertices are invalid.
-        bool GetIndices(int i, std::array<int, 3>& indices) const
+        bool GetIndices(int32_t i, std::array<int32_t, 3>& indices) const
         {
             if (mDimension == 2)
             {
-                int numTriangles = static_cast<int>(mIndices.size() / 3);
+                int32_t numTriangles = static_cast<int32_t>(mIndices.size() / 3);
                 if (0 <= i && i < numTriangles)
                 {
                     size_t threeI = 3 * static_cast<size_t>(i);
@@ -389,11 +389,11 @@ namespace gte
         // returns 'true' when the dimension is 2 and if i is a valid triangle
         // index, in which case the adjacencies are valid; otherwise, the
         // function returns 'false' and the adjacencies are invalid.
-        bool GetAdjacencies(int i, std::array<int, 3>& adjacencies) const
+        bool GetAdjacencies(int32_t i, std::array<int32_t, 3>& adjacencies) const
         {
             if (mDimension == 2)
             {
-                int numTriangles = static_cast<int>(mIndices.size() / 3);
+                int32_t numTriangles = static_cast<int32_t>(mIndices.size() / 3);
                 if (0 <= i && i < numTriangles)
                 {
                     size_t threeI = 3 * static_cast<size_t>(i);
@@ -427,7 +427,7 @@ namespace gte
         // specify 'finalTriangle' from the previous call as 'initialTriangle'
         // for the next call, which should reduce search times.
 
-        static int constexpr negOne = -1;
+        static int32_t constexpr negOne = -1;
 
         struct SearchInfo
         {
@@ -441,23 +441,23 @@ namespace gte
             {
             }
 
-            int initialTriangle;
-            int numPath;
-            std::vector<int> path;
-            int finalTriangle;
-            std::array<int, 3> finalV;
+            int32_t initialTriangle;
+            int32_t numPath;
+            std::vector<int32_t> path;
+            int32_t finalTriangle;
+            std::array<int32_t, 3> finalV;
         };
 
-        int GetContainingTriangle(Vector2<InputType> const& p, SearchInfo& info) const
+        int32_t GetContainingTriangle(Vector2<InputType> const& p, SearchInfo& info) const
         {
             if (mDimension == 2)
             {
                 Vector2<ComputeType> test{ p[0], p[1] };
 
-                int numTriangles = static_cast<int>(mIndices.size() / 3);
+                int32_t numTriangles = static_cast<int32_t>(mIndices.size() / 3);
                 info.path.resize(numTriangles);
                 info.numPath = 0;
-                int triangle;
+                int32_t triangle;
                 if (0 <= info.initialTriangle && info.initialTriangle < numTriangles)
                 {
                     triangle = info.initialTriangle;
@@ -469,10 +469,10 @@ namespace gte
                 }
 
                 // Use triangle edges as binary separating lines.
-                for (int i = 0; i < numTriangles; ++i)
+                for (int32_t i = 0; i < numTriangles; ++i)
                 {
-                    int ibase = 3 * triangle;
-                    int const* v = &mIndices[ibase];
+                    int32_t ibase = 3 * triangle;
+                    int32_t const* v = &mIndices[ibase];
 
                     info.path[info.numPath++] = triangle;
                     info.finalTriangle = triangle;
@@ -533,16 +533,16 @@ namespace gte
         // Support for incremental Delaunay triangulation.
         typedef ETManifoldMesh::Triangle Triangle;
 
-        bool GetContainingTriangle(int i, Triangle*& tri) const
+        bool GetContainingTriangle(int32_t i, Triangle*& tri) const
         {
-            int numTriangles = static_cast<int>(mGraph.GetTriangles().size());
-            for (int t = 0; t < numTriangles; ++t)
+            int32_t numTriangles = static_cast<int32_t>(mGraph.GetTriangles().size());
+            for (int32_t t = 0; t < numTriangles; ++t)
             {
-                int j;
+                int32_t j;
                 for (j = 0; j < 3; ++j)
                 {
-                    int v0 = tri->V[mIndex[j][0]];
-                    int v1 = tri->V[mIndex[j][1]];
+                    int32_t v0 = tri->V[mIndex[j][0]];
+                    int32_t v1 = tri->V[mIndex[j][1]];
                     if (mQuery.ToLine(i, v0, v1) > 0)
                     {
                         // Point i sees edge <v0,v1> from outside the triangle.
@@ -574,7 +574,7 @@ namespace gte
             LogError("Unexpected termination of loop.");
         }
 
-        bool GetAndRemoveInsertionPolygon(int i, std::set<Triangle*>& candidates,
+        bool GetAndRemoveInsertionPolygon(int32_t i, std::set<Triangle*>& candidates,
             std::set<EdgeKey<true>>& boundary)
         {
             // Locate the triangles that make up the insertion polygon.
@@ -584,14 +584,14 @@ namespace gte
                 Triangle* tri = *candidates.begin();
                 candidates.erase(candidates.begin());
 
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     auto adj = tri->T[j];
                     if (adj && candidates.find(adj) == candidates.end())
                     {
-                        int a0 = adj->V[0];
-                        int a1 = adj->V[1];
-                        int a2 = adj->V[2];
+                        int32_t a0 = adj->V[0];
+                        int32_t a1 = adj->V[1];
+                        int32_t a2 = adj->V[2];
                         if (mQuery.ToCircumcircle(i, a0, a1, a2) <= 0)
                         {
                             // Point i is in the circumcircle.
@@ -614,7 +614,7 @@ namespace gte
             for (auto const& element : polygon.GetTriangles())
             {
                 Triangle* tri = element.second.get();
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     if (!tri->T[j])
                     {
@@ -625,7 +625,7 @@ namespace gte
             return true;
         }
 
-        bool Update(int i)
+        bool Update(int32_t i)
         {
             // The return value of mGraph.Insert(...) is nullptr if there was
             // a failure to insert.  The Update function will return 'false'
@@ -657,8 +657,8 @@ namespace gte
                 // point i and the faces of C.
                 for (auto const& key : boundary)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
                     if (mQuery.ToLine(i, v0, v1) < 0)
                     {
                         if (!mGraph.Insert(i, v0, v1))
@@ -681,7 +681,7 @@ namespace gte
                 for (auto const& element : tmap)
                 {
                     Triangle* t = element.second.get();
-                    for (int j = 0; j < 3; ++j)
+                    for (int32_t j = 0; j < 3; ++j)
                     {
                         if (!t->T[j])
                         {
@@ -697,8 +697,8 @@ namespace gte
                 std::set<EdgeKey<true>> visible;
                 for (auto const& key : hull)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
                     if (mQuery.ToLine(i, v0, v1) > 0)
                     {
                         auto iter = emap.find(EdgeKey<false>(v0, v1));
@@ -707,9 +707,9 @@ namespace gte
                             auto adj = iter->second->T[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
-                                int a0 = adj->V[0];
-                                int a1 = adj->V[1];
-                                int a2 = adj->V[2];
+                                int32_t a0 = adj->V[0];
+                                int32_t a1 = adj->V[1];
+                                int32_t a2 = adj->V[2];
                                 if (mQuery.ToCircumcircle(i, a0, a1, a2) <= 0)
                                 {
                                     // Point i is in the circumcircle.
@@ -747,8 +747,8 @@ namespace gte
                 // mGraph-C.
                 for (auto const& key : boundary)
                 {
-                    int v0 = key.V[0];
-                    int v1 = key.V[1];
+                    int32_t v0 = key.V[0];
+                    int32_t v1 = key.V[1];
                     if (mQuery.ToLine(i, v0, v1) < 0)
                     {
                         // This is a back edge of the boundary.
@@ -779,7 +779,7 @@ namespace gte
         // dimension is 1, the caller can query for the approximating line and
         // project vertices[] onto it for further processing.
         InputType mEpsilon;
-        int mDimension;
+        int32_t mDimension;
         Line2<InputType> mLine;
 
         // The array of vertices used for geometric queries.  If you want to
@@ -788,13 +788,13 @@ namespace gte
         PrimalQuery2<ComputeType> mQuery;
 
         // The graph information.
-        int mNumVertices;
-        int mNumUniqueVertices;
-        int mNumTriangles;
+        int32_t mNumVertices;
+        int32_t mNumUniqueVertices;
+        int32_t mNumTriangles;
         Vector2<InputType> const* mVertices;
         VETManifoldMesh mGraph;
-        std::vector<int> mIndices;
-        std::vector<int> mAdjacencies;
+        std::vector<int32_t> mIndices;
+        std::vector<int32_t> mAdjacencies;
 
         // If a vertex occurs multiple times in the 'vertices' input to the
         // constructor, the first processed occurrence of that vertex has an
@@ -805,7 +805,7 @@ namespace gte
         {
             ProcessedVertex() = default;
 
-            ProcessedVertex(Vector2<InputType> const& inVertex, int inLocation)
+            ProcessedVertex(Vector2<InputType> const& inVertex, int32_t inLocation)
                 :
                 vertex(inVertex),
                 location(inLocation)
@@ -818,16 +818,16 @@ namespace gte
             }
 
             Vector2<InputType> vertex;
-            int location;
+            int32_t location;
         };
 
-        std::vector<int> mDuplicates;
+        std::vector<int32_t> mDuplicates;
 
         // Indexing for the vertices of the triangle adjacent to a vertex.
         // The edge adjacent to vertex j is <mIndex[j][0], mIndex[j][1]> and
         // is listed so that the triangle interior is to your left as you walk
         // around the edges.
-        std::array<std::array<int, 2>, 3> mIndex;
+        std::array<std::array<int32_t, 2>, 3> mIndex;
     };
 }
 
@@ -897,7 +897,7 @@ namespace gte
 
             // Compute the intrinsic dimension and return early if that
             // dimension is 0 or 1.
-            IntrinsicsVector2<T> info(static_cast<int>(mNumVertices), mVertices, static_cast<T>(0));
+            IntrinsicsVector2<T> info(static_cast<int32_t>(mNumVertices), mVertices, static_cast<T>(0));
             if (info.dimension == 0)
             {
                 // The vertices are the same point.

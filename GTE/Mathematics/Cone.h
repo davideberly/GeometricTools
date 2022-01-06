@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -106,7 +106,7 @@
 
 namespace gte
 {
-    template <int N, typename T>
+    template <int32_t N, typename T>
     class Cone
     {
     public:
@@ -331,7 +331,7 @@ namespace gte
 
     public:
         // Support for visualization.
-        template <int Dummy = N>
+        template <int32_t Dummy = N>
         typename std::enable_if<(Dummy == 3), void>::type
         CreateMesh(size_t numMinVertices, bool inscribed,
             std::vector<Vector<3, T>>& vertices, std::vector<int32_t>& indices)
@@ -391,7 +391,7 @@ namespace gte
         }
 
     private:
-        template <int Dummy = N>
+        template <int32_t Dummy = N>
         static typename std::enable_if<(Dummy == 3), void>::type
         GenerateInscribed(size_t numVertices, T const& radius,
             std::vector<Vector<2, T>>& polygon)
@@ -407,7 +407,7 @@ namespace gte
             polygon.back() = polygon[0];
         }
 
-        template <int Dummy = N>
+        template <int32_t Dummy = N>
         static typename std::enable_if<(Dummy == 3), void>::type
         GenerateCircumscribed(size_t numVertices, T const& radius,
             std::vector<Vector<2, T>>& polygon)
@@ -431,7 +431,7 @@ namespace gte
             polygon.back() = polygon[0];
         }
 
-        template <int Dummy = N>
+        template <int32_t Dummy = N>
         static typename std::enable_if<(Dummy == 3), void>::type
         CreateConeFrustumMesh(size_t numMinVertices, size_t numMaxVertices,
             size_t numExtra, T const& hMin, T const& hMax,

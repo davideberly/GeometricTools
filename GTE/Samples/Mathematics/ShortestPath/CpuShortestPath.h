@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -16,7 +16,7 @@ class CpuShortestPath
 {
 public:
     CpuShortestPath(std::shared_ptr<Texture2> const& weights);
-    void Compute(std::stack<std::pair<int, int>>& path);
+    void Compute(std::stack<std::pair<int32_t, int32_t>>& path);
 
 private:
     // The weights texture stores (F(x,y), W1(x,y), W2(x,y), W3(x,y)), where
@@ -35,13 +35,13 @@ private:
     // (xPrevious,yPrevious) that led to this minimum.
     struct Node
     {
-        Node(float dist = 0.0f, int xPrev = -1, int yPrev = -1);
+        Node(float dist = 0.0f, int32_t xPrev = -1, int32_t yPrev = -1);
         float distance;
-        int xPrevious, yPrevious;
+        int32_t xPrevious, yPrevious;
     };
 
     // The 'weights' input is mSize-by-mSize.
-    int mSize;
+    int32_t mSize;
 
     // Use the Array2 object to access 'weights' using 2-tuple locations.
     Array2<Weights> mWeights;

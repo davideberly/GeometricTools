@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "Fluids3DWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -22,10 +22,10 @@ Fluids3DWindow3::Fluids3DWindow3(Parameters& parameters)
     // Use blending for the visualization.
     mAlphaState = std::make_shared<BlendState>();
     mAlphaState->target[0].enable = true;
-    mAlphaState->target[0].srcColor = BlendState::BM_SRC_ALPHA;
-    mAlphaState->target[0].dstColor = BlendState::BM_INV_SRC_ALPHA;
-    mAlphaState->target[0].srcAlpha = BlendState::BM_SRC_ALPHA;
-    mAlphaState->target[0].dstAlpha = BlendState::BM_INV_SRC_ALPHA;
+    mAlphaState->target[0].srcColor = BlendState::Mode::SRC_ALPHA;
+    mAlphaState->target[0].dstColor = BlendState::Mode::INV_SRC_ALPHA;
+    mAlphaState->target[0].srcAlpha = BlendState::Mode::SRC_ALPHA;
+    mAlphaState->target[0].dstAlpha = BlendState::Mode::INV_SRC_ALPHA;
     mEngine->SetBlendState(mAlphaState);
 
     // The alpha channel must be zero for the blending of density to work
@@ -70,7 +70,7 @@ void Fluids3DWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool Fluids3DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool Fluids3DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     if (key == '0')
     {
@@ -120,12 +120,12 @@ bool Fluids3DWindow3::CreateNestedBoxes()
     mPVWMatrixBuffer->SetMember("pvwMatrix", Matrix4x4<float>::Identity());
 
     auto volumeSampler = std::make_shared<SamplerState>();
-    volumeSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    volumeSampler->mode[0] = SamplerState::CLAMP;
-    volumeSampler->mode[1] = SamplerState::CLAMP;
-    volumeSampler->mode[2] = SamplerState::CLAMP;
+    volumeSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    volumeSampler->mode[0] = SamplerState::Mode::CLAMP;
+    volumeSampler->mode[1] = SamplerState::Mode::CLAMP;
+    volumeSampler->mode[2] = SamplerState::Mode::CLAMP;
 
-    auto pshader = program->GetPixelShader();
+    auto const& pshader = program->GetPixelShader();
     pshader->Set("volumeTexture", mFluid.GetState(), "volumeSampler", volumeSampler);
 
     auto effect = std::make_shared<VisualEffect>(program);
@@ -135,25 +135,25 @@ bool Fluids3DWindow3::CreateNestedBoxes()
         Vector3<float> position, tcoord;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32B32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numBoxes = 128;
+    int32_t const numBoxes = 128;
     float divisor = static_cast<float>(numBoxes - 1);
-    for (int i = 1; i <= numBoxes; ++i)
+    for (int32_t i = 1; i <= numBoxes; ++i)
     {
         float extent = 0.5f * static_cast<float>(i) / divisor;
         auto visual(mf.CreateBox(extent, extent, extent));
-        auto vbuffer = visual->GetVertexBuffer();
+        auto const& vbuffer = visual->GetVertexBuffer();
         auto vertex = vbuffer->Get<Vertex>();
-        for (unsigned int j = 0; j < vbuffer->GetNumElements(); ++j, ++vertex)
+        for (uint32_t j = 0; j < vbuffer->GetNumElements(); ++j, ++vertex)
         {
             Vector3<float>& tcd = vertex->tcoord;
             Vector3<float> pos = vertex->position;
             Vector4<float> tmp{ pos[0] + 0.5f, pos[1] + 0.5f, pos[2] + 0.5f, 0.0f };
-            for (int k = 0; k < 3; ++k)
+            for (int32_t k = 0; k < 3; ++k)
             {
                 tcd[k] = 0.5f * (tmp[k] + 1.0f);
             }

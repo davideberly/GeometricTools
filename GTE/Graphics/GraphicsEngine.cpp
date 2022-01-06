@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/GraphicsEngine.h>
@@ -93,13 +93,13 @@ uint64_t GraphicsEngine::Draw(std::vector<std::shared_ptr<Visual>> const& visual
     return numPixelsDrawn;
 }
 
-uint64_t GraphicsEngine::Draw(int x, int y, std::array<float, 4> const& color, std::string const& message)
+uint64_t GraphicsEngine::Draw(int32_t x, int32_t y, std::array<float, 4> const& color, std::string const& message)
 {
     uint64_t numPixelsDrawn;
 
     if (message.length() > 0)
     {
-        int vx, vy, vw, vh;
+        int32_t vx, vy, vw, vh;
         GetViewport(vx, vy, vw, vh);
         mActiveFont->Typeset(vw, vh, x, y, color, message);
 
@@ -148,41 +148,48 @@ GEObject* GraphicsEngine::Bind(std::shared_ptr<GraphicsObject> const& object)
 {
     LogAssert(object != nullptr, "Attempt to bind a null object.");
 
+    mGOMapMutex.lock();
     GraphicsObject const* gtObject = object.get();
-    std::shared_ptr<GEObject> geObject;
-    if (!mGOMap.Get(gtObject, geObject))
+    GEObject* geObjectPtr = nullptr;
+    auto iter = mGOMap.find(gtObject);
+    if (iter == mGOMap.end())
     {
         // The 'create' function is not null with the current engine design.
         // If the assertion is triggered, someone changed the hierarchy of
         // GraphicsObjectType but did not change msCreateFunctions[] to match.
         CreateGEObject create = mCreateGEObject[object->GetType()];
-        if (!create)
+        if (create)
         {
-            // No logger message is generated here because GL4 does not
-            // have shader creation functions.
-            return nullptr;
-        }
+            auto geObject = create(mGEObjectCreator, gtObject);
+            LogAssert(geObject != nullptr, "Unexpected condition.");
 
-        geObject = create(mGEObjectCreator, gtObject);
-        LogAssert(geObject != nullptr, "Unexpected condition.");
-
-        mGOMap.Insert(gtObject, geObject);
+            iter = mGOMap.insert(std::make_pair(gtObject, geObject)).first;
 #if defined(GTE_GRAPHICS_USE_NAMED_OBJECTS)
-        geObject->SetName(object->GetName());
+            geObject->SetName(object->GetName());
 #endif
+            geObjectPtr = iter->second.get();
+        }
+        // else: No logger message is generated here because GL4 does not have
+        // shader creation functions.
     }
-    return geObject.get();
+    else
+    {
+        geObjectPtr = iter->second.get();
+    }
+    mGOMapMutex.unlock();
+    return geObjectPtr;
 }
 
 GEDrawTarget* GraphicsEngine::Bind(std::shared_ptr<DrawTarget> const& target)
 {
+    mDTMapMutex.lock();
     DrawTarget const* gtTarget = target.get();
-    std::shared_ptr<GEDrawTarget> geTarget;
-    if (!mDTMap.Get(gtTarget, geTarget))
+    auto iter = mDTMap.find(gtTarget);
+    if (iter == mDTMap.end())
     {
-        unsigned int const numTargets = target->GetNumTargets();
+        uint32_t const numTargets = target->GetNumTargets();
         std::vector<GEObject*> rtTextures(numTargets);
-        for (unsigned int i = 0; i < numTargets; ++i)
+        for (uint32_t i = 0; i < numTargets; ++i)
         {
             rtTextures[i] = static_cast<GEObject*>(Bind(target->GetRTTexture(i)));
         }
@@ -198,42 +205,52 @@ GEDrawTarget* GraphicsEngine::Bind(std::shared_ptr<DrawTarget> const& target)
             dsTexture = nullptr;
         }
 
-        geTarget = mCreateGEDrawTarget(gtTarget, rtTextures, dsTexture);
-        mDTMap.Insert(gtTarget, geTarget);
+        auto geTarget = mCreateGEDrawTarget(gtTarget, rtTextures, dsTexture);
+        LogAssert(geTarget != nullptr, "Unexpected condition.");
+
+        iter = mDTMap.insert(std::make_pair(gtTarget, geTarget)).first;
     }
-    return geTarget.get();
+    GEDrawTarget* geDrawTargetPtr = iter->second.get();
+    mDTMapMutex.unlock();
+    return geDrawTargetPtr;
 }
 
 GEObject* GraphicsEngine::Get(std::shared_ptr<GraphicsObject> const& object) const
 {
+    mGOMapMutex.lock();
     GraphicsObject const* gtObject = object.get();
-    std::shared_ptr<GEObject> geObject;
-    if (mGOMap.Get(gtObject, geObject))
+    GEObject* geObject = nullptr;
+    auto iter = mGOMap.find(gtObject);
+    if (iter != mGOMap.end())
     {
-        return geObject.get();
+        geObject = iter->second.get();
     }
-    return nullptr;
+    mGOMapMutex.unlock();
+    return geObject;
 }
 
 GEDrawTarget* GraphicsEngine::Get(std::shared_ptr<DrawTarget> const& target) const
 {
+    mDTMapMutex.lock();
     DrawTarget const* gtTarget = target.get();
-    std::shared_ptr<GEDrawTarget> geTarget;
-    if (mDTMap.Get(gtTarget, geTarget))
+    GEDrawTarget* geDrawTarget = nullptr;
+    auto iter = mDTMap.find(gtTarget);
+    if (iter != mDTMap.end())
     {
-        return geTarget.get();
+        geDrawTarget = iter->second.get();
     }
-    LogError("Cannot find draw target.");
+    mDTMapMutex.unlock();
+    return geDrawTarget;
 }
 
 void GraphicsEngine::GetTotalAllocation(size_t& numBytes, size_t& numObjects) const
 {
+    mGOMapMutex.lock();
     numBytes = 0;
     numObjects = 0;
-    std::vector<std::shared_ptr<GEObject>> objects;
-    mGOMap.GatherAll(objects);
-    for (auto object : objects)
+    for (auto const& element : mGOMap)
     {
+        auto const& object = element.second;
         if (object)
         {
             auto resource = dynamic_cast<Resource*>(object->GetGraphicsObject());
@@ -244,6 +261,7 @@ void GraphicsEngine::GetTotalAllocation(size_t& numBytes, size_t& numObjects) co
             }
         }
     }
+    mGOMapMutex.unlock();
 }
 
 void GraphicsEngine::DestroyDefaultGlobalState()
@@ -268,10 +286,12 @@ void GraphicsEngine::DestroyDefaultGlobalState()
 
 bool GraphicsEngine::Unbind(GraphicsObject const* object)
 {
-    std::shared_ptr<GEObject> dxObject;
-    if (mGOMap.Get(object, dxObject))
+    mGOMapMutex.lock();
+    bool success = false;
+    auto iter = mGOMap.find(object);
+    if (iter != mGOMap.end())
     {
-        GraphicsObjectType type = object->GetType();
+        uint32_t type = object->GetType();
         if (type == GT_VERTEX_BUFFER)
         {
             mILMap->Unbind(static_cast<VertexBuffer const*>(object));
@@ -281,23 +301,25 @@ bool GraphicsEngine::Unbind(GraphicsObject const* object)
             mILMap->Unbind(static_cast<Shader const*>(object));
         }
 
-        if (mGOMap.Remove(object, dxObject))
-        {
-            return true;
-        }
+        mGOMap.erase(iter);
+        success = true;
     }
-    return false;
+    mGOMapMutex.unlock();
+    return success;
 }
 
 bool GraphicsEngine::Unbind(DrawTarget const* target)
 {
-    std::shared_ptr<GEDrawTarget> dxTarget = nullptr;
-    if (mDTMap.Remove(target, dxTarget))
+    mDTMapMutex.lock();
+    bool success = false;
+    auto iter = mDTMap.find(target);
+    if (iter != mDTMap.end())
     {
-        return true;
+        mDTMap.erase(iter);
+        success = true;
     }
-
-    return false;
+    mDTMapMutex.unlock();
+    return success;
 }
 
 GraphicsEngine::GOListener::GOListener(GraphicsEngine* engine)

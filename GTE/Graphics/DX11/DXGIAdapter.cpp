@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.04.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DXGIAdapter.h>
@@ -84,7 +84,7 @@ DXGIAdapter DXGIAdapter::GetMostPowerful()
     size_t microsoftAdapter = std::numeric_limits<size_t>::max();
     for (size_t i = 0; i < adapters.size(); ++i)
     {
-        auto desc = adapters[i].GetDescription();
+        auto const& desc = adapters[i].GetDescription();
         if (desc.VendorId == 0x00008086u)
         {
             intelAdapter = i;

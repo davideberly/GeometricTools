@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -236,7 +236,7 @@ namespace gte
             std::array<Real, 3> eval;
             std::array<std::array<Real, 3>, 3> evec;
             es(covar00, covar01, covar02, covar11, covar12, covar22, false, +1, eval, evec);
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 box.axis[i] = evec[i];
             }
@@ -252,7 +252,7 @@ namespace gte
             for (uint32_t i = i0; i <= i1; ++i)
             {
                 Vector3<Real> diff = GetPosition(mPartition[i]) - box.center;
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     Real dot = Dot(diff, box.axis[j]);
                     if (dot < pmin[j])
@@ -267,7 +267,7 @@ namespace gte
             }
 
             Real const half(0.5);
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 box.center += (half * (pmin[j] + pmax[j])) * box.axis[j];
                 box.extent[j] = half * (pmax[j] - pmin[j]);

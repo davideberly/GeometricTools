@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -48,7 +48,7 @@ namespace gte
             //      intersectionType = +1
             //      contactTime = first time T > 0
             //      contactPoint = corresponding first contact
-            int intersectionType;
+            int32_t intersectionType;
             T contactTime;
             Vector3<T> contactPoint;
         };
@@ -144,7 +144,7 @@ namespace gte
 
                 T tbar = (sphere.radius - dotUDelta0) / dotUV;
                 bool foundContact = true;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     T phi = Dot(ExU[i], Delta[i]);
                     T psi = Dot(ExU[i], V);
@@ -179,7 +179,7 @@ namespace gte
 
                 T tbar = (-sphere.radius - dotUDelta0) / dotUV;
                 bool foundContact = true;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     T phi = Dot(ExU[i], Delta[i]);
                     T psi = Dot(ExU[i], V);
@@ -211,14 +211,14 @@ namespace gte
             // on-demand (i.e. only when they are needed, but cache them for
             // later use).
             std::array<T, 3> del{}, delp{}, nu{};
-            for (int im1 = 2, i = 0; i < 3; im1 = i++)
+            for (int32_t im1 = 2, i = 0; i < 3; im1 = i++)
             {
                 del[i] = Dot(E[i], Delta[i]);
                 delp[im1] = Dot(E[im1], Delta[i]);
                 nu[i] = Dot(E[i], V);
             }
 
-            for (int i = 2, ip1 = 0; ip1 < 3; i = ip1++)
+            for (int32_t i = 2, ip1 = 0; ip1 < 3; i = ip1++)
             {
                 Vector3<T> hatV = V - E[i] * nu[i] / sqrLenE[i];
                 T sqrLenHatV = Dot(hatV, hatV);
@@ -259,7 +259,7 @@ namespace gte
             // Test for contact with sphere wedges of the sphere-swept
             // volume.  We know that |V|^2 > 0 because of a previous
             // early-exit test.
-            for (int im1 = 2, i = 0; i < 3; im1 = i++)
+            for (int32_t im1 = 2, i = 0; i < 3; im1 = i++)
             {
                 T alpha = -Dot(V, Delta[i]);
                 if (alpha >= (T)0)
@@ -320,7 +320,7 @@ namespace gte
             //      intersectionType = +1
             //      contactTime = first time T > 0
             //      contactPoint = corresponding first contact
-            int intersectionType;
+            int32_t intersectionType;
 
             // The exact representation of the contact time and point.  To
             // convert to a floating-point type, use
@@ -338,7 +338,7 @@ namespace gte
             template <typename OutputType>
             static void Convert(Vector3<QFN1> const& input, Vector3<OutputType>& output)
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     output[i] = static_cast<T>(input[i]);
                 }
@@ -367,7 +367,7 @@ namespace gte
                 // are both zero, so we need only set the
                 // result.contactPoint[].x values.
                 result.intersectionType = (ptResult.sqrDistance < rsqr ? -1 : +1);
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     result.contactPoint[j].x = ptResult.closest[j];
                 }
@@ -450,7 +450,7 @@ namespace gte
                 }
 
                 bool foundContact = true;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     T phi = Dot(ExU[i], Delta[i]);
                     T psi = Dot(ExU[i], V);
@@ -466,7 +466,7 @@ namespace gte
                     result.intersectionType = 1;
                     result.contactTime.x = -element.x / dotUV;
                     result.contactTime.y = -element.y / dotUV;
-                    for (int j = 0; j < 3; ++j)
+                    for (int32_t j = 0; j < 3; ++j)
                     {
                         result.contactPoint[j].x = sphere.center[j] + result.contactTime.x * sphereVelocity[j];
                         result.contactPoint[j].y = result.contactTime.y * sphereVelocity[j];
@@ -493,7 +493,7 @@ namespace gte
                     }
 
                     bool foundContact = true;
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         T phi = Dot(ExU[i], Delta[i]);
                         T psi = Dot(ExU[i], V);
@@ -509,7 +509,7 @@ namespace gte
                         result.intersectionType = 1;
                         result.contactTime.x = -element.x / dotUV;
                         result.contactTime.y = -element.y / dotUV;
-                        for (int j = 0; j < 3; ++j)
+                        for (int32_t j = 0; j < 3; ++j)
                         {
                             result.contactPoint[j].x = sphere.center[j] + result.contactTime.x * sphereVelocity[j];
                             result.contactPoint[j].y = result.contactTime.y * sphereVelocity[j];
@@ -532,14 +532,14 @@ namespace gte
             // on-demand (i.e. only when they are needed, but cache them for
             // later use).
             std::array<T, 3> del{}, delp{}, nu{};
-            for (int im1 = 2, i = 0; i < 3; im1 = i++)
+            for (int32_t im1 = 2, i = 0; i < 3; im1 = i++)
             {
                 del[i] = Dot(E[i], Delta[i]);
                 delp[im1] = Dot(E[im1], Delta[i]);
                 nu[i] = Dot(E[i], V);
             }
 
-            for (int i = 2, ip1 = 0; ip1 < 3; i = ip1++)
+            for (int32_t i = 2, ip1 = 0; ip1 < 3; i = ip1++)
             {
                 Vector3<T> hatV = V - E[i] * nu[i] / sqrLenE[i];
                 T sqrLenHatV = Dot(hatV, hatV);
@@ -568,7 +568,7 @@ namespace gte
                                         result.intersectionType = 1;
                                         result.contactTime.x = alpha / sqrLenHatV;
                                         result.contactTime.y = (T)-1 / sqrLenHatV;
-                                        for (int j = 0; j < 3; ++j)
+                                        for (int32_t j = 0; j < 3; ++j)
                                         {
                                             result.contactPoint[j].x = sphere.center[j] + result.contactTime.x * sphereVelocity[j];
                                             result.contactPoint[j].y = result.contactTime.y * sphereVelocity[j];
@@ -585,7 +585,7 @@ namespace gte
             // Test for contact with sphere wedges of the sphere-swept
             // volume.  We know that |V|^2 > 0 because of a previous
             // early-exit test.
-            for (int im1 = 2, i = 0; i < 3; im1 = i++)
+            for (int32_t im1 = 2, i = 0; i < 3; im1 = i++)
             {
                 T alpha = -Dot(V, Delta[i]);
                 if (alpha >= (T)0)
@@ -604,7 +604,7 @@ namespace gte
                                 result.intersectionType = 1;
                                 result.contactTime.x = alpha / sqrLenV;
                                 result.contactTime.y = (T)-1 / sqrLenV;
-                                for (int j = 0; j < 3; ++j)
+                                for (int32_t j = 0; j < 3; ++j)
                                 {
                                     result.contactPoint[j].x = sphere.center[j] + result.contactTime.x * sphereVelocity[j];
                                     result.contactPoint[j].y = result.contactTime.y * sphereVelocity[j];

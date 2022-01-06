@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,7 +21,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class CLODPolyline
     {
     public:
@@ -32,7 +32,7 @@ namespace gte
         // <V[numVertices-1],V[0]>.
         CLODPolyline(std::vector<Vector<N, Real>> const& vertices, bool closed)
             :
-            mNumVertices(static_cast<int>(vertices.size())),
+            mNumVertices(static_cast<int32_t>(vertices.size())),
             mVertices(vertices),
             mClosed(closed),
             mNumEdges(0),
@@ -50,7 +50,7 @@ namespace gte
         ~CLODPolyline() = default;
 
         // Member access.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
@@ -65,33 +65,33 @@ namespace gte
             return mClosed;
         }
 
-        inline int GetNumEdges() const
+        inline int32_t GetNumEdges() const
         {
             return mNumEdges;
         }
 
-        inline std::vector<int> const& GetEdges() const
+        inline std::vector<int32_t> const& GetEdges() const
         {
             return mEdges;
         }
 
         // Accessors to level of detail (MinLOD <= LOD <= MaxLOD is required).
-        inline int GetMinLevelOfDetail() const
+        inline int32_t GetMinLevelOfDetail() const
         {
             return mVMin;
         }
 
-        inline int GetMaxLevelOfDetail() const
+        inline int32_t GetMaxLevelOfDetail() const
         {
             return mVMax;
         }
 
-        inline int GetLevelOfDetail() const
+        inline int32_t GetLevelOfDetail() const
         {
             return mNumVertices;
         }
 
-        void SetLevelOfDetail(int numVertices)
+        void SetLevelOfDetail(int32_t numVertices)
         {
             if (numVertices < mVMin || numVertices > mVMax)
             {
@@ -121,10 +121,10 @@ namespace gte
         {
         public:
             void operator()(std::vector<Vector<N, Real>>& vertices,
-                bool closed, std::vector<int>& indices, int& numEdges,
-                std::vector<int>& edges)
+                bool closed, std::vector<int32_t>& indices, int32_t& numEdges,
+                std::vector<int32_t>& edges)
             {
-                int numVertices = static_cast<int>(vertices.size());
+                int32_t numVertices = static_cast<int32_t>(vertices.size());
                 indices.resize(vertices.size());
 
                 if (closed)
@@ -158,11 +158,11 @@ namespace gte
                 }
 
                 // Create the heap of weights.
-                MinHeap<int, Real> heap(numVertices);
-                int qm1 = numVertices - 1;
+                MinHeap<int32_t, Real> heap(numVertices);
+                int32_t qm1 = numVertices - 1;
                 if (closed)
                 {
-                    int qm2 = numVertices - 2;
+                    int32_t qm2 = numVertices - 2;
                     heap.Insert(0, GetWeight(qm1, 0, 1, vertices));
                     heap.Insert(qm1, GetWeight(qm2, qm1, 0, vertices));
                 }
@@ -171,13 +171,13 @@ namespace gte
                     heap.Insert(0, std::numeric_limits<Real>::max());
                     heap.Insert(qm1, std::numeric_limits<Real>::max());
                 }
-                for (int m = 0, z = 1, p = 2; z < qm1; ++m, ++z, ++p)
+                for (int32_t m = 0, z = 1, p = 2; z < qm1; ++m, ++z, ++p)
                 {
                     heap.Insert(z, GetWeight(m, z, p, vertices));
                 }
 
                 // Create the level of detail information for the polyline.
-                std::vector<int> collapses(numVertices);
+                std::vector<int32_t> collapses(numVertices);
                 CollapseVertices(heap, numVertices, collapses);
                 ComputeEdges(numVertices, closed, collapses, indices, numEdges, edges);
                 ReorderVertices(numVertices, vertices, collapses, numEdges, edges);
@@ -185,7 +185,7 @@ namespace gte
 
         protected:
             // Weight calculation for vertex triple <V[m],V[z],V[p]>.
-            Real GetWeight(int m, int z, int p, std::vector<Vector<N, Real>>& vertices)
+            Real GetWeight(int32_t m, int32_t z, int32_t p, std::vector<Vector<N, Real>>& vertices)
             {
                 Vector<N, Real> direction = vertices[p] - vertices[m];
                 Real length = Normalize(direction);
@@ -203,24 +203,24 @@ namespace gte
             }
 
             // Create data structures for the polyline.
-            void CollapseVertices(MinHeap<int, Real>& heap,
-                int numVertices, std::vector<int>& collapses)
+            void CollapseVertices(MinHeap<int32_t, Real>& heap,
+                int32_t numVertices, std::vector<int32_t>& collapses)
             {
-                for (int i = numVertices - 1; i >= 0; --i)
+                for (int32_t i = numVertices - 1; i >= 0; --i)
                 {
                     Real weight;
                     heap.Remove(collapses[i], weight);
                 }
             }
 
-            void ComputeEdges(int numVertices, bool closed, std::vector<int>& collapses,
-                std::vector<int>& indices, int numEdges, std::vector<int>& edges)
+            void ComputeEdges(int32_t numVertices, bool closed, std::vector<int32_t>& collapses,
+                std::vector<int32_t>& indices, int32_t numEdges, std::vector<int32_t>& edges)
             {
                 // Compute the edges (first to collapse is last in array).  Do
                 // not collapse the last line segment of an open polyline.  Do
                 // not collapse further when a closed polyline becomes a
                 // triangle.
-                int i, vIndex, eIndex = 2 * numEdges - 1;
+                int32_t i, vIndex, eIndex = 2 * numEdges - 1;
                 if (closed)
                 {
                     for (i = numVertices - 1; i >= 0; --i)
@@ -253,7 +253,7 @@ namespace gte
                 for (i = numVertices - 1; i >= 0; --i)
                 {
                     vIndex = collapses[i];
-                    for (int e = 0; e < 2 * numEdges; ++e)
+                    for (int32_t e = 0; e < 2 * numEdges; ++e)
                     {
                         if (vIndex == edges[e])
                         {
@@ -297,20 +297,20 @@ namespace gte
                 }
             }
 
-            void ReorderVertices(int numVertices, std::vector<Vector<N, Real>>& vertices,
-                std::vector<int>& collapses, int numEdges, std::vector<int>& edges)
+            void ReorderVertices(int32_t numVertices, std::vector<Vector<N, Real>>& vertices,
+                std::vector<int32_t>& collapses, int32_t numEdges, std::vector<int32_t>& edges)
             {
-                std::vector<int> permute(numVertices);
+                std::vector<int32_t> permute(numVertices);
                 std::vector<Vector<N, Real>> permutedVertex(numVertices);
 
-                for (int i = 0; i < numVertices; ++i)
+                for (int32_t i = 0; i < numVertices; ++i)
                 {
-                    int vIndex = collapses[i];
+                    int32_t vIndex = collapses[i];
                     permute[vIndex] = i;
                     permutedVertex[i] = vertices[vIndex];
                 }
 
-                for (int i = 0; i < 2 * numEdges; ++i)
+                for (int32_t i = 0; i < 2 * numEdges; ++i)
                 {
                     edges[i] = permute[edges[i]];
                 }
@@ -321,16 +321,16 @@ namespace gte
 
     private:
         // The polyline vertices.
-        int mNumVertices;
+        int32_t mNumVertices;
         std::vector<Vector<N, Real>> mVertices;
         bool mClosed;
 
         // The polyline edges.
-        int mNumEdges;
-        std::vector<int> mEdges;
+        int32_t mNumEdges;
+        std::vector<int32_t> mEdges;
 
         // The level of detail information.
-        int mVMin, mVMax;
-        std::vector<int> mIndices;
+        int32_t mVMin, mVMax;
+        std::vector<int32_t> mIndices;
     };
 }

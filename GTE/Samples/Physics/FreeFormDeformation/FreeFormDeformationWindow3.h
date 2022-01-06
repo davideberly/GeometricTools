@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,13 +20,13 @@ public:
 
     virtual void OnIdle() override;
 
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
     virtual bool OnMouseClick(MouseButton button, MouseState state,
-        int x, int y, unsigned int modifiers) override;
+        int32_t x, int32_t y, uint32_t modifiers) override;
 
-    virtual bool OnMouseMotion(MouseButton button, int x, int y,
-        unsigned int modifiers) override;
+    virtual bool OnMouseMotion(MouseButton button, int32_t x, int32_t y,
+        uint32_t modifiers) override;
 
 private:
     bool SetEnvironment();
@@ -40,8 +40,8 @@ private:
     void UpdateBoxes();
 
     void DoRandomControlPoints();
-    void OnMouseDown(int x, int y);
-    void OnMouseMove(int x, int y);
+    void OnMouseDown(int32_t x, int32_t y);
+    void OnMouseMove(int32_t x, int32_t y);
 
     // The scene graph objects.
     struct Vertex
@@ -57,7 +57,7 @@ private:
 
     // The control volume for deformation.  The mParameters are the
     // (u,v,w) for the mesh vertices.
-    int mQuantity, mDegree;
+    int32_t mQuantity, mDegree;
     std::unique_ptr<BSplineVolume<3, float>> mVolume;
     Vector3<float> mMin, mMax, mDelta;
     std::vector<Vector3<float>> mParameters;

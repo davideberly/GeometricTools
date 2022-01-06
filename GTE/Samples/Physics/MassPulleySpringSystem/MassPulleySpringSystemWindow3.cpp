@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "MassPulleySpringSystemWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -23,7 +23,7 @@ MassPulleySpringSystemWindow3::MassPulleySpringSystemWindow3(Parameters& paramet
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     mEngine->SetClearColor({ 0.819607f, 0.909803f, 0.713725f, 1.0f });
 
@@ -59,7 +59,7 @@ void MassPulleySpringSystemWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool MassPulleySpringSystemWindow3::OnCharPress(unsigned char key, int x, int y)
+bool MassPulleySpringSystemWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -219,15 +219,15 @@ void MassPulleySpringSystemWindow3::CreateScene()
 void MassPulleySpringSystemWindow3::CreateFloor()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mFloor = mf.CreateRectangle(2, 2, 1024.0f, 1024.0f);
-    auto vbuffer = mFloor->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mFloor->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> position = vertices[i].position;
         vertices[i].position = { position[1], 255.0f - position[2], -position[0] };
@@ -235,7 +235,8 @@ void MassPulleySpringSystemWindow3::CreateFloor()
 
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Wood.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mFloor->SetEffect(effect);
     mPVWMatrices.Subscribe(mFloor->worldTransform, effect->GetPVWMatrixConstant());
 }
@@ -245,12 +246,12 @@ void MassPulleySpringSystemWindow3::CreateCable()
     MeshDescription desc(MeshTopology::CYLINDER, 128, 16);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, desc.numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(uint32_t));
 
     desc.vertexAttributes =
     {
@@ -266,7 +267,7 @@ void MassPulleySpringSystemWindow3::CreateCable()
     BasisFunctionInput<float> input(1024, 2);
     mCableSpline = std::make_shared<BSplineCurve<3, float>>(input, nullptr);
     Vector3<float> zero{ 0.0f, 0.0f, 0.0f };
-    for (int i = 0; i < mCableSpline->GetNumControls(); ++i)
+    for (int32_t i = 0; i < mCableSpline->GetNumControls(); ++i)
     {
         mCableSpline->SetControl(i, zero);
     }
@@ -277,7 +278,8 @@ void MassPulleySpringSystemWindow3::CreateCable()
 
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Rope.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mCable = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mCable->worldTransform, effect->GetPVWMatrixConstant());
 }
@@ -285,7 +287,7 @@ void MassPulleySpringSystemWindow3::CreateCable()
 std::shared_ptr<Visual> MassPulleySpringSystemWindow3::CreateMass(float radius)
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto mass = mf.CreateSphere(8, 8, radius);
@@ -300,8 +302,8 @@ std::shared_ptr<Visual> MassPulleySpringSystemWindow3::CreateMass(float radius)
 void MassPulleySpringSystemWindow3::CreatePulley()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     float const thickness = 4.0f;
@@ -310,27 +312,30 @@ void MassPulleySpringSystemWindow3::CreatePulley()
     mPlate0->localTransform.SetTranslation(0.0f, 0.0f, 0.5f * thickness);
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Metal.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mPlate0->SetEffect(effect);
     mPVWMatrices.Subscribe(mPlate0->worldTransform, effect->GetPVWMatrixConstant());
 
     mPlate1 = mf.CreateDisk(4, 32, mModule.radius);
     mPlate1->localTransform.SetTranslation(0.0f, 0.0f, 0.5f * thickness);
-    auto vbuffer = mPlate1->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mPlate1->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].position[0] = -vertices[i].position[0];
     }
     effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mPlate1->SetEffect(effect);
     mPVWMatrices.Subscribe(mPlate1->worldTransform, effect->GetPVWMatrixConstant());
 
     mCylinder = mf.CreateCylinderOpen(2, 32, mModule.radius, thickness);
     effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mCylinder->SetEffect(effect);
     mPVWMatrices.Subscribe(mCylinder->worldTransform, effect->GetPVWMatrixConstant());
 }
@@ -344,15 +349,15 @@ void MassPulleySpringSystemWindow3::CreateSpring()
     Vector4<float> black{ 0.0f, 0.0f, 0.0f, 1.0f };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
     mSide0 = mf.CreateBox(xExtent, yExtent, zExtent);
-    auto vbuffer = mSide0->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    std::shared_ptr<VertexBuffer> vbuffer = mSide0->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i][1] -= 0.5f * mModule.radius;
         vertices[i][2] += 0.5f * thickness + zExtent;
@@ -365,7 +370,7 @@ void MassPulleySpringSystemWindow3::CreateSpring()
     vbuffer = mSide1->GetVertexBuffer();
     numVertices = vbuffer->GetNumElements();
     vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i][0] = -vertices[i][0];
         vertices[i][1] -= 0.5f * mModule.radius;
@@ -382,7 +387,7 @@ void MassPulleySpringSystemWindow3::CreateSpring()
     vbuffer = mTop->GetVertexBuffer();
     numVertices = vbuffer->GetNumElements();
     vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float> position = vertices[i];
         vertices[i][0] = position[2];
@@ -399,12 +404,12 @@ void MassPulleySpringSystemWindow3::CreateHelix()
     MeshDescription desc(MeshTopology::CYLINDER, 128, 16);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, desc.numVertices);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vertex>();
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(uint32_t));
 
     desc.vertexAttributes =
     {
@@ -420,7 +425,7 @@ void MassPulleySpringSystemWindow3::CreateHelix()
     BasisFunctionInput<float> input(1024, 2);
     mHelixSpline = std::make_shared<BSplineCurve<3, float>>(input, nullptr);
     Vector3<float> zero{ 0.0f, 0.0f, 0.0f };
-    for (int i = 0; i < mHelixSpline->GetNumControls(); ++i)
+    for (int32_t i = 0; i < mHelixSpline->GetNumControls(); ++i)
     {
         mHelixSpline->SetControl(i, zero);
     }
@@ -431,7 +436,8 @@ void MassPulleySpringSystemWindow3::CreateHelix()
 
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Metal.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
     mHelix = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mPVWMatrices.Subscribe(mHelix->worldTransform, effect->GetPVWMatrixConstant());
 }
@@ -446,18 +452,18 @@ void MassPulleySpringSystemWindow3::UpdatePulley()
 void MassPulleySpringSystemWindow3::UpdateCable()
 {
     // Partition control points between two vertical wires and circle piece.
-    int const numCtrls = mCableSpline->GetNumControls();
+    int32_t const numCtrls = mCableSpline->GetNumControls();
     float const fraction1 = mModule.GetCableFraction1();
     float const fraction2 = mModule.GetCableFraction2();
     float const fractionC = 1.0f - fraction1 - fraction2;
 
-    int imin, imax, i;
+    int32_t imin, imax, i;
     float mult, t;
     Vector3<float> ctrl{ 0.0f, 0.0f, 0.0f };
 
     // Set control points for wire from mass 1 to pulley midline.
     imin = 0;
-    imax = static_cast<int>(fraction1 * numCtrls);
+    imax = static_cast<int32_t>(fraction1 * numCtrls);
     if (imin < imax)
     {
         mult = 1.0f / static_cast<float>(imax - imin);
@@ -476,7 +482,7 @@ void MassPulleySpringSystemWindow3::UpdateCable()
 
     // Set control points for wire along hemicircle of pulley.
     imin = imax + 1;
-    imax += static_cast<int>(fractionC * numCtrls);
+    imax += static_cast<int32_t>(fractionC * numCtrls);
     mult = 1.0f / static_cast<float>(imax - imin);
     for (i = imin; i <= imax; ++i)
     {
@@ -520,12 +526,12 @@ void MassPulleySpringSystemWindow3::UpdateHelix()
     // The current span of the helix.
     float span = mModule.GetCurrentY3() - mModule.radius - 4.0f;
 
-    int const numCtrls = mHelixSpline->GetNumControls();
+    int32_t const numCtrls = mHelixSpline->GetNumControls();
     float const radius = 2.0f;
     float const tmax = 14.0f;
     float yMult = span / tmax;
     float delta = tmax / static_cast<float>(numCtrls - 1);
-    for (int i = 0; i < numCtrls; ++i)
+    for (int32_t i = 0; i < numCtrls; ++i)
     {
         float t = delta * static_cast<float>(i);
         float angle = t * (float)GTE_C_TWO_PI;

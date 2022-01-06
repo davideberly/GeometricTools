@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.12.04
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLSLReflection.h>
@@ -82,7 +82,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
     ostr << "num buffer variables = " << mBufferVariables.size() << std::endl;
     ostr << std::endl;
 
-    for (unsigned i = 0; i < mInputs.size(); ++i)
+    for (uint32_t i = 0; i < mInputs.size(); ++i)
     {
         auto const& input = mInputs[i];
 
@@ -98,7 +98,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mOutputs.size(); ++i)
+    for (uint32_t i = 0; i < mOutputs.size(); ++i)
     {
         auto const& output = mOutputs[i];
 
@@ -115,7 +115,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mUniformBlocks.size(); ++i)
+    for (uint32_t i = 0; i < mUniformBlocks.size(); ++i)
     {
         auto const& block = mUniformBlocks[i];
 
@@ -131,7 +131,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << "declaration = " << std::endl;
         ostr << "  uniform " << block.name << std::endl;
         ostr << "  {" << std::endl;
-        for (unsigned v = 0; v < block.activeVariables.size(); ++v)
+        for (uint32_t v = 0; v < block.activeVariables.size(); ++v)
         {
             auto const& uniform = mUniforms[block.activeVariables[v]];
 
@@ -159,7 +159,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mAtomicCounterBuffers.size(); ++i)
+    for (uint32_t i = 0; i < mAtomicCounterBuffers.size(); ++i)
     {
         auto const& acBuffer = mAtomicCounterBuffers[i];
 
@@ -171,7 +171,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mUniforms.size(); ++i)
+    for (uint32_t i = 0; i < mUniforms.size(); ++i)
     {
         auto const& uniform = mUniforms[i];
 
@@ -215,7 +215,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mShaderStorageBlocks.size(); ++i)
+    for (uint32_t i = 0; i < mShaderStorageBlocks.size(); ++i)
     {
         auto const& block = mShaderStorageBlocks[i];
 
@@ -233,7 +233,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << "  {" << std::endl;
         GLint topLevelArrayStride = 0;
         GLint topLevelArrayOffset = 0;
-        for (unsigned v = 0; v < block.activeVariables.size(); ++v)
+        for (size_t v = 0, vp1 = 1; v < block.activeVariables.size(); ++v, ++vp1)
         {
             auto const& bufferVar = mBufferVariables[block.activeVariables[v]];
 
@@ -270,9 +270,9 @@ void GLSLReflection::Print(std::ofstream& ostr) const
                     // Guess array size based on offset for next variable in
                     // struct.
                     GLint nextOffset = block.bufferDataSize;
-                    if ((v+1) < block.activeVariables.size())
+                    if (vp1 < block.activeVariables.size())
                     {
-                        nextOffset = mBufferVariables[block.activeVariables[v+1]].offset;
+                        nextOffset = mBufferVariables[block.activeVariables[vp1]].offset;
                     }
                     arraySize = (nextOffset - bufferVar.offset) / bufferVar.arrayStride;
                 }
@@ -310,7 +310,7 @@ void GLSLReflection::Print(std::ofstream& ostr) const
         ostr << std::endl;
     }
 
-    for (unsigned i = 0; i < mBufferVariables.size(); ++i)
+    for (uint32_t i = 0; i < mBufferVariables.size(); ++i)
     {
         auto const& bufferVar = mBufferVariables[i];
 
@@ -393,7 +393,7 @@ void GLSLReflection::ReflectProgramInputs()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_PROGRAM_INPUT, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -408,12 +408,12 @@ void GLSLReflection::ReflectProgramInputs()
             info.type = results[IDX_TYPE];
             info.location = results[IDX_LOCATION];
             info.arraySize = results[IDX_ARRAY_SIZE];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
             info.isPerPatch = results[IDX_IS_PER_PATCH];
             info.locationComponent = results[IDX_LOCATION_COMPONENT];
         }
@@ -465,7 +465,7 @@ void GLSLReflection::ReflectProgramOutputs()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_PROGRAM_OUTPUT, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -480,12 +480,12 @@ void GLSLReflection::ReflectProgramOutputs()
             info.type = results[IDX_TYPE];
             info.location = results[IDX_LOCATION];
             info.arraySize = results[IDX_ARRAY_SIZE];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
             info.isPerPatch = results[IDX_IS_PER_PATCH];
             info.locationComponent = results[IDX_LOCATION_COMPONENT];
             info.locationIndex = results[IDX_LOCATION_INDEX];
@@ -546,7 +546,7 @@ void GLSLReflection::ReflectUniforms()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_UNIFORM, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -567,16 +567,16 @@ void GLSLReflection::ReflectUniforms()
             info.matrixStride = results[IDX_MATRIX_STRIDE];
             info.isRowMajor = results[IDX_IS_ROW_MAJOR];
             info.atomicCounterBufferIndex = results[IDX_ATOMIC_COUNTER_BUFFER_INDEX];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
 
             // To be sure the bufferBinding field is set correctly, use this
             // approach.
-            if (GL_INVALID_INDEX == static_cast<unsigned int>(info.blockIndex))
+            if (GL_INVALID_INDEX == static_cast<uint32_t>(info.blockIndex))
             {
                 info.location = glGetUniformLocation(mHandle, info.name.c_str());
             }
@@ -656,7 +656,7 @@ void GLSLReflection::ReflectDataBlocks(GLenum programInterface, std::vector<Data
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, programInterface, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -676,12 +676,12 @@ void GLSLReflection::ReflectDataBlocks(GLenum programInterface, std::vector<Data
 
             info.bufferBinding = results[IDX_BUFFER_BINDING];
             info.bufferDataSize = results[IDX_BUFFER_DATA_SIZE];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
 
             // To be sure the bufferBinding field is set correctly, use this
             // approach.
@@ -739,7 +739,7 @@ void GLSLReflection::ReflectAtomicCounterBuffers()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_ATOMIC_COUNTER_BUFFER, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -747,12 +747,12 @@ void GLSLReflection::ReflectAtomicCounterBuffers()
             AtomicCounterBuffer& info = mAtomicCounterBuffers[i];
             info.bufferBinding = results[IDX_BUFFER_BINDING];
             info.bufferDataSize = results[IDX_BUFFER_DATA_SIZE];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
 
             GLint numActiveVariables = results[IDX_NUM_ACTIVE_VARIABLES];
             if (numActiveVariables > 0)
@@ -778,7 +778,7 @@ void GLSLReflection::ReflectSubroutines(GLenum programInterface,
         subroutines.resize(numResources);
 
         GLenum nameLengthProperty = GL_NAME_LENGTH;
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             GLint result = 0;
             glGetProgramResourceiv(mHandle, programInterface, i, 1,
@@ -822,7 +822,7 @@ void GLSLReflection::ReflectSubroutineUniforms(GLenum programInterface,
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, programInterface, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -902,7 +902,7 @@ void GLSLReflection::ReflectBufferVariables()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_BUFFER_VARIABLE, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -923,12 +923,12 @@ void GLSLReflection::ReflectBufferVariables()
             info.isRowMajor = results[IDX_IS_ROW_MAJOR];
             info.topLevelArraySize = results[IDX_TOP_LEVEL_ARRAY_SIZE];
             info.topLevelArrayStride = results[IDX_TOP_LEVEL_ARRAY_STRIDE];
-            info.referencedBy[ST_VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
-            info.referencedBy[ST_GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
-            info.referencedBy[ST_PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
-            info.referencedBy[ST_COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
-            info.referencedBy[ST_TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
-            info.referencedBy[ST_TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
+            info.referencedBy[ReferenceType::VERTEX] = results[IDX_REFERENCED_BY_VERTEX_SHADER];
+            info.referencedBy[ReferenceType::GEOMETRY] = results[IDX_REFERENCED_BY_GEOMETRY_SHADER];
+            info.referencedBy[ReferenceType::PIXEL] = results[IDX_REFERENCED_BY_FRAGMENT_SHADER];
+            info.referencedBy[ReferenceType::COMPUTE] = results[IDX_REFERENCED_BY_COMPUTE_SHADER];
+            info.referencedBy[ReferenceType::TESSCONTROL] = results[IDX_REFERENCED_BY_TESS_CONTROL_SHADER];
+            info.referencedBy[ReferenceType::TESSEVALUATION] = results[IDX_REFERENCED_BY_TESS_EVALUATION_SHADER];
 
             // Keep the original full name returned by the reflection.
             info.fullName = info.name;
@@ -1001,7 +1001,7 @@ void GLSLReflection::ReflectTransformFeedbackVaryings()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_TRANSFORM_FEEDBACK_VARYING, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -1046,7 +1046,7 @@ void GLSLReflection::ReflectTransformFeedbackBuffers()
         GLsizei const numProperties = static_cast<GLsizei>(properties.size());
 
         std::vector<GLint> results(properties.size(), 0);
-        for (int i = 0; i < numResources; ++i)
+        for (int32_t i = 0; i < numResources; ++i)
         {
             glGetProgramResourceiv(mHandle, GL_TRANSFORM_FEEDBACK_BUFFER, i, numProperties,
                 properties.data(), numProperties, nullptr, results.data());
@@ -1068,9 +1068,9 @@ void GLSLReflection::ReflectTransformFeedbackBuffers()
     }
 }
 
-unsigned GLSLReflection::GetEnumSize(GLenum value, GLint arraySize, GLint arrayStride, GLint matrixStride, GLint isRowMajor)
+uint32_t GLSLReflection::GetEnumSize(GLenum value, GLint arraySize, GLint arrayStride, GLint matrixStride, GLint isRowMajor)
 {
-    for (int i = 0; 0 != msEnumMap[i].value; ++i)
+    for (int32_t i = 0; 0 != msEnumMap[i].value; ++i)
     {
         auto const& item = msEnumMap[i];
         if (item.value == value)
@@ -1103,7 +1103,7 @@ unsigned GLSLReflection::GetEnumSize(GLenum value, GLint arraySize, GLint arrayS
 
 std::string GLSLReflection::GetEnumName(GLenum value)
 {
-    for (int i = 0; 0 != msEnumMap[i].value; ++i)
+    for (int32_t i = 0; 0 != msEnumMap[i].value; ++i)
     {
         auto const& item = msEnumMap[i];
         if (item.value == value)
@@ -1117,7 +1117,7 @@ std::string GLSLReflection::GetEnumName(GLenum value)
 
 std::string GLSLReflection::GetEnumShaderName(GLenum value)
 {
-    for (int i = 0; 0 != msEnumMap[i].value; ++i)
+    for (int32_t i = 0; 0 != msEnumMap[i].value; ++i)
     {
         auto const& item = msEnumMap[i];
         if (item.value == value)
@@ -1129,16 +1129,16 @@ std::string GLSLReflection::GetEnumShaderName(GLenum value)
     return std::string("unknown(type=") + std::to_string(value) + ")";
 }
 
-std::string GLSLReflection::GetReferencedByShaderList(GLint const referencedBy[6])
+std::string GLSLReflection::GetReferencedByShaderList(std::array<GLint, 6> const& referencedBy)
 {
     std::string strList;
 
-    if (referencedBy[ST_VERTEX]) strList += "vertex ";
-    if (referencedBy[ST_GEOMETRY]) strList += "geometry ";
-    if (referencedBy[ST_PIXEL]) strList += "pixel ";
-    if (referencedBy[ST_COMPUTE]) strList += "compute ";
-    if (referencedBy[ST_TESSCONTROL]) strList += "tessControl ";
-    if (referencedBy[ST_TESSEVALUATION]) strList += "tessEvaluation ";
+    if (referencedBy[ReferenceType::VERTEX]) strList += "vertex ";
+    if (referencedBy[ReferenceType::GEOMETRY]) strList += "geometry ";
+    if (referencedBy[ReferenceType::PIXEL]) strList += "pixel ";
+    if (referencedBy[ReferenceType::COMPUTE]) strList += "compute ";
+    if (referencedBy[ReferenceType::TESSCONTROL]) strList += "tessControl ";
+    if (referencedBy[ReferenceType::TESSEVALUATION]) strList += "tessEvaluation ";
 
     return strList;
 }
@@ -1171,7 +1171,7 @@ void GLSLReflection::IntelWorkaround(std::string const& name, GLint results[])
         auto iter = mShaderTypeMap.find(type);
         if (iter != mShaderTypeMap.end())
         {
-            int index = iter->second;
+            int32_t index = iter->second;
             if (results[index] == 0)
             {
                 // The shader is reported as not referenced.  Verify
@@ -1236,121 +1236,119 @@ void GLSLReflection::IntelWorkaround(std::string const& name, GLint results[])
     }
 }
 
-#define ENUM(value, shadername, rows, cols, size) { value, #value, #shadername, rows, cols, size }
-GLSLReflection::EnumMap const GLSLReflection::msEnumMap[]
+std::array<GLSLReflection::EnumMap const, 113> GLSLReflection::msEnumMap =
 {
-    ENUM(GL_FLOAT,  float  , 1, 0, 4),
-    ENUM(GL_FLOAT_VEC2,  vec2  , 2, 0, 4),
-    ENUM(GL_FLOAT_VEC3,  vec3  , 3, 0, 4),
-    ENUM(GL_FLOAT_VEC4,  vec4  , 4, 0, 4),
-    ENUM(GL_DOUBLE,  double  , 1, 0, 8),
-    ENUM(GL_DOUBLE_VEC2,  dvec2  , 2, 0, 8),
-    ENUM(GL_DOUBLE_VEC3,  dvec3  , 3, 0, 8),
-    ENUM(GL_DOUBLE_VEC4,  dvec4  , 4, 0, 8),
-    ENUM(GL_INT,  int  , 1, 0, 4),
-    ENUM(GL_INT_VEC2,  ivec2  , 2, 0, 4),
-    ENUM(GL_INT_VEC3,  ivec3  , 3, 0, 4),
-    ENUM(GL_INT_VEC4,  ivec4  , 4, 0, 4),
-    ENUM(GL_UNSIGNED_INT,  uint  , 1, 0, 4),
-    ENUM(GL_UNSIGNED_INT_VEC2,  uvec2  , 2, 0, 4),
-    ENUM(GL_UNSIGNED_INT_VEC3,  uvec3  , 3, 0, 4),
-    ENUM(GL_UNSIGNED_INT_VEC4,  uvec4  , 4, 0, 4),
-    ENUM(GL_BOOL,  bool  , 1, 0, 4),
-    ENUM(GL_BOOL_VEC2,  bvec2  , 2, 0, 4),
-    ENUM(GL_BOOL_VEC3,  bvec3  , 3, 0, 4),
-    ENUM(GL_BOOL_VEC4,  bvec4  , 4, 0, 4),
-    ENUM(GL_FLOAT_MAT2,  mat2  , 2, 2, 4),
-    ENUM(GL_FLOAT_MAT3,  mat3  , 3, 3, 4),
-    ENUM(GL_FLOAT_MAT4,  mat4  , 4, 4, 4),
-    ENUM(GL_FLOAT_MAT2x3,  mat2x3  , 2, 3, 4),
-    ENUM(GL_FLOAT_MAT2x4,  mat2x4  , 2, 4, 4),
-    ENUM(GL_FLOAT_MAT3x2,  mat3x2  , 3, 2, 4),
-    ENUM(GL_FLOAT_MAT3x4,  mat3x4  , 3, 4, 4),
-    ENUM(GL_FLOAT_MAT4x2,  mat4x2  , 4, 2, 4),
-    ENUM(GL_FLOAT_MAT4x3,  mat4x3  , 4, 3, 4),
-    ENUM(GL_DOUBLE_MAT2,  dmat2  , 2, 2, 8),
-    ENUM(GL_DOUBLE_MAT3,  dmat3  , 3, 3, 8),
-    ENUM(GL_DOUBLE_MAT4,  dmat4  , 4, 4, 8),
-    ENUM(GL_DOUBLE_MAT2x3,  dmat2x3  , 2, 3, 8),
-    ENUM(GL_DOUBLE_MAT2x4,  dmat2x4  , 2, 4, 8),
-    ENUM(GL_DOUBLE_MAT3x2,  dmat3x2  , 3, 2, 8),
-    ENUM(GL_DOUBLE_MAT3x4,  dmat3x4  , 3, 4, 8),
-    ENUM(GL_DOUBLE_MAT4x2,  dmat4x2  , 4, 2, 8),
-    ENUM(GL_DOUBLE_MAT4x3,  dmat4x3  , 4, 3, 8),
-    ENUM(GL_SAMPLER_1D,  sampler1D  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D,  sampler2D  , 0, 0, 0),
-    ENUM(GL_SAMPLER_3D,  sampler3D  , 0, 0, 0),
-    ENUM(GL_SAMPLER_CUBE,  samplerCube  , 0, 0, 0),
-    ENUM(GL_SAMPLER_1D_SHADOW,  sampler1DShadow  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_SHADOW,  sampler2DShadow  , 0, 0, 0),
-    ENUM(GL_SAMPLER_1D_ARRAY,  sampler1DArray  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_ARRAY,  sampler2DArray  , 0, 0, 0),
-    ENUM(GL_SAMPLER_1D_ARRAY_SHADOW,  sampler1DArrayShadow  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_ARRAY_SHADOW,  sampler2DArrayShadow  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_MULTISAMPLE,  sampler2DMS  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_MULTISAMPLE_ARRAY,  sampler2DMSArray  , 0, 0, 0),
-    ENUM(GL_SAMPLER_CUBE_SHADOW,  samplerCubeShadow  , 0, 0, 0),
-    ENUM(GL_SAMPLER_CUBE_MAP_ARRAY, samplerCubeArray, 0, 0, 0),
-    ENUM(GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, samplerCubeArrayShadow, 0, 0, 0),
-    ENUM(GL_SAMPLER_BUFFER,  samplerBuffer  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_RECT,  sampler2DRect  , 0, 0, 0),
-    ENUM(GL_SAMPLER_2D_RECT_SHADOW,  sampler2DRectShadow  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_1D,  isampler1D  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_2D,  isampler2D  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_3D,  isampler3D  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_CUBE,  isamplerCube  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_1D_ARRAY,  isampler1DArray  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_2D_ARRAY,  isampler2DArray  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_2D_MULTISAMPLE,  isampler2DMS  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,  isampler2DMSArray  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_CUBE_MAP_ARRAY,  isamplerCubeArray  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_BUFFER,  isamplerBuffer  , 0, 0, 0),
-    ENUM(GL_INT_SAMPLER_2D_RECT,  isampler2DRect  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_1D,  usampler1D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_2D,  usampler2D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_3D,  usampler3D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_CUBE,  usamplerCube  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_1D_ARRAY,  usampler2DArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_2D_ARRAY,  usampler2DArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,  usampler2DMS  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,  usampler2DMSArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY,  usamplerCubeArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_BUFFER,  usamplerBuffer  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_SAMPLER_2D_RECT,  usampler2DRect  , 0, 0, 0),
-    ENUM(GL_IMAGE_1D,  image1D  , 0, 0, 0),
-    ENUM(GL_IMAGE_2D,  image2D  , 0, 0, 0),
-    ENUM(GL_IMAGE_3D,  image3D  , 0, 0, 0),
-    ENUM(GL_IMAGE_CUBE,  imageCube  , 0, 0, 0),
-    ENUM(GL_IMAGE_1D_ARRAY,  image1DArray  , 0, 0, 0),
-    ENUM(GL_IMAGE_2D_ARRAY,  image2DArray  , 0, 0, 0),
-    ENUM(GL_IMAGE_2D_MULTISAMPLE,  image2DMS  , 0, 0, 0),
-    ENUM(GL_IMAGE_2D_MULTISAMPLE_ARRAY,  image2DMSArray  , 0, 0, 0),
-    ENUM(GL_IMAGE_CUBE_MAP_ARRAY,  imageCubeArray  , 0, 0, 0),
-    ENUM(GL_IMAGE_BUFFER,  imageBuffer  , 0, 0, 0),
-    ENUM(GL_IMAGE_2D_RECT,  image2DRect  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_1D,  iimage1D  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_2D,  iimage2D  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_3D,  iimage3D  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_CUBE,  iimageCube  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_1D_ARRAY,  iimage1DArray  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_2D_ARRAY,  iimage2DArray  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_2D_MULTISAMPLE,  iimage2DMS  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY,  iimage2DMSArray  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_CUBE_MAP_ARRAY,  iimageCubeArray  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_BUFFER,  iimageBuffer  , 0, 0, 0),
-    ENUM(GL_INT_IMAGE_2D_RECT,  iimage2DRect  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_1D,  uimage1D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_2D,  uimage2D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_3D,  uimage3D  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_CUBE,  uimageCube  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_1D_ARRAY,  uimage2DArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_2D_ARRAY,  uimage2DArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE,  uimage2DMS  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,  uimage2DMSArray  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, uimageCubeArray, 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_BUFFER,  uimageBuffer  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_IMAGE_2D_RECT,  uimage2DRect  , 0, 0, 0),
-    ENUM(GL_UNSIGNED_INT_ATOMIC_COUNTER, atomic_uint  , 0, 0, 0),
-    {0, "", "", 0, 0, 0 }
+    EnumMap(GL_FLOAT, "GL_FLOAT", "float", 1, 0, 4),
+    EnumMap(GL_FLOAT_VEC2, "GL_FLOAT_VEC2", "vec2", 2, 0, 4),
+    EnumMap(GL_FLOAT_VEC3, "GL_FLOAT_VEC3", "vec3"  , 3, 0, 4),
+    EnumMap(GL_FLOAT_VEC4, "GL_FLOAT_VEC4", "vec4", 4, 0, 4),
+    EnumMap(GL_DOUBLE, "GL_DOUBLE", "double", 1, 0, 8),
+    EnumMap(GL_DOUBLE_VEC2, "GL_DOUBLE_VEC2", "dvec2", 2, 0, 8),
+    EnumMap(GL_DOUBLE_VEC3, "GL_DOUBLE_VEC3", "dvec3", 3, 0, 8),
+    EnumMap(GL_DOUBLE_VEC4, "GL_DOUBLE_VEC4", "dvec4", 4, 0, 8),
+    EnumMap(GL_INT, "GL_INT", "int32_t", 1, 0, 4),
+    EnumMap(GL_INT_VEC2, "GL_INT_VEC2", "ivec2", 2, 0, 4),
+    EnumMap(GL_INT_VEC3, "GL_INT_VEC3", "ivec3", 3, 0, 4),
+    EnumMap(GL_INT_VEC4, "GL_INT_VEC4", "ivec4", 4, 0, 4),
+    EnumMap(GL_UNSIGNED_INT, "GL_UNSIGNED_INT", "uint", 1, 0, 4),
+    EnumMap(GL_UNSIGNED_INT_VEC2, "GL_UNSIGNED_INT_VEC2", "uvec2", 2, 0, 4),
+    EnumMap(GL_UNSIGNED_INT_VEC3, "GL_UNSIGNED_INT_VEC3", "uvec3", 3, 0, 4),
+    EnumMap(GL_UNSIGNED_INT_VEC4, "GL_UNSIGNED_INT_VEC4", "uvec4", 4, 0, 4),
+    EnumMap(GL_BOOL, "GL_BOOL", "bool", 1, 0, 4),
+    EnumMap(GL_BOOL_VEC2, "GL_BOOL_VEC2", "bvec2", 2, 0, 4),
+    EnumMap(GL_BOOL_VEC3, "GL_BOOL_VEC3", "bvec3", 3, 0, 4),
+    EnumMap(GL_BOOL_VEC4, "GL_BOOL_VEC4", "bvec4", 4, 0, 4),
+    EnumMap(GL_FLOAT_MAT2, "GL_FLOAT_MAT2", "mat2", 2, 2, 4),
+    EnumMap(GL_FLOAT_MAT3, "GL_FLOAT_MAT3", "mat3", 3, 3, 4),
+    EnumMap(GL_FLOAT_MAT4, "GL_FLOAT_MAT4", "mat4", 4, 4, 4),
+    EnumMap(GL_FLOAT_MAT2x3, "GL_FLOAT_MAT2x3", "mat2x3", 2, 3, 4),
+    EnumMap(GL_FLOAT_MAT2x4, "GL_FLOAT_MAT2x4", "mat2x4", 2, 4, 4),
+    EnumMap(GL_FLOAT_MAT3x2, "GL_FLOAT_MAT3x2", "mat3x2", 3, 2, 4),
+    EnumMap(GL_FLOAT_MAT3x4, "GL_FLOAT_MAT3x4", "mat3x4", 3, 4, 4),
+    EnumMap(GL_FLOAT_MAT4x2, "GL_FLOAT_MAT4x2", "mat4x2", 4, 2, 4),
+    EnumMap(GL_FLOAT_MAT4x3, "GL_FLOAT_MAT4x3", "mat4x3", 4, 3, 4),
+    EnumMap(GL_DOUBLE_MAT2, "GL_DOUBLE_MAT2", "dmat2", 2, 2, 8),
+    EnumMap(GL_DOUBLE_MAT3, "GL_DOUBLE_MAT3", "dmat3", 3, 3, 8),
+    EnumMap(GL_DOUBLE_MAT4, "GL_DOUBLE_MAT4", "dmat4", 4, 4, 8),
+    EnumMap(GL_DOUBLE_MAT2x3, "GL_DOUBLE_MAT2x3", "dmat2x3", 2, 3, 8),
+    EnumMap(GL_DOUBLE_MAT2x4, "GL_DOUBLE_MAT2x4", "dmat2x4", 2, 4, 8),
+    EnumMap(GL_DOUBLE_MAT3x2, "GL_DOUBLE_MAT3x2", "dmat3x2", 3, 2, 8),
+    EnumMap(GL_DOUBLE_MAT3x4, "GL_DOUBLE_MAT3x4", "dmat3x4", 3, 4, 8),
+    EnumMap(GL_DOUBLE_MAT4x2, "GL_DOUBLE_MAT4x2", "dmat4x2", 4, 2, 8),
+    EnumMap(GL_DOUBLE_MAT4x3, "GL_DOUBLE_MAT4x3", "dmat4x3", 4, 3, 8),
+    EnumMap(GL_SAMPLER_1D, "GL_SAMPLER_1D", "sampler1D", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D, "GL_SAMPLER_2D", "sampler2D", 0, 0, 0),
+    EnumMap(GL_SAMPLER_3D, "GL_SAMPLER_3D", "sampler3D", 0, 0, 0),
+    EnumMap(GL_SAMPLER_CUBE, "GL_SAMPLER_CUBE", "samplerCube", 0, 0, 0),
+    EnumMap(GL_SAMPLER_1D_SHADOW, "GL_SAMPLER_1D_SHADOW", "sampler1DShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_SHADOW, "GL_SAMPLER_2D_SHADOW", "sampler2DShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_1D_ARRAY, "GL_SAMPLER_1D_ARRAY", "sampler1DArray", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_ARRAY, "GL_SAMPLER_2D_ARRAY", "sampler2DArray", 0, 0, 0),
+    EnumMap(GL_SAMPLER_1D_ARRAY_SHADOW, "GL_SAMPLER_1D_ARRAY_SHADOW", "sampler1DArrayShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_ARRAY_SHADOW, "GL_SAMPLER_2D_ARRAY_SHADOW", "sampler2DArrayShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_MULTISAMPLE, "GL_SAMPLER_2D_MULTISAMPLE", "sampler2DMS", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_SAMPLER_2D_MULTISAMPLE_ARRAY", "sampler2DMSArray", 0, 0, 0),
+    EnumMap(GL_SAMPLER_CUBE_SHADOW, "GL_SAMPLER_CUBE_SHADOW", "samplerCubeShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_CUBE_MAP_ARRAY, "GL_SAMPLER_CUBE_MAP_ARRAY", "samplerCubeArray", 0, 0, 0),
+    EnumMap(GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, "GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW", "samplerCubeArrayShadow", 0, 0, 0),
+    EnumMap(GL_SAMPLER_BUFFER, "GL_SAMPLER_BUFFER", "samplerBuffer", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_RECT, "GL_SAMPLER_2D_RECT", "sampler2DRect", 0, 0, 0),
+    EnumMap(GL_SAMPLER_2D_RECT_SHADOW, "GL_SAMPLER_2D_RECT_SHADOW", "sampler2DRectShadow", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_1D, "GL_INT_SAMPLER_1D", "isampler1D", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_2D, "GL_INT_SAMPLER_2D", "isampler2D", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_3D, "GL_INT_SAMPLER_3D", "isampler3D", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_CUBE, "GL_INT_SAMPLER_CUBE", "isamplerCube", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_1D_ARRAY, "GL_INT_SAMPLER_1D_ARRAY", "isampler1DArray", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_2D_ARRAY, "GL_INT_SAMPLER_2D_ARRAY", "isampler2DArray", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_2D_MULTISAMPLE, "GL_INT_SAMPLER_2D_MULTISAMPLE", "isampler2DMS", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY", "isampler2DMSArray", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_CUBE_MAP_ARRAY, "GL_INT_SAMPLER_CUBE_MAP_ARRAY", "isamplerCubeArray", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_BUFFER, "GL_INT_SAMPLER_BUFFER", "isamplerBuffer", 0, 0, 0),
+    EnumMap(GL_INT_SAMPLER_2D_RECT, "GL_INT_SAMPLER_2D_RECT", "isampler2DRect", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_1D, "GL_UNSIGNED_INT_SAMPLER_1D", "usampler1D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_2D, "GL_UNSIGNED_INT_SAMPLER_2D", "usampler2D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_3D, "GL_UNSIGNED_INT_SAMPLER_3D", "usampler3D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_CUBE, "GL_UNSIGNED_INT_SAMPLER_CUBE", "usamplerCube", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, "GL_UNSIGNED_INT_SAMPLER_1D_ARRAY", "usampler2DArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, "GL_UNSIGNED_INT_SAMPLER_2D_ARRAY", "usampler2DArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE", "usampler2DMS", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY", "usampler2DMSArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, "GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY", "usamplerCubeArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_BUFFER, "GL_UNSIGNED_INT_SAMPLER_BUFFER", "usamplerBuffer", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_SAMPLER_2D_RECT, "GL_UNSIGNED_INT_SAMPLER_2D_RECT", "usampler2DRect", 0, 0, 0),
+    EnumMap(GL_IMAGE_1D, "GL_IMAGE_1D", "image1D", 0, 0, 0),
+    EnumMap(GL_IMAGE_2D, "GL_IMAGE_2D", "image2D", 0, 0, 0),
+    EnumMap(GL_IMAGE_3D, "GL_IMAGE_3D", "image3D", 0, 0, 0),
+    EnumMap(GL_IMAGE_CUBE, "GL_IMAGE_CUBE", "imageCube", 0, 0, 0),
+    EnumMap(GL_IMAGE_1D_ARRAY, "GL_IMAGE_1D_ARRAY", "image1DArray", 0, 0, 0),
+    EnumMap(GL_IMAGE_2D_ARRAY, "GL_IMAGE_2D_ARRAY", "image2DArray", 0, 0, 0),
+    EnumMap(GL_IMAGE_2D_MULTISAMPLE, "GL_IMAGE_2D_MULTISAMPLE", "image2DMS", 0, 0, 0),
+    EnumMap(GL_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_IMAGE_2D_MULTISAMPLE_ARRAY", "image2DMSArray", 0, 0, 0),
+    EnumMap(GL_IMAGE_CUBE_MAP_ARRAY, "GL_IMAGE_CUBE_MAP_ARRAY", "imageCubeArray", 0, 0, 0),
+    EnumMap(GL_IMAGE_BUFFER, "GL_IMAGE_BUFFER", "imageBuffer", 0, 0, 0),
+    EnumMap(GL_IMAGE_2D_RECT, "GL_IMAGE_2D_RECT", "image2DRect", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_1D, "GL_INT_IMAGE_1D", "iimage1D", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_2D, "GL_INT_IMAGE_2D", "iimage2D", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_3D, "GL_INT_IMAGE_3D", "iimage3D", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_CUBE, "GL_INT_IMAGE_CUBE", "iimageCube", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_1D_ARRAY, "GL_INT_IMAGE_1D_ARRAY", "iimage1DArray", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_2D_ARRAY, "GL_INT_IMAGE_2D_ARRAY", "iimage2DArray", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_2D_MULTISAMPLE, "GL_INT_IMAGE_2D_MULTISAMPLE", "iimage2DMS", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY", "iimage2DMSArray", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_CUBE_MAP_ARRAY, "GL_INT_IMAGE_CUBE_MAP_ARRAY", "iimageCubeArray", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_BUFFER, "GL_INT_IMAGE_BUFFER", "iimageBuffer", 0, 0, 0),
+    EnumMap(GL_INT_IMAGE_2D_RECT, "GL_INT_IMAGE_2D_RECT", "iimage2DRect", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_1D, "GL_UNSIGNED_INT_IMAGE_1D", "uimage1D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_2D, "GL_UNSIGNED_INT_IMAGE_2D", "uimage2D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_3D, "GL_UNSIGNED_INT_IMAGE_3D", "uimage3D", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_CUBE, "GL_UNSIGNED_INT_IMAGE_CUBE", "uimageCube", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_1D_ARRAY, "GL_UNSIGNED_INT_IMAGE_1D_ARRAY", "uimage2DArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_2D_ARRAY, "GL_UNSIGNED_INT_IMAGE_2D_ARRAY", "uimage2DArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE", "uimage2DMS", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY, "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY", "uimage2DMSArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, "GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY", "uimageCubeArray", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_BUFFER, "GL_UNSIGNED_INT_IMAGE_BUFFER", "uimageBuffer", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_IMAGE_2D_RECT, "GL_UNSIGNED_INT_IMAGE_2D_RECT", "uimage2DRect", 0, 0, 0),
+    EnumMap(GL_UNSIGNED_INT_ATOMIC_COUNTER, "GL_UNSIGNED_INT_ATOMIC_COUNTER", "atomic_uint", 0, 0, 0),
+    EnumMap(0, "", "", 0, 0, 0)
 };
-#undef ENUM

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.02.01
+// Version: 6.0.2022.01.06
 
 #include "FitCylinderWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -38,8 +38,8 @@ FitCylinderWindow3::FitCylinderWindow3(Parameters& parameters)
     }
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetClearColor({ 0.75f, 0.75f, 0.75f, 1.0f });
 
     CreateScene();
@@ -95,10 +95,10 @@ void FitCylinderWindow3::CreateScene()
 
 #ifdef USE_MESH_POINTS
     std::ifstream input(mEnvironment.GetPath("mesh.txt"));
-    unsigned int const numPoints = 10765;
-    for (unsigned int i = 0; i < numPoints; ++i)
+    uint32_t const numPoints = 10765;
+    for (uint32_t i = 0; i < numPoints; ++i)
     {
-        Vector3<double> data;
+        Vector3<double> data{};
         input >> data[0];
         input >> data[1];
         input >> data[2];
@@ -108,12 +108,12 @@ void FitCylinderWindow3::CreateScene()
 #endif
 
 #ifdef USE_CYLINDER_RING
-    for (unsigned int j = 0; j < 64; ++j)
+    for (uint32_t j = 0; j < 64; ++j)
     {
         double theta = GTE_C_TWO_PI * j / 64.0;
         double cstheta = std::cos(theta);
         double sntheta = std::sin(theta);
-        for (unsigned int i = 0; i <= 64; ++i)
+        for (uint32_t i = 0; i <= 64; ++i)
         {
             double t = -2.0 + 4.0 * i / 64.0;
             Vector3<double> sample{ cstheta, sntheta, t };
@@ -124,12 +124,12 @@ void FitCylinderWindow3::CreateScene()
 
 #ifdef USE_CYLINDER_SKEW
     double const b = 0.25;
-    for (unsigned int j = 0; j < 64; ++j)
+    for (uint32_t j = 0; j < 64; ++j)
     {
         double theta = GTE_C_TWO_PI * j / 64.0;
         double cstheta = std::cos(theta);
         double sntheta = std::sin(theta);
-        for (unsigned int i = 0; i <= 64; ++i)
+        for (uint32_t i = 0; i <= 64; ++i)
         {
             double t = -b + cstheta + 2.0 * b * i / 64.0;
             Vector3<double> sample{ cstheta, sntheta, t };
@@ -144,14 +144,14 @@ void FitCylinderWindow3::CreateScene()
 #else
 #ifdef USE_MULTIPLE_THREADS
     // Use all hardware threads available (subject to OS scheduling).
-    unsigned int numThreads = std::thread::hardware_concurrency();
+    uint32_t numThreads = std::thread::hardware_concurrency();
     ApprCylinder3<double> fitter(numThreads, 1024, 512);
 #else
     // Execute the algorithm on the main thread.
     ApprCylinder3<double> fitter(0, 1024, 512);
 #endif
 #endif
-    unsigned int numVertices = static_cast<unsigned int>(positions.size());
+    uint32_t numVertices = static_cast<uint32_t>(positions.size());
     Cylinder3<double> cylinder;
     double minError = fitter(numVertices, positions.data(), cylinder);
     std::cout << "min error = " << minError << std::endl;
@@ -168,12 +168,12 @@ void FitCylinderWindow3::CreateScene()
 
     // Create point cloud for display.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numVertices);
     auto* vertices = vbuffer->Get<Vector3<float>>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
-        for (unsigned int j = 0; j < 3; ++j)
+        for (uint32_t j = 0; j < 3; ++j)
         {
             vertices[i][j] = static_cast<float>(positions[i][j]);
         }
@@ -188,19 +188,19 @@ void FitCylinderWindow3::CreateScene()
     mPVWMatrices.Subscribe(mPoints->worldTransform, effect->GetPVWMatrixConstant());
     mTrackBall.Attach(mPoints);
 
-    Vector3<float> translate;
-    for (unsigned int j = 0; j < 3; ++j)
+    Vector3<float> translate{};
+    for (uint32_t j = 0; j < 3; ++j)
     {
         translate[j] = static_cast<float>(-cylinder.axis.origin[j]);
     }
     mPoints->localTransform.SetTranslation(translate);
 
-    Vector3<float> basis[3];
-    for (unsigned int j = 0; j < 3; ++j)
+    std::array<Vector3<float>, 3> basis{};
+    for (uint32_t j = 0; j < 3; ++j)
     {
         basis[0][j] = static_cast<float>(cylinder.axis.direction[j]);
     }
-    ComputeOrthogonalComplement(1, basis, true);
+    ComputeOrthogonalComplement(1, basis.data());
 #if defined(GTE_USE_MAT_VEC)
     Matrix4x4<float> rotate
     {

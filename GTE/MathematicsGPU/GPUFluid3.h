@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // Construction.  The (x,y,z) grid covers [0,1]^3.
         GPUFluid3(std::shared_ptr<GraphicsEngine> const& engine,
             std::shared_ptr<ProgramFactory> const& factory,
-            int xSize, int ySize, int zSize, float dt);
+            int32_t xSize, int32_t ySize, int32_t zSize, float dt);
 
         void Initialize();
         void DoSimulationStep();
@@ -36,7 +36,7 @@ namespace gte
     private:
         // Constructor inputs.
         std::shared_ptr<GraphicsEngine> mEngine;
-        int mXSize, mYSize, mZSize;
+        int32_t mXSize, mYSize, mZSize;
         float mDt;
 
         // Current simulation time.

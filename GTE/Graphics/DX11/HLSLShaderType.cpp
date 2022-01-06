@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderType.h>
@@ -36,22 +36,22 @@ void HLSLShaderType::SetDescription(D3D_SHADER_TYPE_DESC const& desc)
     }
 }
 
-HLSLShaderType& HLSLShaderType::GetChild(unsigned int i)
+HLSLShaderType& HLSLShaderType::GetChild(uint32_t i)
 {
     LogAssert(i < mDesc.numChildren, "Invalid index.");
     return mChildren[i];
 }
 
-HLSLShaderType const& HLSLShaderType::GetChild(unsigned int i) const
+HLSLShaderType const& HLSLShaderType::GetChild(uint32_t i) const
 {
     LogAssert(i < mDesc.numChildren, "Invalid index.");
     return mChildren[i];
 }
 
-void HLSLShaderType::Print(std::ofstream& output, int indent) const
+void HLSLShaderType::Print(std::ofstream& output, int32_t indent) const
 {
     std::string prefix = "";
-    for (int i = 0; i < indent; ++i)
+    for (int32_t i = 0; i < indent; ++i)
     {
         prefix += "    ";
     }

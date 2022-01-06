@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.06.02
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/GraphicsObject.h>
+#include <cstdint>
 #include <vector>
 
 namespace gte
@@ -18,8 +19,8 @@ namespace gte
         // Abstract base class.
         virtual ~Resource();
     protected:
-        // The default usage is GPU_R.
-        Resource(unsigned int numElements, size_t elementSize, bool createStorage = true);
+        // The default usage is Resource::Usage::IMMUTABLE.
+        Resource(uint32_t numElements, size_t elementSize, bool createStorage = true);
 
     public:
         // Create or destroy the system-memory storage associated with the
@@ -30,17 +31,17 @@ namespace gte
         void DestroyStorage();
 
         // Basic member access.
-        inline unsigned int GetNumElements() const
+        inline uint32_t GetNumElements() const
         {
             return mNumElements;
         }
 
-        inline unsigned int GetElementSize() const
+        inline uint32_t GetElementSize() const
         {
             return mElementSize;
         }
 
-        inline unsigned int GetNumBytes() const
+        inline uint32_t GetNumBytes() const
         {
             return mNumBytes;
         }
@@ -50,9 +51,9 @@ namespace gte
         // to an engine.
         enum Usage
         {
-            IMMUTABLE,       // D3D11_USAGE_IMMUTABLE (default)
-            DYNAMIC_UPDATE,  // D3D11_USAGE_DYNAMIC
-            SHADER_OUTPUT    // D3D11_USAGE_DEFAULT
+            IMMUTABLE,
+            DYNAMIC_UPDATE,
+            SHADER_OUTPUT
         };
 
         inline void SetUsage(Usage usage)
@@ -69,22 +70,22 @@ namespace gte
         // staging buffers to support copies between CPU, staging buffers, and
         // GPU.  You must set the copy type before binding the resource to an
         // engine.
-        enum CopyType
+        enum Copy
         {
-            COPY_NONE,
-            COPY_CPU_TO_STAGING,
-            COPY_STAGING_TO_CPU,
-            COPY_BIDIRECTIONAL
+            NONE,
+            CPU_TO_STAGING,
+            STAGING_TO_CPU,
+            BIDIRECTIONAL
         };
 
-        inline void SetCopyType(CopyType copyType)
+        inline void SetCopy(Copy copy)
         {
-            mCopyType = copyType;
+            mCopy = copy;
         }
 
-        inline CopyType GetCopyType() const
+        inline Copy GetCopy() const
         {
-            return mCopyType;
+            return mCopy;
         }
 
         // Member access to the raw data of the resource.  The ResetData call
@@ -148,34 +149,34 @@ namespace gte
         // If you plan on modifying both mOffset and mNumActiveElements for
         // the same object, call SetOffset() before SetNumActiveElements()
         // because of the dependency of the num-active constraint on offset.
-        void SetOffset(unsigned int offset);
+        void SetOffset(uint32_t offset);
 
-        inline unsigned int GetOffset() const
+        inline uint32_t GetOffset() const
         {
             return mOffset;
         }
 
-        void SetNumActiveElements(unsigned int numActiveElements);
+        void SetNumActiveElements(uint32_t numActiveElements);
 
-        inline unsigned int GetNumActiveElements() const
+        inline uint32_t GetNumActiveElements() const
         {
             return mNumActiveElements;
         }
 
-        inline unsigned int GetNumActiveBytes() const
+        inline uint32_t GetNumActiveBytes() const
         {
             return mNumActiveElements * mElementSize;
         }
 
     protected:
-        unsigned int mNumElements;
-        unsigned int mElementSize;
-        unsigned int mNumBytes;
-        Usage mUsage;
-        CopyType mCopyType;
-        unsigned int mOffset;
-        unsigned int mNumActiveElements;
-        std::vector<char> mStorage;
-        char* mData;
+        uint32_t mNumElements;          // default: 0
+        uint32_t mElementSize;          // default: 0
+        uint32_t mNumBytes;             // default: 0
+        Usage mUsage;                   // default: IMMUTABLE
+        Copy mCopy;                     // default: NONE
+        uint32_t mOffset;               // default: 0
+        uint32_t mNumActiveElements;    // default: 0
+        std::vector<char> mStorage;     // default: empty
+        char* mData;                    // default: nullptr
     };
 }

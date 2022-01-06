@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 class MTTriangle
 {
 public:
-    MTTriangle(int label = -1)
+    MTTriangle(int32_t label = -1)
         :
         mLabel(label),
         mVertex{ -1, -1, -1 },
@@ -23,29 +23,29 @@ public:
 
     ~MTTriangle() = default;
 
-    inline int GetLabel() const
+    inline int32_t GetLabel() const
     {
         return mLabel;
     }
 
-    inline void SetLabel(int label)
+    inline void SetLabel(int32_t label)
     {
         mLabel = label;
     }
 
-    inline int GetVertex(int i) const
+    inline int32_t GetVertex(int32_t i) const
     {
         return mVertex[i];
     }
 
-    inline void SetVertex(int i, int label)
+    inline void SetVertex(int32_t i, int32_t label)
     {
         mVertex[i] = label;
     }
 
-    bool ReplaceVertex(int vOld, int vNew)
+    bool ReplaceVertex(int32_t vOld, int32_t vNew)
     {
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
             if (mVertex[i] == vOld)
             {
@@ -56,19 +56,19 @@ public:
         return false;
     }
 
-    inline int GetEdge(int i) const
+    inline int32_t GetEdge(int32_t i) const
     {
         return mEdge[i];
     }
 
-    inline void SetEdge(int i, int label)
+    inline void SetEdge(int32_t i, int32_t label)
     {
         mEdge[i] = label;
     }
 
-    bool ReplaceEdge(int eOld, int eNew)
+    bool ReplaceEdge(int32_t eOld, int32_t eNew)
     {
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
             if (mEdge[i] == eOld)
             {
@@ -80,19 +80,19 @@ public:
         return false;
     }
 
-    inline int GetAdjacent(int i) const
+    inline int32_t GetAdjacent(int32_t i) const
     {
         return mAdjacent[i];
     }
 
-    inline void SetAdjacent(int i, int label)
+    inline void SetAdjacent(int32_t i, int32_t label)
     {
         mAdjacent[i] = label;
     }
 
-    bool ReplaceAdjacent(int aOld, int aNew)
+    bool ReplaceAdjacent(int32_t aOld, int32_t aNew)
     {
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
             if (mAdjacent[i] == aOld)
             {
@@ -125,8 +125,8 @@ public:
     }
 
 protected:
-    int mLabel;
-    std::array<int, 3> mVertex;
-    std::array<int, 3> mEdge;
-    std::array<int, 3> mAdjacent;
+    int32_t mLabel;
+    std::array<int32_t, 3> mVertex;
+    std::array<int32_t, 3> mEdge;
+    std::array<int32_t, 3> mAdjacent;
 };

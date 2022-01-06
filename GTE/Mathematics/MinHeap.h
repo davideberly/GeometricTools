@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.05.24
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 // A min-heap is a binary tree whose nodes have weights and with the
@@ -36,13 +37,13 @@
 // and use of the min-heap.  The Weight() function is whatever you choose to
 // guide which vertices are removed first from the polyline.
 //
-//    struct Vertex { int previous, current, next; };
-//    int numVertices = <number of polyline vertices>;
+//    struct Vertex { int32_t previous, current, next; };
+//    int32_t numVertices = <number of polyline vertices>;
 //    std::vector<Vector<N, Real>> positions(numVertices);
 //    <assign all positions[*]>;
 //    MinHeap<Vertex, Real> minHeap(numVertices);
 //    std::vector<MinHeap<Vertex, Real>::Record*> records(numVertices);
-//    for (int i = 0; i < numVertices; ++i)
+//    for (int32_t i = 0; i < numVertices; ++i)
 //    {
 //        Vertex vertex;
 //        vertex.previous = (i + numVertices - 1) % numVertices;
@@ -88,13 +89,13 @@ namespace gte
 
             KeyType key;
             ValueType value;
-            int index;
+            int32_t index;
         };
 
         // Construction.  The record 'value' members are uninitialized for
         // native types chosen for ValueType.  If ValueType is of class type,
         // then the default constructor is used to set the 'value' members.
-        MinHeap(int maxElements = 0)
+        MinHeap(int32_t maxElements = 0)
         {
             Reset(maxElements);
         }
@@ -120,14 +121,14 @@ namespace gte
         // Clear the min-heap so that it has the specified max elements,
         // mNumElements is zero, and mPointers are set to the natural ordering
         // of mRecords.
-        void Reset(int maxElements)
+        void Reset(int32_t maxElements)
         {
             mNumElements = 0;
             if (maxElements > 0)
             {
                 mRecords.resize(maxElements);
                 mPointers.resize(maxElements);
-                for (int i = 0; i < maxElements; ++i)
+                for (int32_t i = 0; i < maxElements; ++i)
                 {
                     mPointers[i] = &mRecords[i];
                     mPointers[i]->index = i;
@@ -142,7 +143,7 @@ namespace gte
 
         // Get the remaining number of elements in the min-heap.  This number
         // is in the range {0..maxElements}.
-        inline int GetNumElements() const
+        inline int32_t GetNumElements() const
         {
             return mNumElements;
         }
@@ -176,14 +177,14 @@ namespace gte
         Record* Insert(KeyType const& key, ValueType const& value)
         {
             // Return immediately when the heap is full.
-            if (mNumElements == static_cast<int>(mRecords.size()))
+            if (mNumElements == static_cast<int32_t>(mRecords.size()))
             {
                 return nullptr;
             }
 
             // Store the input information in the last heap record, which is
             // the last leaf in the tree.
-            int child = mNumElements++;
+            int32_t child = mNumElements++;
             Record* record = mPointers[child];
             record->key = key;
             record->value = value;
@@ -193,7 +194,7 @@ namespace gte
             // valid heap.
             while (child > 0)
             {
-                int parent = (child - 1) / 2;
+                int32_t parent = (child - 1) / 2;
                 if (mPointers[parent]->value <= value)
                 {
                     // The parent has a value smaller than or equal to the
@@ -238,16 +239,16 @@ namespace gte
             // Restore the tree to a heap.  Abstractly, record is the new root
             // of the heap.  It is moved down the tree via parent-child swaps
             // until it is in a location that restores the tree to a heap.
-            int last = --mNumElements;
+            int32_t last = --mNumElements;
             Record* record = mPointers[last];
-            int parent = 0, child = 1;
+            int32_t parent = 0, child = 1;
             while (child <= last)
             {
                 if (child < last)
                 {
                     // Select the child with smallest value to be the one that
                     // is swapped with the parent, if necessary.
-                    int childP1 = child + 1;
+                    int32_t childP1 = child + 1;
                     if (mPointers[childP1]->value < mPointers[child]->value)
                     {
                         child = childP1;
@@ -294,7 +295,7 @@ namespace gte
                 return;
             }
 
-            int parent, child, childP1, maxChild;
+            int32_t parent, child, childP1, maxChild;
 
             if (record->value < value)
             {
@@ -388,9 +389,9 @@ namespace gte
         // structure is a valid min-heap.
         bool IsValid() const
         {
-            for (int child = 0; child < mNumElements; ++child)
+            for (int32_t child = 0; child < mNumElements; ++child)
             {
-                int parent = (child - 1) / 2;
+                int32_t parent = (child - 1) / 2;
                 if (parent > 0)
                 {
                     if (mPointers[child]->value < mPointers[parent]->value)
@@ -414,7 +415,7 @@ namespace gte
         // the Update() capability of the min-heap.  Secondly, they avoid
         // potentially expensive copying of Record objects as sorting occurs
         // in the heap.
-        int mNumElements;
+        int32_t mNumElements;
         std::vector<Record> mRecords;
         std::vector<Record*> mPointers;
     };

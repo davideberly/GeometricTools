@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/TrackBall.h>
@@ -17,7 +17,7 @@ TrackBall::TrackBall()
     mInitialOrientation.MakeIdentity();
 }
 
-TrackBall::TrackBall(int xSize, int ySize, std::shared_ptr<Camera> const& camera)
+TrackBall::TrackBall(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera)
     :
     TrackObject(xSize, ySize, camera)
 {

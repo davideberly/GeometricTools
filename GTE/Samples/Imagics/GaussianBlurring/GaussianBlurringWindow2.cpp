@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "GaussianBlurringWindow2.h"
 #include <Applications/WICFileIO.h>
@@ -26,13 +26,13 @@ GaussianBlurringWindow2::GaussianBlurringWindow2(Parameters& parameters)
     // Create an overlay that covers the entire window.  The blurred image
     // is drawn by the overlay effect.
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize,
-        mYSize, mXSize, mYSize, SamplerState::MIN_P_MAG_P_MIP_P,
-        SamplerState::CLAMP, SamplerState::CLAMP, true);
+        mYSize, mXSize, mYSize, SamplerState::Filter::MIN_P_MAG_P_MIP_P,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
     mOverlay->SetTexture(mImage[1]);
 
 #if defined(SAVE_RENDERING_TO_DISK)
     mTarget = std::make_shared<DrawTarget>(1, DF_R8G8B8A8_UNORM, mXSize, mYSize);
-    mTarget->GetRTTexture(0)->SetCopyType(Resource::COPY_STAGING_TO_CPU);
+    mTarget->GetRTTexture(0)->SetCopy(Resource::Copy::STAGING_TO_CPU);
 #endif
 }
 
@@ -55,7 +55,7 @@ void GaussianBlurringWindow2::OnIdle()
     }
 #endif
 
-    auto cshader = mGaussianBlurProgram->GetComputeShader();
+    auto const& cshader = mGaussianBlurProgram->GetComputeShader();
     mEngine->Execute(mGaussianBlurProgram, mNumXGroups, mNumYGroups, 1);
     mEngine->Draw(mOverlay);
     std::swap(mImage[0], mImage[1]);
@@ -100,19 +100,19 @@ bool GaussianBlurringWindow2::SetEnvironment()
 
 bool GaussianBlurringWindow2::CreateImages()
 {
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mImage[i] = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, mXSize, mYSize);
-        mImage[i]->SetUsage(Resource::SHADER_OUTPUT);
+        mImage[i]->SetUsage(Resource::Usage::SHADER_OUTPUT);
     }
 
     std::string path = mEnvironment.GetPath("MedicineBag.png");
     auto original = WICFileIO::Load(path, false);
-    auto const* src = original->Get<unsigned int>();
+    auto const* src = original->Get<uint32_t>();
     auto* trg = mImage[0]->Get<float>();
-    for (int j = 0; j < mXSize*mYSize; ++j)
+    for (int32_t j = 0; j < mXSize*mYSize; ++j)
     {
-        unsigned int rgba = *src++;
+        uint32_t rgba = *src++;
         *trg++ = (rgba & 0x000000FF) / 255.0f;
         *trg++ = ((rgba & 0x0000FF00) >> 8) / 255.0f;
         *trg++ = ((rgba & 0x00FF0000) >> 16) / 255.0f;

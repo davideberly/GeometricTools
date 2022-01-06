@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Window3.h>
@@ -46,7 +46,7 @@ void Window3::InitializeCamera(float upFovDegrees, float aspectRatio, float dmin
     mCameraRig.SetRotationSpeed(rotationSpeed);
 }
 
-bool Window3::OnResize(int xSize, int ySize)
+bool Window3::OnResize(int32_t xSize, int32_t ySize)
 {
     if (Window::OnResize(xSize, ySize))
     {
@@ -59,7 +59,7 @@ bool Window3::OnResize(int xSize, int ySize)
     return false;
 }
 
-bool Window3::OnCharPress(unsigned char key, int x, int y)
+bool Window3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -83,17 +83,17 @@ bool Window3::OnCharPress(unsigned char key, int x, int y)
     return Window::OnCharPress(key, x, y);
 }
 
-bool Window3::OnKeyDown(int key, int, int)
+bool Window3::OnKeyDown(int32_t key, int32_t, int32_t)
 {
     return mCameraRig.PushMotion(key);
 }
 
-bool Window3::OnKeyUp(int key, int, int)
+bool Window3::OnKeyUp(int32_t key, int32_t, int32_t)
 {
     return mCameraRig.PopMotion(key);
 }
 
-bool Window3::OnMouseClick(MouseButton button, MouseState state, int x, int y, unsigned int)
+bool Window3::OnMouseClick(MouseButton button, MouseState state, int32_t x, int32_t y, uint32_t)
 {
     if (button == MOUSE_LEFT)
     {
@@ -113,7 +113,7 @@ bool Window3::OnMouseClick(MouseButton button, MouseState state, int x, int y, u
     return false;
 }
 
-bool Window3::OnMouseMotion(MouseButton button, int x, int y, unsigned int)
+bool Window3::OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t)
 {
     if (button == MOUSE_LEFT && mTrackBall.GetActive())
     {

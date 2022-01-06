@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/KeyframeController.h>
@@ -11,8 +11,8 @@
 #include <Mathematics/Rotation.h>
 using namespace gte;
 
-KeyframeController::KeyframeController(int numCommonTimes, int numTranslations,
-    int numRotations, int numScales, Transform<float> const& localTransform)
+KeyframeController::KeyframeController(int32_t numCommonTimes, int32_t numTranslations,
+    int32_t numRotations, int32_t numScales, Transform<float> const& localTransform)
     :
     TransformController(localTransform),
     mNumCommonTimes(0),
@@ -84,7 +84,7 @@ bool KeyframeController::Update(double applicationTime)
 
     float ctrlTime = static_cast<float>(GetControlTime(applicationTime));
     float normTime = 0.0f;
-    int i0 = 0, i1 = 0;
+    int32_t i0 = 0, i1 = 0;
     Vector4<float> trn;
     Matrix4x4<float> rot;
     float scale;
@@ -146,8 +146,8 @@ bool KeyframeController::Update(double applicationTime)
     return true;
 }
 
-void KeyframeController::GetKeyInfo(float ctrlTime, int numTimes, float* times,
-    int& lastIndex, float& normTime, int& i0, int& i1)
+void KeyframeController::GetKeyInfo(float ctrlTime, int32_t numTimes, float* times,
+    int32_t& lastIndex, float& normTime, int32_t& i0, int32_t& i1)
 {
     if (ctrlTime <= times[0])
     {
@@ -167,7 +167,7 @@ void KeyframeController::GetKeyInfo(float ctrlTime, int numTimes, float* times,
         return;
     }
 
-    int nextIndex;
+    int32_t nextIndex;
     if (ctrlTime > times[lastIndex])
     {
         nextIndex = lastIndex + 1;
@@ -202,20 +202,20 @@ void KeyframeController::GetKeyInfo(float ctrlTime, int numTimes, float* times,
     }
 }
 
-Vector4<float> KeyframeController::GetTranslate(float normTime, int i0, int i1)
+Vector4<float> KeyframeController::GetTranslate(float normTime, int32_t i0, int32_t i1)
 {
     Vector4<float> trn = mTranslations[i0] + normTime * (mTranslations[i1] - mTranslations[i0]);
     return trn;
 }
 
-Matrix4x4<float> KeyframeController::GetRotate(float normTime, int i0, int i1)
+Matrix4x4<float> KeyframeController::GetRotate(float normTime, int32_t i0, int32_t i1)
 {
     Quaternion<float> q = Slerp(normTime, mRotations[i0], mRotations[i1]);
     Matrix4x4<float> rot = Rotation<4, float>(q);
     return rot;
 }
 
-float KeyframeController::GetScale(float normTime, int i0, int i1)
+float KeyframeController::GetScale(float normTime, int32_t i0, int32_t i1)
 {
     return mScales[i0] + normTime * (mScales[i1] - mScales[i0]);
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "TriangleIntersection.h"
 
@@ -45,8 +45,8 @@ bool TriangleIntersection::Intersects(Vector3<float> U[3],
     // Test whether the edges of triangle V transversely intersect the
     // plane of triangle U.
     float d[3];
-    int positive = 0, negative = 0, zero = 0;
-    for (int i = 0; i < 3; ++i)
+    int32_t positive = 0, negative = 0, zero = 0;
+    for (int32_t i = 0; i < 3; ++i)
     {
         d[i] = Dot(normal, V[i] - U[0]);
         if (d[i] > 0.0f)

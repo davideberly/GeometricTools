@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace gte
         // (x,y,0), the velocity is clamped to (vx,vy,0).  The density is
         // set to zero on the image boundary.
         GPUFluid3EnforceStateBoundary(std::shared_ptr<ProgramFactory> const& factory,
-            int xSize, int ySize, int zSize, int numXThreads, int numYThreads, int numZThreads);
+            int32_t xSize, int32_t ySize, int32_t zSize, int32_t numXThreads, int32_t numYThreads, int32_t numZThreads);
 
         // Set the density and velocity values at the image boundary as
         // described in the comments for the constructor.  The state texture
@@ -32,7 +32,7 @@ namespace gte
             std::shared_ptr<Texture3> const& state);
 
     private:
-        int mNumXGroups, mNumYGroups, mNumZGroups;
+        int32_t mNumXGroups, mNumYGroups, mNumZGroups;
         std::shared_ptr<ComputeProgram> mCopyXFace;
         std::shared_ptr<ComputeProgram> mWriteXFace;
         std::shared_ptr<ComputeProgram> mCopyYFace;

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "TextureUpdatingWindow3.h"
 #include <Graphics/Texture2Effect.h>
@@ -37,10 +37,10 @@ void TextureUpdatingWindow3::OnIdle()
 
     // Access the current texture for the effect.
     auto data = reinterpret_cast<uint8_t*>(mTexture->GetData());
-    unsigned const rowBytes = mTexture->GetWidth() * mTexture->GetElementSize();
+    uint32_t const rowBytes = mTexture->GetWidth() * mTexture->GetElementSize();
 
     // First clear all the values in the CPU copy of the texture.
-    memset(data, 0, rowBytes*mTexture->GetHeight());
+    memset(data, 0, static_cast<size_t>(rowBytes) * static_cast<size_t>(mTexture->GetHeight()));
 
     // Read the values back from the GPU.
     mEngine->CopyGpuToCpu(mTexture);
@@ -49,10 +49,11 @@ void TextureUpdatingWindow3::OnIdle()
     // Use the Update call on the texture.
     if (mForward)
     {
-        data += rowBytes * (mTexture->GetHeight() - 1);
+        uint32_t heightM1 = mTexture->GetHeight() - 1;
+        data += static_cast<size_t>(rowBytes) * static_cast<size_t>(heightM1);
         std::vector<uint8_t*> saveRow(rowBytes);
         std::memcpy(saveRow.data(), data, rowBytes);
-        for (unsigned y=mTexture->GetHeight()-1; y > 0; --y)
+        for (uint32_t y = heightM1; y > 0; --y)
         {
             memmove(data, data-rowBytes, rowBytes);
             data -= rowBytes;
@@ -75,7 +76,7 @@ void TextureUpdatingWindow3::OnIdle()
     {
         std::vector<uint8_t*> saveRow(rowBytes);
         std::memcpy(saveRow.data(), data, rowBytes);
-        for (unsigned y=1; y < mTexture->GetHeight(); ++y)
+        for (uint32_t y = 1; y < mTexture->GetHeight(); ++y)
         {
             memmove(data, data+rowBytes, rowBytes);
             data += rowBytes;
@@ -85,7 +86,7 @@ void TextureUpdatingWindow3::OnIdle()
     }
 }
 
-bool TextureUpdatingWindow3::OnCharPress(unsigned char key, int x, int y)
+bool TextureUpdatingWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -115,8 +116,8 @@ void TextureUpdatingWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
@@ -136,18 +137,18 @@ void TextureUpdatingWindow3::CreateScene()
     // bilinearly filtered and the texture coordinates are clamped to [0,1]^2.
     mTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, 256, 256, true, true);
     mTexture->AutogenerateMipmaps();
-    mTexture->SetCopyType(Texture2::COPY_BIDIRECTIONAL);
-    mTexture->SetUsage(Texture2::DYNAMIC_UPDATE);
+    mTexture->SetCopy(Resource::Copy::BIDIRECTIONAL);
+    mTexture->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto* data = mTexture->Get<uint8_t>();
-    for (unsigned y = 0; y < mTexture->GetHeight(); ++y)
+    for (uint32_t y = 0; y < mTexture->GetHeight(); ++y)
     {
-        unsigned const rowBytes = mTexture->GetWidth() * mTexture->GetElementSize();
+        uint32_t const rowBytes = mTexture->GetWidth() * mTexture->GetElementSize();
         memset(data, y, rowBytes);
         data += rowBytes;
     }
 
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, mTexture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     // Create the geometric object for drawing.  Translate it so that its
     // center of mass is at the origin.  This supports virtual trackball

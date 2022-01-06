@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/MorphController.h>
 #include <Graphics/Visual.h>
 #include <Mathematics/Logger.h>
+#include <cstdint>
 using namespace gte;
 
 MorphController::MorphController(size_t numTargets, size_t numVertices, size_t numTimes,
@@ -84,14 +85,14 @@ bool MorphController::Update(double applicationTime)
 
     // Get access to the vertex buffer to store the blended targets.
     auto visual = static_cast<Visual*>(mObject);
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     VertexFormat vformat = vbuffer->GetFormat();
 
     // Initialize the 3-tuple positions (x,y,z) to zero for accumulation.
-    unsigned int numVertices = vbuffer->GetNumElements();
+    uint32_t numVertices = vbuffer->GetNumElements();
     char* combination = vbuffer->GetData();
     size_t vertexSize = static_cast<size_t>(vformat.GetVertexSize());
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& vertex = *reinterpret_cast<Vector3<float>*>(combination);
         vertex = { 0.0f, 0.0f, 0.0f };
@@ -135,20 +136,20 @@ void MorphController::SetObject(ControlledObject* object)
     auto visual = dynamic_cast<Visual*>(object);
     LogAssert(visual != nullptr, "Object is not of type Visual.");
 
-    auto vbuffer = visual->GetVertexBuffer();
+    auto const& vbuffer = visual->GetVertexBuffer();
     LogAssert(vbuffer->GetNumElements() == mNumVertices, "Mismatch in number of vertices.");
 
     // The vertex buffer for a Visual controlled by a MorphController must
     // have 3-tuple or 4-tuple float-valued position that occurs at the
     // beginning (offset 0) of the vertex structure.
     VertexFormat vformat = vbuffer->GetFormat();
-    int index = vformat.GetIndex(VA_POSITION, 0);
-    LogAssert(index >= 0, "Vertex format does not have VA_POSITION.");
+    int32_t index = vformat.GetIndex(VASemantic::POSITION, 0);
+    LogAssert(index >= 0, "Vertex format does not have VASemantic::POSITION.");
 
-    DFType type = vformat.GetType(index);
+    uint32_t type = vformat.GetType(index);
     LogAssert(type == DF_R32G32B32_FLOAT || type == DF_R32G32B32A32_FLOAT, "Invalid position type.");
 
-    unsigned int offset = vformat.GetOffset(index);
+    uint32_t offset = vformat.GetOffset(index);
     LogAssert(offset == 0, "Position offset must be 0.");
 
     Controller::SetObject(object);

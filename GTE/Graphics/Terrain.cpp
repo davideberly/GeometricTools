@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Terrain.h>
@@ -31,14 +31,14 @@ Terrain::Terrain(size_t numRows, size_t numCols, size_t size, float minElevation
     LogAssert(minElevation <= maxElevation, "Invalid ordering of elevation extremes.");
     LogAssert(spacing > 0.0f, "Spacing must be positive.");
 
-    int index = vformat.GetIndex(VA_POSITION, 0);
-    LogAssert(index >= 0, "Vertex format does not have VA_POSITION.");
+    int32_t index = vformat.GetIndex(VASemantic::POSITION, 0);
+    LogAssert(index >= 0, "Vertex format does not have VASemantic::POSITION.");
 
-    DFType type = vformat.GetType(index);
+    uint32_t type = vformat.GetType(index);
     LogAssert(type == DF_R32G32B32_FLOAT || type == DF_R32G32B32A32_FLOAT,
         "VertexFormat type is not supported.");
 
-    unsigned int offset = vformat.GetOffset(index);
+    uint32_t offset = vformat.GetOffset(index);
     LogAssert(offset == 0, "VertexFormat offset must be 0.");
 
     LogAssert(mCamera != nullptr, "Camera must exist.");
@@ -63,24 +63,24 @@ Terrain::Terrain(size_t numRows, size_t numCols, size_t size, float minElevation
 std::shared_ptr<Visual> Terrain::GetPage(size_t row, size_t col) const
 {
     LogAssert(row < mNumRows && col < mNumCols, "Invalid input to GetPage.");
-    auto child = mChild[col + mNumCols * row];
+    auto const& child = mChild[col + mNumCols * row];
     auto page = std::dynamic_pointer_cast<Visual>(child);
     return page;
 }
 
-void Terrain::SetHeights(size_t row, size_t col, std::vector<unsigned short> const& heights)
+void Terrain::SetHeights(size_t row, size_t col, std::vector<uint16_t> const& heights)
 {
     LogAssert(row < mNumRows && col < mNumCols && heights.size() >= mSize * mSize,
         "Invalid input to SetHeights.");
-    auto child = mChild[col + mNumCols * row];
+    auto const& child = mChild[col + mNumCols * row];
     auto page = std::dynamic_pointer_cast<Page>(child);
     page->SetHeights(heights);
 }
 
-std::vector<unsigned short> const& Terrain::GetHeights(size_t row, size_t col) const
+std::vector<uint16_t> const& Terrain::GetHeights(size_t row, size_t col) const
 {
     LogAssert(row < mNumRows && col < mNumCols, "Invalid input to GetHeights.");
-    auto child = mChild[col + mNumCols * row];
+    auto const& child = mChild[col + mNumCols * row];
     auto page = std::dynamic_pointer_cast<Page>(child);
     return page->GetHeights();
 }
@@ -141,18 +141,18 @@ void Terrain::OnCameraMotion()
         mCameraRow = newCameraRow;
 
         // Translate page origins for toroidal wraparound.
-        int cminO = static_cast<int>(mCameraCol) - static_cast<int>(mNumCols / 2);
-        int cminP = (cminO + static_cast<int>(mNumCols)) % static_cast<int>(mNumCols);
-        int rminO = static_cast<int>(mCameraRow) - static_cast<int>(mNumRows / 2);
-        int rminP = (rminO + static_cast<int>(mNumRows)) % static_cast<int>(mNumRows);
+        int32_t cminO = static_cast<int32_t>(mCameraCol) - static_cast<int32_t>(mNumCols / 2);
+        int32_t cminP = (cminO + static_cast<int32_t>(mNumCols)) % static_cast<int32_t>(mNumCols);
+        int32_t rminO = static_cast<int32_t>(mCameraRow) - static_cast<int32_t>(mNumRows / 2);
+        int32_t rminP = (rminO + static_cast<int32_t>(mNumRows)) % static_cast<int32_t>(mNumRows);
 
-        int rO = rminO, rP = rminP;
+        int32_t rO = rminO, rP = rminP;
         for (size_t row = 0; row < mNumRows; ++row)
         {
-            int cO = cminO, cP = cminP;
+            int32_t cO = cminO, cP = cminP;
             for (size_t col = 0; col < mNumCols; ++col)
             {
-                auto child = mChild[cP + mNumCols * rP];
+                auto const& child = mChild[cP + mNumCols * rP];
                 auto page = std::dynamic_pointer_cast<Page>(child);
                 Vector2<float> oldOrigin = page->GetOrigin();
                 Vector2<float> newOrigin{ cO * mLength, rO * mLength };
@@ -165,14 +165,14 @@ void Terrain::OnCameraMotion()
                 page->localTransform.SetTranslation(pageTrn);
 
                 ++cO;
-                if (++cP == static_cast<int>(mNumCols))
+                if (++cP == static_cast<int32_t>(mNumCols))
                 {
                     cP = 0;
                 }
             }
 
             ++rO;
-            if (++rP == static_cast<int>(mNumRows))
+            if (++rP == static_cast<int32_t>(mNumRows))
             {
                 rP = 0;
             }
@@ -195,13 +195,13 @@ Terrain::Page::Page(size_t size, float minElevation, float maxElevation,
     // SetHeights(...) function.
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    unsigned int numSamples = static_cast<unsigned int>(mSize);
+    uint32_t numSamples = static_cast<uint32_t>(mSize);
     auto rectangle = mf.CreateRectangle(numSamples, numSamples, length, length);
     mVBuffer = rectangle->GetVertexBuffer();
     mIBuffer = rectangle->GetIndexBuffer();
 }
 
-void Terrain::Page::SetHeights(std::vector<unsigned short> const& heights)
+void Terrain::Page::SetHeights(std::vector<uint16_t> const& heights)
 {
     char* vertices = mVBuffer->GetData();
     size_t vertexSize = static_cast<size_t>(mVBuffer->GetFormat().GetVertexSize());
@@ -302,7 +302,7 @@ std::shared_ptr<Terrain::Page> Terrain::GetPage(float x, float y) const
     col = (col + mNumCols) % mNumCols;
     size_t row = static_cast<size_t>(std::floor(y / mLength));
     row = (row + mNumRows) % mNumRows;
-    auto child = mChild[col + mNumCols * row];
+    auto const& child = mChild[col + mNumCols * row];
     auto page = std::dynamic_pointer_cast<Page>(child);
     return page;
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.10.2021.04.30
+// Version: 6.0.2022.01.06
 
 #include "IntersectTriangleCylinderWindow3.h"
 #include <Mathematics/Rotation.h>
@@ -56,10 +56,10 @@ IntersectTriangleCylinderWindow3::IntersectTriangleCylinderWindow3(Parameters& p
     mCylinderBasis.SetCol(2, basis[0]);
 
     mNoCullState = std::make_shared<RasterizerState>();
-    mNoCullState->cullMode = RasterizerState::CULL_NONE;
+    mNoCullState->cull = RasterizerState::Cull::NONE;
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.001f, 0.001f,
@@ -89,7 +89,7 @@ void IntersectTriangleCylinderWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool IntersectTriangleCylinderWindow3::OnCharPress(unsigned char key, int x, int y)
+bool IntersectTriangleCylinderWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     float const delta = 0.1f;
 
@@ -170,7 +170,7 @@ bool IntersectTriangleCylinderWindow3::OnCharPress(unsigned char key, int x, int
 void IntersectTriangleCylinderWindow3::CreateScene()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
 
     mRedEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 1.0f, 0.0f, 0.0f, 1.0f });
@@ -181,7 +181,7 @@ void IntersectTriangleCylinderWindow3::CreateScene()
 
     // Create the triangle mesh.
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 3);
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     auto vertices = vbuffer->Get<Vector3<float>>();
     for (size_t i = 0; i < 3; ++i)
     {
@@ -195,7 +195,7 @@ void IntersectTriangleCylinderWindow3::CreateScene()
     // Create the cylinder mesh.
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::DYNAMIC_UPDATE);
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
     mCylinderMesh = mf.CreateCylinderClosed(8, 16, mCylinder.radius, mCylinder.height);
     mCylinderMesh->SetEffect(mRedEffect);
     mPVWMatrices.Subscribe(mCylinderMesh);
@@ -227,7 +227,7 @@ void IntersectTriangleCylinderWindow3::Translate(int32_t direction, float delta)
         mCylinder.axis.origin[direction] += delta;
 
         VertexFormat vformat;
-        vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+        vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
         MeshFactory mf;
         mf.SetVertexFormat(vformat);
         auto mesh = mf.CreateCylinderClosed(8, 16, mCylinder.radius, mCylinder.height);
@@ -320,7 +320,7 @@ void IntersectTriangleCylinderWindow3::Rotate(int32_t direction, float delta)
         mCylinder.axis.direction = mCylinderBasis.GetCol(2);
 
         VertexFormat vformat;
-        vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+        vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
         MeshFactory mf;
         mf.SetVertexFormat(vformat);
         auto mesh = mf.CreateCylinderClosed(8, 16, mCylinder.radius, mCylinder.height);

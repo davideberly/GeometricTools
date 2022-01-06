@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.09.28
+// Version: 6.0.2022.01.06
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid2EnforceStateBoundary.h>
@@ -11,28 +11,28 @@ using namespace gte;
 
 GPUFluid2EnforceStateBoundary::GPUFluid2EnforceStateBoundary(
     std::shared_ptr<ProgramFactory> const& factory,
-    int xSize, int ySize, int numXThreads, int numYThreads)
+    int32_t xSize, int32_t ySize, int32_t numXThreads, int32_t numYThreads)
     :
     mNumXGroups(xSize / numXThreads),
     mNumYGroups(ySize / numYThreads)
 {
     mXMin = std::make_shared<Texture1>(DF_R32_FLOAT, ySize);
-    mXMin->SetUsage(Resource::SHADER_OUTPUT);
+    mXMin->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mXMax = std::make_shared<Texture1>(DF_R32_FLOAT, ySize);
-    mXMax->SetUsage(Resource::SHADER_OUTPUT);
+    mXMax->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mYMin = std::make_shared<Texture1>(DF_R32_FLOAT, xSize);
-    mYMin->SetUsage(Resource::SHADER_OUTPUT);
+    mYMin->SetUsage(Resource::Usage::SHADER_OUTPUT);
     mYMax = std::make_shared<Texture1>(DF_R32_FLOAT, xSize);
-    mYMax->SetUsage(Resource::SHADER_OUTPUT);
+    mYMax->SetUsage(Resource::Usage::SHADER_OUTPUT);
 
-    int api = factory->GetAPI();
+    int32_t api = factory->GetAPI();
     factory->PushDefines();
     factory->defines.Set("USE_COPY_X_EDGE", 1);
     factory->defines.Set("NUM_Y_THREADS", numYThreads);
     mCopyXEdge = factory->CreateFromSource(*msSource[api]);
     if (mCopyXEdge)
     {
-        auto cshader = mCopyXEdge->GetComputeShader();
+        auto const& cshader = mCopyXEdge->GetComputeShader();
         cshader->Set("xMin", mXMin);
         cshader->Set("xMax", mXMax);
     }
@@ -43,7 +43,7 @@ GPUFluid2EnforceStateBoundary::GPUFluid2EnforceStateBoundary(
     mWriteXEdge = factory->CreateFromSource(*msSource[api]);
     if (mWriteXEdge)
     {
-        auto cshader = mWriteXEdge->GetComputeShader();
+        auto const& cshader = mWriteXEdge->GetComputeShader();
         cshader->Set("xMin", mXMin);
         cshader->Set("xMax", mXMax);
     }
@@ -54,7 +54,7 @@ GPUFluid2EnforceStateBoundary::GPUFluid2EnforceStateBoundary(
     mCopyYEdge = factory->CreateFromSource(*msSource[api]);
     if (mCopyYEdge)
     {
-        auto cshader = mCopyYEdge->GetComputeShader();
+        auto const& cshader = mCopyYEdge->GetComputeShader();
         cshader->Set("yMin", mYMin);
         cshader->Set("yMax", mYMax);
     }
@@ -65,7 +65,7 @@ GPUFluid2EnforceStateBoundary::GPUFluid2EnforceStateBoundary(
     mWriteYEdge = factory->CreateFromSource(*msSource[api]);
     if (mWriteYEdge)
     {
-        auto cshader = mWriteYEdge->GetComputeShader();
+        auto const& cshader = mWriteYEdge->GetComputeShader();
         cshader->Set("yMin", mYMin);
         cshader->Set("yMax", mYMax);
     }

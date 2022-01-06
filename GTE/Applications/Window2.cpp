@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Window2.h>
 #include <Mathematics/ImageUtility2.h>
+#include <Graphics/SamplerState.h>
 using namespace gte;
 
 Window2::Window2(Parameters& parameters)
@@ -26,10 +27,10 @@ Window2::Window2(Parameters& parameters)
     }
 
     mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, mXSize, mYSize,
-        SamplerState::MIN_P_MAG_P_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP, true);
+        SamplerState::Filter::MIN_P_MAG_P_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
 
     mScreenTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, mXSize, mYSize);
-    mScreenTexture->SetUsage(Resource::DYNAMIC_UPDATE);
+    mScreenTexture->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
     mOverlay->SetTexture(mScreenTexture);
 
     // The default is to disable depth and stenciling.  For layered drawing in
@@ -41,12 +42,12 @@ Window2::Window2(Parameters& parameters)
     mEngine->SetDepthStencilState(mNoDepthStencilState);
 
     // Callback functions for ImageUtility2 functions.
-    mDrawPixel = [this](int x, int y) { SetPixel(x, y, mPixelColor); };
-    mDrawThickPixel = [this](int x, int y)
+    mDrawPixel = [this](int32_t x, int32_t y) { SetPixel(x, y, mPixelColor); };
+    mDrawThickPixel = [this](int32_t x, int32_t y)
     {
-        for (int dy = -mThick; dy <= mThick; ++dy)
+        for (int32_t dy = -mThick; dy <= mThick; ++dy)
         {
-            for (int dx = -mThick; dx <= mThick; ++dx)
+            for (int32_t dx = -mThick; dx <= mThick; ++dx)
             {
                 SetPixel(x + dx, y + dy, mPixelColor);
             }
@@ -54,7 +55,7 @@ Window2::Window2(Parameters& parameters)
     };
 }
 
-bool Window2::OnResize(int, int)
+bool Window2::OnResize(int32_t, int32_t)
 {
     // See the comments in GteWindow.h.
     return false;
@@ -78,17 +79,17 @@ void Window2::DrawScreenOverlay()
     // Stub for derived classes.
 }
 
-void Window2::ClearScreen(unsigned int color)
+void Window2::ClearScreen(uint32_t color)
 {
-    unsigned int const numTexels = mScreenTexture->GetNumElements();
-    unsigned int* texels = mScreenTexture->Get<unsigned int>();
-    for (unsigned int i = 0; i < numTexels; ++i)
+    uint32_t const numTexels = mScreenTexture->GetNumElements();
+    uint32_t* texels = mScreenTexture->Get<uint32_t>();
+    for (uint32_t i = 0; i < numTexels; ++i)
     {
         *texels++ = color;
     }
 }
 
-void Window2::SetPixel(int x, int y, unsigned int color)
+void Window2::SetPixel(int32_t x, int32_t y, uint32_t color)
 {
     if (mClampToWindow)
     {
@@ -103,10 +104,10 @@ void Window2::SetPixel(int x, int y, unsigned int color)
         y = mYSize - 1 - y;
     }
 
-    mScreenTexture->Get<unsigned int>()[x + mXSize * y] = color;
+    mScreenTexture->Get<uint32_t>()[x + mXSize * y] = color;
 }
 
-unsigned int Window2::GetPixel(int x, int y)
+uint32_t Window2::GetPixel(int32_t x, int32_t y)
 {
     if (mClampToWindow)
     {
@@ -121,70 +122,70 @@ unsigned int Window2::GetPixel(int x, int y)
         y = mYSize - 1 - y;
     }
 
-    return mScreenTexture->Get<unsigned int>()[x + mXSize * y];
+    return mScreenTexture->Get<uint32_t>()[x + mXSize * y];
 }
 
-void Window2::DrawThickPixel(int x, int y, int thick, unsigned int color)
+void Window2::DrawThickPixel(int32_t x, int32_t y, int32_t thick, uint32_t color)
 {
     mPixelColor = color;
     ImageUtility2::DrawThickPixel(x, y, thick, mDrawPixel);
 }
 
-void Window2::DrawLine(int x0, int y0, int x1, int y1, unsigned int color)
+void Window2::DrawLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color)
 {
     mPixelColor = color;
     ImageUtility2::DrawLine(x0, y0, x1, y1, mDrawPixel);
 }
 
-void Window2::DrawThickLine(int x0, int y0, int x1, int y1, int thick, unsigned int color)
+void Window2::DrawThickLine(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t thick, uint32_t color)
 {
     mPixelColor = color;
     mThick = thick;
     ImageUtility2::DrawLine(x0, y0, x1, y1, mDrawThickPixel);
 }
 
-void Window2::DrawRectangle(int xMin, int yMin, int xMax, int yMax, unsigned int color, bool solid)
+void Window2::DrawRectangle(int32_t xMin, int32_t yMin, int32_t xMax, int32_t yMax, uint32_t color, bool solid)
 {
     mPixelColor = color;
     ImageUtility2::DrawRectangle(xMin, yMin, xMax, yMax, solid, mDrawPixel);
 }
 
-void Window2::DrawThickRectangle(int xMin, int yMin, int xMax, int yMax, int thick, unsigned int color, bool solid)
+void Window2::DrawThickRectangle(int32_t xMin, int32_t yMin, int32_t xMax, int32_t yMax, int32_t thick, uint32_t color, bool solid)
 {
     mPixelColor = color;
     mThick = thick;
     ImageUtility2::DrawRectangle(xMin, yMin, xMax, yMax, solid, mDrawThickPixel);
 }
 
-void Window2::DrawCircle(int xCenter, int yCenter, int radius, unsigned int color, bool solid)
+void Window2::DrawCircle(int32_t xCenter, int32_t yCenter, int32_t radius, uint32_t color, bool solid)
 {
     mPixelColor = color;
     ImageUtility2::DrawCircle(xCenter, yCenter, radius, solid, mDrawPixel);
 }
 
-void Window2::DrawThickCircle(int xCenter, int yCenter, int radius, int thick, unsigned int color, bool solid)
+void Window2::DrawThickCircle(int32_t xCenter, int32_t yCenter, int32_t radius, int32_t thick, uint32_t color, bool solid)
 {
     mPixelColor = color;
     mThick = thick;
     ImageUtility2::DrawCircle(xCenter, yCenter, radius, solid, mDrawThickPixel);
 }
 
-void Window2::DrawEllipse(int xCenter, int yCenter, int xExtent, int yExtent, unsigned int color)
+void Window2::DrawEllipse(int32_t xCenter, int32_t yCenter, int32_t xExtent, int32_t yExtent, uint32_t color)
 {
     mPixelColor = color;
     ImageUtility2::DrawEllipse(xCenter, yCenter, xExtent, yExtent, mDrawPixel);
 }
 
-void Window2::DrawThickEllipse(int xCenter, int yCenter, int xExtent, int yExtent, int thick, unsigned int color)
+void Window2::DrawThickEllipse(int32_t xCenter, int32_t yCenter, int32_t xExtent, int32_t yExtent, int32_t thick, uint32_t color)
 {
     mPixelColor = color;
     mThick = thick;
     ImageUtility2::DrawEllipse(xCenter, yCenter, xExtent, yExtent, mDrawThickPixel);
 }
 
-void Window2::DrawFloodFill4(int x, int y, unsigned int foreColor, unsigned int backColor)
+void Window2::DrawFloodFill4(int32_t x, int32_t y, uint32_t foreColor, uint32_t backColor)
 {
-    ImageUtility2::DrawFloodFill4<unsigned int>(x, y, mXSize, mYSize, foreColor, backColor,
-        [this](int x, int y, unsigned int color) { SetPixel(x, y, color); },
-        [this](int x, int y) { return GetPixel(x, y); });
+    ImageUtility2::DrawFloodFill4<uint32_t>(x, y, mXSize, mYSize, foreColor, backColor,
+        [this](int32_t x, int32_t y, uint32_t color) { SetPixel(x, y, color); },
+        [this](int32_t x, int32_t y) { return GetPixel(x, y); });
 }

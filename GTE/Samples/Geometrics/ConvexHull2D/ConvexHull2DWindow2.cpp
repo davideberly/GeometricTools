@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.08.30
+// Version: 6.0.2022.01.06
 
 #include "ConvexHull2DWindow2.h"
 #include <random>
@@ -38,7 +38,7 @@ ConvexHull2DWindow2::ConvexHull2DWindow2(Parameters& parameters)
     mVertices[8] = Vector2<float>(448.0f, 448.0f);
 #endif
 
-    if (!mConvexHull(static_cast<int>(mVertices.size()), mVertices.data(), 0.001f))
+    if (!mConvexHull(static_cast<int32_t>(mVertices.size()), mVertices.data(), 0.001f))
     {
         LogError("Degenerate point set.");
     }
@@ -48,25 +48,25 @@ void ConvexHull2DWindow2::OnDisplay()
 {
     ClearScreen(0xFFFFFFFF);
 
-    unsigned int const black = 0xFF000000;
-    unsigned int const gray = 0xFF808080;
-    unsigned int const blue = 0xFFFF0000;
+    uint32_t const black = 0xFF000000;
+    uint32_t const gray = 0xFF808080;
+    uint32_t const blue = 0xFFFF0000;
 
-    int x0, y0, x1, y1;
+    int32_t x0, y0, x1, y1;
     Vector2<float> v0, v1;
 
     // Draw the convex polygon.
-    std::vector<int> const& hull = mConvexHull.GetHull();
-    int const numIndices = static_cast<int>(hull.size());
-    for (int i0 = numIndices - 1, i1 = 0; i1 < numIndices; i0 = i1++)
+    std::vector<int32_t> const& hull = mConvexHull.GetHull();
+    int32_t const numIndices = static_cast<int32_t>(hull.size());
+    for (int32_t i0 = numIndices - 1, i1 = 0; i1 < numIndices; i0 = i1++)
     {
         v0 = mVertices[hull[i0]];
-        x0 = static_cast<int>(std::lrint(v0[0]));
-        y0 = static_cast<int>(std::lrint(v0[1]));
+        x0 = static_cast<int32_t>(std::lrint(v0[0]));
+        y0 = static_cast<int32_t>(std::lrint(v0[1]));
 
         v1 = mVertices[hull[i1]];
-        x1 = static_cast<int>(std::lrint(v1[0]));
-        y1 = static_cast<int>(std::lrint(v1[1]));
+        x1 = static_cast<int32_t>(std::lrint(v1[0]));
+        y1 = static_cast<int32_t>(std::lrint(v1[1]));
 
         DrawLine(x0, y0, x1, y1, gray);
     }
@@ -74,8 +74,8 @@ void ConvexHull2DWindow2::OnDisplay()
     // Draw the input points.
     for (auto const& v : mVertices)
     {
-        x0 = static_cast<int>(std::lrint(v[0]));
-        y0 = static_cast<int>(std::lrint(v[1]));
+        x0 = static_cast<int32_t>(std::lrint(v[0]));
+        y0 = static_cast<int32_t>(std::lrint(v[1]));
         DrawThickPixel(x0, y0, 1, blue);
     }
 
@@ -83,8 +83,8 @@ void ConvexHull2DWindow2::OnDisplay()
     for (auto index : hull)
     {
         v0 = mVertices[index];
-        x0 = static_cast<int>(std::lrint(v0[0]));
-        y0 = static_cast<int>(std::lrint(v0[1]));
+        x0 = static_cast<int32_t>(std::lrint(v0[0]));
+        y0 = static_cast<int32_t>(std::lrint(v0[1]));
         DrawThickPixel(x0, y0, 1, black);
     }
 

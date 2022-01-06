@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.10.2021.05.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -26,6 +26,13 @@ namespace gte
     class DistanceBoxQuad
     {
     public:
+        DistanceBoxQuad()
+            :
+            quadrilateral{ Vector<3, T>::Zero(), Vector<3, T>::Zero(), Vector<3, T>::Zero(), Vector<3, T>::Zero() },
+            mLCP{}
+        {
+        }
+
         bool operator()(OrientedBox3<T> const& box, Cone<3, T> const& cone,
             T const& sliceAngle, T& distance, Vector<3, T>& boxClosest,
             Vector<3, T>& coneClosest)
@@ -111,7 +118,7 @@ namespace gte
             for (int32_t i = 0; i < 5; ++i)
             {
                 q[i] = b[i];
-                q[i + 5] = -e[i];
+                q[static_cast<size_t>(i) + 5] = -e[i];
             }
 
             std::array<std::array<T, 10>, 10> M;
@@ -120,9 +127,9 @@ namespace gte
                 for (int32_t c = 0; c < 5; ++c)
                 {
                     M[r][c] = A(r, c);
-                    M[r + 5][c] = D(r, c);
-                    M[r][c + 5] = -D(c, r);
-                    M[r + 5][c + 5] = zero;
+                    M[static_cast<size_t>(r) + 5][c] = D(r, c);
+                    M[r][static_cast<size_t>(c) + 5] = -D(c, r);
+                    M[static_cast<size_t>(r) + 5][static_cast<size_t>(c) + 5] = zero;
                 }
             }
 
@@ -136,7 +143,7 @@ namespace gte
                 }
 
                 coneClosest = cone.ray.origin;
-                for (int32_t i = 0; i < 2; ++i)
+                for (size_t i = 0; i < 2; ++i)
                 {
                     coneClosest += z[i + 3] * G[i];
                 }

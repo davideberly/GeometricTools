@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ public:
     // randomly, but each new direction is nearby the old direction in order
     // to obtain some sense of continuity of direction.  The magnitude of the
     // wind force is constant, the length of the initial force.
-    PhysicsModule(int numParticles, float step, Vector3<float> const& gravity,
+    PhysicsModule(int32_t numParticles, float step, Vector3<float> const& gravity,
         Vector3<float> const& wind, float windChangeAmplitude,
         float viscosity);
 
@@ -34,7 +34,7 @@ public:
 
     // External acceleration is due to forces of gravitation, wind, and
     // viscous friction.  The wind forces are randomly generated.
-    virtual Vector<3, float> ExternalAcceleration(int i, float time,
+    virtual Vector<3, float> ExternalAcceleration(int32_t i, float time,
         std::vector<Vector<3, float>> const& position,
         std::vector<Vector<3, float>> const& velocity);
 

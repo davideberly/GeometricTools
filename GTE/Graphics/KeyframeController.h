@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -30,12 +30,12 @@ namespace gte
         // set appropriately by the application.  Now KeyframeController sets
         // *all* the channels.
         virtual ~KeyframeController() = default;
-        KeyframeController(int numCommonTimes, int numTranslations,
-            int numRotations, int numScales, Transform<float> const& localTransform);
+        KeyframeController(int32_t numCommonTimes, int32_t numTranslations,
+            int32_t numRotations, int32_t numScales, Transform<float> const& localTransform);
 
         // Member access.  After calling the constructor, you must set the
         // data using these functions.
-        inline int GetNumCommonTimes() const
+        inline int32_t GetNumCommonTimes() const
         {
             return mNumCommonTimes;
         }
@@ -45,7 +45,7 @@ namespace gte
             return mCommonTimes.data();
         }
 
-        inline int GetNumTranslations() const
+        inline int32_t GetNumTranslations() const
         {
             return mNumTranslations;
         }
@@ -60,7 +60,7 @@ namespace gte
             return mTranslations.data();
         }
 
-        inline int GetNumRotations() const
+        inline int32_t GetNumRotations() const
         {
             return mNumRotations;
         }
@@ -75,7 +75,7 @@ namespace gte
             return mRotations.data();
         }
 
-        inline int GetNumScales() const
+        inline int32_t GetNumScales() const
         {
             return mNumScales;
         }
@@ -95,33 +95,33 @@ namespace gte
 
     protected:
         // Support for looking up keyframes given the specified time.
-        static void GetKeyInfo(float ctrlTime, int numTimes, float* times,
-            int& lastIndex, float& normTime, int& i0, int& i1);
+        static void GetKeyInfo(float ctrlTime, int32_t numTimes, float* times,
+            int32_t& lastIndex, float& normTime, int32_t& i0, int32_t& i1);
 
-        Vector4<float> GetTranslate(float normTime, int i0, int i1);
-        Matrix4x4<float> GetRotate(float normTime, int i0, int i1);
-        float GetScale(float normTime, int i0, int i1);
+        Vector4<float> GetTranslate(float normTime, int32_t i0, int32_t i1);
+        Matrix4x4<float> GetRotate(float normTime, int32_t i0, int32_t i1);
+        float GetScale(float normTime, int32_t i0, int32_t i1);
 
         // This array is used only when times are shared by translations,
         // rotations, and scales.
-        int mNumCommonTimes;
+        int32_t mNumCommonTimes;
         std::vector<float> mCommonTimes;
 
-        int mNumTranslations;
+        int32_t mNumTranslations;
         std::vector<float> mTranslationTimes;
         std::vector<Vector4<float>> mTranslations;
 
-        int mNumRotations;
+        int32_t mNumRotations;
         std::vector<float> mRotationTimes;
         std::vector<Quaternion<float>> mRotations;
 
-        int mNumScales;
+        int32_t mNumScales;
         std::vector<float> mScaleTimes;
         std::vector<float> mScales;
 
         // Cached indices for the last found pair of keys used for
         // interpolation.  For a sequence of times, this guarantees an
         // O(1) lookup.
-        int mTLastIndex, mRLastIndex, mSLastIndex, mCLastIndex;
+        int32_t mTLastIndex, mRLastIndex, mSLastIndex, mCLastIndex;
     };
 }

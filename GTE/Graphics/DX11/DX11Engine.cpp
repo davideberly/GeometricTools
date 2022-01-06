@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -49,19 +49,23 @@ DX11Engine::~DX11Engine()
     DrawTarget::UnsubscribeForDestruction(mDTListener);
     mDTListener = nullptr;
 
-    if (mGOMap.HasElements())
+    mGOMapMutex.lock();
+    if (mGOMap.size() > 0)
     {
         // Bridge map is nonempty on destruction.
         // TODO: In GTL, handle differently. The condition should not occur.
-        mGOMap.RemoveAll();
+        mGOMap.clear();
     }
+    mGOMapMutex.unlock();
 
-    if (mDTMap.HasElements())
+    mDTMapMutex.lock();
+    if (mDTMap.size() > 0)
     {
         // Draw target map nonempty on destruction.
         // TODO: In GTL, handle differently. The condition should not occur.
-        mDTMap.RemoveAll();
+        mDTMap.clear();
     }
+    mDTMapMutex.unlock();
 
     if (mILMap->HasElements())
     {
@@ -170,7 +174,9 @@ DX11GraphicsObject* DX11Engine::Share(std::shared_ptr<Texture2> const& texture, 
         {
             dxShared = std::make_shared<DX11TextureDS>(mDevice, static_cast<DX11TextureDS const*>(dxTexture));
         }
-        mGOMap.Insert(texture.get(), dxShared);
+        mGOMapMutex.lock();
+        mGOMap.insert(std::make_pair(texture.get(), dxShared));
+        mGOMapMutex.unlock();
         return dxTexture;
     }
 
@@ -178,7 +184,7 @@ DX11GraphicsObject* DX11Engine::Share(std::shared_ptr<Texture2> const& texture, 
     return static_cast<DX11GraphicsObject*>(Bind(texture));
 }
 
-D3D11_MAPPED_SUBRESOURCE DX11Engine::MapForWrite(std::shared_ptr<Resource> const& resource, unsigned int sri)
+D3D11_MAPPED_SUBRESOURCE DX11Engine::MapForWrite(std::shared_ptr<Resource> const& resource, uint32_t sri)
 {
     if (!resource->GetData())
     {
@@ -189,7 +195,7 @@ D3D11_MAPPED_SUBRESOURCE DX11Engine::MapForWrite(std::shared_ptr<Resource> const
     return dxResource->MapForWrite(mImmediate, sri);
 }
 
-void DX11Engine::Unmap(std::shared_ptr<Resource> const& resource, unsigned int sri)
+void DX11Engine::Unmap(std::shared_ptr<Resource> const& resource, uint32_t sri)
 {
     DX11Resource* dxResource = static_cast<DX11Resource*>(Bind(resource));
     dxResource->Unmap(mImmediate, sri);
@@ -748,35 +754,35 @@ uint64_t DX11Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
 
     UINT numActiveIndices = ibuffer->GetNumActiveIndices();
     UINT firstIndex = ibuffer->GetFirstIndex();
-    IPType type = ibuffer->GetPrimitiveType();
+    uint32_t type = ibuffer->GetPrimitiveType();
 
     switch (type)
     {
-    case IPType::IP_POLYPOINT:
+    case IP_POLYPOINT:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
         break;
-    case IPType::IP_POLYSEGMENT_DISJOINT:
+    case IP_POLYSEGMENT_DISJOINT:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
         break;
-    case IPType::IP_POLYSEGMENT_CONTIGUOUS:
+    case IP_POLYSEGMENT_CONTIGUOUS:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
         break;
-    case IPType::IP_TRIMESH:
+    case IP_TRIMESH:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         break;
-    case IPType::IP_TRISTRIP:
+    case IP_TRISTRIP:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
         break;
-    case IPType::IP_POLYSEGMENT_DISJOINT_ADJ:
+    case IP_POLYSEGMENT_DISJOINT_ADJ:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ);
         break;
-    case IPType::IP_POLYSEGMENT_CONTIGUOUS_ADJ:
+    case IP_POLYSEGMENT_CONTIGUOUS_ADJ:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ);
         break;
-    case IPType::IP_TRIMESH_ADJ:
+    case IP_TRIMESH_ADJ:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ);
         break;
-    case IPType::IP_TRISTRIP_ADJ:
+    case IP_TRISTRIP_ADJ:
         mImmediate->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ);
         break;
     default:
@@ -917,7 +923,7 @@ void DX11Engine::Disable(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableCBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = ConstantBuffer::shaderDataLookup;
+    int32_t const index = ConstantBuffer::shaderDataLookup;
     for (auto const& cb : shader->GetData(index))
     {
         if (cb.object)
@@ -941,7 +947,7 @@ void DX11Engine::EnableCBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableCBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = ConstantBuffer::shaderDataLookup;
+    int32_t const index = ConstantBuffer::shaderDataLookup;
     for (auto const& cb : shader->GetData(index))
     {
         dxShader->DisableCBuffer(mImmediate, cb.bindPoint);
@@ -950,7 +956,7 @@ void DX11Engine::DisableCBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableTBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = TextureBuffer::shaderDataLookup;
+    int32_t const index = TextureBuffer::shaderDataLookup;
     for (auto const& tb : shader->GetData(index))
     {
         if (tb.object)
@@ -974,7 +980,7 @@ void DX11Engine::EnableTBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableTBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = TextureBuffer::shaderDataLookup;
+    int32_t const index = TextureBuffer::shaderDataLookup;
     for (auto const& tb : shader->GetData(index))
     {
         dxShader->DisableSRView(mImmediate, tb.bindPoint);
@@ -983,7 +989,7 @@ void DX11Engine::DisableTBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableSBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = StructuredBuffer::shaderDataLookup;
+    int32_t const index = StructuredBuffer::shaderDataLookup;
     for (auto const& sb : shader->GetData(index))
     {
         if (sb.object)
@@ -995,7 +1001,7 @@ void DX11Engine::EnableSBuffers(Shader const* shader, DX11Shader* dxShader)
                 {
                     StructuredBuffer* gtSB = static_cast<StructuredBuffer*>(sb.object.get());
 
-                    unsigned int numActive = (gtSB->GetKeepInternalCount() ?
+                    uint32_t numActive = (gtSB->GetKeepInternalCount() ?
                         0xFFFFFFFFu : gtSB->GetNumActiveElements());
                     dxShader->EnableUAView(mImmediate, sb.bindPoint, dxSB->GetUAView(), numActive);
                 }
@@ -1018,7 +1024,7 @@ void DX11Engine::EnableSBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableSBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = StructuredBuffer::shaderDataLookup;
+    int32_t const index = StructuredBuffer::shaderDataLookup;
     for (auto const& sb : shader->GetData(index))
     {
         if (sb.isGpuWritable)
@@ -1034,7 +1040,7 @@ void DX11Engine::DisableSBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableRBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = RawBuffer::shaderDataLookup;
+    int32_t const index = RawBuffer::shaderDataLookup;
     for (auto const& rb : shader->GetData(index))
     {
         if (rb.object)
@@ -1065,7 +1071,7 @@ void DX11Engine::EnableRBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableRBuffers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = RawBuffer::shaderDataLookup;
+    int32_t const index = RawBuffer::shaderDataLookup;
     for (auto const& rb : shader->GetData(index))
     {
         if (rb.isGpuWritable)
@@ -1081,7 +1087,7 @@ void DX11Engine::DisableRBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableTextures(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = TextureSingle::shaderDataLookup;
+    int32_t const index = TextureSingle::shaderDataLookup;
     for (auto const& tx : shader->GetData(index))
     {
         if (tx.object)
@@ -1112,7 +1118,7 @@ void DX11Engine::EnableTextures(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableTextures(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = TextureSingle::shaderDataLookup;
+    int32_t const index = TextureSingle::shaderDataLookup;
     for (auto const& tx : shader->GetData(index))
     {
         if (tx.isGpuWritable)
@@ -1128,7 +1134,7 @@ void DX11Engine::DisableTextures(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableTextureArrays(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = TextureArray::shaderDataLookup;
+    int32_t const index = TextureArray::shaderDataLookup;
     for (auto const& ta : shader->GetData(index))
     {
         if (ta.object)
@@ -1160,7 +1166,7 @@ void DX11Engine::EnableTextureArrays(Shader const* shader, DX11Shader* dxShader)
 void DX11Engine::DisableTextureArrays(Shader const* shader,
     DX11Shader* dxShader)
 {
-    int const index = TextureArray::shaderDataLookup;
+    int32_t const index = TextureArray::shaderDataLookup;
     for (auto const& ta : shader->GetData(index))
     {
         if (ta.isGpuWritable)
@@ -1176,7 +1182,7 @@ void DX11Engine::DisableTextureArrays(Shader const* shader,
 
 void DX11Engine::EnableSamplers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = SamplerState::shaderDataLookup;
+    int32_t const index = SamplerState::shaderDataLookup;
     for (auto const& ss : shader->GetData(index))
     {
         if (ss.object)
@@ -1200,7 +1206,7 @@ void DX11Engine::EnableSamplers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::DisableSamplers(Shader const* shader, DX11Shader* dxShader)
 {
-    int const index = SamplerState::shaderDataLookup;
+    int32_t const index = SamplerState::shaderDataLookup;
     for (auto const& ss : shader->GetData(index))
     {
         dxShader->DisableSampler(mImmediate, ss.bindPoint);
@@ -1210,7 +1216,7 @@ void DX11Engine::DisableSamplers(Shader const* shader, DX11Shader* dxShader)
 //----------------------------------------------------------------------------
 // Public overrides from GraphicsEngine
 //----------------------------------------------------------------------------
-void DX11Engine::SetViewport(int x, int y, int w, int h)
+void DX11Engine::SetViewport(int32_t x, int32_t y, int32_t w, int32_t h)
 {
     UINT numViewports = 1;
     mImmediate->RSGetViewports(&numViewports, &mViewport);
@@ -1223,17 +1229,17 @@ void DX11Engine::SetViewport(int x, int y, int w, int h)
     mImmediate->RSSetViewports(1, &mViewport);
 }
 
-void DX11Engine::GetViewport(int& x, int& y, int& w, int& h) const
+void DX11Engine::GetViewport(int32_t& x, int32_t& y, int32_t& w, int32_t& h) const
 {
     UINT numViewports = 1;
     D3D11_VIEWPORT viewport;
     mImmediate->RSGetViewports(&numViewports, &viewport);
     LogAssert(1 == numViewports, "Failed to get viewport.");
 
-    x = static_cast<unsigned int>(viewport.TopLeftX);
-    y = static_cast<unsigned int>(viewport.TopLeftY);
-    w = static_cast<unsigned int>(viewport.Width);
-    h = static_cast<unsigned int>(viewport.Height);
+    x = static_cast<uint32_t>(viewport.TopLeftX);
+    y = static_cast<uint32_t>(viewport.TopLeftY);
+    w = static_cast<uint32_t>(viewport.Width);
+    h = static_cast<uint32_t>(viewport.Height);
 }
 
 void DX11Engine::SetDepthRange(float zmin, float zmax)
@@ -1258,7 +1264,7 @@ void DX11Engine::GetDepthRange(float& zmin, float& zmax) const
     zmax = viewport.MaxDepth;
 }
 
-bool DX11Engine::Resize(unsigned int w, unsigned int h)
+bool DX11Engine::Resize(uint32_t w, uint32_t h)
 {
     // Release the previous back buffer before resizing.
     if (DestroyBackBuffer())
@@ -1296,7 +1302,7 @@ void DX11Engine::ClearColorBuffer()
 
     mImmediate->OMGetRenderTargets(mNumActiveRTs, rtViews, &dsView);
     DX11::SafeRelease(dsView);
-    for (unsigned int i = 0; i < mNumActiveRTs; ++i)
+    for (uint32_t i = 0; i < mNumActiveRTs; ++i)
     {
         if (rtViews[i])
         {
@@ -1339,7 +1345,7 @@ void DX11Engine::ClearBuffers()
     ID3D11DepthStencilView* dsView = nullptr;
 
     mImmediate->OMGetRenderTargets(mNumActiveRTs, rtViews, &dsView);
-    for (unsigned int i = 0; i < mNumActiveRTs; ++i)
+    for (uint32_t i = 0; i < mNumActiveRTs; ++i)
     {
         if (rtViews[i])
         {
@@ -1356,7 +1362,7 @@ void DX11Engine::ClearBuffers()
     }
 }
 
-void DX11Engine::DisplayColorBuffer(unsigned int syncInterval)
+void DX11Engine::DisplayColorBuffer(uint32_t syncInterval)
 {
     // The swap must occur on the thread in which the device was created.
     mSwapChain->Present(syncInterval, 0);
@@ -1454,8 +1460,8 @@ void DX11Engine::Disable(std::shared_ptr<DrawTarget> const& target)
         // mipmap generation, we do so here.
         if (target->WantAutogenerateRTMipmaps())
         {
-            unsigned int const numTargets = target->GetNumTargets();
-            for (unsigned int i = 0; i < numTargets; ++i)
+            uint32_t const numTargets = target->GetNumTargets();
+            for (uint32_t i = 0; i < numTargets; ++i)
             {
                 DX11Texture* dxTexture = static_cast<DX11Texture*>(Get(target->GetRTTexture(i)));
                 ID3D11ShaderResourceView* srView = dxTexture->GetSRView();
@@ -1471,21 +1477,26 @@ void DX11Engine::Disable(std::shared_ptr<DrawTarget> const& target)
 DX11Texture2* DX11Engine::BindTexture(std::shared_ptr<Texture2> const& texture,
     ID3D11Texture2D* dxTexture, ID3D11ShaderResourceView* dxSRView)
 {
-    LogAssert(texture != nullptr && dxTexture != nullptr && dxSRView != nullptr,
+    LogAssert(
+        texture != nullptr && dxTexture != nullptr && dxSRView != nullptr,
         "Attempt to bind a null object.");
 
+    mGOMapMutex.lock();
     GraphicsObject const* gtObject = texture.get();
-    std::shared_ptr<GEObject> geObject{};
-    if (!mGOMap.Get(gtObject, geObject))
+    auto iter = mGOMap.find(gtObject);
+    if (iter == mGOMap.end())
     {
-        geObject = std::make_shared<DX11Texture2>(texture.get(), dxTexture, dxSRView);
+        auto geObject = std::make_shared<DX11Texture2>(texture.get(), dxTexture, dxSRView);
         LogAssert(geObject, "Null object.  Out of memory?");
-        mGOMap.Insert(gtObject, geObject);
+
+        iter = mGOMap.insert(std::make_pair(gtObject, geObject)).first;
 #if defined(GTE_GRAPHICS_USE_NAMED_OBJECTS)
         geObject->SetName(texture->GetName());
 #endif
     }
-    return static_cast<DX11Texture2*>(geObject.get());
+    DX11Texture2* dx11Texture2 = static_cast<DX11Texture2*>(iter->second.get());
+    mGOMapMutex.unlock();
+    return dx11Texture2;
 }
 
 bool DX11Engine::Update(std::shared_ptr<Buffer> const& buffer)
@@ -1510,7 +1521,7 @@ bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture)
     return dxTexture->Update(mImmediate);
 }
 
-bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1518,7 +1529,7 @@ bool DX11Engine::Update(std::shared_ptr<TextureSingle> const& texture, unsigned 
     }
 
     DX11Texture* dxTexture = static_cast<DX11Texture*>(Bind(texture));
-    unsigned int sri = texture->GetIndex(0, level);
+    uint32_t sri = texture->GetIndex(0, level);
     return dxTexture->Update(mImmediate, sri);
 }
 
@@ -1534,7 +1545,7 @@ bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray)
     return dxTextureArray->Update(mImmediate);
 }
 
-bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1543,7 +1554,7 @@ bool DX11Engine::Update(std::shared_ptr<TextureArray> const& textureArray, unsig
 
     DX11TextureArray* dxTextureArray = static_cast<DX11TextureArray*>(
         Bind(textureArray));
-    unsigned int sri = textureArray->GetIndex(item, level);
+    uint32_t sri = textureArray->GetIndex(item, level);
     return dxTextureArray->Update(mImmediate, sri);
 }
 
@@ -1569,7 +1580,7 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture)
     return dxTexture->CopyCpuToGpu(mImmediate);
 }
 
-bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1577,7 +1588,7 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uns
     }
 
     DX11Texture* dxTexture = static_cast<DX11Texture*>(Bind(texture));
-    unsigned int sri = texture->GetIndex(0, level);
+    uint32_t sri = texture->GetIndex(0, level);
     return dxTexture->CopyCpuToGpu(mImmediate, sri);
 }
 
@@ -1593,7 +1604,7 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray)
     return dxTextureArray->CopyCpuToGpu(mImmediate);
 }
 
-bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1602,7 +1613,7 @@ bool DX11Engine::CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray,
 
     DX11TextureArray* dxTextureArray = static_cast<DX11TextureArray*>(
         Bind(textureArray));
-    unsigned int sri = textureArray->GetIndex(item, level);
+    uint32_t sri = textureArray->GetIndex(item, level);
     return dxTextureArray->CopyCpuToGpu(mImmediate, sri);
 }
 
@@ -1628,7 +1639,7 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture)
     return dxTexture->CopyGpuToCpu(mImmediate);
 }
 
-bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level)
+bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level)
 {
     if (!texture->GetData())
     {
@@ -1636,7 +1647,7 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uns
     }
 
     DX11Texture* dxTexture = static_cast<DX11Texture*>(Bind(texture));
-    unsigned int sri = texture->GetIndex(0, level);
+    uint32_t sri = texture->GetIndex(0, level);
     return dxTexture->CopyGpuToCpu(mImmediate, sri);
 }
 
@@ -1652,7 +1663,7 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray)
     return dxTextureArray->CopyGpuToCpu(mImmediate);
 }
 
-bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level)
+bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level)
 {
     if (!textureArray->GetData())
     {
@@ -1661,7 +1672,7 @@ bool DX11Engine::CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray,
 
     DX11TextureArray* dxTextureArray = static_cast<DX11TextureArray*>(
         Bind(textureArray));
-    unsigned int sri = textureArray->GetIndex(item, level);
+    uint32_t sri = textureArray->GetIndex(item, level);
     return dxTextureArray->CopyGpuToCpu(mImmediate, sri);
 }
 
@@ -1686,11 +1697,11 @@ void DX11Engine::CopyGpuToGpu(
 void DX11Engine::CopyGpuToGpu(
     std::shared_ptr<TextureSingle> const& texture0,
     std::shared_ptr<TextureSingle> const& texture1,
-    unsigned int level)
+    uint32_t level)
 {
     DX11Texture* dxTexture0 = static_cast<DX11Texture*>(Bind(texture0));
     DX11Texture* dxTexture1 = static_cast<DX11Texture*>(Bind(texture1));
-    unsigned int sri = texture0->GetIndex(0, level);
+    uint32_t sri = texture0->GetIndex(0, level);
     dxTexture0->CopyGpuToGpu(mImmediate, dxTexture1->GetDXResource(), sri);
 }
 
@@ -1706,11 +1717,11 @@ void DX11Engine::CopyGpuToGpu(
 void DX11Engine::CopyGpuToGpu(
     std::shared_ptr<TextureArray> const& textureArray0,
     std::shared_ptr<TextureArray> const& textureArray1,
-    unsigned int item, unsigned int level)
+    uint32_t item, uint32_t level)
 {
     DX11TextureArray* dxTextureArray0 = static_cast<DX11TextureArray*>(Bind(textureArray0));
     DX11TextureArray* dxTextureArray1 = static_cast<DX11TextureArray*>(Bind(textureArray1));
-    unsigned int sri = textureArray0->GetIndex(item, level);
+    uint32_t sri = textureArray0->GetIndex(item, level);
     return dxTextureArray0->CopyGpuToGpu(mImmediate, dxTextureArray1->GetDXResource(), sri);
 }
 
@@ -1741,7 +1752,7 @@ bool DX11Engine::BindProgram(std::shared_ptr<ComputeProgram> const& program)
 }
 
 void DX11Engine::Execute(std::shared_ptr<ComputeProgram> const& program,
-    unsigned int numXGroups, unsigned int numYGroups, unsigned int numZGroups)
+    uint32_t numXGroups, uint32_t numYGroups, uint32_t numZGroups)
 {
     auto hlslProgram = std::dynamic_pointer_cast<HLSLComputeProgram>(program);
     if (hlslProgram && numXGroups > 0 && numYGroups > 0 && numZGroups > 0)

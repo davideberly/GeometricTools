@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -57,7 +57,7 @@ namespace gte
         // parameters are necessary for using ConvexHull2.  NOTE:  ConvexHull2
         // guarantees that the hull does not have three consecutive collinear
         // points.
-        OrientedBox2<InputType> operator()(int numPoints,
+        OrientedBox2<InputType> operator()(int32_t numPoints,
             Vector2<InputType> const* points,
             bool useRotatingCalipers = !std::is_floating_point<ComputeType>::value)
         {
@@ -68,7 +68,7 @@ namespace gte
             // Get the convex hull of the points.
             ConvexHull2<InputType> ch2;
             ch2(mNumPoints, mPoints, (InputType)0);
-            int dimension = ch2.GetDimension();
+            int32_t dimension = ch2.GetDimension();
 
             OrientedBox2<InputType> minBox;
 
@@ -94,8 +94,8 @@ namespace gte
                 // input vertex, so we can start both t-extremes at zero.
                 Line2<InputType> const& line = ch2.GetLine();
                 InputType tmin = (InputType)0, tmax = (InputType)0;
-                int imin = 0, imax = 0;
-                for (int i = 0; i < mNumPoints; ++i)
+                int32_t imin = 0, imax = 0;
+                for (int32_t i = 0; i < mNumPoints; ++i)
                 {
                     Vector2<InputType> diff = mPoints[i] - line.origin;
                     InputType t = Dot(diff, line.direction);
@@ -127,7 +127,7 @@ namespace gte
             std::vector<Vector2<ComputeType>> computePoints(mHull.size());
             for (size_t i = 0; i < mHull.size(); ++i)
             {
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     computePoints[i][j] = vertices[mHull[i]][j];
                 }
@@ -154,8 +154,8 @@ namespace gte
         // numIndices to 0 and indices to nullptr.  If the polygon vertices
         // are a subset of the incoming points, that subset is identified by
         // numIndices >= 3 and indices having numIndices elements.
-        OrientedBox2<InputType> operator()(int numPoints,
-            Vector2<InputType> const* points, int numIndices, int const* indices,
+        OrientedBox2<InputType> operator()(int32_t numPoints,
+            Vector2<InputType> const* points, int32_t numIndices, int32_t const* indices,
             bool useRotatingCalipers = !std::is_floating_point<ComputeType>::value)
         {
             mHull.clear();
@@ -180,16 +180,16 @@ namespace gte
             {
                 numIndices = numPoints;
                 mHull.resize(numIndices);
-                for (int i = 0; i < numIndices; ++i)
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
                     mHull[i] = i;
                 }
             }
 
             std::vector<Vector2<ComputeType>> computePoints(numIndices);
-            for (int i = 0; i < numIndices; ++i)
+            for (int32_t i = 0; i < numIndices; ++i)
             {
-                int h = mHull[i];
+                int32_t h = mHull[i];
                 computePoints[i][0] = (ComputeType)points[h][0];
                 computePoints[i][1] = (ComputeType)points[h][1];
             }
@@ -211,7 +211,7 @@ namespace gte
         }
 
         // Member access.
-        inline int GetNumPoints() const
+        inline int32_t GetNumPoints() const
         {
             return mNumPoints;
         }
@@ -221,12 +221,12 @@ namespace gte
             return mPoints;
         }
 
-        inline std::vector<int> const& GetHull() const
+        inline std::vector<int32_t> const& GetHull() const
         {
             return mHull;
         }
 
-        inline std::array<int, 4> const& GetSupportIndices() const
+        inline std::array<int32_t, 4> const& GetSupportIndices() const
         {
             return mSupportIndices;
         }
@@ -254,7 +254,7 @@ namespace gte
             }
 
             std::array<Vector2<ComputeType>, 2> U;
-            std::array<int, 4> index;  // order: bottom, right, top, left
+            std::array<int32_t, 4> index;  // order: bottom, right, top, left
             ComputeType sqrLenU0, area;
         };
 
@@ -266,10 +266,10 @@ namespace gte
         {
             std::vector<Vector2<ComputeType>> tmpVertices = vertices;
 
-            int const numVertices = static_cast<int>(vertices.size());
-            int numNoncollinear = 0;
+            int32_t const numVertices = static_cast<int32_t>(vertices.size());
+            int32_t numNoncollinear = 0;
             Vector2<ComputeType> ePrev = tmpVertices[0] - tmpVertices.back();
-            for (int i0 = 0, i1 = 1; i0 < numVertices; ++i0)
+            for (int32_t i0 = 0, i1 = 1; i0 < numVertices; ++i0)
             {
                 Vector2<ComputeType> eNext = tmpVertices[i1] - tmpVertices[i0];
 
@@ -294,8 +294,8 @@ namespace gte
         {
             Box minBox;
             minBox.area = mNegOne;
-            int const numIndices = static_cast<int>(vertices.size());
-            for (int i0 = numIndices - 1, i1 = 0; i1 < numIndices; i0 = i1++)
+            int32_t const numIndices = static_cast<int32_t>(vertices.size());
+            for (int32_t i0 = numIndices - 1, i1 = 0; i1 < numIndices; i0 = i1++)
             {
                 Box box = SmallestBox(i0, i1, vertices);
                 if (minBox.area == mNegOne || box.area < minBox.area)
@@ -327,15 +327,15 @@ namespace gte
             // starting at these points are then guaranteed not to coincide
             // with a box edge except when an extreme point is shared by two
             // box edges (at a corner).
-            Box minBox = SmallestBox((int)vertices.size() - 1, 0, vertices);
+            Box minBox = SmallestBox((int32_t)vertices.size() - 1, 0, vertices);
             visited[minBox.index[0]] = true;
 
             // Execute the rotating calipers algorithm.
             Box box = minBox;
             for (size_t i = 0; i < vertices.size(); ++i)
             {
-                std::array<std::pair<ComputeType, int>, 4> A;
-                int numA;
+                std::array<std::pair<ComputeType, int32_t>, 4> A;
+                int32_t numA;
                 if (!ComputeAngles(vertices, box, A, numA))
                 {
                     // The polygon is a rectangle, so the search is over.
@@ -343,7 +343,7 @@ namespace gte
                 }
 
                 // Indirectly sort the A-array.
-                std::array<int, 4> sort = SortAngles(A, numA);
+                std::array<int32_t, 4> sort = SortAngles(A, numA);
 
                 // Update the supporting indices (box.index[]) and the box
                 // axis directions (box.U[]).
@@ -364,7 +364,7 @@ namespace gte
         }
 
         // Compute the smallest box for the polygon edge <V[i0],V[i1]>.
-        Box SmallestBox(int i0, int i1, std::vector<Vector2<ComputeType>> const& vertices)
+        Box SmallestBox(int32_t i0, int32_t i1, std::vector<Vector2<ComputeType>> const& vertices)
         {
             Box box;
             box.U[0] = vertices[i1] - vertices[i0];
@@ -374,12 +374,12 @@ namespace gte
 
             Vector2<ComputeType> const& origin = vertices[i1];
             Vector2<ComputeType> support[4];
-            for (int j = 0; j < 4; ++j)
+            for (int32_t j = 0; j < 4; ++j)
             {
                 support[j] = { mZero, mZero };
             }
 
-            int i = 0;
+            int32_t i = 0;
             for (auto const& vertex : vertices)
             {
                 Vector2<ComputeType> diff = vertex - origin;
@@ -436,18 +436,18 @@ namespace gte
         // least one angle is in [0,pi/2); otherwise, the return value is
         // 'false' and the original polygon must be a rectangle.
         bool ComputeAngles(std::vector<Vector2<ComputeType>> const& vertices,
-            Box const& box, std::array<std::pair<ComputeType, int>, 4>& A, int& numA) const
+            Box const& box, std::array<std::pair<ComputeType, int32_t>, 4>& A, int32_t& numA) const
         {
-            int const numVertices = static_cast<int>(vertices.size());
+            int32_t const numVertices = static_cast<int32_t>(vertices.size());
             numA = 0;
-            for (int k0 = 3, k1 = 0; k1 < 4; k0 = k1++)
+            for (int32_t k0 = 3, k1 = 0; k1 < 4; k0 = k1++)
             {
                 if (box.index[k0] != box.index[k1])
                 {
                     // The box edges are ordered in k1 as U[0], U[1],
                     // -U[0], -U[1].
                     Vector2<ComputeType> D = ((k0 & 2) ? -box.U[k0 & 1] : box.U[k0 & 1]);
-                    int j0 = box.index[k0], j1 = j0 + 1;
+                    int32_t j0 = box.index[k0], j1 = j0 + 1;
                     if (j1 == numVertices)
                     {
                         j1 = 0;
@@ -456,7 +456,8 @@ namespace gte
                     ComputeType dp = DotPerp(D, E);
                     ComputeType esqrlen = Dot(E, E);
                     ComputeType sinThetaSqr = (dp * dp) / esqrlen;
-                    A[numA++] = std::make_pair(sinThetaSqr, k0);
+                    A[numA] = std::make_pair(sinThetaSqr, k0);
+                    ++numA;
                 }
             }
             return numA > 0;
@@ -465,9 +466,9 @@ namespace gte
         // Sort the angles indirectly.  The sorted indices are returned.
         // This avoids swapping elements of A[], which can be expensive when
         // ComputeType is an exact rational type.
-        std::array<int, 4> SortAngles(std::array<std::pair<ComputeType, int>, 4> const& A, int numA) const
+        std::array<int32_t, 4> SortAngles(std::array<std::pair<ComputeType, int32_t>, 4> const& A, int32_t numA) const
         {
-            std::array<int, 4> sort = { 0, 1, 2, 3 };
+            std::array<int32_t, 4> sort = { 0, 1, 2, 3 };
             if (numA > 1)
             {
                 if (numA == 2)
@@ -519,16 +520,16 @@ namespace gte
             return sort;
         }
 
-        bool UpdateSupport(std::array<std::pair<ComputeType, int>, 4> const& A,
-            int numA, std::array<int, 4> const& sort,
+        bool UpdateSupport(std::array<std::pair<ComputeType, int32_t>, 4> const& A,
+            int32_t numA, std::array<int32_t, 4> const& sort,
             std::vector<Vector2<ComputeType>> const& vertices,
             std::vector<bool>& visited, Box& box)
         {
             // Replace the support vertices of those edges attaining minimum
             // angle with the other endpoints of the edges.
-            int const numVertices = static_cast<int>(vertices.size());
+            int32_t const numVertices = static_cast<int32_t>(vertices.size());
             auto const& amin = A[sort[0]];
-            for (int k = 0; k < numA; ++k)
+            for (int32_t k = 0; k < numA; ++k)
             {
                 auto const& a = A[sort[k]];
                 if (a.first == amin.first)
@@ -544,7 +545,7 @@ namespace gte
                 }
             }
 
-            int bottom = box.index[amin.second];
+            int32_t bottom = box.index[amin.second];
             if (visited[bottom])
             {
                 // We have already processed this polygon edge.
@@ -553,15 +554,15 @@ namespace gte
             visited[bottom] = true;
 
             // Cycle the vertices so that the bottom support occurs first.
-            std::array<int, 4> nextIndex;
-            for (int k = 0; k < 4; ++k)
+            std::array<int32_t, 4> nextIndex;
+            for (int32_t k = 0; k < 4; ++k)
             {
                 nextIndex[k] = box.index[(amin.second + k) % 4];
             }
             box.index = nextIndex;
 
             // Compute the box axis directions.
-            int j1 = box.index[0], j0 = j1 - 1;
+            int32_t j1 = box.index[0], j0 = j1 - 1;
             if (j0 < 0)
             {
                 j0 = numVertices - 1;
@@ -607,14 +608,14 @@ namespace gte
             // Calculate the squared extent using ComputeType to avoid loss of
             // precision before computing a squared root.
             Vector2<ComputeType> sqrExtent;
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 sqrExtent[i] = mHalf * Dot(minBox.U[i], difference[i]);
                 sqrExtent[i] *= sqrExtent[i];
                 sqrExtent[i] /= minBox.sqrLenU0;
             }
 
-            for (int i = 0; i < 2; ++i)
+            for (int32_t i = 0; i < 2; ++i)
             {
                 itMinBox.center[i] = (InputType)center[i];
                 itMinBox.extent[i] = std::sqrt((InputType)sqrExtent[i]);
@@ -626,7 +627,7 @@ namespace gte
                 Vector2<ComputeType> const& axis = minBox.U[i];
                 ComputeType cmax = std::max(std::fabs(axis[0]), std::fabs(axis[1]));
                 ComputeType invCMax = mOne / cmax;
-                for (int j = 0; j < 2; ++j)
+                for (int32_t j = 0; j < 2; ++j)
                 {
                     itMinBox.axis[i][j] = (InputType)(axis[j] * invCMax);
                 }
@@ -638,15 +639,15 @@ namespace gte
         }
 
         // The input points to be bound.
-        int mNumPoints;
+        int32_t mNumPoints;
         Vector2<InputType> const* mPoints;
 
         // The indices into mPoints/mComputePoints for the convex hull
         // vertices.
-        std::vector<int> mHull;
+        std::vector<int32_t> mHull;
 
         // The support indices for the minimum-area box.
-        std::array<int, 4> mSupportIndices;
+        std::array<int32_t, 4> mSupportIndices;
 
         // The area of the minimum-area box.  The ComputeType value is
         // exact,  so the only rounding errors occur in the conversion from

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BumpMapsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -53,7 +53,7 @@ void BumpMapsWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool BumpMapsWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BumpMapsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -69,7 +69,7 @@ bool BumpMapsWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool BumpMapsWindow3::OnMouseMotion(MouseButton button, int x, int y, unsigned int modifiers)
+bool BumpMapsWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (Window3::OnMouseMotion(button, x, y, modifiers))
     {
@@ -137,20 +137,20 @@ void BumpMapsWindow3::CreateBumpMappedTorus()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 1);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 1);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::DYNAMIC_UPDATE);
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
     mBumpMappedTorus = mf.CreateTorus(32, 32, 1.0f, 0.4f);
-    auto vbuffer = mBumpMappedTorus->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mBumpMappedTorus->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].baseTCoord *= 4.0f;
         if (mUseBumpMap)
@@ -166,8 +166,8 @@ void BumpMapsWindow3::CreateBumpMappedTorus()
     auto normalTexture = WICFileIO::Load(texpath, true);
     normalTexture->AutogenerateMipmaps();
     mBumpMapEffect = std::make_shared<BumpMapEffect>(mProgramFactory,
-        baseTexture, normalTexture, SamplerState::MIN_L_MAG_L_MIP_L,
-        SamplerState::WRAP, SamplerState::WRAP);
+        baseTexture, normalTexture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
+        SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
 
     mBumpMappedTorus->SetEffect(mBumpMapEffect);
     mPVWMatrices.Subscribe(mBumpMappedTorus->worldTransform, mBumpMapEffect->GetPVWMatrixConstant());
@@ -185,17 +185,17 @@ void BumpMapsWindow3::CreateTexturedTorus()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    mf.SetVertexBufferUsage(Resource::DYNAMIC_UPDATE);
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
     mTexturedTorus = mf.CreateTorus(32, 32, 1.0f, 0.4f);
-    auto vbuffer = mTexturedTorus->GetVertexBuffer();
-    unsigned int const numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = mTexturedTorus->GetVertexBuffer();
+    uint32_t const numVertices = vbuffer->GetNumElements();
     auto* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         vertices[i].tcoord *= 4.0f;
     }
@@ -205,7 +205,7 @@ void BumpMapsWindow3::CreateTexturedTorus()
     baseTexture->AutogenerateMipmaps();
 
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, baseTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP, SamplerState::Mode::WRAP);
 
     mTexturedTorus->SetEffect(effect);
     mPVWMatrices.Subscribe(mTexturedTorus->worldTransform, effect->GetPVWMatrixConstant());

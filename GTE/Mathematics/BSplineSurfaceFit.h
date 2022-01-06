@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,8 +25,8 @@ namespace gte
         //   1 <= degree1 && degree1 + 1 < numControls1 <= numSamples1
         // The sample data must be in row-major order.  The control data is
         // also stored in row-major order.
-        BSplineSurfaceFit(int degree0, int numControls0, int numSamples0,
-            int degree1, int numControls1, int numSamples1, Vector3<Real> const* sampleData)
+        BSplineSurfaceFit(int32_t degree0, int32_t numControls0, int32_t numSamples0,
+            int32_t degree1, int32_t numControls1, int32_t numSamples1, Vector3<Real> const* sampleData)
             :
             mSampleData(sampleData),
             mControlData(static_cast<size_t>(numControls0) * static_cast<size_t>(numControls1))
@@ -46,7 +46,7 @@ namespace gte
 
             BasisFunctionInput<Real> input;
             Real tMultiplier[2];
-            int dim;
+            int32_t dim;
             for (dim = 0; dim < 2; ++dim)
             {
                 input.numControls = mNumControls[dim];
@@ -57,9 +57,9 @@ namespace gte
                 input.uniqueKnots.resize(input.numUniqueKnots);
                 input.uniqueKnots[0].t = (Real)0;
                 input.uniqueKnots[0].multiplicity = mDegree[dim] + 1;
-                int last = input.numUniqueKnots - 1;
+                int32_t last = input.numUniqueKnots - 1;
                 Real factor = (Real)1 / (Real)last;
-                for (int i = 1; i < last; ++i)
+                for (int32_t i = 1; i < last; ++i)
                 {
                     input.uniqueKnots[i].t = factor * (Real)i;
                     input.uniqueKnots[i].multiplicity = 1;
@@ -77,7 +77,7 @@ namespace gte
             // banded matrices, P contains the sample data, and Q is the
             // unknown matrix of control points.
             Real t;
-            int i0, i1, i2, imin, imax;
+            int32_t i0, i1, i2, imin, imax;
 
             // Construct the matrices A0^T*A0 and A1^T*A1.
             BandedMatrix<Real> ATAMat[2] =
@@ -95,7 +95,7 @@ namespace gte
                         ATAMat[dim](i0, i1) = ATAMat[dim](i1, i0);
                     }
 
-                    int i1Max = i0 + mDegree[dim];
+                    int32_t i1Max = i0 + mDegree[dim];
                     if (i1Max >= mNumControls[dim])
                     {
                         i1Max = mNumControls[dim] - 1;
@@ -158,10 +158,10 @@ namespace gte
                 for (i0 = 0; i0 < mNumControls[0]; ++i0)
                 {
                     Vector3<Real> sum = Vector3<Real>::Zero();
-                    for (int j1 = 0; j1 < mNumSamples[1]; ++j1)
+                    for (int32_t j1 = 0; j1 < mNumSamples[1]; ++j1)
                     {
                         Real x1Value = ATMat[1][i1][j1];
-                        for (int j0 = 0; j0 < mNumSamples[0]; ++j0)
+                        for (int32_t j0 = 0; j0 < mNumSamples[0]; ++j0)
                         {
                             Real x0Value = ATMat[0][i0][j0];
                             Vector3<Real> sample =
@@ -175,7 +175,7 @@ namespace gte
         }
 
         // Access to input sample information.
-        inline int GetNumSamples(int dimension) const
+        inline int32_t GetNumSamples(int32_t dimension) const
         {
             return mNumSamples[dimension];
         }
@@ -186,12 +186,12 @@ namespace gte
         }
 
         // Access to output control point and surface information.
-        inline int GetDegree(int dimension) const
+        inline int32_t GetDegree(int32_t dimension) const
         {
             return mDegree[dimension];
         }
 
-        inline int GetNumControls(int dimension) const
+        inline int32_t GetNumControls(int32_t dimension) const
         {
             return mNumControls[dimension];
         }
@@ -201,7 +201,7 @@ namespace gte
             return &mControlData[0];
         }
 
-        inline BasisFunction<Real> const& GetBasis(int dimension) const
+        inline BasisFunction<Real> const& GetBasis(int32_t dimension) const
         {
             return mBasis[dimension];
         }
@@ -211,15 +211,15 @@ namespace gte
         // [0,1], it is clamped to [0,1].
         Vector3<Real> GetPosition(Real u, Real v) const
         {
-            int iumin, iumax, ivmin, ivmax;
+            int32_t iumin, iumax, ivmin, ivmax;
             mBasis[0].Evaluate(u, 0, iumin, iumax);
             mBasis[1].Evaluate(v, 0, ivmin, ivmax);
 
             Vector3<Real> position = Vector3<Real>::Zero();
-            for (int iv = ivmin; iv <= ivmax; ++iv)
+            for (int32_t iv = ivmin; iv <= ivmax; ++iv)
             {
                 Real value1 = mBasis[1].GetValue(0, iv);
-                for (int iu = iumin; iu <= iumax; ++iu)
+                for (int32_t iu = iumin; iu <= iumax; ++iu)
                 {
                     Real value0 = mBasis[0].GetValue(0, iu);
                     Vector3<Real> control = mControlData[iu + static_cast<size_t>(mNumControls[0]) * iv];
@@ -231,12 +231,12 @@ namespace gte
 
     private:
         // Input sample information.
-        int mNumSamples[2];
+        int32_t mNumSamples[2];
         Vector3<Real> const* mSampleData;
 
         // The fitted B-spline surface, open and with uniform knots.
-        int mDegree[2];
-        int mNumControls[2];
+        int32_t mDegree[2];
+        int32_t mNumControls[2];
         std::vector<Vector3<Real>> mControlData;
         BasisFunction<Real> mBasis[2];
     };

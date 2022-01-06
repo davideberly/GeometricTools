@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.6.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -27,68 +27,68 @@ namespace gte
 
         // The configuration describes geometrically how the input convex
         // polyhedron and the plane intersect.
-        static int constexpr CFG_EMPTY = 0x00000000;
-        static int constexpr CFG_POS_SIDE = 0x00000010;
-        static int constexpr CFG_NEG_SIDE = 0x00000020;
+        static int32_t constexpr CFG_EMPTY = 0x00000000;
+        static int32_t constexpr CFG_POS_SIDE = 0x00000010;
+        static int32_t constexpr CFG_NEG_SIDE = 0x00000020;
 
         // The plane intersects the convex polyhedron transversely. The set of
         // intersection is a convex polygon. The convex polyhedron is split
         // into two convex polyhedra, one on the positive side of the plane
         // and one on the negative side of the plane, both polyhedra sharing
         // the convex polygon of intersection.
-        static int constexpr CFG_SPLIT = CFG_POS_SIDE | CFG_NEG_SIDE;  // 48
+        static int32_t constexpr CFG_SPLIT = CFG_POS_SIDE | CFG_NEG_SIDE;  // 48
 
         // The convex polyhedron is strictly on the positive side of the
         // plane.
-        static int constexpr CFG_POS_SIDE_STRICT = CFG_POS_SIDE;  // 16
+        static int32_t constexpr CFG_POS_SIDE_STRICT = CFG_POS_SIDE;  // 16
 
         // The convex polyhedron is on the positive side of the plane with one
         // vertex in the plane.
-        static int constexpr CFG_POS_SIDE_VERTEX = CFG_POS_SIDE | 1;  // 17
+        static int32_t constexpr CFG_POS_SIDE_VERTEX = CFG_POS_SIDE | 1;  // 17
 
         // The convex polyhedron is on the positive side of the plane with one
         // edge in the plane.
-        static int constexpr CFG_POS_SIDE_EDGE = CFG_POS_SIDE | 2;  // 18
+        static int32_t constexpr CFG_POS_SIDE_EDGE = CFG_POS_SIDE | 2;  // 18
 
         // The convex polyhedron is on the positive side of the plane with a
         // polygonal face in the plane. The face can consist of multiple
         // triangles.
-        static int constexpr CFG_POS_SIDE_POLYGON = CFG_POS_SIDE | 4;  // 20
+        static int32_t constexpr CFG_POS_SIDE_POLYGON = CFG_POS_SIDE | 4;  // 20
 
         // Flags for any of the tangential cases (vertex touching, edge
         // touching, face touching).
-        static int constexpr CFG_POS_SIDE_TANGENT = CFG_POS_SIDE | 7;  // 23
+        static int32_t constexpr CFG_POS_SIDE_TANGENT = CFG_POS_SIDE | 7;  // 23
 
         // The convex polyhedron is strictly on the negative side of the
         // plane.
-        static int constexpr CFG_NEG_SIDE_STRICT = CFG_NEG_SIDE;  // 32
+        static int32_t constexpr CFG_NEG_SIDE_STRICT = CFG_NEG_SIDE;  // 32
 
         // The convex polyhedron is on the negative side of the plane with one
         // vertex in the plane.
-        static int constexpr CFG_NEG_SIDE_VERTEX = CFG_NEG_SIDE | 1;  // 33
+        static int32_t constexpr CFG_NEG_SIDE_VERTEX = CFG_NEG_SIDE | 1;  // 33
 
         // The convex polyhedron is on the negative side of the plane with one
         // edge in the plane.
-        static int constexpr CFG_NEG_SIDE_EDGE = CFG_NEG_SIDE | 2;  // 34
+        static int32_t constexpr CFG_NEG_SIDE_EDGE = CFG_NEG_SIDE | 2;  // 34
 
         // The convex polyhedron is on the negative side of the plane with a
         // polygonal face in the plane. The face can consist of multiple
         // triangles.
-        static int constexpr CFG_NEG_SIDE_POLYGON = CFG_NEG_SIDE | 4;  // 36
+        static int32_t constexpr CFG_NEG_SIDE_POLYGON = CFG_NEG_SIDE | 4;  // 36
 
         // Flags for any of the tangential cases (vertex touching, edge
         // touching, face touching).
-        static int constexpr CFG_NEG_SIDE_TANGENT = CFG_NEG_SIDE | 7;  // 39
+        static int32_t constexpr CFG_NEG_SIDE_TANGENT = CFG_NEG_SIDE | 7;  // 39
 
         // Requested information for the query to compute.
-        static int constexpr REQ_CONFIGURATION_ONLY = 0x00000000;
-        static int constexpr REQ_INTR_MESH = 0x00000001;
-        static int constexpr REQ_INTR_POLYGON = 0x00000002;
-        static int constexpr REQ_INTR_BOTH = REQ_INTR_MESH | REQ_INTR_POLYGON;
-        static int constexpr REQ_POLYHEDRON_POS = 0x00000004;
-        static int constexpr REQ_POLYHEDRON_NEG = 0x00000008;
-        static int constexpr REQ_POLYHEDRON_BOTH = REQ_POLYHEDRON_POS | REQ_POLYHEDRON_NEG;
-        static int constexpr REQ_ALL = 0x0000000F;
+        static int32_t constexpr REQ_CONFIGURATION_ONLY = 0x00000000;
+        static int32_t constexpr REQ_INTR_MESH = 0x00000001;
+        static int32_t constexpr REQ_INTR_POLYGON = 0x00000002;
+        static int32_t constexpr REQ_INTR_BOTH = REQ_INTR_MESH | REQ_INTR_POLYGON;
+        static int32_t constexpr REQ_POLYHEDRON_POS = 0x00000004;
+        static int32_t constexpr REQ_POLYHEDRON_NEG = 0x00000008;
+        static int32_t constexpr REQ_POLYHEDRON_BOTH = REQ_POLYHEDRON_POS | REQ_POLYHEDRON_NEG;
+        static int32_t constexpr REQ_ALL = 0x0000000F;
 
         struct Result
         {
@@ -105,10 +105,10 @@ namespace gte
 
             // The configuration describes geometrically how the input convex
             // polyhedron and the plane intersect.
-            int configuration;
+            int32_t configuration;
 
             // You can specify the information you want from the query.
-            int requested;
+            int32_t requested;
 
             // The intersection of the convex polyhedron and the plane is
             // either empty, a single vertex, a single edge or a convex
@@ -138,7 +138,7 @@ namespace gte
         };
 
         Result operator() (ConvexMesh3<Real> const& polyhedron,
-            Plane3<Real> const& plane, int requested)
+            Plane3<Real> const& plane, int32_t requested)
         {
             static_assert(is_arbitrary_precision<Real>::value, "Real must be arbitrary precision.");
             static_assert(has_division_operator<Real>::value, "Real must support division.");
@@ -149,10 +149,10 @@ namespace gte
             // Storage for (Dot(N,X) - c) for each vertex X, where N is a
             // plane normal (not necessarily unit length) and c is the
             // corresponding plane constant.
-            int numPositive = 0, numNegative = 0, numZero = 0;
+            int32_t numPositive = 0, numNegative = 0, numZero = 0;
             size_t const numVertices = polyhedron.vertices.size();
             std::vector<Real> dot(numVertices);
-            std::vector<int> sign(numVertices);
+            std::vector<int32_t> sign(numVertices);
             for (size_t i = 0; i < numVertices; ++i)
             {
                 dot[i] = Dot(plane.normal, polyhedron.vertices[i]) - plane.constant;
@@ -214,8 +214,8 @@ namespace gte
         }
 
     private:
-        static void GetIntersection(CM const& polyhedron, int numZero,
-            std::vector<int> const& sign, Result& result)
+        static void GetIntersection(CM const& polyhedron, int32_t numZero,
+            std::vector<int32_t> const& sign, Result& result)
         {
             bool const wantIntrMesh = (result.requested & REQ_INTR_MESH) != 0;
             bool const wantIntrPolygon = (result.requested & REQ_INTR_POLYGON) != 0;
@@ -238,7 +238,7 @@ namespace gte
         }
 
         static void GetIntersectionVertex(CM const& polyhedron,
-            std::vector<int> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
+            std::vector<int32_t> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
             Result& result)
         {
             result.intersectionMesh.configuration = ConvexMesh3<Real>::CFG_POINT;
@@ -270,7 +270,7 @@ namespace gte
         }
 
         static void GetIntersectionEdge(CM const& polyhedron,
-            std::vector<int> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
+            std::vector<int32_t> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
             Result& result)
         {
             result.intersectionMesh.configuration = ConvexMesh3<Real>::CFG_SEGMENT;
@@ -305,7 +305,7 @@ namespace gte
         }
 
         static void GetIntersectionPolygon(CM const& polyhedron,
-            std::vector<int> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
+            std::vector<int32_t> const& sign, bool wantIntrMesh, bool wantIntrPolygon,
             Result& result)
         {
             result.intersectionMesh.configuration = ConvexMesh3<Real>::CFG_POLYGON;
@@ -322,7 +322,7 @@ namespace gte
 
             std::vector<Vertex> outVertices;
             std::vector<Triangle> outTriangles;
-            UniqueVerticesSimplices<Vertex, int, 3> uvt;
+            UniqueVerticesSimplices<Vertex, int32_t, 3> uvt;
             uvt.RemoveDuplicateAndUnusedVertices(polyhedron.vertices,
                 intersectionMeshTriangles, outVertices, outTriangles);
 
@@ -330,7 +330,7 @@ namespace gte
             {
                 // Get the boundary edges with ordering consistent with the
                 // triangle face chirality.
-                std::map<EdgeKey<false>, std::array<int, 2>> edgeMap;
+                std::map<EdgeKey<false>, std::array<int32_t, 2>> edgeMap;
                 for (auto const& triangle : outTriangles)
                 {
                     for (size_t j0 = 2, j1 = 0; j1 < 3; j0 = j1++)
@@ -347,14 +347,14 @@ namespace gte
                         {
                             // The edge is visited the first time, so it might be
                             // a boundary edge.
-                            std::array<int, 2> value = { triangle[j1], triangle[j0] };
+                            std::array<int32_t, 2> value = { triangle[j1], triangle[j0] };
                             edgeMap.insert(std::make_pair(edge, value));
                         }
                     }
                 }
 
                 // Construct the boundary polygon.
-                std::vector<int> polygonIndices(edgeMap.size(), -1);
+                std::vector<int32_t> polygonIndices(edgeMap.size(), -1);
                 for (auto const& element : edgeMap)
                 {
                     polygonIndices[element.second[0]] = element.second[1];
@@ -375,7 +375,7 @@ namespace gte
         }
 
         static void SplitPolyhedron(CM const& polyhedron, std::vector<Real> const& dot,
-            std::vector<int> const& sign, Result& result)
+            std::vector<int32_t> const& sign, Result& result)
         {
             bool const wantPosMesh = (result.requested & REQ_POLYHEDRON_POS) != 0;
             bool const wantNegMesh = (result.requested & REQ_POLYHEDRON_NEG) != 0;
@@ -387,18 +387,18 @@ namespace gte
             // edges. The center point of the polygon of intersection (if any)
             // is also used as a vertex.
             std::vector<Vertex> splitVertices;
-            std::map<EdgeKey<false>, int> eiVMap;
+            std::map<EdgeKey<false>, int32_t> eiVMap;
             GetVertexCandidates(polyhedron, dot, sign, splitVertices, eiVMap);
 
             // Split each triangle face of the polyhedron by the plane.
             std::vector<Triangle> posMesh, negMesh;
-            std::map<int, int> posIntersection;
+            std::map<int32_t, int32_t> posIntersection;
             DoSplit(polyhedron, sign, eiVMap, wantPosMesh, posMesh,
                 wantNegMesh, negMesh, posIntersection);
 
             // Get the polygon of intersection. This is used by all of the
             // requested features.
-            std::vector<int> polygon;
+            std::vector<int32_t> polygon;
             GetIntersectionPolygon(posIntersection, splitVertices,
                 wantIntrPolygon, polygon, result);
 
@@ -413,9 +413,9 @@ namespace gte
         }
 
         static void GetVertexCandidates(CM const& polyhedron,
-            std::vector<Real> const& dot, std::vector<int> const& sign,
+            std::vector<Real> const& dot, std::vector<int32_t> const& sign,
             std::vector<Vertex>& splitVertices,
-            std::map<EdgeKey<false>, int>& eiVMap)
+            std::map<EdgeKey<false>, int32_t>& eiVMap)
         {
             // Get the edges of the polyhedron.
             std::set<EdgeKey<false>> edgeMap;
@@ -444,8 +444,8 @@ namespace gte
             // polyhedron is processed for intersection with the plane.
             for (auto const& element : edgeMap)
             {
-                int v0 = element.V[0];
-                int v1 = element.V[1];
+                int32_t v0 = element.V[0];
+                int32_t v1 = element.V[1];
                 if (sign[v0] * sign[v1] < 0)
                 {
                     Real denom = dot[v1] - dot[v0];
@@ -453,7 +453,7 @@ namespace gte
                     Real w1 = -dot[v0] / denom;
                     auto eiVertex =
                         w0 * polyhedron.vertices[v0] + w1 * polyhedron.vertices[v1];
-                    int const eiIndex = static_cast<int>(splitVertices.size());
+                    int32_t const eiIndex = static_cast<int32_t>(splitVertices.size());
                     eiVMap.insert(std::make_pair(EdgeKey<false>(v0, v1), eiIndex));
                     splitVertices.push_back(eiVertex);
                 }
@@ -463,16 +463,16 @@ namespace gte
             // necessary.
         }
 
-        static void DoSplit(CM const& polyhedron, std::vector<int> const& sign,
-            std::map<EdgeKey<false>, int>& eiVMap,
+        static void DoSplit(CM const& polyhedron, std::vector<int32_t> const& sign,
+            std::map<EdgeKey<false>, int32_t>& eiVMap,
             bool wantPosMesh, std::vector<Triangle>& posMesh,
             bool wantNegMesh, std::vector<Triangle>& negMesh,
-            std::map<int, int>& posIntersection)
+            std::map<int32_t, int32_t>& posIntersection)
         {
             for (auto const& triangle : polyhedron.triangles)
             {
-                int v0 = triangle[0], v1 = triangle[1], v2 = triangle[2];
-                int v01 = -1, v12 = -1, v20 = -1;
+                int32_t v0 = triangle[0], v1 = triangle[1], v2 = triangle[2];
+                int32_t v01 = -1, v12 = -1, v20 = -1;
 
                 if (sign[v0] > 0)
                 {
@@ -816,9 +816,9 @@ namespace gte
             }
         }
 
-        static void GetIntersectionPolygon(std::map<int, int> const& posIntersection,
+        static void GetIntersectionPolygon(std::map<int32_t, int32_t> const& posIntersection,
             std::vector<Vertex>& splitVertices, bool wantIntrPolygon,
-            std::vector<int>& polygon, Result& result)
+            std::vector<int32_t>& polygon, Result& result)
         {
             size_t const numVertices = posIntersection.size();
             polygon.resize(numVertices);
@@ -840,7 +840,7 @@ namespace gte
         }
 
         static void GetSplitPolyhedra(std::vector<Vertex>& splitVertices,
-            std::vector<int> const& polygon, bool wantIntrMesh,
+            std::vector<int32_t> const& polygon, bool wantIntrMesh,
             bool wantPosMesh, std::vector<Triangle>& posMesh,
             bool wantNegMesh, std::vector<Triangle>& negMesh, Result& result)
         {
@@ -858,13 +858,13 @@ namespace gte
             {
                 average += splitVertices[i];
             }
-            int const numVertices = static_cast<int>(polygon.size());
+            int32_t const numVertices = static_cast<int32_t>(polygon.size());
             average /= static_cast<Real>(numVertices);
-            int iAvrIndex = static_cast<int>(splitVertices.size());
+            int32_t iAvrIndex = static_cast<int32_t>(splitVertices.size());
             splitVertices.push_back(average);
 
             std::vector<Triangle> intrMesh;
-            for (int i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
+            for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
             {
                 if (wantPosMesh)
                 {
@@ -882,7 +882,7 @@ namespace gte
                 }
             }
 
-            UniqueVerticesSimplices<Vertex, int, 3> uvt;
+            UniqueVerticesSimplices<Vertex, int32_t, 3> uvt;
 
             if (wantPosMesh)
             {

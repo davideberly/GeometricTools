@@ -1,14 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Texture.h>
 #include <Graphics/GL45/GL45Resource.h>
+#include <array>
 
 namespace gte
 {
@@ -38,7 +39,7 @@ namespace gte
         }
 
         // Get the GL4 internal format for the specified Texture data format.
-        inline static GLuint GetInternalFormat(DFType dataFormat)
+        inline static GLuint GetInternalFormat(uint32_t dataFormat)
         {
             return msGLTextureInternalFormat[dataFormat];
         }
@@ -54,8 +55,8 @@ namespace gte
         GLuint mExternalType;
 
         // Mapping from DFType to GL4 specific types
-        static GLuint const msGLTextureInternalFormat[DF_NUM_FORMATS];
-        static GLuint const msGLTextureExternalFormat[DF_NUM_FORMATS];
-        static GLuint const msGLTextureExternalType[DF_NUM_CHANNEL_TYPES];
+        static std::array<GLuint const, DF_NUM_FORMATS> msGLTextureInternalFormat;
+        static std::array<GLuint const, DF_NUM_FORMATS> msGLTextureExternalFormat;
+        static std::array<GLuint const, DF_NUM_CHANNEL_TYPES> msGLTextureExternalType;
     };
 }

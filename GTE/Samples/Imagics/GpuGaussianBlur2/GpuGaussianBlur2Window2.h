@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -15,8 +15,8 @@ class GpuGaussianBlur2Window2 : public Window2
 public:
     struct Parameters : public Window2::Parameters
     {
-        Parameters(std::wstring const& inTitle, int inXOrigin, int inYOrigin,
-            int inXSize, int inYSize, bool inUseDirichlet)
+        Parameters(std::wstring const& inTitle, int32_t inXOrigin, int32_t inYOrigin,
+            int32_t inXSize, int32_t inYSize, bool inUseDirichlet)
             :
             Window2::Parameters(inTitle, inXOrigin, inYOrigin, inXSize, inYSize),
             useDirichlet(inUseDirichlet)
@@ -43,7 +43,7 @@ private:
     std::shared_ptr<ComputeProgram> mGaussianBlurProgram;
     std::shared_ptr<ComputeProgram> mBoundaryDirichletProgram;
     std::shared_ptr<ComputeProgram> mBoundaryNeumannProgram;
-    unsigned int mNumXThreads, mNumYThreads;
-    unsigned int mNumXGroups, mNumYGroups;
+    uint32_t mNumXThreads, mNumYThreads;
+    uint32_t mNumXGroups, mNumYGroups;
     bool mUseDirichlet;
 };

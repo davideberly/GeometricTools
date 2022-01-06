@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class NURBSCurve : public ParametricCurve<N, Real>
     {
     public:
@@ -63,9 +63,9 @@ namespace gte
             return mBasisFunction;
         }
 
-        inline int GetNumControls() const
+        inline int32_t GetNumControls() const
         {
-            return static_cast<int>(mControls.size());
+            return static_cast<int32_t>(mControls.size());
         }
 
         inline Vector<N, Real> const* GetControls() const
@@ -88,7 +88,7 @@ namespace gte
             return mWeights.data();
         }
 
-        void SetControl(int i, Vector<N, Real> const& control)
+        void SetControl(int32_t i, Vector<N, Real> const& control)
         {
             if (0 <= i && i < GetNumControls())
             {
@@ -96,7 +96,7 @@ namespace gte
             }
         }
 
-        Vector<N, Real> const& GetControl(int i) const
+        Vector<N, Real> const& GetControl(int32_t i) const
         {
             if (0 <= i && i < GetNumControls())
             {
@@ -109,7 +109,7 @@ namespace gte
             }
         }
 
-        void SetWeight(int i, Real weight)
+        void SetWeight(int32_t i, Real weight)
         {
             if (0 <= i && i < GetNumControls())
             {
@@ -117,7 +117,7 @@ namespace gte
             }
         }
 
-        Real const& GetWeight(int i) const
+        Real const& GetWeight(int32_t i) const
         {
             if (0 <= i && i < GetNumControls())
             {
@@ -137,20 +137,20 @@ namespace gte
         // output array 'jet' must have enough storage to support the maximum
         // order.  The values are ordered as: position, first derivative,
         // second derivative, third derivative.
-        virtual void Evaluate(Real t, unsigned int order, Vector<N, Real>* jet) const override
+        virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            unsigned int const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
+            uint32_t const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
             if (!this->mConstructed || order >= supOrder)
             {
                 // Return a zero-valued jet for invalid state.
-                for (unsigned int i = 0; i < supOrder; ++i)
+                for (uint32_t i = 0; i < supOrder; ++i)
                 {
                     jet[i].MakeZero();
                 }
                 return;
             }
 
-            int imin, imax;
+            int32_t imin, imax;
             mBasisFunction.Evaluate(t, order, imin, imax);
 
             // Compute position.
@@ -191,18 +191,18 @@ namespace gte
 
     protected:
         // Support for Evaluate(...).
-        void Compute(unsigned int order, int imin, int imax, Vector<N, Real>& X, Real& w) const
+        void Compute(uint32_t order, int32_t imin, int32_t imax, Vector<N, Real>& X, Real& w) const
         {
             // The j-index introduces a tiny amount of overhead in order to
             // handle both aperiodic and periodic splines.  For aperiodic
             // splines, j = i always.
 
-            int numControls = GetNumControls();
+            int32_t numControls = GetNumControls();
             X.MakeZero();
             w = (Real)0;
-            for (int i = imin; i <= imax; ++i)
+            for (int32_t i = imin; i <= imax; ++i)
             {
-                int j = (i >= numControls ? i - numControls : i);
+                int32_t j = (i >= numControls ? i - numControls : i);
                 Real tmp = mBasisFunction.GetValue(order, i) * mWeights[j];
                 X += tmp * mControls[j];
                 w += tmp;

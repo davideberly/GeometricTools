@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -21,7 +21,7 @@ public:
     GelatinCubeWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
@@ -39,12 +39,12 @@ private:
     };
 
     // Support for creating the cube faces.
-    void CreateFaceVertices(unsigned int numRows, unsigned int numCols,
-        float faceValue, unsigned int const permute[3], Vertex* vertices,
-        unsigned int& index);
+    void CreateFaceVertices(uint32_t numRows, uint32_t numCols,
+        float faceValue, uint32_t const permute[3], Vertex* vertices,
+        uint32_t& index);
 
-    void CreateFaceIndices(unsigned int numRows, unsigned int numCols,
-        bool ccw, unsigned int& vBase, unsigned int*& indices);
+    void CreateFaceIndices(uint32_t numRows, uint32_t numCols,
+        bool ccw, uint32_t& vBase, uint32_t*& indices);
 
     void UpdateFaces();
 
@@ -63,5 +63,5 @@ private:
     // The masses are located at the control points of a spline surface.
     // The control points are connected in a mass-spring system.
     std::shared_ptr<BSplineVolume<3, float>> mVolume;
-    unsigned int mNumUSamples, mNumVSamples, mNumWSamples;
+    uint32_t mNumUSamples, mNumVSamples, mNumWSamples;
 };

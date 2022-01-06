@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -23,8 +23,8 @@ namespace gte
         // 1 <= degree && degree < numControls <= numSamples - degree - 1.
         // The samples points are contiguous blocks of 'dimension' real values
         // stored in sampleData.
-        BSplineCurveFit(int dimension, int numSamples, Real const* sampleData,
-            int degree, int numControls)
+        BSplineCurveFit(int32_t dimension, int32_t numSamples, Real const* sampleData,
+            int32_t degree, int32_t numControls)
             :
             mDimension(dimension),
             mNumSamples(numSamples),
@@ -47,9 +47,9 @@ namespace gte
             input.uniqueKnots.resize(input.numUniqueKnots);
             input.uniqueKnots[0].t = (Real)0;
             input.uniqueKnots[0].multiplicity = degree + 1;
-            int last = input.numUniqueKnots - 1;
+            int32_t last = input.numUniqueKnots - 1;
             Real factor = ((Real)1) / (Real)last;
-            for (int i = 1; i < last; ++i)
+            for (int32_t i = 1; i < last; ++i)
             {
                 input.uniqueKnots[i].t = factor * (Real)i;
                 input.uniqueKnots[i].multiplicity = 1;
@@ -64,11 +64,11 @@ namespace gte
             // Q is the unknown vector of control points.
             Real tMultiplier = (Real)1 / ((Real)mNumSamples - (Real)1);
             Real t;
-            int i0, i1, i2, imin, imax, j;
+            int32_t i0, i1, i2, imin, imax, j;
 
             // Construct the matrix A^T*A.
-            int degp1 = mDegree + 1;
-            int numBands = (mNumControls > degp1 ? degp1 : mDegree);
+            int32_t degp1 = mDegree + 1;
+            int32_t numBands = (mNumControls > degp1 ? degp1 : mDegree);
             BandedMatrix<Real> ATAMat(mNumControls, numBands, numBands);
             for (i0 = 0; i0 < mNumControls; ++i0)
             {
@@ -77,7 +77,7 @@ namespace gte
                     ATAMat(i0, i1) = ATAMat(i1, i0);
                 }
 
-                int i1Max = i0 + mDegree;
+                int32_t i1Max = i0 + mDegree;
                 if (i1Max >= mNumControls)
                 {
                     i1Max = mNumControls - 1;
@@ -156,12 +156,12 @@ namespace gte
         }
 
         // Access to input sample information.
-        inline int GetDimension() const
+        inline int32_t GetDimension() const
         {
             return mDimension;
         }
 
-        inline int GetNumSamples() const
+        inline int32_t GetNumSamples() const
         {
             return mNumSamples;
         }
@@ -172,12 +172,12 @@ namespace gte
         }
 
         // Access to output control point and curve information.
-        inline int GetDegree() const
+        inline int32_t GetDegree() const
         {
             return mDegree;
         }
 
-        inline int GetNumControls() const
+        inline int32_t GetNumControls() const
         {
             return mNumControls;
         }
@@ -196,22 +196,22 @@ namespace gte
         // If a t-value is outside [0,1], an open spline clamps it to [0,1].
         // The caller must ensure that position[] has at least 'dimension'
         // elements.
-        void Evaluate(Real t, unsigned int order, Real* value) const
+        void Evaluate(Real t, uint32_t order, Real* value) const
         {
-            int imin, imax;
+            int32_t imin, imax;
             mBasis.Evaluate(t, order, imin, imax);
 
             Real const* source = &mControlData[static_cast<size_t>(mDimension) * imin];
             Real basisValue = mBasis.GetValue(order, imin);
-            for (int j = 0; j < mDimension; ++j)
+            for (int32_t j = 0; j < mDimension; ++j)
             {
                 value[j] = basisValue * (*source++);
             }
 
-            for (int i = imin + 1; i <= imax; ++i)
+            for (int32_t i = imin + 1; i <= imax; ++i)
             {
                 basisValue = mBasis.GetValue(order, i);
-                for (int j = 0; j < mDimension; ++j)
+                for (int32_t j = 0; j < mDimension; ++j)
                 {
                     value[j] += basisValue * (*source++);
                 }
@@ -225,13 +225,13 @@ namespace gte
 
     private:
         // Input sample information.
-        int mDimension;
-        int mNumSamples;
+        int32_t mDimension;
+        int32_t mNumSamples;
         Real const* mSampleData;
 
         // The fitted B-spline curve, open and with uniform knots.
-        int mDegree;
-        int mNumControls;
+        int32_t mDegree;
+        int32_t mNumControls;
         std::vector<Real> mControlData;
         BasisFunction<Real> mBasis;
     };

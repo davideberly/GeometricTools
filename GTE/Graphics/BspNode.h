@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -62,19 +62,19 @@ namespace gte
             return DetachChildAt(2);
         }
 
-        inline std::shared_ptr<Spatial> GetPositiveChild()
+        inline Spatial* GetPositiveChild()
         {
-            return GetChild(0);
+            return mChild[0].get();
         }
 
-        inline std::shared_ptr<Spatial> GetCoplanarChild()
+        inline Spatial* GetCoplanarChild()
         {
-            return GetChild(1);
+            return mChild[1].get();
         }
 
-        inline std::shared_ptr<Spatial> GetNegativeChild()
+        inline Spatial* GetNegativeChild()
         {
-            return GetChild(2);
+            return mChild[2].get();
         }
 
         // Member access.
@@ -101,7 +101,7 @@ namespace gte
         // plane.  The function returns +1 if the point is on the positive
         // side of the plane, -1 if the point is on the negative side of the
         // plane, or 0 if the point is on the plane.
-        int WhichSide(Vector4<float> const& point) const;
+        int32_t WhichSide(Vector4<float> const& point) const;
 
         // Determine whether the view frustum is fully on one side of the
         // world plane.  The function returns +1 if the view frustum is fully
@@ -109,7 +109,7 @@ namespace gte
         // on the negative side of the plane, or 0 if the view frustum
         // straddles the plane.  The world camera coordinate system is used
         // for the test.
-        int WhichSide(std::shared_ptr<Camera> const& camera) const;
+        int32_t WhichSide(std::shared_ptr<Camera> const& camera) const;
 
         Vector4<float> mModelPlane, mWorldPlane;
     };

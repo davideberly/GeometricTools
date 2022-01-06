@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -13,7 +13,7 @@
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class BezierCurve : public ParametricCurve<N, Real>
     {
     public:
@@ -22,7 +22,7 @@ namespace gte
         // in [0,1].  To validate construction, create an object as shown:
         //     BezierCurve<N, Real> curve(parameters);
         //     if (!curve) { <constructor failed, handle accordingly>; }
-        BezierCurve(int degree, Vector<N, Real> const* controls)
+        BezierCurve(int32_t degree, Vector<N, Real> const* controls)
             :
             ParametricCurve<N, Real>((Real)0, (Real)1),
             mDegree(degree),
@@ -37,14 +37,14 @@ namespace gte
 
             // Compute first-order differences.
             mControls[1].resize(static_cast<size_t>(mNumControls) - 1);
-            for (int i = 0, ip1 = 1; ip1 < mNumControls; ++i, ++ip1)
+            for (int32_t i = 0, ip1 = 1; ip1 < mNumControls; ++i, ++ip1)
             {
                 mControls[1][i] = mControls[0][ip1] - mControls[0][i];
             }
 
             // Compute second-order differences.
             mControls[2].resize(static_cast<size_t>(mNumControls) - 2);
-            for (int i = 0, ip1 = 1, ip2 = 2; ip2 < mNumControls; ++i, ++ip1, ++ip2)
+            for (int32_t i = 0, ip1 = 1, ip2 = 2; ip2 < mNumControls; ++i, ++ip1, ++ip2)
             {
                 mControls[2][i] = mControls[1][ip1] - mControls[1][i];
             }
@@ -53,7 +53,7 @@ namespace gte
             if (degree >= 3)
             {
                 mControls[3].resize(static_cast<size_t>(mNumControls) - 3);
-                for (int i = 0, ip1 = 1, ip3 = 3; ip3 < mNumControls; ++i, ++ip1, ++ip3)
+                for (int32_t i = 0, ip1 = 1, ip3 = 3; ip3 < mNumControls; ++i, ++ip1, ++ip3)
                 {
                     mControls[3][i] = mControls[2][ip1] - mControls[2][i];
                 }
@@ -65,11 +65,11 @@ namespace gte
             mChoose[0][0] = (Real)1;
             mChoose[1][0] = (Real)1;
             mChoose[1][1] = (Real)1;
-            for (int i = 2; i <= mDegree; ++i)
+            for (int32_t i = 2; i <= mDegree; ++i)
             {
                 mChoose[i][0] = (Real)1;
                 mChoose[i][i] = (Real)1;
-                for (int j = 1; j < i; ++j)
+                for (int32_t j = 1; j < i; ++j)
                 {
                     mChoose[i][j] = mChoose[i - 1][j - 1] + mChoose[i - 1][j];
                 }
@@ -83,12 +83,12 @@ namespace gte
         }
 
         // Member access.
-        inline int GetDegree() const
+        inline int32_t GetDegree() const
         {
             return mDegree;
         }
 
-        inline int GetNumControls() const
+        inline int32_t GetNumControls() const
         {
             return mNumControls;
         }
@@ -105,13 +105,13 @@ namespace gte
         // output array 'jet' must have enough storage to support the maximum
         // order.  The values are ordered as: position, first derivative,
         // second derivative, third derivative.
-        virtual void Evaluate(Real t, unsigned int order, Vector<N, Real>* jet) const override
+        virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            unsigned int const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
+            uint32_t const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
             if (!this->mConstructed || order >= supOrder)
             {
                 // Return a zero-valued jet for invalid state.
-                for (unsigned int i = 0; i < supOrder; ++i)
+                for (uint32_t i = 0; i < supOrder; ++i)
                 {
                     jet[i].MakeZero();
                 }
@@ -147,13 +147,13 @@ namespace gte
 
     protected:
         // Support for Evaluate(...).
-        Vector<N, Real> Compute(Real t, Real omt, int order) const
+        Vector<N, Real> Compute(Real t, Real omt, int32_t order) const
         {
             Vector<N, Real> result = omt * mControls[order][0];
 
             Real tpow = t;
-            int isup = mDegree - order;
-            for (int i = 1; i < isup; ++i)
+            int32_t isup = mDegree - order;
+            for (int32_t i = 1; i < isup; ++i)
             {
                 Real c = mChoose[isup][i] * tpow;
                 result = (result + c * mControls[order][i]) * omt;
@@ -161,8 +161,8 @@ namespace gte
             }
             result = (result + tpow * mControls[order][isup]);
 
-            int multiplier = 1;
-            for (int i = 0; i < order; ++i)
+            int32_t multiplier = 1;
+            for (int32_t i = 0; i < order; ++i)
             {
                 multiplier *= mDegree - i;
             }
@@ -171,7 +171,7 @@ namespace gte
             return result;
         }
 
-        int mDegree, mNumControls;
+        int32_t mDegree, mNumControls;
         std::array<std::vector<Vector<N, Real>>, ParametricCurve<N, Real>::SUP_ORDER> mControls;
         Array2<Real> mChoose;
     };

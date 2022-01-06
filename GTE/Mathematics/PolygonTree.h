@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.3.2020.11.06
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -57,7 +57,7 @@ namespace gte
         {
         }
 
-        std::vector<int> polygon;
+        std::vector<int32_t> polygon;
         std::vector<std::shared_ptr<PolygonTree>> child;
     };
 
@@ -96,9 +96,9 @@ namespace gte
             {
             }
 
-            std::vector<int> polygon;
+            std::vector<int32_t> polygon;
             int64_t chirality;
-            std::vector<std::array<int, 3>> triangulation;
+            std::vector<std::array<int32_t, 3>> triangulation;
             size_t self, parent, minChild, supChild;
         };
 
@@ -116,27 +116,27 @@ namespace gte
         // by an outer polygon and its contained inner polygons. This set
         // is the equivalent of the output of TriangulateEC that uses ear
         // clipping.
-        std::vector<std::array<int, 3>> interiorTriangles;
+        std::vector<std::array<int32_t, 3>> interiorTriangles;
         std::vector<size_t> interiorNodeIndices;
 
         // The triangles in the polygon tree that cover each region bounded
         // by an inner polygon and its contained outer polygons.
-        std::vector<std::array<int, 3>> exteriorTriangles;
+        std::vector<std::array<int32_t, 3>> exteriorTriangles;
         std::vector<size_t> exteriorNodeIndices;
 
         // The triangles inside the polygon tree.
         //   insideTriangles = interiorTriangle + exteriorTriangles
-        std::vector<std::array<int, 3>> insideTriangles;
+        std::vector<std::array<int32_t, 3>> insideTriangles;
         std::vector<size_t> insideNodeIndices;
 
         // The triangles inside the convex hull of the Delaunay triangles but
         // outside the polygon tree. These triangles are not associated with
         // any 'nodes[]' element.
-        std::vector<std::array<int, 3>> outsideTriangles;
+        std::vector<std::array<int32_t, 3>> outsideTriangles;
 
         // All the triangles:
         //   allTriangles = insideTriangles + outsideTriangles.
-        std::vector<std::array<int, 3>> allTriangles;
+        std::vector<std::array<int32_t, 3>> allTriangles;
 
     public:
         // Point-containment queries.
@@ -203,7 +203,7 @@ namespace gte
         //       tree.exteriorIndices, points);
         template <typename T>
         std::pair<size_t, size_t> GetContainingTriangle(Vector2<T> const& test,
-            std::vector<std::array<int, 3>> const& triangles,
+            std::vector<std::array<int32_t, 3>> const& triangles,
             std::vector<size_t> const& nodeIndices,
             Vector2<T> const* points)
         {
@@ -243,7 +243,7 @@ namespace gte
         //       tree.outsideTriangles, +1, points);
         template <typename T>
         size_t GetContainingTriangle(Vector2<T> const& test,
-            std::vector<std::array<int, 3>> const& triangles, int64_t chirality,
+            std::vector<std::array<int32_t, 3>> const& triangles, int64_t chirality,
             Vector2<T> const* points)
         {
             size_t result = std::numeric_limits<size_t>::max();
@@ -265,11 +265,11 @@ namespace gte
         // If the points are clockwise ordered, set 'chirality' to -1.
         template <typename T>
         static bool PointInTriangle(Vector2<T> const& test, int64_t chirality,
-            std::array<int, 3> const& triangle, Vector2<T> const* points)
+            std::array<int32_t, 3> const& triangle, Vector2<T> const* points)
         {
             T const zero = static_cast<T>(0);
             T const sign = static_cast<T>(chirality);
-            for (int i1 = 0, i0 = 2; i1 < 3; i0 = i1++)
+            for (int32_t i1 = 0, i0 = 2; i1 < 3; i0 = i1++)
             {
                 T nx = points[triangle[i1]][1] - points[triangle[i0]][1];
                 T ny = points[triangle[i0]][0] - points[triangle[i1]][0];

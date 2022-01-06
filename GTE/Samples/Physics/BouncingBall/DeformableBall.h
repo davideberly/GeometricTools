@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -81,10 +81,10 @@ private:
     // region of influence of the deformation *and* if the deformation
     // function is active at time t.  This allows the mesh smoother to avoid
     // evolving the surface in regions where no deformation is occuring.
-    bool VertexInfluenced(unsigned int i, float time, Vector3<float> const& position) const;
+    bool VertexInfluenced(uint32_t i, float time, Vector3<float> const& position) const;
 
-    float GetTangentWeight(unsigned int i, float time, Vector3<float> const& position) const;
-    float GetNormalWeight(unsigned int i, float time, Vector3<float> const& position) const;
+    float GetTangentWeight(uint32_t i, float time, Vector3<float> const& position) const;
+    float GetNormalWeight(uint32_t i, float time, Vector3<float> const& position) const;
 
     // Level surface function:  parameters (X,t,F,Grad(F))
     //   input:  X = point in space
@@ -100,10 +100,10 @@ private:
     bool mDeforming, mDoAffine;
 
     // Parameters for Newton's method in ComputeFunction.
-    int mMaxIterations;
+    int32_t mMaxIterations;
     float mErrorTolerance;
 
     // Mesh smoother data.
     std::vector<Vector3<float>> mNormal, mMean;
-    std::vector<int> mNeighborCount;
+    std::vector<int32_t> mNeighborCount;
 };

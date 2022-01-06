@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -30,7 +30,7 @@ namespace gte
         // The fundamental problem is to compute the triangulation of a
         // polygon tree. The outer polygons have counterclockwise ordered
         // vertices. The inner polygons have clockwise ordered vertices.
-        typedef std::vector<int> Polygon;
+        typedef std::vector<int32_t> Polygon;
 
         // The class is a functor to support triangulating multiple polygons
         // that share vertices in a collection of points.  The interpretation
@@ -39,7 +39,7 @@ namespace gte
         // pointer to an array of at least numPoints elements.  If the
         // preconditions are satisfied, then operator() functions will return
         // 'true'; otherwise, they return 'false'.
-        TriangulateEC(int numPoints, Vector2<InputType> const* points)
+        TriangulateEC(int32_t numPoints, Vector2<InputType> const* points)
             :
             mNumPoints(numPoints),
             mPoints(points),
@@ -59,7 +59,7 @@ namespace gte
 
         TriangulateEC(std::vector<Vector2<InputType>> const& points)
             :
-            mNumPoints(static_cast<int>(points.size())),
+            mNumPoints(static_cast<int32_t>(points.size())),
             mPoints(points.data()),
             mCFirst(-1),
             mCLast(-1),
@@ -76,7 +76,7 @@ namespace gte
         }
 
         // Access the triangulation after each operator() call.
-        inline std::vector<std::array<int, 3>> const& GetTriangles() const
+        inline std::vector<std::array<int32_t, 3>> const& GetTriangles() const
         {
             return mTriangles;
         }
@@ -90,12 +90,12 @@ namespace gte
             if (mPoints)
             {
                 // Compute the points for the queries.
-                for (int i = 0; i < mNumPoints; ++i)
+                for (int32_t i = 0; i < mNumPoints; ++i)
                 {
                     if (!mIsConverted[i])
                     {
                         mIsConverted[i] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[i][j] = mPoints[i][j];
                         }
@@ -121,15 +121,15 @@ namespace gte
             if (mPoints)
             {
                 // Compute the points for the queries.
-                int const numIndices = static_cast<int>(polygon.size());
-                int const* indices = polygon.data();
-                for (int i = 0; i < numIndices; ++i)
+                int32_t const numIndices = static_cast<int32_t>(polygon.size());
+                int32_t const* indices = polygon.data();
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
-                    int index = indices[i];
+                    int32_t index = indices[i];
                     if (!mIsConverted[index])
                     {
                         mIsConverted[index] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[index][j] = mPoints[index][j];
                         }
@@ -158,8 +158,8 @@ namespace gte
             {
                 // Two extra elements are needed to duplicate the endpoints of
                 // the edge introduced to combine outer and inner polygons.
-                int numPointsPlusExtras = mNumPoints + 2;
-                if (numPointsPlusExtras > static_cast<int>(mComputePoints.size()))
+                int32_t numPointsPlusExtras = mNumPoints + 2;
+                if (numPointsPlusExtras > static_cast<int32_t>(mComputePoints.size()))
                 {
                     mComputePoints.resize(numPointsPlusExtras);
                     mIsConverted.resize(numPointsPlusExtras);
@@ -170,30 +170,30 @@ namespace gte
 
                 // Convert any points that have not been encountered in other
                 // triangulation calls.
-                int const numOuterIndices = static_cast<int>(outer.size());
-                int const* outerIndices = outer.data();
-                for (int i = 0; i < numOuterIndices; ++i)
+                int32_t const numOuterIndices = static_cast<int32_t>(outer.size());
+                int32_t const* outerIndices = outer.data();
+                for (int32_t i = 0; i < numOuterIndices; ++i)
                 {
-                    int index = outerIndices[i];
+                    int32_t index = outerIndices[i];
                     if (!mIsConverted[index])
                     {
                         mIsConverted[index] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[index][j] = mPoints[index][j];
                         }
                     }
                 }
 
-                int const numInnerIndices = static_cast<int>(inner.size());
-                int const* innerIndices = inner.data();
-                for (int i = 0; i < numInnerIndices; ++i)
+                int32_t const numInnerIndices = static_cast<int32_t>(inner.size());
+                int32_t const* innerIndices = inner.data();
+                for (int32_t i = 0; i < numInnerIndices; ++i)
                 {
-                    int index = innerIndices[i];
+                    int32_t index = innerIndices[i];
                     if (!mIsConverted[index])
                     {
                         mIsConverted[index] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[index][j] = mPoints[index][j];
                         }
@@ -204,9 +204,9 @@ namespace gte
                 // simple polygon by inserting two edges connecting mutually
                 // visible vertices, one from the outer polygon and one from
                 // the inner polygon.
-                int nextElement = mNumPoints;  // The next available element.
-                std::map<int, int> indexMap;
-                std::vector<int> combined;
+                int32_t nextElement = mNumPoints;  // The next available element.
+                std::map<int32_t, int32_t> indexMap;
+                std::vector<int32_t> combined;
                 if (!CombinePolygons(nextElement, outer, inner, indexMap, combined))
                 {
                     // An unexpected condition was encountered.
@@ -215,8 +215,8 @@ namespace gte
 
                 // The combined polygon is now in the format of a simple
                 // polygon, albeit one with coincident edges.
-                int numVertices = static_cast<int>(combined.size());
-                int* const indices = &combined[0];
+                int32_t numVertices = static_cast<int32_t>(combined.size());
+                int32_t* const indices = &combined[0];
                 InitializeVertices(numVertices, indices);
                 DoEarClipping(numVertices, indices);
 
@@ -242,12 +242,12 @@ namespace gte
                 // Two extra elements per inner polygon are needed to
                 // duplicate the endpoints of the edges introduced to combine
                 // outer and inner polygons.
-                int numPointsPlusExtras = mNumPoints + 2 * (int)inners.size();
-                if (numPointsPlusExtras > static_cast<int>(mComputePoints.size()))
+                int32_t numPointsPlusExtras = mNumPoints + 2 * (int32_t)inners.size();
+                if (numPointsPlusExtras > static_cast<int32_t>(mComputePoints.size()))
                 {
                     mComputePoints.resize(numPointsPlusExtras);
                     mIsConverted.resize(numPointsPlusExtras);
-                    for (int i = mNumPoints; i < numPointsPlusExtras; ++i)
+                    for (int32_t i = mNumPoints; i < numPointsPlusExtras; ++i)
                     {
                         mIsConverted[i] = false;
                     }
@@ -256,15 +256,15 @@ namespace gte
 
                 // Convert any points that have not been encountered in other
                 // triangulation calls.
-                int const numOuterIndices = static_cast<int>(outer.size());
-                int const* outerIndices = outer.data();
-                for (int i = 0; i < numOuterIndices; ++i)
+                int32_t const numOuterIndices = static_cast<int32_t>(outer.size());
+                int32_t const* outerIndices = outer.data();
+                for (int32_t i = 0; i < numOuterIndices; ++i)
                 {
-                    int index = outerIndices[i];
+                    int32_t index = outerIndices[i];
                     if (!mIsConverted[index])
                     {
                         mIsConverted[index] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[index][j] = mPoints[index][j];
                         }
@@ -273,15 +273,15 @@ namespace gte
 
                 for (auto const& inner : inners)
                 {
-                    int const numInnerIndices = static_cast<int>(inner.size());
-                    int const* innerIndices = inner.data();
-                    for (int i = 0; i < numInnerIndices; ++i)
+                    int32_t const numInnerIndices = static_cast<int32_t>(inner.size());
+                    int32_t const* innerIndices = inner.data();
+                    for (int32_t i = 0; i < numInnerIndices; ++i)
                     {
-                        int index = innerIndices[i];
+                        int32_t index = innerIndices[i];
                         if (!mIsConverted[index])
                         {
                             mIsConverted[index] = true;
-                            for (int j = 0; j < 2; ++j)
+                            for (int32_t j = 0; j < 2; ++j)
                             {
                                 mComputePoints[index][j] = mPoints[index][j];
                             }
@@ -292,9 +292,9 @@ namespace gte
                 // Combine the outer polygon and the inner polygons into a
                 // simple polygon by inserting two edges per inner polygon
                 // connecting mutually visible vertices.
-                int nextElement = mNumPoints;  // The next available element.
-                std::map<int, int> indexMap;
-                std::vector<int> combined;
+                int32_t nextElement = mNumPoints;  // The next available element.
+                std::map<int32_t, int32_t> indexMap;
+                std::vector<int32_t> combined;
                 if (!ProcessOuterAndInners(nextElement, outer, inners, indexMap, combined))
                 {
                     // An unexpected condition was encountered.
@@ -303,8 +303,8 @@ namespace gte
 
                 // The combined polygon is now in the format of a simple
                 // polygon, albeit with coincident edges.
-                int numVertices = static_cast<int>(combined.size());
-                int* const indices = &combined[0];
+                int32_t numVertices = static_cast<int32_t>(combined.size());
+                int32_t* const indices = &combined[0];
                 InitializeVertices(numVertices, indices);
                 DoEarClipping(numVertices, indices);
 
@@ -328,20 +328,20 @@ namespace gte
                 // Two extra elements per inner polygon are needed to
                 // duplicate the endpoints of the edges introduced to combine
                 // outer and inner polygons.
-                int numPointsPlusExtras = mNumPoints + InitializeFromTree(tree);
-                if (numPointsPlusExtras > static_cast<int>(mComputePoints.size()))
+                int32_t numPointsPlusExtras = mNumPoints + InitializeFromTree(tree);
+                if (numPointsPlusExtras > static_cast<int32_t>(mComputePoints.size()))
                 {
                     mComputePoints.resize(numPointsPlusExtras);
                     mIsConverted.resize(numPointsPlusExtras);
-                    for (int i = mNumPoints; i < numPointsPlusExtras; ++i)
+                    for (int32_t i = mNumPoints; i < numPointsPlusExtras; ++i)
                     {
                         mIsConverted[i] = false;
                     }
                     mQuery.Set(numPointsPlusExtras, &mComputePoints[0]);
                 }
 
-                int nextElement = mNumPoints;
-                std::map<int, int> indexMap;
+                int32_t nextElement = mNumPoints;
+                std::map<int32_t, int32_t> indexMap;
 
                 std::queue<std::shared_ptr<PolygonTree>> treeQueue;
                 treeQueue.push(tree);
@@ -350,15 +350,15 @@ namespace gte
                     std::shared_ptr<PolygonTree> outer = treeQueue.front();
                     treeQueue.pop();
 
-                    int numChildren = static_cast<int>(outer->child.size());
-                    int numVertices;
-                    int const* indices;
+                    int32_t numChildren = static_cast<int32_t>(outer->child.size());
+                    int32_t numVertices;
+                    int32_t const* indices;
 
                     if (numChildren == 0)
                     {
                         // The outer polygon is a simple polygon (no nested
                         // inner polygons).  Triangulate the simple polygon.
-                        numVertices = static_cast<int>(outer->polygon.size());
+                        numVertices = static_cast<int32_t>(outer->polygon.size());
                         indices = outer->polygon.data();
                         InitializeVertices(numVertices, indices);
                         DoEarClipping(numVertices, indices);
@@ -368,12 +368,12 @@ namespace gte
                         // Place the next level of outer polygon nodes on the
                         // queue for triangulation.
                         std::vector<Polygon> inners(numChildren);
-                        for (int c = 0; c < numChildren; ++c)
+                        for (int32_t c = 0; c < numChildren; ++c)
                         {
                             std::shared_ptr<PolygonTree> inner = outer->child[c];
                             inners[c] = inner->polygon;
-                            int numGrandChildren = static_cast<int>(inner->child.size());
-                            for (int g = 0; g < numGrandChildren; ++g)
+                            int32_t numGrandChildren = static_cast<int32_t>(inner->child.size());
+                            for (int32_t g = 0; g < numGrandChildren; ++g)
                             {
                                 treeQueue.push(inner->child[g]);
                             }
@@ -382,12 +382,12 @@ namespace gte
                         // Combine the outer polygon and the inner polygons
                         // into a simple polygon by inserting two edges per
                         // inner polygon connecting mutually visible vertices.
-                        std::vector<int> combined;
+                        std::vector<int32_t> combined;
                         ProcessOuterAndInners(nextElement, outer->polygon, inners, indexMap, combined);
 
                         // The combined polygon is now in the format of a
                         // simple polygon, albeit with coincident edges.
-                        numVertices = static_cast<int>(combined.size());
+                        numVertices = static_cast<int32_t>(combined.size());
                         indices = &combined[0];
                         InitializeVertices(numVertices, indices);
                         DoEarClipping(numVertices, indices);
@@ -407,7 +407,7 @@ namespace gte
     private:
         // Create the vertex objects that store the various lists required by
         // the ear-clipping algorithm.
-        void InitializeVertices(int numVertices, int const* indices)
+        void InitializeVertices(int32_t numVertices, int32_t const* indices)
         {
             mVertices.clear();
             mVertices.resize(numVertices);
@@ -420,8 +420,8 @@ namespace gte
 
             // Create a circular list of the polygon vertices for dynamic
             // removal of vertices.
-            int numVerticesM1 = numVertices - 1;
-            for (int i = 0; i <= numVerticesM1; ++i)
+            int32_t numVerticesM1 = numVertices - 1;
+            for (int32_t i = 0; i <= numVerticesM1; ++i)
             {
                 Vertex& vertex = V(i);
                 vertex.index = (indices ? indices[i] : i);
@@ -434,7 +434,7 @@ namespace gte
             // for the convex vertices and one for the reflex vertices.
             // This is an O(N) process where N is the number of polygon
             // vertices.
-            for (int i = 0; i <= numVerticesM1; ++i)
+            for (int32_t i = 0; i <= numVerticesM1; ++i)
             {
                 if (IsConvex(i))
                 {
@@ -451,22 +451,22 @@ namespace gte
         // preprocessed to obtain an index array that is nearly a simple
         // polygon.  This outer polygon has a pair of coincident edges per
         // inner polygon.
-        void DoEarClipping(int numVertices, int const* indices)
+        void DoEarClipping(int32_t numVertices, int32_t const* indices)
         {
             // If the polygon is convex, just create a triangle fan.
             if (mRFirst == -1)
             {
-                int numVerticesM1 = numVertices - 1;
+                int32_t numVerticesM1 = numVertices - 1;
                 if (indices)
                 {
-                    for (int i = 1; i < numVerticesM1; ++i)
+                    for (int32_t i = 1; i < numVerticesM1; ++i)
                     {
                         mTriangles.push_back( { indices[0], indices[i], indices[i + 1] } );
                     }
                 }
                 else
                 {
-                    for (int i = 1; i < numVerticesM1; ++i)
+                    for (int32_t i = 1; i < numVerticesM1; ++i)
                     {
                         mTriangles.push_back( { 0, i, i + 1 } );
                     }
@@ -483,7 +483,7 @@ namespace gte
             // where C is the number of convex vertices and R is the number of
             // reflex vertices with N = C+R.  The order is O(N^2), for example
             // when C = R = N/2.
-            for (int i = mCFirst; i != -1; i = V(i).sNext)
+            for (int32_t i = mCFirst; i != -1; i = V(i).sNext)
             {
                 if (IsEar(i))
                 {
@@ -499,8 +499,8 @@ namespace gte
             {
                 // Add the triangle with the ear to the output list of
                 // triangles.
-                int iVPrev = V(mEFirst).vPrev;
-                int iVNext = V(mEFirst).vNext;
+                int32_t iVPrev = V(mEFirst).vPrev;
+                int32_t iVNext = V(mEFirst).vNext;
                 mTriangles.push_back( { V(iVPrev).index, V(mEFirst).index, V(iVNext).index } );
 
                 // Remove the vertex corresponding to the ear.
@@ -577,20 +577,20 @@ namespace gte
         // Given an outer polygon that contains an inner polygon, this
         // function determines a pair of visible vertices and inserts two
         // coincident edges to generate a nearly simple polygon.
-        bool CombinePolygons(int nextElement, Polygon const& outer,
-            Polygon const& inner, std::map<int, int>& indexMap,
-            std::vector<int>& combined)
+        bool CombinePolygons(int32_t nextElement, Polygon const& outer,
+            Polygon const& inner, std::map<int32_t, int32_t>& indexMap,
+            std::vector<int32_t>& combined)
         {
-            int const numOuterIndices = static_cast<int>(outer.size());
-            int const* outerIndices = outer.data();
-            int const numInnerIndices = static_cast<int>(inner.size());
-            int const* innerIndices = inner.data();
+            int32_t const numOuterIndices = static_cast<int32_t>(outer.size());
+            int32_t const* outerIndices = outer.data();
+            int32_t const numInnerIndices = static_cast<int32_t>(inner.size());
+            int32_t const* innerIndices = inner.data();
 
             // Locate the inner-polygon vertex of maximum x-value, call this
             // vertex M.
             ComputeType xmax = mComputePoints[innerIndices[0]][0];
-            int xmaxIndex = 0;
-            for (int i = 1; i < numInnerIndices; ++i)
+            int32_t xmaxIndex = 0;
+            for (int32_t i = 1; i < numInnerIndices; ++i)
             {
                 ComputeType x = mComputePoints[innerIndices[i]][0];
                 if (x > xmax)
@@ -607,8 +607,8 @@ namespace gte
             ComputeType const cmax = static_cast<ComputeType>(std::numeric_limits<InputType>::max());
             ComputeType const zero = static_cast<ComputeType>(0);
             Vector2<ComputeType> intr{ cmax, M[1] };
-            int v0min = -1, v1min = -1, endMin = -1;
-            int i0, i1;
+            int32_t v0min = -1, v1min = -1, endMin = -1;
+            int32_t i0, i1;
             ComputeType s = cmax;
             ComputeType t = cmax;
             for (i0 = numOuterIndices - 1, i1 = 0; i1 < numOuterIndices; i0 = i1++)
@@ -628,7 +628,7 @@ namespace gte
                 }
 
                 // At this time, diff0.y <= 0 and diff1.y >= 0.
-                int currentEndMin = -1;
+                int32_t currentEndMin = -1;
                 if (diff0[1] < zero)
                 {
                     if (diff1[1] > zero)
@@ -701,7 +701,7 @@ namespace gte
 
                     // For the previous closest edge, endMin refers to a
                     // vertex of the edge.  Get the index of the other vertex.
-                    int other = (endMin == v0min ? v1min : v0min);
+                    int32_t other = (endMin == v0min ? v1min : v0min);
 
                     // The new edge is closer if the other vertex of the old
                     // edge is left-of the new edge.
@@ -723,7 +723,7 @@ namespace gte
             // adjusted.
             intr[0] += M[0];
 
-            int maxCosIndex;
+            int32_t maxCosIndex;
             if (endMin == -1)
             {
                 // If you reach this assert, there is a good chance that you
@@ -735,7 +735,7 @@ namespace gte
                 // <M,I,P> must contain an outer-polygon vertex that is
                 // visible to M, which is possibly P itself.
                 Vector2<ComputeType> sTriangle[3];  // <P,M,I> or <P,I,M>
-                int pIndex;
+                int32_t pIndex;
                 if (mComputePoints[outerIndices[v0min]][0] > mComputePoints[outerIndices[v1min]][0])
                 {
                     sTriangle[0] = mComputePoints[outerIndices[v0min]];
@@ -762,16 +762,16 @@ namespace gte
                 ComputeType maxCos = diff[0] * diff[0] / maxSqrLen;
                 PrimalQuery2<ComputeType> localQuery(3, sTriangle);
                 maxCosIndex = pIndex;
-                for (int i = 0; i < numOuterIndices; ++i)
+                for (int32_t i = 0; i < numOuterIndices; ++i)
                 {
                     if (i == pIndex)
                     {
                         continue;
                     }
 
-                    int curr = outerIndices[i];
-                    int prev = outerIndices[(i + numOuterIndices - 1) % numOuterIndices];
-                    int next = outerIndices[(i + 1) % numOuterIndices];
+                    int32_t curr = outerIndices[i];
+                    int32_t prev = outerIndices[(i + numOuterIndices - 1) % numOuterIndices];
+                    int32_t next = outerIndices[(i + 1) % numOuterIndices];
                     if (mQuery.ToLine(curr, prev, next) <= 0
                         && localQuery.ToTriangle(mComputePoints[curr], 0, 1, 2) <= 0)
                     {
@@ -813,19 +813,19 @@ namespace gte
             // convex (or reflex) and the duplicate is reflex (or convex).
             // The ear-clipping algorithm needs to distinguish between them.
             combined.resize(static_cast<size_t>(numOuterIndices) + static_cast<size_t>(numInnerIndices) + 2);
-            int cIndex = 0;
-            for (int i = 0; i <= maxCosIndex; ++i, ++cIndex)
+            int32_t cIndex = 0;
+            for (int32_t i = 0; i <= maxCosIndex; ++i, ++cIndex)
             {
                 combined[cIndex] = outerIndices[i];
             }
 
-            for (int i = 0; i < numInnerIndices; ++i, ++cIndex)
+            for (int32_t i = 0; i < numInnerIndices; ++i, ++cIndex)
             {
-                int j = (xmaxIndex + i) % numInnerIndices;
+                int32_t j = (xmaxIndex + i) % numInnerIndices;
                 combined[cIndex] = innerIndices[j];
             }
 
-            int innerIndex = innerIndices[xmaxIndex];
+            int32_t innerIndex = innerIndices[xmaxIndex];
             mComputePoints[nextElement] = mComputePoints[innerIndex];
             combined[cIndex] = nextElement;
             auto iter = indexMap.find(innerIndex);
@@ -837,7 +837,7 @@ namespace gte
             ++cIndex;
             ++nextElement;
 
-            int outerIndex = outerIndices[maxCosIndex];
+            int32_t outerIndex = outerIndices[maxCosIndex];
             mComputePoints[nextElement] = mComputePoints[outerIndex];
             combined[cIndex] = nextElement;
             iter = indexMap.find(outerIndex);
@@ -849,7 +849,7 @@ namespace gte
             ++cIndex;
             ++nextElement;
 
-            for (int i = maxCosIndex + 1; i < numOuterIndices; ++i, ++cIndex)
+            for (int32_t i = maxCosIndex + 1; i < numOuterIndices; ++i, ++cIndex)
             {
                 combined[cIndex] = outerIndices[i];
             }
@@ -861,19 +861,19 @@ namespace gte
         // inserts coincident edges to generate a nearly simple polygon.  It
         // repeatedly calls CombinePolygons for each inner polygon of the
         // outer polygon.
-        bool ProcessOuterAndInners(int& nextElement, Polygon const& outer,
-            std::vector<Polygon> const& inners, std::map<int, int>& indexMap,
-            std::vector<int>& combined)
+        bool ProcessOuterAndInners(int32_t& nextElement, Polygon const& outer,
+            std::vector<Polygon> const& inners, std::map<int32_t, int32_t>& indexMap,
+            std::vector<int32_t>& combined)
         {
             // Sort the inner polygons based on maximum x-values.
-            int numInners = static_cast<int>(inners.size());
-            std::vector<std::pair<ComputeType, int>> pairs(numInners);
-            for (int p = 0; p < numInners; ++p)
+            int32_t numInners = static_cast<int32_t>(inners.size());
+            std::vector<std::pair<ComputeType, int32_t>> pairs(numInners);
+            for (int32_t p = 0; p < numInners; ++p)
             {
-                int numIndices = static_cast<int>(inners[p].size());
-                int const* indices = inners[p].data();
+                int32_t numIndices = static_cast<int32_t>(inners[p].size());
+                int32_t const* indices = inners[p].data();
                 ComputeType xmax = mComputePoints[indices[0]][0];
-                for (int j = 1; j < numIndices; ++j)
+                for (int32_t j = 1; j < numIndices; ++j)
                 {
                     ComputeType x = mComputePoints[indices[j]][0];
                     if (x > xmax)
@@ -888,7 +888,7 @@ namespace gte
 
             // Merge the inner polygons with the outer polygon.
             Polygon currentPolygon = outer;
-            for (int p = numInners - 1; p >= 0; --p)
+            for (int32_t p = numInners - 1; p >= 0; --p)
             {
                 Polygon const& polygon = inners[pairs[p].second];
                 Polygon currentCombined;
@@ -911,14 +911,14 @@ namespace gte
         // requires duplication of vertices in order that the ear-clipping
         // algorithm work correctly.  After the triangulation, the indices of
         // the duplicated vertices are converted to the original indices.
-        void RemapIndices(std::map<int, int> const& indexMap)
+        void RemapIndices(std::map<int32_t, int32_t> const& indexMap)
         {
             // The triangulation includes indices to the duplicated outer and
             // inner vertices.  These indices must be mapped back to the
             // original ones.
             for (auto& tri : mTriangles)
             {
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     auto iter = indexMap.find(tri[i]);
                     if (iter != indexMap.end())
@@ -933,11 +933,11 @@ namespace gte
         // outer-inners polygon.  This function computes the total number of
         // extra elements needed for the input tree and it converts InputType
         // vertices to ComputeType values.
-        int InitializeFromTree(std::shared_ptr<PolygonTree> const& tree)
+        int32_t InitializeFromTree(std::shared_ptr<PolygonTree> const& tree)
         {
             // Use a breadth-first search to process the outer-inners pairs
             // of the tree of nested polygons.
-            int numExtraPoints = 0;
+            int32_t numExtraPoints = 0;
 
             std::queue<std::shared_ptr<PolygonTree>> treeQueue;
             treeQueue.push(tree);
@@ -948,19 +948,19 @@ namespace gte
                 treeQueue.pop();
 
                 // Count number of extra points for this outer-inners pair.
-                int numChildren = static_cast<int>(outer->child.size());
+                int32_t numChildren = static_cast<int32_t>(outer->child.size());
                 numExtraPoints += 2 * numChildren;
 
                 // Convert outer points from InputType to ComputeType.
-                int const numOuterIndices = static_cast<int>(outer->polygon.size());
-                int const* outerIndices = outer->polygon.data();
-                for (int i = 0; i < numOuterIndices; ++i)
+                int32_t const numOuterIndices = static_cast<int32_t>(outer->polygon.size());
+                int32_t const* outerIndices = outer->polygon.data();
+                for (int32_t i = 0; i < numOuterIndices; ++i)
                 {
-                    int index = outerIndices[i];
+                    int32_t index = outerIndices[i];
                     if (!mIsConverted[index])
                     {
                         mIsConverted[index] = true;
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             mComputePoints[index][j] = mPoints[index][j];
                         }
@@ -969,29 +969,29 @@ namespace gte
 
                 // The grandchildren of the outer polygon are also outer
                 // polygons.  Insert them into the queue for processing.
-                for (int c = 0; c < numChildren; ++c)
+                for (int32_t c = 0; c < numChildren; ++c)
                 {
                     // The 'child' is an inner polygon.
                     std::shared_ptr<PolygonTree> inner = outer->child[c];
 
                     // Convert inner points from InputType to ComputeType.
-                    int const numInnerIndices = static_cast<int>(inner->polygon.size());
-                    int const* innerIndices = inner->polygon.data();
-                    for (int i = 0; i < numInnerIndices; ++i)
+                    int32_t const numInnerIndices = static_cast<int32_t>(inner->polygon.size());
+                    int32_t const* innerIndices = inner->polygon.data();
+                    for (int32_t i = 0; i < numInnerIndices; ++i)
                     {
-                        int index = innerIndices[i];
+                        int32_t index = innerIndices[i];
                         if (!mIsConverted[index])
                         {
                             mIsConverted[index] = true;
-                            for (int j = 0; j < 2; ++j)
+                            for (int32_t j = 0; j < 2; ++j)
                             {
                                 mComputePoints[index][j] = mPoints[index][j];
                             }
                         }
                     }
 
-                    int numGrandChildren = static_cast<int>(inner->child.size());
-                    for (int g = 0; g < numGrandChildren; ++g)
+                    int32_t numGrandChildren = static_cast<int32_t>(inner->child.size());
+                    for (int32_t g = 0; g < numGrandChildren; ++g)
                     {
                         treeQueue.push(inner->child[g]);
                     }
@@ -1002,11 +1002,11 @@ namespace gte
         }
 
         // The input polygon.
-        int mNumPoints;
+        int32_t mNumPoints;
         Vector2<InputType> const* mPoints;
 
         // The output triangulation.
-        std::vector<std::array<int, 3>> mTriangles;
+        std::vector<std::array<int32_t, 3>> mTriangles;
 
         // The array of points used for geometric queries.  If you want to be
         // certain of a correct result, choose ComputeType to be BSNumber.
@@ -1035,31 +1035,31 @@ namespace gte
             {
             }
 
-            int index;          // index of vertex in position array
-            int vPrev, vNext;   // vertex links for polygon
-            int sPrev, sNext;   // convex/reflex vertex links (disjoint lists)
-            int ePrev, eNext;   // ear links
+            int32_t index;          // index of vertex in position array
+            int32_t vPrev, vNext;   // vertex links for polygon
+            int32_t sPrev, sNext;   // convex/reflex vertex links (disjoint lists)
+            int32_t ePrev, eNext;   // ear links
             bool isConvex, isEar;
         };
 
-        inline Vertex& V(int i)
+        inline Vertex& V(int32_t i)
         {
-            LogAssert(0 <= i && i < static_cast<int>(mVertices.size()),
+            LogAssert(0 <= i && i < static_cast<int32_t>(mVertices.size()),
                 "Index out of range. Do you have coincident vertex-edge or edge-edge? These violate the assumptions for the algorithm.");
             return mVertices[i];
         }
 
-        bool IsConvex(int i)
+        bool IsConvex(int32_t i)
         {
             Vertex& vertex = V(i);
-            int curr = vertex.index;
-            int prev = V(vertex.vPrev).index;
-            int next = V(vertex.vNext).index;
+            int32_t curr = vertex.index;
+            int32_t prev = V(vertex.vPrev).index;
+            int32_t next = V(vertex.vNext).index;
             vertex.isConvex = (mQuery.ToLine(curr, prev, next) > 0);
             return vertex.isConvex;
         }
 
-        bool IsEar(int i)
+        bool IsEar(int32_t i)
         {
             Vertex& vertex = V(i);
 
@@ -1072,11 +1072,11 @@ namespace gte
 
             // Search the reflex vertices and test if any are in the triangle
             // <V[prev],V[curr],V[next]>.
-            int prev = V(vertex.vPrev).index;
-            int curr = vertex.index;
-            int next = V(vertex.vNext).index;
+            int32_t prev = V(vertex.vPrev).index;
+            int32_t curr = vertex.index;
+            int32_t next = V(vertex.vNext).index;
             vertex.isEar = true;
-            for (int j = mRFirst; j != -1; j = V(j).sNext)
+            for (int32_t j = mRFirst; j != -1; j = V(j).sNext)
             {
                 // Check if the test vertex is already one of the triangle
                 // vertices.
@@ -1089,7 +1089,7 @@ namespace gte
                 // the triangle <V[prev],V[curr],V[next]>.  When triangulating
                 // polygons with holes, V[j] might be a duplicated vertex, in
                 // which case it does not affect the earness of V[curr].
-                int test = V(j).index;
+                int32_t test = V(j).index;
                 if (mComputePoints[test] == mComputePoints[prev]
                     || mComputePoints[test] == mComputePoints[curr]
                     || mComputePoints[test] == mComputePoints[next])
@@ -1110,7 +1110,7 @@ namespace gte
         }
 
         // insert convex vertex
-        void InsertAfterC(int i)
+        void InsertAfterC(int32_t i)
         {
             if (mCFirst == -1)
             {
@@ -1126,7 +1126,7 @@ namespace gte
         }
 
         // insert reflex vertesx
-        void InsertAfterR(int i)
+        void InsertAfterR(int32_t i)
         {
             if (mRFirst == -1)
             {
@@ -1142,7 +1142,7 @@ namespace gte
         }
 
         // insert ear at end of list
-        void InsertEndE(int i)
+        void InsertEndE(int32_t i)
         {
             if (mEFirst == -1)
             {
@@ -1156,10 +1156,10 @@ namespace gte
         }
 
         // insert ear after efirst
-        void InsertAfterE(int i)
+        void InsertAfterE(int32_t i)
         {
             Vertex& first = V(mEFirst);
-            int currENext = first.eNext;
+            int32_t currENext = first.eNext;
             Vertex& vertex = V(i);
             vertex.ePrev = mEFirst;
             vertex.eNext = currENext;
@@ -1168,10 +1168,10 @@ namespace gte
         }
 
         // insert ear before efirst
-        void InsertBeforeE(int i)
+        void InsertBeforeE(int32_t i)
         {
             Vertex& first = V(mEFirst);
-            int currEPrev = first.ePrev;
+            int32_t currEPrev = first.ePrev;
             Vertex& vertex = V(i);
             vertex.ePrev = currEPrev;
             vertex.eNext = mEFirst;
@@ -1180,26 +1180,26 @@ namespace gte
         }
 
         // remove vertex
-        void RemoveV(int i)
+        void RemoveV(int32_t i)
         {
-            int currVPrev = V(i).vPrev;
-            int currVNext = V(i).vNext;
+            int32_t currVPrev = V(i).vPrev;
+            int32_t currVNext = V(i).vNext;
             V(currVPrev).vNext = currVNext;
             V(currVNext).vPrev = currVPrev;
         }
 
         // remove ear at i
-        int RemoveE(int i)
+        int32_t RemoveE(int32_t i)
         {
-            int currEPrev = V(i).ePrev;
-            int currENext = V(i).eNext;
+            int32_t currEPrev = V(i).ePrev;
+            int32_t currENext = V(i).eNext;
             V(currEPrev).eNext = currENext;
             V(currENext).ePrev = currEPrev;
             return currENext;
         }
 
         // remove reflex vertex
-        void RemoveR(int i)
+        void RemoveR(int32_t i)
         {
             LogAssert(mRFirst != -1 && mRLast != -1, "Reflex vertices must exist.");
 
@@ -1223,8 +1223,8 @@ namespace gte
             }
             else
             {
-                int currSPrev = V(i).sPrev;
-                int currSNext = V(i).sNext;
+                int32_t currSPrev = V(i).sPrev;
+                int32_t currSNext = V(i).sNext;
                 V(currSPrev).sNext = currSNext;
                 V(currSNext).sPrev = currSPrev;
                 V(i).sNext = -1;
@@ -1234,8 +1234,8 @@ namespace gte
 
         // The doubly linked list.
         std::vector<Vertex> mVertices;
-        int mCFirst, mCLast;  // linear list of convex vertices
-        int mRFirst, mRLast;  // linear list of reflex vertices
-        int mEFirst, mELast;  // cyclical list of ears
+        int32_t mCFirst, mCLast;  // linear list of convex vertices
+        int32_t mRFirst, mRLast;  // linear list of reflex vertices
+        int32_t mEFirst, mELast;  // cyclical list of ears
     };
 }

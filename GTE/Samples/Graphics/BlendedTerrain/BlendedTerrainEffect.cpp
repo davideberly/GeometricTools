@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BlendedTerrainEffect.h"
 #include <Applications/WICFileIO.h>
@@ -52,28 +52,28 @@ BlendedTerrainEffect::BlendedTerrainEffect(std::shared_ptr<GraphicsEngine> const
 
     // Create a 1-dimensional texture whose intensities are proportional to
     // height.
-    unsigned int const numTexels = 256;
+    uint32_t const numTexels = 256;
     mBlendTexture = std::make_shared<Texture1>(DF_R8_UNORM, numTexels);
-    unsigned char* texels = mBlendTexture->Get<unsigned char>();
-    for (unsigned int i = 0; i < numTexels; ++i, ++texels)
+    uint8_t* texels = mBlendTexture->Get<uint8_t>();
+    for (uint32_t i = 0; i < numTexels; ++i, ++texels)
     {
-        *texels = static_cast<unsigned char>(i);
+        *texels = static_cast<uint8_t>(i);
     }
 
     // Create the texture samplers.  The common sampler uses trilinear
     // interpolation (mipmapping).  The blend sample uses bilinear
     // interpolation (no mipmapping).
     mCommonSampler = std::make_shared<SamplerState>();
-    mCommonSampler->filter = SamplerState::MIN_L_MAG_L_MIP_L;
-    mCommonSampler->mode[0] = SamplerState::WRAP;
-    mCommonSampler->mode[1] = SamplerState::WRAP;
+    mCommonSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_L;
+    mCommonSampler->mode[0] = SamplerState::Mode::WRAP;
+    mCommonSampler->mode[1] = SamplerState::Mode::WRAP;
     mBlendSampler = std::make_shared<SamplerState>();
-    mBlendSampler->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    mBlendSampler->mode[0] = SamplerState::WRAP;
+    mBlendSampler->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    mBlendSampler->mode[0] = SamplerState::Mode::WRAP;
 
     // Set the resources for the shaders.
-    auto vshader = mProgram->GetVertexShader();
-    auto pshader = mProgram->GetPixelShader();
+    auto const& vshader = mProgram->GetVertexShader();
+    auto const& pshader = mProgram->GetPixelShader();
     vshader->Set("PVWMatrix", mPVWMatrixConstant);
     vshader->Set("FlowDirection", mFlowDirectionConstant);
     pshader->Set("PowerFactor", mPowerFactorConstant);

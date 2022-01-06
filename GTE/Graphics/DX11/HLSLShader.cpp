@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShader.h>
@@ -19,7 +19,7 @@ HLSLShader::HLSLShader(HLSLReflection const& reflector, GraphicsObjectType type)
     mNumZThreads = reflector.GetNumZThreads();
 
     mCBufferLayouts.resize(reflector.GetCBuffers().size());
-    int i = 0;
+    int32_t i = 0;
     for (auto const& cb : reflector.GetCBuffers())
     {
         mData[ConstantBuffer::shaderDataLookup].push_back(
@@ -44,25 +44,25 @@ HLSLShader::HLSLShader(HLSLReflection const& reflector, GraphicsObjectType type)
 
     for (auto const& sb : reflector.GetSBuffers())
     {
-        unsigned int ctrtype = 0xFFFFFFFFu;
+        uint32_t ctrtype = 0xFFFFFFFFu;
         switch (sb.GetType())
         {
-        case HLSLStructuredBuffer::SBT_BASIC:
-            ctrtype = StructuredBuffer::CT_NONE;
+        case HLSLStructuredBuffer::Type::SBT_BASIC:
+            ctrtype = StructuredBuffer::CounterType::NONE;
             break;
 
-        case HLSLStructuredBuffer::SBT_APPEND:
-        case HLSLStructuredBuffer::SBT_CONSUME:
-            ctrtype = StructuredBuffer::CT_APPEND_CONSUME;
+        case HLSLStructuredBuffer::Type::SBT_APPEND:
+        case HLSLStructuredBuffer::Type::SBT_CONSUME:
+            ctrtype = StructuredBuffer::CounterType::APPEND_CONSUME;
             break;
 
-        case HLSLStructuredBuffer::SBT_COUNTER:
-            ctrtype = StructuredBuffer::CT_COUNTER;
+        case HLSLStructuredBuffer::Type::SBT_COUNTER:
+            ctrtype = StructuredBuffer::CounterType::COUNTER;
             break;
 
         default:
             LogError("Unexpected structured buffer option: " +
-                std::to_string(static_cast<int>(sb.GetType())));
+                std::to_string(static_cast<int32_t>(sb.GetType())));
         }
 
         mData[StructuredBuffer::shaderDataLookup].push_back(
@@ -172,7 +172,7 @@ bool HLSLShader::IsValid(Data const& goal, StructuredBuffer* resource) const
         return false;
     }
 
-    if (goal.isGpuWritable && resource->GetUsage() != Resource::SHADER_OUTPUT)
+    if (goal.isGpuWritable && resource->GetUsage() != Resource::Usage::SHADER_OUTPUT)
     {
         // mismatch of GPU write flag
         return false;
@@ -182,7 +182,7 @@ bool HLSLShader::IsValid(Data const& goal, StructuredBuffer* resource) const
     // a shader.  We care about the mismatch in counter type only when the
     // shader needs a countered structure buffer but the attached resource
     // does not have one.
-    if (goal.extra != 0 && goal.extra != static_cast<unsigned int>(resource->GetCounterType()))
+    if (goal.extra != 0 && goal.extra != static_cast<uint32_t>(resource->GetCounterType()))
     {
         // mismatch of counter type
         return false;
@@ -205,7 +205,7 @@ bool HLSLShader::IsValid(Data const& goal, RawBuffer* resource) const
         return false;
     }
 
-    if (goal.isGpuWritable && resource->GetUsage() != Resource::SHADER_OUTPUT)
+    if (goal.isGpuWritable && resource->GetUsage() != Resource::Usage::SHADER_OUTPUT)
     {
         // mismatch of GPU write flag
         return false;
@@ -228,7 +228,7 @@ bool HLSLShader::IsValid(Data const& goal, TextureSingle* resource) const
         return false;
     }
 
-    if (goal.isGpuWritable && resource->GetUsage() != Resource::SHADER_OUTPUT)
+    if (goal.isGpuWritable && resource->GetUsage() != Resource::Usage::SHADER_OUTPUT)
     {
         // mismatch of GPU write flag
         return false;
@@ -259,7 +259,7 @@ bool HLSLShader::IsValid(Data const& goal, TextureArray* resource) const
         return false;
     }
 
-    if (goal.isGpuWritable && resource->GetUsage() != Resource::SHADER_OUTPUT)
+    if (goal.isGpuWritable && resource->GetUsage() != Resource::Usage::SHADER_OUTPUT)
     {
         // mismatch of GPU write flag
         return false;

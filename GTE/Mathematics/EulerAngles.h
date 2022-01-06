@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -52,7 +52,7 @@ namespace gte
         {
         }
 
-        EulerAngles(int i0, int i1, int i2, Real a0, Real a1, Real a2)
+        EulerAngles(int32_t i0, int32_t i1, int32_t i2, Real a0, Real a1, Real a2)
             :
             axis{ i0, i1, i2 },
             angle{ a0, a1, a2 },
@@ -60,7 +60,7 @@ namespace gte
         {
         }
 
-        std::array<int, 3> axis;
+        std::array<int32_t, 3> axis;
         std::array<Real, 3> angle;
 
         // This member is set during conversions from rotation matrices,

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -24,7 +24,7 @@ namespace gte
         // The input constraint is x in [-pi/2,pi/2].  For example,
         //   float x; // in [-pi/2,pi/2]
         //   float result = CosEstimate<float>::Degree<4>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real Degree(Real x)
         {
             return Evaluate(degree<D>(), x);
@@ -35,7 +35,7 @@ namespace gte
         // cos(y) = s*cos(x).  For example,
         //   float x;  // x any real number
         //   float result = CosEstimate<float>::DegreeRR<3>(x);
-        template <int D>
+        template <int32_t D>
         inline static Real DegreeRR(Real x)
         {
             Real y, sign;
@@ -47,7 +47,7 @@ namespace gte
     private:
         // Metaprogramming and private implementation to allow specialization
         // of a template member function.
-        template <int D> struct degree {};
+        template <int32_t D> struct degree {};
 
         inline static Real Evaluate(degree<2>, Real x)
         {
@@ -111,11 +111,11 @@ namespace gte
             Real quotient = (Real)GTE_C_INV_TWO_PI * x;
             if (x >= (Real)0)
             {
-                quotient = (Real)((int)(quotient + (Real)0.5));
+                quotient = (Real)((int32_t)(quotient + (Real)0.5));
             }
             else
             {
-                quotient = (Real)((int)(quotient - (Real)0.5));
+                quotient = (Real)((int32_t)(quotient - (Real)0.5));
             }
             y = x - (Real)GTE_C_TWO_PI * quotient;
 

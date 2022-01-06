@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.08
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,6 +12,7 @@
 #include <Graphics/Texture.h>
 #include <Mathematics/Logger.h>
 #include <algorithm>
+#include <cstdint>
 
 // TextureBuffer is currently supported only in the DirectX graphics engine.
 
@@ -29,9 +30,9 @@ namespace gte
         // the contents of the texture buffer at run time, much like you
         // update a constant buffer, set 'allowDynamicUpdate' to 'true';
         // otherwise, the buffer is immutable.
-        TextureBuffer(DFType format, unsigned int numElements, bool allowDynamicUpdate);
+        TextureBuffer(uint32_t format, uint32_t numElements, bool allowDynamicUpdate);
 
-        DFType GetFormat() const;
+        uint32_t GetFormat() const;
 
         // Access to texture buffer members using the layout of a shader
         // program itself is allowed as long as you have attached the constant
@@ -90,7 +91,7 @@ namespace gte
 
         // Set or get an array member.
         template <typename T>
-        bool SetMember(std::string const& name, unsigned int index, T const& value)
+        bool SetMember(std::string const& name, uint32_t index, T const& value)
         {
             auto iter = std::find_if(mLayout.begin(), mLayout.end(),
                 [&name](MemberLayout const& item) { return name == item.name; });
@@ -106,7 +107,7 @@ namespace gte
         }
 
         template <typename T>
-        bool GetMember(std::string const& name, unsigned int index, T& value) const
+        bool GetMember(std::string const& name, uint32_t index, T& value) const
         {
             auto iter = std::find_if(mLayout.begin(), mLayout.end(),
                 [&name](MemberLayout const& item) { return name == item.name; });
@@ -122,11 +123,11 @@ namespace gte
         }
 
     protected:
-        DFType mFormat;
+        uint32_t mFormat;
         std::vector<MemberLayout> mLayout;
 
     public:
         // For use by the Shader class for storing reflection information.
-        static int const shaderDataLookup = 1;
+        static int32_t const shaderDataLookup = 1;
     };
 }

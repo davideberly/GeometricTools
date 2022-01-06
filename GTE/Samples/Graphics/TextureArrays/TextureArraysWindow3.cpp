@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "TextureArraysWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -91,8 +91,8 @@ bool TextureArraysWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 4);
     auto* vertices = vbuffer->Get<Vertex>();
     vertices[0].position = { 0.0f, 0.0f, 0.0f };
@@ -112,27 +112,27 @@ bool TextureArraysWindow3::CreateScene()
     auto cbuffer = std::make_shared<ConstantBuffer>(sizeof(Matrix4x4<float>), true);
     program->GetVertexShader()->Set("PVWMatrix", cbuffer);
 
-    auto pshader = program->GetPixelShader();
+    auto const& pshader = program->GetPixelShader();
     auto t1array = std::make_shared<Texture1Array>(2, DF_R8G8B8A8_UNORM, 2);
-    auto* t1data = t1array->Get<unsigned int>();
+    auto* t1data = t1array->Get<uint32_t>();
     t1data[0] = 0xFF000000;
     t1data[1] = 0xFFFFFFFF;
 
     auto stoneTexture = WICFileIO::Load(mEnvironment.GetPath("StoneWall.png"), false);
     auto t2array = std::make_shared<Texture2Array>(2, DF_R8G8B8A8_UNORM, 256, 256);
-    unsigned char* t2data = t2array->Get<unsigned char>();
+    uint8_t* t2data = t2array->Get<uint8_t>();
     size_t const numBytes = stoneTexture->GetNumBytes();
     std::memcpy(t2data, stoneTexture->GetData(), numBytes);
     t2data += numBytes;
     for (size_t i = 0; i < numBytes; ++i)
     {
-        *t2data++ = static_cast<unsigned char>(rand() % 256);
+        *t2data++ = static_cast<uint8_t>(rand() % 256);
     }
 
     auto samplerState = std::make_shared<SamplerState>();
-    samplerState->filter = SamplerState::MIN_L_MAG_L_MIP_P;
-    samplerState->mode[0] = SamplerState::CLAMP;
-    samplerState->mode[1] = SamplerState::CLAMP;
+    samplerState->filter = SamplerState::Filter::MIN_L_MAG_L_MIP_P;
+    samplerState->mode[0] = SamplerState::Mode::CLAMP;
+    samplerState->mode[1] = SamplerState::Mode::CLAMP;
 
     pshader->Set("myTexture1", t1array, "mySampler1", samplerState);
     pshader->Set("myTexture2", t2array, "mySampler2", samplerState);

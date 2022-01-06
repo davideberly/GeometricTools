@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -11,6 +11,7 @@
 #include <Graphics/Node.h>
 #include <Graphics/Visual.h>
 #include <Mathematics/Line.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -20,8 +21,8 @@ namespace gte
         // Construction and destruction. Set the numThreads parameter to a
         // value larger than 1 for multithreaded picking of triangle
         // primitives.
+        Picker(uint32_t numThreads = 1);
         ~Picker() = default;
-        Picker(unsigned int numThreads = 1);
 
         // Set the maximum distance when the 'scene' contains point or segment
         // primitives.  Such primitives are selected when they are within the
@@ -64,21 +65,21 @@ namespace gte
         void ExecuteRecursive(std::shared_ptr<Spatial> const& object);
 
         void PickTriangles(std::shared_ptr<Visual> const& visual, char const* positions,
-            unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line);
+            uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line);
 
         void PickTriangles(std::shared_ptr<Visual> const& visual, char const* positions,
-            unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line,
-            unsigned int i0, unsigned int i1, std::vector<PickRecord>& output) const;
+            uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line,
+            uint32_t i0, uint32_t i1, std::vector<PickRecord>& output) const;
 
         void PickSegments(std::shared_ptr<Visual> const& visual, char const* positions,
-            unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line);
+            uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line);
 
         void PickPoints(std::shared_ptr<Visual> const& visual, char const* positions,
-            unsigned int vstride, IndexBuffer* ibuffer, Line3<float> const& line);
+            uint32_t vstride, IndexBuffer* ibuffer, Line3<float> const& line);
 
         // The maximum number of threads that may be used to perform picking
         // requests for triangle primitives.
-        unsigned int mNumThreads;
+        uint32_t mNumThreads;
 
         // The maximum distance from the pick line used to select point or
         // segment primitives.

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -41,14 +41,14 @@ namespace gte
 
     protected:
         // Helpers for construction and destruction.
-        virtual bool Initialize(int requiredMajor, int requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo);
+        virtual bool Initialize(int32_t requiredMajor, int32_t requiredMinor, bool useDepth24Stencil8, bool saveDriverInfo);
         void Terminate();
         void CreateDefaultFont();
         void DestroyDefaultFont();
 
         // GTEngine GL45 requires OpenGL 4.5 or later for compute shaders and
         // for CPU-side OpenGL API calls.
-        int mMajor, mMinor;
+        int32_t mMajor, mMinor;
         bool mMeetsRequirements;
 
     private:
@@ -95,16 +95,16 @@ namespace gte
             ~ProgramIndexUnitMap() = default;
             ProgramIndexUnitMap() = default;
 
-            int AcquireUnit(GLint program, GLint index);
-            int GetUnit(GLint program, GLint index) const;
-            void ReleaseUnit(unsigned index);
-            unsigned GetUnitLinkCount(unsigned unit) const;
-            bool GetUnitProgramIndex(unsigned unit, GLint& program, GLint& index) const;
+            int32_t AcquireUnit(GLint program, GLint index);
+            int32_t GetUnit(GLint program, GLint index) const;
+            void ReleaseUnit(uint32_t index);
+            uint32_t GetUnitLinkCount(uint32_t unit) const;
+            bool GetUnitProgramIndex(uint32_t unit, GLint& program, GLint& index) const;
 
         private:
             struct LinkInfo
             {
-                unsigned linkCount;
+                uint32_t linkCount;
                 GLint program;
                 GLint index;
             };
@@ -130,8 +130,8 @@ namespace gte
         // lower-left corner of the window, the x-axis is directed rightward,
         // the y-axis is directed upward, and the depth range is a subset of
         // [-1,1].
-        virtual void SetViewport(int x, int y, int w, int h) override;
-        virtual void GetViewport(int& x, int& y, int& w, int& h) const override;
+        virtual void SetViewport(int32_t x, int32_t y, int32_t w, int32_t h) override;
+        virtual void GetViewport(int32_t& x, int32_t& y, int32_t& w, int32_t& h) const override;
         virtual void SetDepthRange(float zmin, float zmax) override;
         virtual void GetDepthRange(float& zmin, float& zmax) const override;
 
@@ -150,7 +150,7 @@ namespace gte
         }
 
         // Window resizing.
-        virtual bool Resize(unsigned int w, unsigned int h) override;
+        virtual bool Resize(uint32_t w, uint32_t h) override;
 
         // Support for clearing the color, depth, and stencil back buffers.
         virtual void ClearColorBuffer() override;
@@ -173,23 +173,23 @@ namespace gte
         // Support for copying from CPU to GPU via mapped memory.
         virtual bool Update(std::shared_ptr<Buffer> const& buffer) override;
         virtual bool Update(std::shared_ptr<TextureSingle> const& texture) override;
-        virtual bool Update(std::shared_ptr<TextureSingle> const& texture, unsigned int level) override;
+        virtual bool Update(std::shared_ptr<TextureSingle> const& texture, uint32_t level) override;
         virtual bool Update(std::shared_ptr<TextureArray> const& textureArray) override;
-        virtual bool Update(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) override;
+        virtual bool Update(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) override;
 
         // Support for copying from CPU to GPU via staging memory.
         virtual bool CopyCpuToGpu(std::shared_ptr<Buffer> const& buffer) override;
         virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture) override;
-        virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level) override;
+        virtual bool CopyCpuToGpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level) override;
         virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray) override;
-        virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) override;
+        virtual bool CopyCpuToGpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) override;
 
         // Support for copying from GPU to CPU via staging memory.
         virtual bool CopyGpuToCpu(std::shared_ptr<Buffer> const& buffer) override;
         virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture) override;
-        virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, unsigned int level) override;
+        virtual bool CopyGpuToCpu(std::shared_ptr<TextureSingle> const& texture, uint32_t level) override;
         virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray) override;
-        virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, unsigned int item, unsigned int level) override;
+        virtual bool CopyGpuToCpu(std::shared_ptr<TextureArray> const& textureArray, uint32_t item, uint32_t level) override;
 
         // Support for copying from GPU to GPU directly.  TODO: We will
         // improve on the feature set for such copies later.  For now, the
@@ -207,7 +207,7 @@ namespace gte
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureSingle> const& texture0,
             std::shared_ptr<TextureSingle> const& texture1,
-            unsigned int level) override;
+            uint32_t level) override;
 
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureArray> const& textureArray0,
@@ -216,7 +216,7 @@ namespace gte
         virtual void CopyGpuToGpu(
             std::shared_ptr<TextureArray> const& textureArray0,
             std::shared_ptr<TextureArray> const& textureArray1,
-            unsigned int item, unsigned int level) override;
+            uint32_t item, uint32_t level) override;
 
         // Counted buffer management.  GetNumActiveElements stores the result
         // in 'buffer'.
@@ -229,7 +229,7 @@ namespace gte
         // stall the CPU before obtaining the GPU results.
         virtual bool BindProgram(std::shared_ptr<ComputeProgram> const& program) override;
         virtual void Execute(std::shared_ptr<ComputeProgram> const& program,
-            unsigned int numXGroups, unsigned int numYGroups, unsigned int numZGroups) override;
+            uint32_t numXGroups, uint32_t numYGroups, uint32_t numZGroups) override;
 
         // Have the CPU wait until the GPU finishes its current command
         // buffer.

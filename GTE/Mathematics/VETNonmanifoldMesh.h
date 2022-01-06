@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,8 +20,8 @@ namespace gte
     public:
         // Vertex data types.
         class Vertex;
-        typedef std::shared_ptr<Vertex>(*VCreator)(int);
-        typedef std::map<int, std::shared_ptr<Vertex>> VMap;
+        typedef std::shared_ptr<Vertex>(*VCreator)(int32_t);
+        typedef std::map<int32_t, std::shared_ptr<Vertex>> VMap;
 
         // Vertex object.
         class Vertex
@@ -29,14 +29,14 @@ namespace gte
         public:
             virtual ~Vertex() = default;
 
-            Vertex(int vIndex)
+            Vertex(int32_t vIndex)
                 :
                 V(vIndex)
             {
             }
 
             // The index into the vertex pool of the mesh.
-            int V;
+            int32_t V;
 
             bool operator<(Vertex const& other) const
             {
@@ -44,7 +44,7 @@ namespace gte
             }
 
             // Adjacent objects.
-            std::set<int> VAdjacent;
+            std::set<int32_t> VAdjacent;
             std::set<std::shared_ptr<Edge>, SharedPtrLT<Edge>> EAdjacent;
             std::set<std::shared_ptr<Triangle>, SharedPtrLT<Triangle>> TAdjacent;
         };
@@ -87,7 +87,7 @@ namespace gte
         // If <v0,v1,v2> is not in the mesh, a Triangle object is created and
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
         // returned.
-        virtual std::shared_ptr<Triangle> Insert(int v0, int v1, int v2) override
+        virtual std::shared_ptr<Triangle> Insert(int32_t v0, int32_t v1, int32_t v2) override
         {
             std::shared_ptr<Triangle> tri = ETNonmanifoldMesh::Insert(v0, v1, v2);
             if (!tri)
@@ -95,9 +95,9 @@ namespace gte
                 return nullptr;
             }
 
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
-                int vIndex = tri->V[i];
+                int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
                 std::shared_ptr<Vertex> vertex;
                 if (vItem == mVMap.end())
@@ -112,7 +112,7 @@ namespace gte
 
                 vertex->TAdjacent.insert(tri);
 
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j].lock();
                     LogAssert(edge != nullptr, "Unexpected condition.");
@@ -134,7 +134,7 @@ namespace gte
 
         // If <v0,v1,v2> is in the mesh, it is removed and 'true' is returned;
         // otherwise, <v0,v1,v2> is not in the mesh and 'false' is returned.
-        virtual bool Remove(int v0, int v1, int v2) override
+        virtual bool Remove(int32_t v0, int32_t v1, int32_t v2) override
         {
             auto tItem = mTMap.find(TriangleKey<true>(v0, v1, v2));
             if (tItem == mTMap.end())
@@ -143,13 +143,13 @@ namespace gte
             }
 
             std::shared_ptr<Triangle> tri = tItem->second;
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
-                int vIndex = tri->V[i];
+                int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
                 LogAssert(vItem != mVMap.end(), "Unexpected condition.");
                 std::shared_ptr<Vertex> vertex = vItem->second;
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j].lock();
                     LogAssert(edge != nullptr, "Unexpected condition.");
@@ -202,7 +202,7 @@ namespace gte
 
     protected:
         // The vertex data and default vertex creation.
-        static std::shared_ptr<Vertex> CreateVertex(int vIndex)
+        static std::shared_ptr<Vertex> CreateVertex(int32_t vIndex)
         {
             return std::make_shared<Vertex>(vIndex);
         }

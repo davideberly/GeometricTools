@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/IKController.h>
@@ -36,73 +36,73 @@ void IKController::InitializeJoint(size_t j, std::shared_ptr<Spatial> const& obj
     mJoints[j].goalIndices = goalIndices;
 }
 
-void IKController::SetJointAllowTranslation(size_t j, int axis, bool allow)
+void IKController::SetJointAllowTranslation(size_t j, int32_t axis, bool allow)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].allowTranslation[axis] = allow;
 }
 
-void IKController::SetJointMinTranslation(size_t j, int axis, float minTranslation)
+void IKController::SetJointMinTranslation(size_t j, int32_t axis, float minTranslation)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].minTranslation[axis] = minTranslation;
 }
 
-void IKController::SetJointMaxTranslation(size_t j, int axis, float maxTranslation)
+void IKController::SetJointMaxTranslation(size_t j, int32_t axis, float maxTranslation)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].maxTranslation[axis] = maxTranslation;
 }
 
-void IKController::SetJointAllowRotation(size_t j, int axis, bool allow)
+void IKController::SetJointAllowRotation(size_t j, int32_t axis, bool allow)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].allowRotation[axis] = allow;
 }
 
-void IKController::SetJointMinRotation(size_t j, int axis, float minRotation)
+void IKController::SetJointMinRotation(size_t j, int32_t axis, float minRotation)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].minRotation[axis] = minRotation;
 }
 
-void IKController::SetJointMaxRotation(size_t j, int axis, float maxRotation)
+void IKController::SetJointMaxRotation(size_t j, int32_t axis, float maxRotation)
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     mJoints[j].maxRotation[axis] = maxRotation;
 }
 
-bool IKController::GetJointAllowTranslation(size_t j, int axis) const
+bool IKController::GetJointAllowTranslation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].allowTranslation[axis];
 }
 
-float IKController::GetJointMinTranslation(size_t j, int axis) const
+float IKController::GetJointMinTranslation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].minTranslation[axis];
 }
 
-float IKController::GetJointMaxTranslation(size_t j, int axis) const
+float IKController::GetJointMaxTranslation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].maxTranslation[axis];
 }
 
-bool IKController::GetJointAllowRotation(size_t j, int axis) const
+bool IKController::GetJointAllowRotation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].allowRotation[axis];
 }
 
-float IKController::GetJointMinRotation(size_t j, int axis) const
+float IKController::GetJointMinRotation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].minRotation[axis];
 }
 
-float IKController::GetJointMaxRotation(size_t j, int axis) const
+float IKController::GetJointMaxRotation(size_t j, int32_t axis) const
 {
     LogAssert(j < mJoints.size() && 0 <= axis && axis < 3, "Invalid input.");
     return mJoints[j].maxRotation[axis];
@@ -126,23 +126,23 @@ bool IKController::Update(double applicationTime)
     // Update joints one-at-a-time to meet goals.  As each joint is updated,
     // the nodes occurring in the chain after that joint must be made current
     // in world space.
-    int numJoints = static_cast<int>(mJoints.size());
+    int32_t numJoints = static_cast<int32_t>(mJoints.size());
     if (mOrderEndToRoot)
     {
         for (size_t iter = 0; iter < mNumIterations; ++iter)
         {
-            for (int k = 0; k < numJoints; ++k)
+            for (int32_t k = 0; k < numJoints; ++k)
             {
-                int r = numJoints - 1 - k;
+                int32_t r = numJoints - 1 - k;
                 auto& joint = mJoints[r];
 
-                for (int axis = 0; axis < 3; ++axis)
+                for (int32_t axis = 0; axis < 3; ++axis)
                 {
                     if (joint.allowTranslation[axis])
                     {
                         if (joint.UpdateLocalT(axis, mGoals))
                         {
-                            for (int j = r; j < numJoints; ++j)
+                            for (int32_t j = r; j < numJoints; ++j)
                             {
                                 mJoints[j].UpdateWorldRT();
                             }
@@ -150,13 +150,13 @@ bool IKController::Update(double applicationTime)
                     }
                 }
 
-                for (int axis = 0; axis < 3; ++axis)
+                for (int32_t axis = 0; axis < 3; ++axis)
                 {
                     if (joint.allowRotation[axis])
                     {
                         if (joint.UpdateLocalR(axis, mGoals))
                         {
-                            for (int j = r; j < numJoints; ++j)
+                            for (int32_t j = r; j < numJoints; ++j)
                             {
                                 mJoints[j].UpdateWorldRT();
                             }
@@ -170,17 +170,17 @@ bool IKController::Update(double applicationTime)
     {
         for (size_t iter = 0; iter < mNumIterations; ++iter)
         {
-            for (int k = 0; k < numJoints; ++k)
+            for (int32_t k = 0; k < numJoints; ++k)
             {
                 auto& joint = mJoints[k];
 
-                for (int axis = 0; axis < 3; ++axis)
+                for (int32_t axis = 0; axis < 3; ++axis)
                 {
                     if (joint.allowTranslation[axis])
                     {
                         if (joint.UpdateLocalT(axis, mGoals))
                         {
-                            for (int j = k; j < numJoints; ++j)
+                            for (int32_t j = k; j < numJoints; ++j)
                             {
                                 mJoints[j].UpdateWorldRT();
                             }
@@ -188,13 +188,13 @@ bool IKController::Update(double applicationTime)
                     }
                 }
 
-                for (int axis = 0; axis < 3; ++axis)
+                for (int32_t axis = 0; axis < 3; ++axis)
                 {
                     if (joint.allowRotation[axis])
                     {
                         if (joint.UpdateLocalR(axis, mGoals))
                         {
-                            for (int j = k; j < numJoints; ++j)
+                            for (int32_t j = k; j < numJoints; ++j)
                             {
                                 mJoints[j].UpdateWorldRT();
                             }
@@ -263,7 +263,7 @@ void IKController::Joint::UpdateWorldRT()
     }
 }
 
-Vector3<float> IKController::Joint::GetAxis(int axis)
+Vector3<float> IKController::Joint::GetAxis(int32_t axis)
 {
     const Spatial* parent = object->GetParent();
     if (parent)
@@ -277,7 +277,7 @@ Vector3<float> IKController::Joint::GetAxis(int axis)
     }
 }
 
-bool IKController::Joint::UpdateLocalT(int axis, std::vector<Goal> const& goals)
+bool IKController::Joint::UpdateLocalT(int32_t axis, std::vector<Goal> const& goals)
 {
     Vector3<float> U = GetAxis(axis);
     float numer = 0.0f;
@@ -342,7 +342,7 @@ bool IKController::Joint::UpdateLocalT(int axis, std::vector<Goal> const& goals)
     return true;
 }
 
-bool IKController::Joint::UpdateLocalR(int axis, std::vector<Goal> const& goals)
+bool IKController::Joint::UpdateLocalR(int32_t axis, std::vector<Goal> const& goals)
 {
     Vector3<float> U = GetAxis(axis);
     float numer = 0.0f;

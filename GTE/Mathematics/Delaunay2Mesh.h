@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -35,12 +35,12 @@ namespace gte
         }
 
         // Mesh information.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mDelaunay->GetNumVertices();
         }
 
-        inline int GetNumTriangles() const
+        inline int32_t GetNumTriangles() const
         {
             return mDelaunay->GetNumTriangles();
         }
@@ -50,23 +50,23 @@ namespace gte
             return mDelaunay->GetVertices();
         }
 
-        inline int const* GetIndices() const
+        inline int32_t const* GetIndices() const
         {
             return &mDelaunay->GetIndices()[0];
         }
 
-        inline int const* GetAdjacencies() const
+        inline int32_t const* GetAdjacencies() const
         {
             return &mDelaunay->GetAdjacencies()[0];
         }
 
-        inline int GetInvalidIndex() const
+        inline int32_t GetInvalidIndex() const
         {
             return mDelaunay->negOne;
         }
 
         // Containment queries.
-        int GetContainingTriangle(Vector2<InputType> const& P) const
+        int32_t GetContainingTriangle(Vector2<InputType> const& P) const
         {
             // VS 2019 16.8.1 generates LNT1006 "Local variable is not
             // initialized." Incorrect, because the default constructor
@@ -75,19 +75,19 @@ namespace gte
             return mDelaunay->GetContainingTriangle(P, info);
         }
 
-        bool GetVertices(int t, std::array<Vector2<InputType>, 3>& vertices) const
+        bool GetVertices(int32_t t, std::array<Vector2<InputType>, 3>& vertices) const
         {
             if (mDelaunay->GetDimension() == 2)
             {
-                std::array<int, 3> indices = { 0, 0, 0 };
+                std::array<int32_t, 3> indices = { 0, 0, 0 };
                 if (mDelaunay->GetIndices(t, indices))
                 {
                     PrimalQuery2<ComputeType> const& query = mDelaunay->GetQuery();
                     Vector2<ComputeType> const* ctVertices = query.GetVertices();
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         Vector2<ComputeType> const& V = ctVertices[indices[i]];
-                        for (int j = 0; j < 2; ++j)
+                        for (int32_t j = 0; j < 2; ++j)
                         {
                             vertices[i][j] = (InputType)V[j];
                         }
@@ -98,29 +98,29 @@ namespace gte
             return false;
         }
 
-        bool GetIndices(int t, std::array<int, 3>& indices) const
+        bool GetIndices(int32_t t, std::array<int32_t, 3>& indices) const
         {
             return mDelaunay->GetIndices(t, indices);
         }
 
-        bool GetAdjacencies(int t, std::array<int, 3>& adjacencies) const
+        bool GetAdjacencies(int32_t t, std::array<int32_t, 3>& adjacencies) const
         {
             return mDelaunay->GetAdjacencies(t, adjacencies);
         }
 
-        bool GetBarycentrics(int t, Vector2<InputType> const& P, std::array<InputType, 3>& bary) const
+        bool GetBarycentrics(int32_t t, Vector2<InputType> const& P, std::array<InputType, 3>& bary) const
         {
-            std::array<int, 3> indices = { 0, 0, 0 };
+            std::array<int32_t, 3> indices = { 0, 0, 0 };
             if (mDelaunay->GetIndices(t, indices))
             {
                 PrimalQuery2<ComputeType> const& query = mDelaunay->GetQuery();
                 Vector2<ComputeType> const* vertices = query.GetVertices();
                 Vector2<RationalType> rtP{ P[0], P[1] };
                 std::array<Vector2<RationalType>, 3> rtV;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     Vector2<ComputeType> const& V = vertices[indices[i]];
-                    for (int j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         rtV[i][j] = (RationalType)V[j];
                     }
@@ -129,7 +129,7 @@ namespace gte
                 std::array<RationalType, 3> rtBary;
                 if (ComputeBarycentrics(rtP, rtV[0], rtV[1], rtV[2], rtBary.data()))
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         bary[i] = (InputType)rtBary[i];
                     }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -30,17 +30,17 @@
 //          UInteger& operator=(UInteger const& number);
 //          UInteger(UInteger&& number);
 //          UInteger& operator=(UInteger&& number);
-//          void SetNumBits(int numBits);
+//          void SetNumBits(int32_t numBits);
 //          int32_t GetNumBits() const;
 //          bool operator==(UInteger const& number) const;
 //          bool operator< (UInteger const& number) const;
 //          void Add(UInteger const& n0, UInteger const& n1);
 //          void Sub(UInteger const& n0, UInteger const& n1);
 //          void Mul(UInteger const& n0, UInteger const& n1);
-//          void ShiftLeft(UInteger const& number, int shift);
+//          void ShiftLeft(UInteger const& number, int32_t shift);
 //          int32_t ShiftRightToOdd(UInteger const& number);
 //          int32_t RoundUp();
-//          uint64_t GetPrefix(int numRequested) const;
+//          uint64_t GetPrefix(int32_t numRequested) const;
 //          bool Write(std::ofstream& output) const;
 //          bool Read(std::ifstream& input);
 //      };
@@ -226,7 +226,7 @@ namespace gte
 
             // Get the leading '+' or '-' if it exists.
             std::string intNumber;
-            int sign;
+            int32_t sign;
             if (number[0] == '+')
             {
                 intNumber = number.substr(1);
@@ -572,7 +572,7 @@ namespace gte
         BSNumber operator*(BSNumber const& number) const
         {
             BSNumber result;  // = 0
-            int sign = mSign * number.mSign;
+            int32_t sign = mSign * number.mSign;
             if (sign != 0)
             {
                 result.mSign = sign;
@@ -665,7 +665,7 @@ namespace gte
         // valid for a nonnegative integer without a leading '+' sign.
         static BSNumber ConvertToInteger(std::string const& number)
         {
-            int digit = static_cast<int>(number.back()) - static_cast<int>('0');
+            int32_t digit = static_cast<int32_t>(number.back()) - static_cast<int32_t>('0');
             BSNumber x(digit);
             if (number.size() > 1)
             {
@@ -674,7 +674,7 @@ namespace gte
                 BSNumber ten(10), pow10(10);
                 for (size_t i = 1, j = number.size() - 2; i < number.size(); ++i, --j)
                 {
-                    digit = static_cast<int>(number[j]) - static_cast<int>('0');
+                    digit = static_cast<int32_t>(number[j]) - static_cast<int32_t>('0');
                     if (digit > 0)
                     {
                         x += BSNumber(digit) * pow10;
@@ -1071,7 +1071,7 @@ namespace gte
         int32_t inCurrent = inSize - 1;
 
         int32_t lastBit = -1;
-        for (int i = precisionM1; i >= 0; --i)
+        for (int32_t i = precisionM1; i >= 0; --i)
         {
             if (inBits[inCurrent] & inMask)
             {
@@ -1268,7 +1268,7 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSNumber<UInteger> frexp(gte::BSNumber<UInteger> const& x, int* exponent)
+    inline gte::BSNumber<UInteger> frexp(gte::BSNumber<UInteger> const& x, int32_t* exponent)
     {
         if (x.GetSign() != 0)
         {
@@ -1285,7 +1285,7 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSNumber<UInteger> ldexp(gte::BSNumber<UInteger> const& x, int exponent)
+    inline gte::BSNumber<UInteger> ldexp(gte::BSNumber<UInteger> const& x, int32_t exponent)
     {
         gte::BSNumber<UInteger> result = x;
         result.SetBiasedExponent(result.GetBiasedExponent() + exponent);
@@ -1390,7 +1390,7 @@ namespace gte
     }
 
     template <typename UInteger>
-    inline int isign(BSNumber<UInteger> const& x)
+    inline int32_t isign(BSNumber<UInteger> const& x)
     {
         return isign((double)x);
     }

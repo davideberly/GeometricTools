@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.12.20
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Mathematics/Logger.h>
@@ -16,26 +16,26 @@ GL45InputLayout::~GL45InputLayout()
     glDeleteVertexArrays(1, &mVArrayHandle);
 }
 
-GL45InputLayout::GL45InputLayout(GLuint, GLuint vbufferHandle,
-    VertexBuffer const* vbuffer)
+GL45InputLayout::GL45InputLayout(GLuint, GLuint vbufferHandle, VertexBuffer const* vbuffer)
     :
     mVBufferHandle(vbufferHandle),
-    mNumAttributes(0)
+    mVArrayHandle(0),
+    mNumAttributes(0),
+    mAttributes{}
 {
     glGenVertexArrays(1, &mVArrayHandle);
     glBindVertexArray(mVArrayHandle);
 
-    std::memset(&mAttributes[0], 0, VA_MAX_ATTRIBUTES*sizeof(mAttributes[0]));
     if (vbuffer)
     {
         VertexFormat const& format = vbuffer->GetFormat();
         mNumAttributes = format.GetNumAttributes();
-        for (int i = 0; i < mNumAttributes; ++i)
+        for (int32_t i = 0; i < mNumAttributes; ++i)
         {
             Attribute& attribute = mAttributes[i];
 
-            DFType type;
-            unsigned int unit, offset;
+            DFType type{};
+            uint32_t unit{}, offset{};
             format.GetAttribute(i, attribute.semantic, type, unit, offset);
 
             attribute.numChannels = static_cast<GLint>(

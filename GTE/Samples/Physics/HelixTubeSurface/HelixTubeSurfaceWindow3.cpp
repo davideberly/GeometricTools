@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include "HelixTubeSurfaceWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -26,7 +26,7 @@ HelixTubeSurfaceWindow3::HelixTubeSurfaceWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
 
@@ -51,7 +51,7 @@ void HelixTubeSurfaceWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool HelixTubeSurfaceWindow3::OnCharPress(unsigned char key, int x, int y)
+bool HelixTubeSurfaceWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -79,7 +79,7 @@ bool HelixTubeSurfaceWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool HelixTubeSurfaceWindow3::OnKeyDown(int key, int x, int y)
+bool HelixTubeSurfaceWindow3::OnKeyDown(int32_t key, int32_t x, int32_t y)
 {
     if (key == KEY_UP)
     {
@@ -131,11 +131,11 @@ void HelixTubeSurfaceWindow3::CreateScene()
     desc.wantCCW = false;
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, desc.numVertices);
     auto vertices = vbuffer->Get<Vertex>();
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, desc.numTriangles, sizeof(uint32_t));
 
     desc.vertexAttributes =
     {
@@ -151,14 +151,15 @@ void HelixTubeSurfaceWindow3::CreateScene()
 
     // The texture coordinates are in [0,1]^2.  Allow the texture to repeat
     // in the direction along the medial curve.
-    for (unsigned int i = 0; i < vbuffer->GetNumElements(); ++i)
+    for (uint32_t i = 0; i < vbuffer->GetNumElements(); ++i)
     {
         vertices[i].tcoord[1] *= 32.0f;
     }
 
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Grating.png"), false);
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     mHelixTube = std::make_shared<Visual>(vbuffer, ibuffer, effect);
     mHelixTube->Update();
@@ -169,14 +170,14 @@ void HelixTubeSurfaceWindow3::CreateCurve()
 {
     // Sample points on a looped helix (first and last point must match).
     float const fourPi = static_cast<float>(2.0 * GTE_C_TWO_PI);
-    int const numSegments = 32;
-    int const numSegmentsP1 = numSegments + 1;
+    int32_t const numSegments = 32;
+    int32_t const numSegmentsP1 = numSegments + 1;
     float const invNumSegments = 1.0f / static_cast<float>(numSegments);
     float const invNumSegmentsP1 = 1.0f / static_cast<float>(numSegmentsP1);
     std::vector<float> times(numSegmentsP1);
     std::vector<Vector3<float>> points(numSegmentsP1);
     float t;
-    int i;
+    int32_t i;
 
     for (i = 0; i <= numSegmentsP1 / 2; ++i)
     {

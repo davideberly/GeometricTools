@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "BufferUpdatingWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -19,31 +19,31 @@ BufferUpdatingWindow3::BufferUpdatingWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     // Create a flat surface with a gridded texture.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     mSurface = mf.CreateRectangle(NUM_SAMPLES, NUM_SAMPLES, 1.0f, 1.0f);
-    auto vbuffer = mSurface->GetVertexBuffer();
+    auto const& vbuffer = mSurface->GetVertexBuffer();
 
 #if defined(TEST_UPDATE)
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
 #endif
 #if defined(TEST_COPY_CPU_TO_GPU)
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
-    vbuffer->SetCopyType(Resource::COPY_CPU_TO_STAGING);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    vbuffer->SetCopy(Resource::Copy::CPU_TO_STAGING);
 #endif
 #if defined(TEST_COPY_GPU_TO_CPU)
     // Start with flat height field, offset the middle row on CPU and
     // copy to GPU, copy from GPU to CPU, modify the middle row, copy
     // from CPU to GPU.  Thus, we need the COPY_BIDIRECTIONAL flag.  If
     // all you do is copy from GPU to CPU, then use COPY_STAGING_TO_CPU.
-    vbuffer->SetUsage(Resource::DYNAMIC_UPDATE);
-    vbuffer->SetCopyType(Resource::COPY_BIDIRECTIONAL);
+    vbuffer->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+    vbuffer->SetCopy(Resource::Copy::BIDIRECTIONAL);
 #endif
     mEngine->Bind(vbuffer);
 
@@ -52,8 +52,8 @@ BufferUpdatingWindow3::BufferUpdatingWindow3(Parameters& parameters)
     auto texture = WICFileIO::Load(path, true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory,
-        texture, SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP,
-        SamplerState::CLAMP);
+        texture, SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP);
     mSurface->SetEffect(effect);
     mPVWMatrices.Subscribe(mSurface->worldTransform, effect->GetPVWMatrixConstant());
     mTrackBall.Attach(mSurface);
@@ -73,13 +73,13 @@ void BufferUpdatingWindow3::OnIdle()
     }
 
     // Offset the middle row of vertices of the flat surface.
-    auto vbuffer = mSurface->GetVertexBuffer();
-    unsigned int saveOffset = vbuffer->GetOffset();
-    unsigned int saveNumActiveElements = vbuffer->GetNumActiveElements();
+    auto const& vbuffer = mSurface->GetVertexBuffer();
+    uint32_t saveOffset = vbuffer->GetOffset();
+    uint32_t saveNumActiveElements = vbuffer->GetNumActiveElements();
     vbuffer->SetNumActiveElements(NUM_SAMPLES);
     vbuffer->SetOffset(NUM_SAMPLES * NUM_SAMPLES / 2);
     Vertex* vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < vbuffer->GetNumActiveElements(); ++i)
+    for (uint32_t i = 0; i < vbuffer->GetNumActiveElements(); ++i)
     {
         vertices[i + vbuffer->GetOffset()].position[2] = 1.0f;
     }
@@ -98,7 +98,7 @@ void BufferUpdatingWindow3::OnIdle()
     mEngine->CopyCpuToGpu(vbuffer);
     mEngine->CopyGpuToCpu(vbuffer);
     float invNumElements = 1.0f / static_cast<float>(vbuffer->GetNumActiveElements());
-    for (unsigned int i = 0; i < vbuffer->GetNumActiveElements(); ++i)
+    for (uint32_t i = 0; i < vbuffer->GetNumActiveElements(); ++i)
     {
         vertices[i + vbuffer->GetOffset()].position[2] -= i * invNumElements;
     }
@@ -115,7 +115,7 @@ void BufferUpdatingWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool BufferUpdatingWindow3::OnCharPress(unsigned char key, int x, int y)
+bool BufferUpdatingWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {

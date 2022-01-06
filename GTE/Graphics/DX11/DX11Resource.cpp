@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Resource.h>
@@ -24,14 +24,14 @@ DX11Resource::DX11Resource(Resource const* gtResource)
     // otherwise.
 }
 
-D3D11_MAPPED_SUBRESOURCE DX11Resource::MapForWrite(ID3D11DeviceContext* context, unsigned int sri)
+D3D11_MAPPED_SUBRESOURCE DX11Resource::MapForWrite(ID3D11DeviceContext* context, uint32_t sri)
 {
     D3D11_MAPPED_SUBRESOURCE mapped;
     DX11Log(context->Map(GetDXResource(), sri, D3D11_MAP_WRITE_DISCARD, 0, &mapped));
     return mapped;
 }
 
-void DX11Resource::Unmap(ID3D11DeviceContext* context, unsigned int sri)
+void DX11Resource::Unmap(ID3D11DeviceContext* context, uint32_t sri)
 {
     context->Unmap(GetDXResource(), sri);
 }
@@ -49,7 +49,7 @@ void DX11Resource::PreparedForCopy(D3D11_CPU_ACCESS_FLAG access) const
     LogAssert(mStaging != nullptr, "Staging object does not exist.");
 
     // Verify the copy type.
-    LogAssert((msStagingAccess[GetResource()->GetCopyType()] & access) != 0, "Invalid copy type.");
+    LogAssert((msStagingAccess[GetResource()->GetCopy()] & access) != 0, "Invalid copy type.");
 }
 
 

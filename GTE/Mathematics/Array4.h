@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 // The Array4 class represents a 4-dimensional array that minimizes the number
@@ -124,12 +125,12 @@ namespace gte
             return mBound3;
         }
 
-        inline T** const* operator[](int cuboid) const
+        inline T** const* operator[](int32_t cuboid) const
         {
             return mIndirect3[cuboid];
         }
 
-        inline T*** operator[](int cuboid)
+        inline T*** operator[](int32_t cuboid)
         {
             return mIndirect3[cuboid];
         }

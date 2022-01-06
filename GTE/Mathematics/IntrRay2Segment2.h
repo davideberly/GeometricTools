@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -31,7 +31,7 @@ namespace gte
             // in a single point), or 2 (ray and segment are collinear and
             // intersect in a segment).
             bool intersect;
-            int numIntersections;
+            int32_t numIntersections;
         };
 
         Result operator()(Ray2<T> const& ray, Segment2<T> const& segment)
@@ -61,7 +61,7 @@ namespace gte
                     result.numIntersections = 0;
                 }
             }
-            else if (llResult.numIntersections == std::numeric_limits<int>::max())
+            else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 // Compute the location of the right-most point of the segment
                 // relative to the ray direction.
@@ -113,7 +113,7 @@ namespace gte
             // in a single point), or 2 (ray and segment are collinear and
             // intersect in a segment).
             bool intersect;
-            int numIntersections;
+            int32_t numIntersections;
 
             // If numIntersections is 1, the intersection is
             //   point[0] = ray.origin + rayParameter[0] * ray.direction
@@ -158,7 +158,7 @@ namespace gte
                     result.numIntersections = 0;
                 }
             }
-            else if (llResult.numIntersections == std::numeric_limits<int>::max())
+            else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
                 // Compute t for which segment.origin =
                 // ray.origin + t*ray.direction.
@@ -182,7 +182,7 @@ namespace gte
                 {
                     result.intersect = true;
                     result.numIntersections = iiResult.numIntersections;
-                    for (int i = 0; i < iiResult.numIntersections; ++i)
+                    for (int32_t i = 0; i < iiResult.numIntersections; ++i)
                     {
                         result.rayParameter[i] = iiResult.overlap[i];
                         result.segmentParameter[i] = iiResult.overlap[i] - t;

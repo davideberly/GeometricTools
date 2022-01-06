@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -45,8 +45,8 @@ namespace gte
         // lower-left corner of the window, the x-axis is directed rightward,
         // the y-axis is directed upward, and the depth range is a subset of
         // [-1,1].
-        virtual void SetViewport(int x, int y, int w, int h) = 0;
-        virtual void GetViewport(int& x, int& y, int& w, int& h) const = 0;
+        virtual void SetViewport(int32_t x, int32_t y, int32_t w, int32_t h) = 0;
+        virtual void GetViewport(int32_t& x, int32_t& y, int32_t& w, int32_t& h) const = 0;
         virtual void SetDepthRange(float zmin, float zmax) = 0;
         virtual void GetDepthRange(float& zmin, float& zmax) const = 0;
 
@@ -59,7 +59,7 @@ namespace gte
         virtual std::string GetShaderName(std::string const& name) const = 0;
 
         // Window resizing.
-        virtual bool Resize(unsigned int w, unsigned int h) = 0;
+        virtual bool Resize(uint32_t w, uint32_t h) = 0;
 
         // Support for clearing the color, depth, and stencil back buffers.
         inline void SetClearColor(std::array<float, 4> const& clearColor)
@@ -72,7 +72,7 @@ namespace gte
             mClearDepth = clearDepth;
         }
 
-        inline void SetClearStencil(unsigned int clearStencil)
+        inline void SetClearStencil(uint32_t clearStencil)
         {
             mClearStencil = clearStencil;
         }
@@ -87,12 +87,12 @@ namespace gte
             return mClearDepth;
         }
 
-        inline unsigned int GetClearStencil() const
+        inline uint32_t GetClearStencil() const
         {
             return mClearStencil;
         }
 
-        virtual void DisplayColorBuffer(unsigned int syncInterval) = 0;
+        virtual void DisplayColorBuffer(uint32_t syncInterval) = 0;
 
         // Support for bitmapped fonts used in text rendering.  The default
         // font is Arial (height 18, no italics, no bold).
@@ -180,12 +180,12 @@ namespace gte
         virtual void DestroyDefaultGlobalState();
 
         // The window size.
-        unsigned int mXSize, mYSize;
+        uint32_t mXSize, mYSize;
 
         // Clear values.
         std::array<float, 4> mClearColor;
         float mClearDepth;
-        unsigned int mClearStencil;
+        uint32_t mClearStencil;
 
         // Fonts for text rendering.
         std::shared_ptr<Font> mDefaultFont;

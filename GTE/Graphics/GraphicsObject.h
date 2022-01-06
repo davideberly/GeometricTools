@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -51,12 +51,12 @@ namespace gte
     //          DepthStencilState
     //          RasterizerState
 
-    // The GraphicsObjectType enumeration is for run-time type information.
+    // The graphics object types GT_* are for run-time type information.
     // The typeid() mechanism does not work in Unbind() calls because the
     // listeners receive 'this' from a base class during a destructor call.
     enum GraphicsObjectType
     {
-        GT_GRAPHICS_OBJECT,  // abstract
+        GT_NONE,  // abstract
         GT_RESOURCE,  // abstract
         GT_BUFFER,  // abstract
         GT_CONSTANT_BUFFER,
@@ -89,7 +89,7 @@ namespace gte
         GT_BLEND_STATE,
         GT_DEPTH_STENCIL_STATE,
         GT_RASTERIZER_STATE,
-        GT_NUM_TYPES
+        GT_NUM_TYPES,
     };
 
     class GraphicsObject

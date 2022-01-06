@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 5.12.2021.08.01
+// Version: 6.0.2022.01.06
 
 #include "DistanceLine2Box2Window2.h"
 
@@ -132,7 +132,7 @@ void DistanceLine2Box2Window2::DrawScreenOverlay()
     mEngine->Draw(8, 24, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
 }
 
-bool DistanceLine2Box2Window2::OnCharPress(unsigned char key, int x, int y)
+bool DistanceLine2Box2Window2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     double const trnDelta = 1.0;
     double const rotDelta = GTE_C_DEG_TO_RAD;

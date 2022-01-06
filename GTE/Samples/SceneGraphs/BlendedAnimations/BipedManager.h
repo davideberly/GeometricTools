@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -115,7 +115,7 @@ public:
     // walk when blendWalkToRun is 'true' in the Update function.  The input
     // walkRunCount is the maximum number of times Update samples the blend
     // of walk and run before transitioning to walk or run.
-    void Initialize(int idleWalkCount, int walkCount, int walkRunCount);
+    void Initialize(int32_t idleWalkCount, int32_t walkCount, int32_t walkRunCount);
 
     // Select and sample the appropriate animation.
     //
@@ -194,14 +194,14 @@ private:
     NodeCtrlArray mIdleWalkArray, mWalkRunArray;
 
     // Finite state machine.
-    enum Animation
+    struct Animation
     {
-        ANIM_IDLE,
-        ANIM_IDLE_WALK,
-        ANIM_WALK,
-        ANIM_WALK_RUN,
-        ANIM_RUN,
-        NUM_STATES
+        static uint32_t constexpr IDLE = 0;
+        static uint32_t constexpr IDLE_WALK = 1;
+        static uint32_t constexpr WALK = 2;
+        static uint32_t constexpr WALK_RUN = 3;
+        static uint32_t constexpr RUN = 4;
+        static uint32_t constexpr NUM_STATES = 5;
     };
 
     void ContinueIdleWalk();
@@ -217,7 +217,8 @@ private:
     void TransitionWalkToWalkIdle();
     void TransitionWalkIdleToIdle();
 
-    Animation mState;
-    int mCount, mCountMax[NUM_STATES];
+    uint32_t mState;
+    int32_t mCount;
+    std::array<int32_t, Animation::NUM_STATES> mCountMax;
     float mWeight, mDeltaWeight0, mDeltaWeight1;
 };

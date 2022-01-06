@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -47,14 +47,14 @@ namespace gte
         // array has no elements, and the triangle face orientation is set to
         // clockwise.
         Polyhedron3(std::shared_ptr<std::vector<Vector3<Real>>> const& vertexPool,
-            int numIndices, int const* indices, bool counterClockwise)
+            int32_t numIndices, int32_t const* indices, bool counterClockwise)
             :
             mVertexPool(vertexPool),
             mCounterClockwise(counterClockwise)
         {
             if (vertexPool && indices && numIndices >= 12 && (numIndices % 3) == 0)
             {
-                for (int i = 0; i < numIndices; ++i)
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
                     mUniqueIndices.insert(indices[i]);
                 }
@@ -89,12 +89,12 @@ namespace gte
             return *mVertexPool.get();
         }
 
-        inline std::set<int> const& GetUniqueIndices() const
+        inline std::set<int32_t> const& GetUniqueIndices() const
         {
             return mUniqueIndices;
         }
 
-        inline std::vector<int> const& GetIndices() const
+        inline std::vector<int32_t> const& GetIndices() const
         {
             return mIndices;
         }
@@ -111,7 +111,7 @@ namespace gte
             if (mVertexPool)
             {
                 auto vertexPool = GetVertices();
-                for (int index : mUniqueIndices)
+                for (int32_t index : mUniqueIndices)
                 {
                     average += vertexPool[index];
                 }
@@ -126,13 +126,13 @@ namespace gte
             if (mVertexPool)
             {
                 auto vertexPool = GetVertices();
-                int const numTriangles = static_cast<int>(mIndices.size()) / 3;
-                int const* indices = mIndices.data();
-                for (int t = 0; t < numTriangles; ++t)
+                int32_t const numTriangles = static_cast<int32_t>(mIndices.size()) / 3;
+                int32_t const* indices = mIndices.data();
+                for (int32_t t = 0; t < numTriangles; ++t)
                 {
-                    int v0 = *indices++;
-                    int v1 = *indices++;
-                    int v2 = *indices++;
+                    int32_t v0 = *indices++;
+                    int32_t v1 = *indices++;
+                    int32_t v2 = *indices++;
                     Vector3<Real> edge0 = vertexPool[v1] - vertexPool[v0];
                     Vector3<Real> edge1 = vertexPool[v2] - vertexPool[v0];
                     Vector3<Real> cross = Cross(edge0, edge1);
@@ -149,13 +149,13 @@ namespace gte
             if (mVertexPool)
             {
                 auto vertexPool = GetVertices();
-                int const numTriangles = static_cast<int>(mIndices.size()) / 3;
-                int const* indices = mIndices.data();
-                for (int t = 0; t < numTriangles; ++t)
+                int32_t const numTriangles = static_cast<int32_t>(mIndices.size()) / 3;
+                int32_t const* indices = mIndices.data();
+                for (int32_t t = 0; t < numTriangles; ++t)
                 {
-                    int v0 = *indices++;
-                    int v1 = *indices++;
-                    int v2 = *indices++;
+                    int32_t v0 = *indices++;
+                    int32_t v1 = *indices++;
+                    int32_t v2 = *indices++;
                     volume += DotCross(vertexPool[v0], vertexPool[v1], vertexPool[v2]);
                 }
                 volume /= (Real)6;
@@ -165,8 +165,8 @@ namespace gte
 
     private:
         std::shared_ptr<std::vector<Vector3<Real>>> mVertexPool;
-        std::set<int> mUniqueIndices;
-        std::vector<int> mIndices;
+        std::set<int32_t> mUniqueIndices;
+        std::vector<int32_t> mIndices;
         bool mCounterClockwise;
     };
 }

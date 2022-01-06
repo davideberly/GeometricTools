@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.03.15
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -84,7 +84,7 @@ namespace gte
             // Factor a^2 = r^2 * 2^e, where r^2 in [1/2,1). Compute s^2 and
             // the exponent used to generate the estimate of sqrt(a^2).
             Rational sSqr;
-            int exponentA;
+            int32_t exponentA;
             PreprocessSqr(aSqr, sSqr, exponentA);
 
             // Use the FPU to estimate s = sqrt(sSqr) to 53-bit precision with
@@ -450,7 +450,7 @@ namespace gte
         }
 
     private:
-        void PreprocessSqr(Rational const& aSqr, Rational& rSqr, int& exponentA)
+        void PreprocessSqr(Rational const& aSqr, Rational& rSqr, int32_t& exponentA)
         {
             // Factor a^2 = r^2 * 2^e, where r^2 in [1/2,1).
             int32_t exponentASqr;
@@ -470,7 +470,7 @@ namespace gte
             }
         }
 
-        Rational GetMinOfSqrt(Rational const& rSqr, int exponent)
+        Rational GetMinOfSqrt(Rational const& rSqr, int32_t exponent)
         {
             // Compute a lower bound on the square root of r^2.
             double lowerRSqr = 0.0;
@@ -482,7 +482,7 @@ namespace gte
             return aMin;
         }
 
-        Rational GetMaxOfSqrt(Rational const& rSqr, int exponent)
+        Rational GetMaxOfSqrt(Rational const& rSqr, int32_t exponent)
         {
             // Compute an upper bound on the square root of r^2.
             double upperRSqr = 0.0;

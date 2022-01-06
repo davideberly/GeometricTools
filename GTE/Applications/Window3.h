@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -36,31 +36,31 @@ namespace gte
         // to OnDisplay() or OnIdle().  The base class is unaware of which
         // display method you use, so to have a visual update you must
         // override OnResize
-        //    bool MyApplication::OnResize(int xSize, int ySize)
+        //    bool MyApplication::OnResize(int32_t xSize, int32_t ySize)
         //    {
         //        if (Window3::OnResize(xSize, ySize))
         //        {
         //            OnIdle();  // or OnDisplay() or MyOwnDrawFunction() ...
         //        }
         //    }
-        virtual bool OnResize(int xSize, int ySize) override;
+        virtual bool OnResize(int32_t xSize, int32_t ySize) override;
 
         // The key 't' decreases the translation speed and the 'T' key
         // increases the translation speed.  The 'r' key decreases the
         // rotation speed and the 'R' key increases the rotation speed.
-        virtual bool OnCharPress(unsigned char key, int x, int y) override;
+        virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
         // The appropriate camera rig motion is selected when 'key' is mapped
         // to a camera motion.
-        virtual bool OnKeyDown(int key, int x, int y) override;
-        virtual bool OnKeyUp(int key, int x, int y) override;
+        virtual bool OnKeyDown(int32_t key, int32_t x, int32_t y) override;
+        virtual bool OnKeyUp(int32_t key, int32_t x, int32_t y) override;
 
         // Control the rotation of the trackball.
         virtual bool OnMouseClick(MouseButton button, MouseState state,
-            int x, int y, unsigned int modifiers) override;
+            int32_t x, int32_t y, uint32_t modifiers) override;
 
-        virtual bool OnMouseMotion(MouseButton button, int x, int y,
-            unsigned int modifiers) override;
+        virtual bool OnMouseMotion(MouseButton button, int32_t x, int32_t y,
+            uint32_t modifiers) override;
 
     protected:
         BufferUpdater mUpdater;

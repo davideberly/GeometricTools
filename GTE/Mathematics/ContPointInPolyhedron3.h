@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -43,7 +43,7 @@ namespace gte
             // When you view the face from outside, the vertices are
             // counterclockwise ordered.  The indices array stores the indices
             // into the vertex array.
-            std::array<int, 3> indices;
+            std::array<int32_t, 3> indices;
 
             // The normal vector is unit length and points to the outside of
             // the polyhedron.
@@ -51,8 +51,8 @@ namespace gte
         };
 
         // The Contains query will use ray-triangle intersection queries.
-        PointInPolyhedron3(int numPoints, Vector3<Real> const* points,
-            int numFaces, TriangleFace const* faces, int numRays,
+        PointInPolyhedron3(int32_t numPoints, Vector3<Real> const* points,
+            int32_t numFaces, TriangleFace const* faces, int32_t numRays,
             Vector3<Real> const* directions)
             :
             mNumPoints(numPoints),
@@ -74,7 +74,7 @@ namespace gte
             // When you view the face from outside, the vertices are
             // counterclockwise ordered.  The indices array stores the indices
             // into the vertex array.
-            std::vector<int> indices;
+            std::vector<int32_t> indices;
 
             // The normal vector is unit length and points to the outside of
             // the polyhedron.
@@ -92,9 +92,9 @@ namespace gte
         //   2 : Find the point of intersection of ray and plane of polygon.
         //       Test whether that point is inside the convex polygon using an
         //       O(log N) test.
-        PointInPolyhedron3(int numPoints, Vector3<Real> const* points,
-            int numFaces, ConvexFace const* faces, int numRays,
-            Vector3<Real> const* directions, unsigned int method)
+        PointInPolyhedron3(int32_t numPoints, Vector3<Real> const* points,
+            int32_t numFaces, ConvexFace const* faces, int32_t numRays,
+            Vector3<Real> const* directions, uint32_t method)
             :
             mNumPoints(numPoints),
             mPoints(points),
@@ -116,7 +116,7 @@ namespace gte
             // When you view the face from outside, the vertices are
             // counterclockwise ordered.  The Indices array stores the indices
             // into the vertex array.
-            std::vector<int> indices;
+            std::vector<int32_t> indices;
 
             // The normal vector is unit length and points to the outside of
             // the polyhedron.
@@ -125,7 +125,7 @@ namespace gte
             // Each simple face may be triangulated.  The indices are relative
             // to the vertex array.  Each triple of indices represents a
             // triangle in the triangulation.
-            std::vector<int> triangles;
+            std::vector<int32_t> triangles;
         };
 
         // The Contains query will use ray-simplepolygon intersection queries.
@@ -139,9 +139,9 @@ namespace gte
         //       Test whether that point is inside the polygon using an O(N)
         //       test.  The SimpleFace::Triangles array is not used for this
         //       method, so it does not have to be initialized for each face.
-        PointInPolyhedron3(int numPoints, Vector3<Real> const* points,
-            int numFaces, SimpleFace const* faces, int numRays,
-            Vector3<Real> const* directions, unsigned int method)
+        PointInPolyhedron3(int32_t numPoints, Vector3<Real> const* points,
+            int32_t numFaces, SimpleFace const* faces, int32_t numRays,
+            Vector3<Real> const* directions, uint32_t method)
             :
             mNumPoints(numPoints),
             mPoints(points),
@@ -227,14 +227,14 @@ namespace gte
         // For triangle faces.
         bool ContainsT0(Vector3<Real> const& p) const
         {
-            int insideCount = 0;
+            int32_t insideCount = 0;
 
             TIQuery<Real, Ray3<Real>, Triangle3<Real>> rtQuery;
             Triangle3<Real> triangle;
             Ray3<Real> ray;
             ray.origin = p;
 
-            for (int j = 0; j < mNumRays; ++j)
+            for (int32_t j = 0; j < mNumRays; ++j)
             {
                 ray.direction = mDirections[j];
 
@@ -242,7 +242,7 @@ namespace gte
                 bool odd = false;
 
                 TriangleFace const* face = mTFaces;
-                for (int i = 0; i < mNumFaces; ++i, ++face)
+                for (int32_t i = 0; i < mNumFaces; ++i, ++face)
                 {
                     // Attempt to quickly cull the triangle.
                     if (FastNoIntersect(ray, face->plane))
@@ -251,7 +251,7 @@ namespace gte
                     }
 
                     // Get the triangle vertices.
-                    for (int k = 0; k < 3; ++k)
+                    for (int32_t k = 0; k < 3; ++k)
                     {
                         triangle.v[k] = mPoints[face->indices[k]];
                     }
@@ -276,14 +276,14 @@ namespace gte
         // For convex faces.
         bool ContainsC0(Vector3<Real> const& p) const
         {
-            int insideCount = 0;
+            int32_t insideCount = 0;
 
             TIQuery<Real, Ray3<Real>, Triangle3<Real>> rtQuery;
             Triangle3<Real> triangle;
             Ray3<Real> ray;
             ray.origin = p;
 
-            for (int j = 0; j < mNumRays; ++j)
+            for (int32_t j = 0; j < mNumRays; ++j)
             {
                 ray.direction = mDirections[j];
 
@@ -291,7 +291,7 @@ namespace gte
                 bool odd = false;
 
                 ConvexFace const* face = mCFaces;
-                for (int i = 0; i < mNumFaces; ++i, ++face)
+                for (int32_t i = 0; i < mNumFaces; ++i, ++face)
                 {
                     // Attempt to quickly cull the triangle.
                     if (FastNoIntersect(ray, face->plane))
@@ -324,15 +324,15 @@ namespace gte
             return insideCount > mNumRays / 2;
         }
 
-        bool ContainsC1C2(Vector3<Real> const& p, unsigned int method) const
+        bool ContainsC1C2(Vector3<Real> const& p, uint32_t method) const
         {
-            int insideCount = 0;
+            int32_t insideCount = 0;
 
             FIQuery<Real, Ray3<Real>, Plane3<Real>> rpQuery;
             Ray3<Real> ray;
             ray.origin = p;
 
-            for (int j = 0; j < mNumRays; ++j)
+            for (int32_t j = 0; j < mNumRays; ++j)
             {
                 ray.direction = mDirections[j];
 
@@ -340,7 +340,7 @@ namespace gte
                 bool odd = false;
 
                 ConvexFace const* face = mCFaces;
-                for (int i = 0; i < mNumFaces; ++i, ++face)
+                for (int32_t i = 0; i < mNumFaces; ++i, ++face)
                 {
                     // Attempt to quickly cull the triangle.
                     if (FastNoIntersect(ray, face->plane))
@@ -386,7 +386,7 @@ namespace gte
 
                     // Test whether the intersection point is in the convex
                     // polygon.
-                    PointInPolygon2<Real> PIP(static_cast<int>(mProjVertices.size()),
+                    PointInPolygon2<Real> PIP(static_cast<int32_t>(mProjVertices.size()),
                         &mProjVertices[0]);
 
                     if (method == 1)
@@ -419,14 +419,14 @@ namespace gte
         // For simple faces.
         bool ContainsS0(Vector3<Real> const& p) const
         {
-            int insideCount = 0;
+            int32_t insideCount = 0;
 
             TIQuery<Real, Ray3<Real>, Triangle3<Real>> rtQuery;
             Triangle3<Real> triangle;
             Ray3<Real> ray;
             ray.origin = p;
 
-            for (int j = 0; j < mNumRays; ++j)
+            for (int32_t j = 0; j < mNumRays; ++j)
             {
                 ray.direction = mDirections[j];
 
@@ -434,7 +434,7 @@ namespace gte
                 bool odd = false;
 
                 SimpleFace const* face = mSFaces;
-                for (int i = 0; i < mNumFaces; ++i, ++face)
+                for (int32_t i = 0; i < mNumFaces; ++i, ++face)
                 {
                     // Attempt to quickly cull the triangle.
                     if (FastNoIntersect(ray, face->plane))
@@ -447,11 +447,11 @@ namespace gte
                     LogAssert(numTriangles > 0, "Triangulation must exist.");
 
                     // Process the triangles in a triangulation of the face.
-                    int const* currIndex = &face->triangles[0];
+                    int32_t const* currIndex = &face->triangles[0];
                     for (size_t t = 0; t < numTriangles; ++t)
                     {
                         // Get the triangle vertices.
-                        for (int k = 0; k < 3; ++k)
+                        for (int32_t k = 0; k < 3; ++k)
                         {
                             triangle.v[k] = mPoints[*currIndex++];
                         }
@@ -476,13 +476,13 @@ namespace gte
 
         bool ContainsS1(Vector3<Real> const& p) const
         {
-            int insideCount = 0;
+            int32_t insideCount = 0;
 
             FIQuery<Real, Ray3<Real>, Plane3<Real>> rpQuery;
             Ray3<Real> ray;
             ray.origin = p;
 
-            for (int j = 0; j < mNumRays; ++j)
+            for (int32_t j = 0; j < mNumRays; ++j)
             {
                 ray.direction = mDirections[j];
 
@@ -490,7 +490,7 @@ namespace gte
                 bool odd = false;
 
                 SimpleFace const* face = mSFaces;
-                for (int i = 0; i < mNumFaces; ++i, ++face)
+                for (int32_t i = 0; i < mNumFaces; ++i, ++face)
                 {
                     // Attempt to quickly cull the triangle.
                     if (FastNoIntersect(ray, face->plane))
@@ -536,7 +536,7 @@ namespace gte
 
                     // Test whether the intersection point is in the convex
                     // polygon.
-                    PointInPolygon2<Real> PIP(static_cast<int>(mProjVertices.size()),
+                    PointInPolygon2<Real> PIP(static_cast<int32_t>(mProjVertices.size()),
                         &mProjVertices[0]);
 
                     if (PIP.Contains(projIntersect))
@@ -555,16 +555,16 @@ namespace gte
             return insideCount > mNumRays / 2;
         }
 
-        int mNumPoints;
+        int32_t mNumPoints;
         Vector3<Real> const* mPoints;
 
-        int mNumFaces;
+        int32_t mNumFaces;
         TriangleFace const* mTFaces;
         ConvexFace const* mCFaces;
         SimpleFace const* mSFaces;
 
-        unsigned int mMethod;
-        int mNumRays;
+        uint32_t mMethod;
+        int32_t mNumRays;
         Vector3<Real> const* mDirections;
 
         // Temporary storage for those methods that reduce the problem to 2D

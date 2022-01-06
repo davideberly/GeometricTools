@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -34,11 +34,11 @@ namespace gte
         // that polyhedron.  This lets the operator() function know to create
         // the LCP solver once at construction time, thus avoiding the memory
         // management costs during the query.
-        DCPQuery(int numTriangles = 0)
+        DCPQuery(int32_t numTriangles = 0)
         {
             if (numTriangles > 0)
             {
-                int const n = numTriangles + 3;
+                int32_t const n = numTriangles + 3;
                 mLCP = std::make_unique<LCPSolver<T>>(n);
                 mMaxLCPIterations = mLCP->GetMaxIterations();
             }
@@ -69,13 +69,13 @@ namespace gte
 
             // The number of iterations used by LCPSolver regardless of
             // whether the query is successful.
-            int numLCPIterations;
+            int32_t numLCPIterations;
         };
 
         // Default maximum iterations is 144 (n = 12, maxIterations = n*n).
         // If the solver fails to converge, try increasing the maximum number
         // of iterations.
-        void SetMaxLCPIterations(int maxLCPIterations)
+        void SetMaxLCPIterations(int32_t maxLCPIterations)
         {
             mMaxLCPIterations = maxLCPIterations;
             if (mLCP)
@@ -88,12 +88,12 @@ namespace gte
         {
             Result result{};
 
-            int const numTriangles = static_cast<int>(polyhedron.planes.size());
+            int32_t const numTriangles = static_cast<int32_t>(polyhedron.planes.size());
             if (numTriangles == 0)
             {
                 // The polyhedron planes and aligned box need to be created.
                 result.queryIsSuccessful = false;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     result.closest[0][i] = (T)0;
                     result.closest[1][i] = (T)0;
@@ -104,7 +104,7 @@ namespace gte
                 return result;
             }
 
-            int const n = numTriangles + 3;
+            int32_t const n = numTriangles + 3;
 
             // Translate the point and convex polyhedron so that the
             // polyhedron is in the first octant.  The translation is not
@@ -113,11 +113,11 @@ namespace gte
             Vector4<T> hmin = HLift(polyhedron.alignedBox.min, (T)1);
 
             std::vector<T> q(n);
-            for (int r = 0; r < 3; ++r)
+            for (int32_t r = 0; r < 3; ++r)
             {
                 q[r] = polyhedron.alignedBox.min[r] - point[r];
             }
-            for (int r = 3, t = 0; r < n; ++r, ++t)
+            for (int32_t r = 3, t = 0; r < n; ++r, ++t)
             {
                 q[r] = -Dot(polyhedron.planes[t], hmin);
             }
@@ -132,18 +132,18 @@ namespace gte
             M[2 * static_cast<size_t>(n)] = (T)0;
             M[2 * static_cast<size_t>(n) + 1] = (T)0;
             M[2 * static_cast<size_t>(n) + 2] = (T)1;
-            for (int t = 0, c = 3; t < numTriangles; ++t, ++c)
+            for (int32_t t = 0, c = 3; t < numTriangles; ++t, ++c)
             {
                 Vector3<T> normal = HProject(polyhedron.planes[t]);
-                for (int r = 0; r < 3; ++r)
+                for (int32_t r = 0; r < 3; ++r)
                 {
                     M[c + static_cast<size_t>(n) * r] = normal[r];
                     M[r + static_cast<size_t>(n) * c] = -normal[r];
                 }
             }
-            for (int r = 3; r < n; ++r)
+            for (int32_t r = 3; r < n; ++r)
             {
-                for (int c = 3; c < n; ++c)
+                for (int32_t c = 3; c < n; ++c)
                 {
                     M[c + static_cast<size_t>(n) * r] = (T)0;
                 }
@@ -164,7 +164,7 @@ namespace gte
             {
                 result.queryIsSuccessful = true;
                 result.closest[0] = point;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     result.closest[1][i] = z[i] + polyhedron.alignedBox.min[i];
                 }
@@ -191,7 +191,7 @@ namespace gte
         }
 
     private:
-        int mMaxLCPIterations;
+        int32_t mMaxLCPIterations;
         std::unique_ptr<LCPSolver<T>> mLCP;
     };
 }

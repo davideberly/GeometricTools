@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CastleWindow3.h"
 
@@ -161,7 +161,7 @@ void CastleWindow3::CreateFrontHall()
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("FrontHall.txt");
 
-    for (int i = 0; i < 7; ++i)
+    for (int32_t i = 0; i < 7; ++i)
     {
         meshes[i]->name = name[i];
         meshes[i]->localTransform = local;
@@ -203,7 +203,7 @@ void CastleWindow3::CreateFrontRamp()
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("FrontRamp.txt");
 
-    for (int i = 0; i < 7; ++i)
+    for (int32_t i = 0; i < 7; ++i)
     {
         meshes[i]->localTransform = local;
         auto effect = CreateLTEffect(materials[i], textures[i]);
@@ -240,7 +240,7 @@ void CastleWindow3::CreateExterior()
     };
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("Exterior.txt");
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         meshes[i]->localTransform = local;
         auto effect = CreateLTEffect(materials[i], textures[i]);
@@ -292,7 +292,7 @@ void CastleWindow3::CreateCylinder02()
     };
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("Cylinder02.txt");
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         meshes[i]->localTransform = local;
         auto effect = CreateLTEffect(materials[i], textures[i]);
@@ -330,7 +330,7 @@ void CastleWindow3::CreateLargePort()
     mScene->AttachChild(mesh);
 }
 
-void CastleWindow3::CreateSmallPort(int i)
+void CastleWindow3::CreateSmallPort(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1("SmallPort.txt");
     mesh->name = "SmallPort[" + std::to_string(i) + "]";
@@ -349,7 +349,7 @@ void CastleWindow3::CreateSmallPort(int i)
     mScene->AttachChild(mesh);
 }
 
-void CastleWindow3::CreateRope(int i)
+void CastleWindow3::CreateRope(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1("Rope.txt");
     mesh->name = "Rope[" + std::to_string(i) + "]";
@@ -463,7 +463,7 @@ void CastleWindow3::CreateTerrain()
     };
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("Terrain.txt");
-    for (int i = 0; i < 21; ++i)
+    for (int32_t i = 0; i < 21; ++i)
     {
         meshes[i]->name = "Terrain." + name[i];
         auto effect = CreateLTEffect(materials[i], textures[i]);
@@ -509,7 +509,7 @@ float CastleWindow3::msWoodShieldXRotate[MAX_WOODSHIELDS] =
     45.0f     // 7 // neg scale
 };
 
-void CastleWindow3::CreateWoodShield(int i)
+void CastleWindow3::CreateWoodShield(int32_t i)
 {
     std::shared_ptr<Visual> mesh = std::make_shared<Visual>(
         mWoodShieldMesh->GetVertexBuffer(),
@@ -574,7 +574,7 @@ float CastleWindow3::msTorchZAngle[MAX_TORCHES] =
     -135.0f  // 17  // neg scale
 };
 
-void CastleWindow3::CreateTorch(int i)
+void CastleWindow3::CreateTorch(int32_t i)
 {
     // Node<torchNode>
     //     TriMesh<torchMetal>
@@ -649,7 +649,7 @@ float CastleWindow3::msKegZAngle[MAX_KEGS] =
     135.0f   // 3
 };
 
-void CastleWindow3::CreateKeg(int i)
+void CastleWindow3::CreateKeg(int32_t i)
 {
     // Node<kegNode>
     //     Node<verticalParent>
@@ -910,7 +910,7 @@ float CastleWindow3::msBarrelXAngle[MAX_BARRELS] =
     89.999988f   // 37
 };
 
-void CastleWindow3::CreateBarrel(int i)
+void CastleWindow3::CreateBarrel(int32_t i)
 {
     // Node<barrelNode>
     //     TriMesh<barrel>
@@ -1157,7 +1157,7 @@ Vector4<float> CastleWindow3::msDoorFramePivotTrn[35] =
     { -0.504759f, 0.000022f, 0.000000f, 1.0f },  // 83 // neg scale
 };
 
-std::string CastleWindow3::GetDoorFrameFilename(int i)
+std::string CastleWindow3::GetDoorFrameFilename(int32_t i)
 {
     if ((1 <= i && i <= 52) || (64 <= i && i <= 72))
     {
@@ -1178,7 +1178,7 @@ std::string CastleWindow3::GetDoorFrameFilename(int i)
     return "DoorFrame62.txt";
 }
 
-void CastleWindow3::CreateDoorFrame(int i)
+void CastleWindow3::CreateDoorFrame(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1(GetDoorFrameFilename(i));
     mesh->name = "DoorFrame[" + std::to_string(i) + "]";
@@ -1191,7 +1191,7 @@ void CastleWindow3::CreateDoorFrame(int i)
     mScene->AttachChild(mesh);
 }
 
-void CastleWindow3::CreateDoorFramePivotTrn(int i)
+void CastleWindow3::CreateDoorFramePivotTrn(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msDoorFrameTrn[i]);
@@ -1208,7 +1208,7 @@ void CastleWindow3::CreateDoorFramePivotTrn(int i)
     node->AttachChild(mesh);
 }
 
-void CastleWindow3::CreateDoorFrameScalePivotTrn(int i)
+void CastleWindow3::CreateDoorFrameScalePivotTrn(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msDoorFrameTrn[i]);
@@ -1277,7 +1277,7 @@ float CastleWindow3::msBunkZAngle[MAX_BUNKS] =
     -135.0f   // 20
 };
 
-void CastleWindow3::CreateBunk(int i)
+void CastleWindow3::CreateBunk(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msBunkTrn[i]);
@@ -1291,7 +1291,7 @@ void CastleWindow3::CreateBunk(int i)
 
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("Bunk01.txt");
 
-    for (int j = 0; j < 2; ++j)
+    for (int32_t j = 0; j < 2; ++j)
     {
         meshes[j]->localTransform = local;
         auto effect = CreateTextureEffect(textures[j]);
@@ -1387,7 +1387,7 @@ float CastleWindow3::msBenchZAngle[MAX_BENCHES] =
     -136.0f   // 36
 };
 
-void CastleWindow3::CreateBench(int i)
+void CastleWindow3::CreateBench(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1("Bench01.txt");
     mesh->name = "Bench[" + std::to_string(i) + "]";
@@ -1428,7 +1428,7 @@ float CastleWindow3::msTableZAngle[MAX_TABLES] =
     135.0f   // 9
 };
 
-void CastleWindow3::CreateTable(int i)
+void CastleWindow3::CreateTable(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msTableTrn[i]);
@@ -1454,7 +1454,7 @@ Vector4<float> CastleWindow3::msBarrelRackTrn[MAX_BARREL_RACKS] =
     { 1884.024170f, -26.615065f, 36.000000f, 1.0f }   // 4
 };
 
-void CastleWindow3::CreateBarrelRack(int i)
+void CastleWindow3::CreateBarrelRack(int32_t i)
 {
     std::shared_ptr<Visual> mesh = 0;
     if (i == 1 || i == 2)
@@ -1557,7 +1557,7 @@ float CastleWindow3::msChestZAngle[MAX_CHESTS] =
     -45.0f    // 36
 };
 
-void CastleWindow3::CreateChest(int i)
+void CastleWindow3::CreateChest(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msChestTrn[i]);
@@ -1600,7 +1600,7 @@ Vector4<float> CastleWindow3::msCeilingLightTrn[MAX_CEILING_LIGHTS] =
     { 1794.712280f, -82.175278f, 50.007000f, 1.0f }   // 3
 };
 
-void CastleWindow3::CreateCeilingLight(int i)
+void CastleWindow3::CreateCeilingLight(int32_t i)
 {
     std::vector<std::shared_ptr<Visual>> meshes = LoadMeshPNT1Multi("CeilingLight01.txt");
 
@@ -1652,7 +1652,7 @@ float CastleWindow3::msSquareTableZAngle[MAX_SQUARE_TABLES] =
     135.0f   // 7
 };
 
-void CastleWindow3::CreateSquareTable(int i)
+void CastleWindow3::CreateSquareTable(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msSquareTableTrn[i]);
@@ -1733,7 +1733,7 @@ float CastleWindow3::msSimpleChairZAngle[MAX_SIMPLE_CHAIRS] =
     127.0f    // 27
 };
 
-void CastleWindow3::CreateSimpleChair(int i)
+void CastleWindow3::CreateSimpleChair(int32_t i)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>();
     node->localTransform.SetTranslation(msSimpleChairTrn[i]);
@@ -1844,7 +1844,7 @@ float CastleWindow3::msMugZAngle[MAX_MUGS] =
     65.0f     // 42  // neg scale
 };
 
-void CastleWindow3::CreateMug(int i)
+void CastleWindow3::CreateMug(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1("Mug.txt");
     mesh->name = "Mug[" + std::to_string(i) + "]";
@@ -1885,7 +1885,7 @@ float CastleWindow3::msDoorZAngle[MAX_DOORS] =
     -90.0f    // 9
 };
 
-void CastleWindow3::CreateDoor(int i)
+void CastleWindow3::CreateDoor(int32_t i)
 {
     std::shared_ptr<Visual> mesh = LoadMeshPNT1("Door.txt");
     mesh->name = "Door[" + std::to_string(i) + "]";
@@ -1913,7 +1913,7 @@ std::shared_ptr<DirectionalLightTextureEffect> CastleWindow3::CreateLTEffect(
 
     return std::make_shared<DirectionalLightTextureEffect>(mProgramFactory, mUpdater,
         localMaterial, mDLight->lighting, std::make_shared<LightCameraGeometry>(),
-        texture, SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        texture, SamplerState::Filter::MIN_L_MAG_L_MIP_L, , );
 }
 #else
 std::shared_ptr<PointLightTextureEffect> CastleWindow3::CreateLTEffect(
@@ -1930,7 +1930,8 @@ std::shared_ptr<PointLightTextureEffect> CastleWindow3::CreateLTEffect(
 
     return std::make_shared<PointLightTextureEffect>(mProgramFactory, mUpdater,
         localMaterial, mDLight->lighting, std::make_shared<LightCameraGeometry>(),
-        texture, SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        texture, SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 }
 #endif
 
@@ -1938,7 +1939,8 @@ std::shared_ptr<TexturePNT1Effect> CastleWindow3::CreateTextureEffect(
     std::shared_ptr<Texture2> const& texture)
 {
     return std::make_shared<TexturePNT1Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 }
 
 std::shared_ptr<ConstantColorEffect> CastleWindow3::CreateMaterialEffect(

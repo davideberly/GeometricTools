@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -44,7 +44,7 @@ namespace gte
         // subimages and the adaptive skeleton climbing applied to each
         // subimage.  By forcing highest resolution on the boundary,
         // adjacent subimages will not have any cracking problems.
-        AdaptiveSkeletonClimbing3(int N, T const* inputVoxels,
+        AdaptiveSkeletonClimbing3(int32_t N, T const* inputVoxels,
             bool fixBoundary = false)
             :
             mTwoPowerN(1 << N),
@@ -64,9 +64,9 @@ namespace gte
                 LogError("Invalid input.");
             }
 
-            for (int i = 0; i < mSize; ++i)
+            for (int32_t i = 0; i < mSize; ++i)
             {
-                for (int j = 0; j < mSize; ++j)
+                for (int32_t j = 0; j < mSize; ++j)
                 {
                     mXMerge[i][j] = std::make_shared<LinearMergeTree>(N);
                     mYMerge[i][j] = std::make_shared<LinearMergeTree>(N);
@@ -77,10 +77,10 @@ namespace gte
 
         // TODO: Refactor this class to have base class SurfaceExtractor.
         typedef std::array<Real, 3> Vertex;
-        typedef std::array<int, 2> Edge;
+        typedef std::array<int32_t, 2> Edge;
         typedef TriangleKey<true> Triangle;
 
-        void Extract(Real level, int depth,
+        void Extract(Real level, int32_t depth,
             std::vector<Vertex>& vertices, std::vector<Triangle>& triangles)
         {
             std::vector<Vertex> localVertices;
@@ -107,8 +107,8 @@ namespace gte
 
             // Compute the map of unique vertices and assign to them new and
             // unique indices.
-            std::map<Vertex, int> vmap;
-            int nextVertex = 0;
+            std::map<Vertex, int32_t> vmap;
+            int32_t nextVertex = 0;
             for (size_t v = 0; v < numVertices; ++v)
             {
                 // Keep only unique vertices.
@@ -121,12 +121,12 @@ namespace gte
 
             // Compute the map of unique triangles and assign to them new and
             // unique indices.
-            std::map<Triangle, int> tmap;
-            int nextTriangle = 0;
+            std::map<Triangle, int32_t> tmap;
+            int32_t nextTriangle = 0;
             for (size_t t = 0; t < numTriangles; ++t)
             {
                 Triangle& triangle = triangles[t];
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     auto iter = vmap.find(vertices[triangle.V[i]]);
                     LogAssert(iter != vmap.end(), "Expecting the vertex to be in the vmap.");
@@ -169,7 +169,7 @@ namespace gte
                 // Construct the triangle normal based on the current
                 // orientation.
                 std::array<Real, 3> edge1, edge2, normal;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     edge1[i] = v1[i] - v0[i];
                     edge2[i] = v2[i] - v0[i];
@@ -185,7 +185,7 @@ namespace gte
 
                 // Compute the average gradient.
                 std::array<Real, 3> gradAvr;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     gradAvr[i] = (grad0[i] + grad1[i] + grad2[i]) / (Real)3;
                 }
@@ -232,7 +232,7 @@ namespace gte
 
                 // Construct the triangle normal.
                 std::array<Real, 3> edge1, edge2, normal;
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
                     edge1[i] = v1[i] - v0[i];
                     edge2[i] = v2[i] - v0[i];
@@ -242,9 +242,9 @@ namespace gte
                 normal[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
 
                 // Maintain the sum of normals at each vertex.
-                for (int i = 0; i < 3; ++i)
+                for (int32_t i = 0; i < 3; ++i)
                 {
-                    for (int j = 0; j < 3; ++j)
+                    for (int32_t j = 0; j < 3; ++j)
                     {
                         normals[triangle.V[i]][j] += normal[j];
                     }
@@ -260,14 +260,14 @@ namespace gte
                 Real length = std::sqrt(sqrLength);
                 if (length > (Real)0)
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         normal[i] /= length;
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < 3; ++i)
+                    for (int32_t i = 0; i < 3; ++i)
                     {
                         normal[i] = (Real)0;
                     }
@@ -296,8 +296,8 @@ namespace gte
         // Helper classes for the skeleton climbing.
         struct OctBox
         {
-            OctBox(int inX0, int inY0, int inZ0, int inDX, int inDY, int inDZ,
-                int inLX, int inLY, int inLZ)
+            OctBox(int32_t inX0, int32_t inY0, int32_t inZ0, int32_t inDX, int32_t inDY, int32_t inDZ,
+                int32_t inLX, int32_t inLY, int32_t inLZ)
                 :
                 x0(inX0), y0(inY0), z0(inZ0),
                 x1(inX0 + inDX), y1(inY0 + inDY), z1(inZ0 + inDZ),
@@ -306,26 +306,26 @@ namespace gte
             {
             }
 
-            int x0, y0, z0, x1, y1, z1, dx, dy, dz, LX, LY, LZ;
+            int32_t x0, y0, z0, x1, y1, z1, dx, dy, dz, LX, LY, LZ;
         };
 
         struct MergeBox
         {
-            MergeBox(int stride)
+            MergeBox(int32_t stride)
                 :
                 xStride(stride), yStride(stride), zStride(stride),
                 valid(true)
             {
             }
 
-            int xStride, yStride, zStride;
+            int32_t xStride, yStride, zStride;
             bool valid;
         };
 
         class LinearMergeTree
         {
         public:
-            LinearMergeTree(int N)
+            LinearMergeTree(int32_t N)
                 :
                 mTwoPowerN(1 << N),
                 mNodes(2 * static_cast<size_t>(mTwoPowerN) - 1),
@@ -344,22 +344,22 @@ namespace gte
                 CFG_ZERO_SUBEDGE = 8
             };
 
-            bool IsNone(int i) const
+            bool IsNone(int32_t i) const
             {
                 return (mNodes[i] & CFG_ROOT_MASK) == CFG_NONE;
             }
 
-            int GetRootType(int i) const
+            int32_t GetRootType(int32_t i) const
             {
                 return mNodes[i] & CFG_ROOT_MASK;
             }
 
-            int GetZeroBase(int i) const
+            int32_t GetZeroBase(int32_t i) const
             {
                 return mZeroBases[i];
             }
 
-            void SetEdge(int i)
+            void SetEdge(int32_t i)
             {
                 mNodes[i] |= CFG_EDGE;
 
@@ -374,18 +374,18 @@ namespace gte
                 }
             }
 
-            bool IsZeroEdge(int i) const
+            bool IsZeroEdge(int32_t i) const
             {
                 return mNodes[i] == (CFG_EDGE | CFG_INCR)
                     || mNodes[i] == (CFG_EDGE | CFG_DECR);
             }
 
-            bool HasZeroSubedge(int i) const
+            bool HasZeroSubedge(int32_t i) const
             {
                 return (mNodes[i] & CFG_ZERO_SUBEDGE) != 0;
             }
 
-            void SetLevel(Real level, T const* data, int offset, int stride)
+            void SetLevel(Real level, T const* data, int32_t offset, int32_t stride)
             {
                 // Assert:  The 'level' is not an image value.  Because T is
                 // an integer type, choose 'level' to be a Real-valued number
@@ -393,10 +393,10 @@ namespace gte
 
                 // Determine the sign changes between pairs of consecutive
                 // samples.
-                int firstLeaf = mTwoPowerN - 1;
-                for (int i = 0, leaf = firstLeaf; i < mTwoPowerN; ++i, ++leaf)
+                int32_t firstLeaf = mTwoPowerN - 1;
+                for (int32_t i = 0, leaf = firstLeaf; i < mTwoPowerN; ++i, ++leaf)
                 {
-                    int base = offset + stride * i;
+                    int32_t base = offset + stride * i;
                     Real value0 = static_cast<Real>(data[base]);
                     Real value1 = static_cast<Real>(data[base + stride]);
 
@@ -429,12 +429,12 @@ namespace gte
                 }
 
                 // Propagate the sign change information up the binary tree.
-                for (int i = firstLeaf - 1; i >= 0; --i)
+                for (int32_t i = firstLeaf - 1; i >= 0; --i)
                 {
-                    int twoIp1 = 2 * i + 1, twoIp2 = twoIp1 + 1;
-                    int value0 = mNodes[twoIp1];
-                    int value1 = mNodes[twoIp2];
-                    int combine = (value0 | value1);
+                    int32_t twoIp1 = 2 * i + 1, twoIp2 = twoIp1 + 1;
+                    int32_t value0 = mNodes[twoIp1];
+                    int32_t value1 = mNodes[twoIp2];
+                    int32_t combine = (value0 | value1);
                     mNodes[i] = combine;
                     if (combine == CFG_INCR)
                     {
@@ -466,9 +466,9 @@ namespace gte
             }
 
         private:
-            int mTwoPowerN;
-            std::vector<int> mNodes;
-            std::vector<int> mZeroBases;
+            int32_t mTwoPowerN;
+            std::vector<int32_t> mNodes;
+            std::vector<int32_t> mZeroBases;
         };
 
         class VETable
@@ -480,22 +480,22 @@ namespace gte
             {
             }
 
-            bool IsValidVertex(int i) const
+            bool IsValidVertex(int32_t i) const
             {
                 return mVertices[i].valid;
             }
 
-            int GetNumVertices() const
+            int32_t GetNumVertices() const
             {
-                return static_cast<int>(mVertices.size());
+                return static_cast<int32_t>(mVertices.size());
             }
 
-            Vertex const& GetVertex(int i) const
+            Vertex const& GetVertex(int32_t i) const
             {
                 return mVertices[i].position;
             }
 
-            void Insert(int i, Real x, Real y, Real z)
+            void Insert(int32_t i, Real x, Real y, Real z)
             {
                 TVertex& vertex = mVertices[i];
                 vertex.position = Vertex{ x, y, z };
@@ -507,7 +507,7 @@ namespace gte
                 mVertices.push_back(TVertex(position));
             }
 
-            void InsertEdge(int v0, int v1)
+            void InsertEdge(int32_t v0, int32_t v1)
             {
                 TVertex& vertex0 = mVertices[v0];
                 TVertex& vertex1 = mVertices[v1];
@@ -524,9 +524,9 @@ namespace gte
                 Triangle triangle;
                 while (RemoveEC(triangle))
                 {
-                    int v0 = static_cast<int>(positions.size());
-                    int v1 = v0 + 1;
-                    int v2 = v1 + 1;
+                    int32_t v0 = static_cast<int32_t>(positions.size());
+                    int32_t v1 = v0 + 1;
+                    int32_t v2 = v1 + 1;
                     // Bypassing the constructor to avoid a warning in the
                     // release build by gcc 7.5.0 on Ubuntu 18.04.5 LTS:
                     // "assuming signed overflow does not occur when assuming
@@ -548,8 +548,8 @@ namespace gte
             {
                 // Compute centroid of vertices.
                 Vertex centroid = { (Real)0, (Real)0, (Real)0 };
-                int const vmax = static_cast<int>(mVertices.size());
-                int i, j, quantity = 0;
+                int32_t const vmax = static_cast<int32_t>(mVertices.size());
+                int32_t i, j, quantity = 0;
                 for (i = 0; i < vmax; i++)
                 {
                     TVertex const& vertex = mVertices[i];
@@ -567,14 +567,14 @@ namespace gte
                     centroid[j] /= static_cast<Real>(quantity);
                 }
 
-                int v0 = static_cast<int>(positions.size());
+                int32_t v0 = static_cast<int32_t>(positions.size());
                 positions.push_back(centroid);
 
-                int i1 = 18;
-                int v1 = v0 + 1;
+                int32_t i1 = 18;
+                int32_t v1 = v0 + 1;
                 positions.push_back(mVertices[i1].position);
 
-                int i2 = mVertices[i1].adjacent[1], v2;
+                int32_t i2 = mVertices[i1].adjacent[1], v2;
                 for (i = 0; i < quantity - 1; ++i)
                 {
                     v2 = v1 + 1;
@@ -609,15 +609,15 @@ namespace gte
             }
 
         protected:
-            void RemoveVertex(int i)
+            void RemoveVertex(int32_t i)
             {
                 TVertex& vertex0 = mVertices[i];
-                int a0 = vertex0.adjacent[0];
-                int a1 = vertex0.adjacent[1];
+                int32_t a0 = vertex0.adjacent[0];
+                int32_t a1 = vertex0.adjacent[1];
                 TVertex& adjVertex0 = mVertices[a0];
                 TVertex& adjVertex1 = mVertices[a1];
 
-                int j;
+                int32_t j;
                 for (j = 0; j < adjVertex0.adjQuantity; j++)
                 {
                     if (adjVertex0.adjacent[j] == i)
@@ -658,8 +658,8 @@ namespace gte
             // ear clipping
             bool RemoveEC(Triangle& triangle)
             {
-                int numVertices = static_cast<int>(mVertices.size());
-                for (int i = 0; i < numVertices; ++i)
+                int32_t numVertices = static_cast<int32_t>(mVertices.size());
+                for (int32_t i = 0; i < numVertices; ++i)
                 {
                     TVertex const& vertex = mVertices[i];
                     if (vertex.valid && vertex.adjQuantity == 2)
@@ -698,8 +698,8 @@ namespace gte
                 }
 
                 Vertex position;
-                int adjQuantity;
-                std::array<int, 4> adjacent;
+                int32_t adjQuantity;
+                std::array<int32_t, 4> adjacent;
                 bool valid;
             };
 
@@ -708,9 +708,9 @@ namespace gte
 
     private:
         // Support for merging monoboxes.
-        void Merge(int depth)
+        void Merge(int32_t depth)
         {
-            int x, y, z, offset, stride;
+            int32_t x, y, z, offset, stride;
 
             for (y = 0; y < mSize; ++y)
             {
@@ -745,26 +745,26 @@ namespace gte
             Merge(0, 0, 0, 0, 0, 0, 0, mTwoPowerN, depth);
         }
 
-        bool Merge(int v, int LX, int LY, int LZ, int x0, int y0, int z0, int stride, int depth)
+        bool Merge(int32_t v, int32_t LX, int32_t LY, int32_t LZ, int32_t x0, int32_t y0, int32_t z0, int32_t stride, int32_t depth)
         {
             if (stride > 1)  // internal nodes
             {
-                int hStride = stride / 2;
-                int vBase = 8 * v;
-                int v000 = vBase + 1;
-                int v100 = vBase + 2;
-                int v010 = vBase + 3;
-                int v110 = vBase + 4;
-                int v001 = vBase + 5;
-                int v101 = vBase + 6;
-                int v011 = vBase + 7;
-                int v111 = vBase + 8;
-                int LX0 = 2 * LX + 1, LX1 = LX0 + 1;
-                int LY0 = 2 * LY + 1, LY1 = LY0 + 1;
-                int LZ0 = 2 * LZ + 1, LZ1 = LZ0 + 1;
-                int x1 = x0 + hStride, y1 = y0 + hStride, z1 = z0 + hStride;
+                int32_t hStride = stride / 2;
+                int32_t vBase = 8 * v;
+                int32_t v000 = vBase + 1;
+                int32_t v100 = vBase + 2;
+                int32_t v010 = vBase + 3;
+                int32_t v110 = vBase + 4;
+                int32_t v001 = vBase + 5;
+                int32_t v101 = vBase + 6;
+                int32_t v011 = vBase + 7;
+                int32_t v111 = vBase + 8;
+                int32_t LX0 = 2 * LX + 1, LX1 = LX0 + 1;
+                int32_t LY0 = 2 * LY + 1, LY1 = LY0 + 1;
+                int32_t LZ0 = 2 * LZ + 1, LZ1 = LZ0 + 1;
+                int32_t x1 = x0 + hStride, y1 = y0 + hStride, z1 = z0 + hStride;
 
-                int dm1 = depth - 1;
+                int32_t dm1 = depth - 1;
                 bool m000 = Merge(v000, LX0, LY0, LZ0, x0, y0, z0, hStride, dm1);
                 bool m100 = Merge(v100, LX1, LY0, LZ0, x1, y0, z0, hStride, dm1);
                 bool m010 = Merge(v010, LX0, LY1, LZ0, x0, y1, z0, hStride, dm1);
@@ -1034,9 +1034,9 @@ namespace gte
                 // handled separately from boxes of larger dimensions.
 
                 // xmin face
-                int z1 = z0 + 1;
-                int rt0 = mYMerge[x0][z0]->GetRootType(LY);
-                int rt1 = mYMerge[x0][z1]->GetRootType(LY);
+                int32_t z1 = z0 + 1;
+                int32_t rt0 = mYMerge[x0][z0]->GetRootType(LY);
+                int32_t rt1 = mYMerge[x0][z1]->GetRootType(LY);
                 if ((rt0 | rt1) == LinearMergeTree::CFG_MULT)
                 {
                     AddBox(x0, y0, z0, 1, 1, 1, LX, LY, LZ);
@@ -1044,7 +1044,7 @@ namespace gte
                 }
 
                 // xmax face
-                int x1 = x0 + 1;
+                int32_t x1 = x0 + 1;
                 rt0 = mYMerge[x1][z0]->GetRootType(LY);
                 rt1 = mYMerge[x1][z1]->GetRootType(LY);
                 if ((rt0 | rt1) == LinearMergeTree::CFG_MULT)
@@ -1063,7 +1063,7 @@ namespace gte
                 }
 
                 // ymax face
-                int y1 = y0 + 1;
+                int32_t y1 = y0 + 1;
                 rt0 = mZMerge[x0][y1]->GetRootType(LZ);
                 rt1 = mZMerge[x1][y1]->GetRootType(LZ);
                 if ((rt0 | rt1) == LinearMergeTree::CFG_MULT)
@@ -1094,7 +1094,7 @@ namespace gte
             }
         }
 
-        bool DoXMerge(MergeBox& r0, MergeBox& r1, int LX, int y0, int z0)
+        bool DoXMerge(MergeBox& r0, MergeBox& r1, int32_t LX, int32_t y0, int32_t z0)
         {
             if (!r0.valid || !r1.valid || r0.yStride != r1.yStride || r0.zStride != r1.zStride)
             {
@@ -1102,11 +1102,11 @@ namespace gte
             }
 
             // Boxes are potentially x-mergeable.
-            int y1 = y0 + r0.yStride, z1 = z0 + r0.zStride;
-            int incr = 0, decr = 0;
-            for (int y = y0; y <= y1; ++y)
+            int32_t y1 = y0 + r0.yStride, z1 = z0 + r0.zStride;
+            int32_t incr = 0, decr = 0;
+            for (int32_t y = y0; y <= y1; ++y)
             {
-                for (int z = z0; z <= z1; ++z)
+                for (int32_t z = z0; z <= z1; ++z)
                 {
                     switch (mXMerge[y][z]->GetRootType(LX))
                     {
@@ -1133,7 +1133,7 @@ namespace gte
             return true;
         }
 
-        bool DoYMerge(MergeBox& r0, MergeBox& r1, int x0, int LY, int z0)
+        bool DoYMerge(MergeBox& r0, MergeBox& r1, int32_t x0, int32_t LY, int32_t z0)
         {
             if (!r0.valid || !r1.valid || r0.xStride != r1.xStride || r0.zStride != r1.zStride)
             {
@@ -1141,11 +1141,11 @@ namespace gte
             }
 
             // Boxes are potentially y-mergeable.
-            int x1 = x0 + r0.xStride, z1 = z0 + r0.zStride;
-            int incr = 0, decr = 0;
-            for (int x = x0; x <= x1; ++x)
+            int32_t x1 = x0 + r0.xStride, z1 = z0 + r0.zStride;
+            int32_t incr = 0, decr = 0;
+            for (int32_t x = x0; x <= x1; ++x)
             {
-                for (int z = z0; z <= z1; ++z)
+                for (int32_t z = z0; z <= z1; ++z)
                 {
                     switch (mYMerge[x][z]->GetRootType(LY))
                     {
@@ -1172,7 +1172,7 @@ namespace gte
             return true;
         }
 
-        bool DoZMerge(MergeBox& r0, MergeBox& r1, int x0, int y0, int LZ)
+        bool DoZMerge(MergeBox& r0, MergeBox& r1, int32_t x0, int32_t y0, int32_t LZ)
         {
             if (!r0.valid || !r1.valid || r0.xStride != r1.xStride || r0.yStride != r1.yStride)
             {
@@ -1180,11 +1180,11 @@ namespace gte
             }
 
             // Boxes are potentially z-mergeable.
-            int x1 = x0 + r0.xStride, y1 = y0 + r0.yStride;
-            int incr = 0, decr = 0;
-            for (int x = x0; x <= x1; ++x)
+            int32_t x1 = x0 + r0.xStride, y1 = y0 + r0.yStride;
+            int32_t incr = 0, decr = 0;
+            for (int32_t x = x0; x <= x1; ++x)
             {
-                for (int y = y0; y <= y1; ++y)
+                for (int32_t y = y0; y <= y1; ++y)
                 {
                     switch (mZMerge[x][y]->GetRootType(LZ))
                     {
@@ -1211,7 +1211,7 @@ namespace gte
             return true;
         }
 
-        void AddBox(int x0, int y0, int z0, int dx, int dy, int dz, int LX, int LY, int LZ)
+        void AddBox(int32_t x0, int32_t y0, int32_t z0, int32_t dx, int32_t dy, int32_t dz, int32_t LX, int32_t LY, int32_t LZ)
         {
             OctBox box(x0, y0, z0, dx, dy, dz, LX, LY, LZ);
             mBoxes.push_back(box);
@@ -1241,7 +1241,7 @@ namespace gte
 
                 // Get vertices on edges of box.
                 VETable table;
-                unsigned int type;
+                uint32_t type;
                 GetVertices(box, type, table);
                 if (type == 0)
                 {
@@ -1285,36 +1285,36 @@ namespace gte
             }
         }
 
-        Real GetXInterp(int x, int y, int z) const
+        Real GetXInterp(int32_t x, int32_t y, int32_t z) const
         {
-            int index = x + mSize * (y + mSize * z);
+            int32_t index = x + mSize * (y + mSize * z);
             Real f0 = static_cast<Real>(mInputVoxels[index]);
             ++index;
             Real f1 = static_cast<Real>(mInputVoxels[index]);
             return static_cast<Real>(x) + (mLevel - f0) / (f1 - f0);
         }
 
-        Real GetYInterp(int x, int y, int z) const
+        Real GetYInterp(int32_t x, int32_t y, int32_t z) const
         {
-            int index = x + mSize * (y + mSize * z);
+            int32_t index = x + mSize * (y + mSize * z);
             Real f0 = static_cast<Real>(mInputVoxels[index]);
             index += mSize;
             Real f1 = static_cast<Real>(mInputVoxels[index]);
             return static_cast<Real>(y) + (mLevel - f0) / (f1 - f0);
         }
 
-        Real GetZInterp(int x, int y, int z) const
+        Real GetZInterp(int32_t x, int32_t y, int32_t z) const
         {
-            int index = x + mSize * (y + mSize * z);
+            int32_t index = x + mSize * (y + mSize * z);
             Real f0 = static_cast<Real>(mInputVoxels[index]);
             index += mSizeSqr;
             Real f1 = static_cast<Real>(mInputVoxels[index]);
             return static_cast<Real>(z) + (mLevel - f0) / (f1 - f0);
         }
 
-        void GetVertices(OctBox const& box, unsigned int& type, VETable& table)
+        void GetVertices(OctBox const& box, uint32_t& type, VETable& table)
         {
-            int root;
+            int32_t root;
             type = 0;
 
             // xmin-ymin edge
@@ -1451,9 +1451,9 @@ namespace gte
         }
 
         // Edge extraction for single boxes (1x1x1).
-        void GetXMinEdgesS(OctBox const& box, unsigned int type, VETable& table)
+        void GetXMinEdgesS(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -1496,7 +1496,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x0 + mSize * (box.y0 + mSize * box.z0);
+                int32_t i = box.x0 + mSize * (box.y0 + mSize * box.z0);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 i += mSize;
@@ -1544,9 +1544,9 @@ namespace gte
             }
         }
 
-        void GetXMaxEdgesS(OctBox const& box, unsigned int type, VETable& table)
+        void GetXMaxEdgesS(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMAX_YMIN)
             {
                 faceType |= 0x01;
@@ -1589,7 +1589,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x1 + mSize * (box.y0 + mSize * box.z0);
+                int32_t i = box.x1 + mSize * (box.y0 + mSize * box.z0);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 i += mSize;
@@ -1637,9 +1637,9 @@ namespace gte
             }
         }
 
-        void GetYMinEdgesS(OctBox const& box, unsigned int type, VETable& table)
+        void GetYMinEdgesS(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -1682,7 +1682,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x0 + mSize * (box.y0 + mSize * box.z0);
+                int32_t i = box.x0 + mSize * (box.y0 + mSize * box.z0);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 ++i;
@@ -1730,9 +1730,9 @@ namespace gte
             }
         }
 
-        void GetYMaxEdgesS(OctBox const& box, unsigned int type, VETable& table)
+        void GetYMaxEdgesS(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMAX)
             {
                 faceType |= 0x01;
@@ -1775,7 +1775,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x0 + mSize * (box.y1 + mSize * box.z0);
+                int32_t i = box.x0 + mSize * (box.y1 + mSize * box.z0);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 ++i;
@@ -1823,9 +1823,9 @@ namespace gte
             }
         }
 
-        void GetZMinEdgesS(OctBox const& box, unsigned int type, VETable& table)
+        void GetZMinEdgesS(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_ZMIN)
             {
                 faceType |= 0x01;
@@ -1868,7 +1868,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x0 + mSize * (box.y0 + mSize * box.z0);
+                int32_t i = box.x0 + mSize * (box.y0 + mSize * box.z0);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 ++i;
@@ -1916,9 +1916,9 @@ namespace gte
             }
         }
 
-        void GetZMaxEdgesS(const OctBox& box, unsigned int type, VETable& table)
+        void GetZMaxEdgesS(const OctBox& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_ZMAX)
             {
                 faceType |= 0x01;
@@ -1961,7 +1961,7 @@ namespace gte
             case 15:
             {
                 // Four vertices, one per edge, need to disambiguate.
-                int i = box.x0 + mSize * (box.y0 + mSize * box.z1);
+                int32_t i = box.x0 + mSize * (box.y0 + mSize * box.z1);
                 // F(x,y,z)
                 int64_t f00 = static_cast<int64_t>(mInputVoxels[i]);
                 i++;
@@ -2085,9 +2085,9 @@ namespace gte
             }
         };
 
-        void GetZMinEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetZMinEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_ZMIN)
             {
                 faceType |= 0x01;
@@ -2105,7 +2105,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2140,12 +2140,12 @@ namespace gte
 
             std::set<Vertex, Sort0> vSet;
 
-            for (int x = box.x0 + 1; x < box.x1; ++x)
+            for (int32_t x = box.x0 + 1; x < box.x1; ++x)
             {
                 auto const& merge = mYMerge[x][box.z0];
                 if (merge->IsZeroEdge(box.LY) || merge->HasZeroSubedge(box.LY))
                 {
-                    int root = merge->GetZeroBase(box.LY);
+                    int32_t root = merge->GetZeroBase(box.LY);
                     vSet.insert(Vertex{
                         static_cast<Real>(x),
                         GetYInterp(x, root, box.z0),
@@ -2153,12 +2153,12 @@ namespace gte
                 }
             }
 
-            for (int y = box.y0 + 1; y < box.y1; ++y)
+            for (int32_t y = box.y0 + 1; y < box.y1; ++y)
             {
                 auto const& merge = mXMerge[y][box.z0];
                 if (merge->IsZeroEdge(box.LX) || merge->HasZeroSubedge(box.LX))
                 {
-                    int root = merge->GetZeroBase(box.LX);
+                    int32_t root = merge->GetZeroBase(box.LX);
                     vSet.insert(Vertex{
                         GetXInterp(root, y, box.z0),
                         static_cast<Real>(y),
@@ -2183,7 +2183,7 @@ namespace gte
             }
 
             // Add vertices.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             for (auto const& position : vSet)
             {
                 table.Insert(position);
@@ -2192,17 +2192,17 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
             table.InsertEdge(v0, end1);
         }
 
-        void GetZMaxEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetZMaxEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_ZMAX)
             {
                 faceType |= 0x01;
@@ -2220,7 +2220,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2255,12 +2255,12 @@ namespace gte
 
             std::set<Vertex, Sort0> vSet;
 
-            for (int x = box.x0 + 1; x < box.x1; ++x)
+            for (int32_t x = box.x0 + 1; x < box.x1; ++x)
             {
                 auto const& merge = mYMerge[x][box.z1];
                 if (merge->IsZeroEdge(box.LY) || merge->HasZeroSubedge(box.LY))
                 {
-                    int root = merge->GetZeroBase(box.LY);
+                    int32_t root = merge->GetZeroBase(box.LY);
                     vSet.insert(Vertex{
                         static_cast<Real>(x),
                         GetYInterp(x, root, box.z1),
@@ -2268,12 +2268,12 @@ namespace gte
                 }
             }
 
-            for (int y = box.y0 + 1; y < box.y1; ++y)
+            for (int32_t y = box.y0 + 1; y < box.y1; ++y)
             {
                 auto const& merge = mXMerge[y][box.z1];
                 if (merge->IsZeroEdge(box.LX) || merge->HasZeroSubedge(box.LX))
                 {
-                    int root = merge->GetZeroBase(box.LX);
+                    int32_t root = merge->GetZeroBase(box.LX);
                     vSet.insert(Vertex{
                         GetXInterp(root, y, box.z1),
                         static_cast<Real>(y),
@@ -2282,7 +2282,7 @@ namespace gte
             }
 
             // Add subdivision.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             if (vSet.size() == 0)
             {
                 table.InsertEdge(end0, end1);
@@ -2307,17 +2307,17 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
             table.InsertEdge(v0, end1);
         }
 
-        void GetYMinEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetYMinEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -2335,7 +2335,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2370,12 +2370,12 @@ namespace gte
 
             std::set<Vertex, Sort1> vSet;
 
-            for (int x = box.x0 + 1; x < box.x1; ++x)
+            for (int32_t x = box.x0 + 1; x < box.x1; ++x)
             {
                 auto const& merge = mZMerge[x][box.y0];
                 if (merge->IsZeroEdge(box.LZ) || merge->HasZeroSubedge(box.LZ))
                 {
-                    int root = merge->GetZeroBase(box.LZ);
+                    int32_t root = merge->GetZeroBase(box.LZ);
                     vSet.insert(Vertex{
                         static_cast<Real>(x),
                         static_cast<Real>(box.y0),
@@ -2383,12 +2383,12 @@ namespace gte
                 }
             }
 
-            for (int z = box.z0 + 1; z < box.z1; ++z)
+            for (int32_t z = box.z0 + 1; z < box.z1; ++z)
             {
                 auto const& merge = mXMerge[box.y0][z];
                 if (merge->IsZeroEdge(box.LX) || merge->HasZeroSubedge(box.LX))
                 {
-                    int root = merge->GetZeroBase(box.LX);
+                    int32_t root = merge->GetZeroBase(box.LX);
                     vSet.insert(Vertex{
                         GetXInterp(root, box.y0, z),
                         static_cast<Real>(box.y0),
@@ -2397,7 +2397,7 @@ namespace gte
             }
 
             // Add subdivision.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             if (vSet.size() == 0)
             {
                 table.InsertEdge(end0, end1);
@@ -2422,17 +2422,17 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
             table.InsertEdge(v0, end1);
         }
 
-        void GetYMaxEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetYMaxEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMAX)
             {
                 faceType |= 0x01;
@@ -2450,7 +2450,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2485,12 +2485,12 @@ namespace gte
 
             std::set<Vertex, Sort1> vSet;
 
-            for (int x = box.x0 + 1; x < box.x1; ++x)
+            for (int32_t x = box.x0 + 1; x < box.x1; ++x)
             {
                 auto const& merge = mZMerge[x][box.y1];
                 if (merge->IsZeroEdge(box.LZ) || merge->HasZeroSubedge(box.LZ))
                 {
-                    int root = merge->GetZeroBase(box.LZ);
+                    int32_t root = merge->GetZeroBase(box.LZ);
                     vSet.insert(Vertex{
                         static_cast<Real>(x),
                         static_cast<Real>(box.y1),
@@ -2498,12 +2498,12 @@ namespace gte
                 }
             }
 
-            for (int z = box.z0 + 1; z < box.z1; ++z)
+            for (int32_t z = box.z0 + 1; z < box.z1; ++z)
             {
                 auto const& merge = mXMerge[box.y1][z];
                 if (merge->IsZeroEdge(box.LX) || merge->HasZeroSubedge(box.LX))
                 {
-                    int root = merge->GetZeroBase(box.LX);
+                    int32_t root = merge->GetZeroBase(box.LX);
                     vSet.insert(Vertex{
                         GetXInterp(root, box.y1, z),
                         static_cast<Real>(box.y1),
@@ -2528,7 +2528,7 @@ namespace gte
             }
 
             // Add vertices.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             for (auto const& position : vSet)
             {
                 table.Insert(position);
@@ -2537,17 +2537,17 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
             table.InsertEdge(v0, end1);
         }
 
-        void GetXMinEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetXMinEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMIN_YMIN)
             {
                 faceType |= 0x01;
@@ -2565,7 +2565,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2600,12 +2600,12 @@ namespace gte
 
             std::set<Vertex, Sort2> vSet;
 
-            for (int z = box.z0 + 1; z < box.z1; ++z)
+            for (int32_t z = box.z0 + 1; z < box.z1; ++z)
             {
                 auto const& merge = mYMerge[box.x0][z];
                 if (merge->IsZeroEdge(box.LY) || merge->HasZeroSubedge(box.LY))
                 {
-                    int root = merge->GetZeroBase(box.LY);
+                    int32_t root = merge->GetZeroBase(box.LY);
                     vSet.insert(Vertex{
                         static_cast<Real>(box.x0),
                         GetYInterp(box.x0, root, z),
@@ -2613,12 +2613,12 @@ namespace gte
                 }
             }
 
-            for (int y = box.y0 + 1; y < box.y1; ++y)
+            for (int32_t y = box.y0 + 1; y < box.y1; ++y)
             {
                 auto const& merge = mZMerge[box.x0][y];
                 if (merge->IsZeroEdge(box.LZ) || merge->HasZeroSubedge(box.LZ))
                 {
-                    int root = merge->GetZeroBase(box.LZ);
+                    int32_t root = merge->GetZeroBase(box.LZ);
                     vSet.insert(Vertex{
                         static_cast<Real>(box.x0),
                         static_cast<Real>(y),
@@ -2627,7 +2627,7 @@ namespace gte
             }
 
             // Add subdivision.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             if (vSet.size() == 0)
             {
                 table.InsertEdge(end0, end1);
@@ -2652,17 +2652,17 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
             table.InsertEdge(v0, end1);
         }
 
-        void GetXMaxEdgesM(OctBox const& box, unsigned int type, VETable& table)
+        void GetXMaxEdgesM(OctBox const& box, uint32_t type, VETable& table)
         {
-            unsigned int faceType = 0;
+            uint32_t faceType = 0;
             if (type & EB_XMAX_YMIN)
             {
                 faceType |= 0x01;
@@ -2680,7 +2680,7 @@ namespace gte
                 faceType |= 0x08;
             }
 
-            int end0 = 0, end1 = 0;
+            int32_t end0 = 0, end1 = 0;
             switch (faceType)
             {
             case 0:
@@ -2715,12 +2715,12 @@ namespace gte
 
             std::set<Vertex, Sort2> vSet;
 
-            for (int z = box.z0 + 1; z < box.z1; ++z)
+            for (int32_t z = box.z0 + 1; z < box.z1; ++z)
             {
                 auto const& merge = mYMerge[box.x1][z];
                 if (merge->IsZeroEdge(box.LY) || merge->HasZeroSubedge(box.LY))
                 {
-                    int root = merge->GetZeroBase(box.LY);
+                    int32_t root = merge->GetZeroBase(box.LY);
                     vSet.insert(Vertex{
                         static_cast<Real>(box.x1),
                         GetYInterp(box.x1, root, z),
@@ -2728,12 +2728,12 @@ namespace gte
                 }
             }
 
-            for (int y = box.y0 + 1; y < box.y1; y++)
+            for (int32_t y = box.y0 + 1; y < box.y1; y++)
             {
                 auto const& merge = mZMerge[box.x1][y];
                 if (merge->IsZeroEdge(box.LZ) || merge->HasZeroSubedge(box.LZ))
                 {
-                    int root = merge->GetZeroBase(box.LZ);
+                    int32_t root = merge->GetZeroBase(box.LZ);
                     vSet.insert(Vertex{
                         static_cast<Real>(box.x1),
                         static_cast<Real>(y),
@@ -2758,7 +2758,7 @@ namespace gte
             }
 
             // Add vertices.
-            int v0 = table.GetNumVertices(), v1 = v0;
+            int32_t v0 = table.GetNumVertices(), v1 = v0;
             for (auto const& position : vSet)
             {
                 table.Insert(position);
@@ -2767,8 +2767,8 @@ namespace gte
             // Add edges.
             table.InsertEdge(end0, v1);
             ++v1;
-            int const imax = static_cast<int>(vSet.size());
-            for (int i = 1; i < imax; ++i, ++v0, ++v1)
+            int32_t const imax = static_cast<int32_t>(vSet.size());
+            for (int32_t i = 1; i < imax; ++i, ++v0, ++v1)
             {
                 table.InsertEdge(v0, v1);
             }
@@ -2779,32 +2779,32 @@ namespace gte
         Vertex GetGradient(Vertex const& position) const
         {
             Vertex vzero = { (Real)0, (Real)0, (Real)0 };
-            int x = static_cast<int>(position[0]);
+            int32_t x = static_cast<int32_t>(position[0]);
             if (x < 0 || x >= mTwoPowerN)
             {
                 return vzero;
             }
 
-            int y = static_cast<int>(position[1]);
+            int32_t y = static_cast<int32_t>(position[1]);
             if (y < 0 || y >= mTwoPowerN)
             {
                 return vzero;
             }
 
-            int z = static_cast<int>(position[2]);
+            int32_t z = static_cast<int32_t>(position[2]);
             if (z < 0 || z >= mTwoPowerN)
             {
                 return vzero;
             }
 
-            int i000 = x + mSize * (y + mSize * z);
-            int i100 = i000 + 1;
-            int i010 = i000 + mSize;
-            int i110 = i100 + mSize;
-            int i001 = i000 + mSizeSqr;
-            int i101 = i100 + mSizeSqr;
-            int i011 = i010 + mSizeSqr;
-            int i111 = i110 + mSizeSqr;
+            int32_t i000 = x + mSize * (y + mSize * z);
+            int32_t i100 = i000 + 1;
+            int32_t i010 = i000 + mSize;
+            int32_t i110 = i100 + mSize;
+            int32_t i001 = i000 + mSizeSqr;
+            int32_t i101 = i100 + mSizeSqr;
+            int32_t i011 = i010 + mSizeSqr;
+            int32_t i111 = i110 + mSizeSqr;
             Real f000 = static_cast<Real>(mInputVoxels[i000]);
             Real f100 = static_cast<Real>(mInputVoxels[i100]);
             Real f010 = static_cast<Real>(mInputVoxels[i010]);
@@ -2881,7 +2881,7 @@ namespace gte
         };
 
         // image data
-        int mTwoPowerN, mSize, mSizeSqr;
+        int32_t mTwoPowerN, mSize, mSizeSqr;
         T const* mInputVoxels;
         Real mLevel;
 

@@ -1,13 +1,15 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/GL45/GL45.h>
+#include <array>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
@@ -24,34 +26,60 @@ namespace gte
         // successfully created for the active context.
         GLSLReflection(GLuint handle);
 
-        enum  // Named indices for the 'referencedBy' arrays.
+        // Named indices for the 'referencedBy' arrays.
+        enum ReferenceType
         {
-            ST_VERTEX,
-            ST_GEOMETRY,
-            ST_PIXEL,
-            ST_COMPUTE,
-            ST_TESSCONTROL,
-            ST_TESSEVALUATION
+            VERTEX,
+            GEOMETRY,
+            PIXEL,
+            COMPUTE,
+            TESSCONTROL,
+            TESSEVALUATION
         };
 
         struct Input
         {
+            Input()
+                :
+                name(""),
+                type(0),
+                location(0),
+                arraySize(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 },
+                isPerPatch(0),
+                locationComponent(0)
+            {
+            }
+
             std::string name;
             GLint type;
             GLint location;
             GLint arraySize;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
             GLint isPerPatch;
             GLint locationComponent;
         };
 
         struct Output
         {
+            Output()
+                :
+                name(""),
+                type(0),
+                location(0),
+                arraySize(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 },
+                isPerPatch(0),
+                locationComponent(0),
+                locationIndex(0)
+            {
+            }
+
             std::string name;
             GLint type;
             GLint location;
             GLint arraySize;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
             GLint isPerPatch;
             GLint locationComponent;
             GLint locationIndex;
@@ -59,6 +87,23 @@ namespace gte
 
         struct Uniform
         {
+            Uniform()
+                :
+                fullName(""),
+                name(""),
+                type(0),
+                location(0),
+                arraySize(0),
+                offset(0),
+                blockIndex(0),
+                arrayStride(0),
+                matrixStride(0),
+                isRowMajor(0),
+                atomicCounterBufferIndex(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 }
+            {
+            }
+
             std::string fullName;
             std::string name;
             GLint type;
@@ -70,28 +115,56 @@ namespace gte
             GLint matrixStride;
             GLint isRowMajor;
             GLint atomicCounterBufferIndex;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
         };
 
         struct DataBlock
         {
+            DataBlock()
+                :
+                name(""),
+                bufferBinding(0),
+                bufferDataSize(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 },
+                activeVariables{}
+            {
+            }
+
             std::string name;
             GLint bufferBinding;
             GLint bufferDataSize;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
             std::vector<GLint> activeVariables;
         };
 
         struct AtomicCounterBuffer
         {
+            AtomicCounterBuffer()
+                :
+                bufferBinding(0),
+                bufferDataSize(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 },
+                activeVariables{}
+            {
+            }
+
             GLint bufferBinding;
             GLint bufferDataSize;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
             std::vector<GLint> activeVariables;
         };
 
         struct SubroutineUniform
         {
+            SubroutineUniform()
+                :
+                name(""),
+                location(0),
+                arraySize(0),
+                compatibleSubroutines{}
+            {
+            }
+
             std::string name;
             GLint location;
             GLint arraySize;
@@ -100,6 +173,23 @@ namespace gte
 
         struct BufferVariable
         {
+            BufferVariable()
+                :
+                fullName(""),
+                name(""),
+                type(0),
+                arraySize(0),
+                offset(0),
+                blockIndex(0),
+                arrayStride(0),
+                matrixStride(0),
+                isRowMajor(0),
+                topLevelArraySize(0),
+                topLevelArrayStride(0),
+                referencedBy{ 0, 0, 0, 0, 0, 0 }
+            {
+            }
+
             std::string fullName;
             std::string name;
             GLint type;
@@ -111,11 +201,21 @@ namespace gte
             GLint isRowMajor;
             GLint topLevelArraySize;
             GLint topLevelArrayStride;
-            GLint referencedBy[6];
+            std::array<GLint, 6> referencedBy;
         };
 
         struct TransformFeedbackVarying
         {
+            TransformFeedbackVarying()
+                :
+                name(""),
+                type(0),
+                arraySize(0),
+                offset(0),
+                transformFeedbackBufferIndex(0)
+            {
+            }
+
             std::string name;
             GLint type;
             GLint arraySize;
@@ -125,6 +225,14 @@ namespace gte
 
         struct TransformFeedbackBuffer
         {
+            TransformFeedbackBuffer()
+                :
+                bufferBinding(0),
+                transformFeedbackBufferStride(0),
+                activeVariables{}
+            {
+            }
+
             GLint bufferBinding;
             GLint transformFeedbackBufferStride;
             std::vector<GLint> activeVariables;
@@ -216,20 +324,33 @@ namespace gte
         // Used by Print() method to mape enums to strings.
         struct EnumMap
         {
+            EnumMap(GLenum inValue, std::string const& inName,
+                std::string const& inShaderName, uint32_t inRows,
+                uint32_t inCols, uint32_t inSize)
+                :
+                value(inValue),
+                name(inName),
+                shaderName(inShaderName),
+                rows(inRows),
+                cols(inCols),
+                size(inSize)
+            {
+            }
+
             GLenum value;
             std::string name;
             std::string shaderName;
-            unsigned rows; // use actual dim for straight vectors
-            unsigned cols; // only use for cols in matrices
-            unsigned size; // use 0 for opaques
+            uint32_t rows; // use actual dim for straight vectors
+            uint32_t cols; // only use for cols in matrices
+            uint32_t size; // use 0 for opaques
         };
 
-        static EnumMap const msEnumMap[];
+        static std::array<EnumMap const, 113> msEnumMap;
 
-        static unsigned GetEnumSize(GLenum value, GLint arraySize, GLint arrayStride, GLint matrixStride, GLint isRowMajor);
+        static uint32_t GetEnumSize(GLenum value, GLint arraySize, GLint arrayStride, GLint matrixStride, GLint isRowMajor);
         static std::string GetEnumName(GLenum value);
         static std::string GetEnumShaderName(GLenum value);
-        static std::string GetReferencedByShaderList(GLint const referencedBy[6]);
+        static std::string GetReferencedByShaderList(std::array<GLint, 6> const& referencedBy);
 
     private:
         // TODO: This is a workaround for an apparent bug in the Intel HD 4600
@@ -238,6 +359,6 @@ namespace gte
         // in fact it is referenced.  Remove this once the bug is fixed.
         void IntelWorkaround(std::string const& name, GLint results[]);
         bool mVendorIsIntel;
-        std::map<GLenum, int> mShaderTypeMap;
+        std::map<GLenum, int32_t> mShaderTypeMap;
     };
 }

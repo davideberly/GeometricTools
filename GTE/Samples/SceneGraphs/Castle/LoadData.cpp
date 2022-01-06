@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CastleWindow3.h"
 
@@ -19,15 +19,15 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
     GetTuple2(inFile, tcoords);
 
     // Get the vertices and indices.
-    unsigned int numTriangles;
+    uint32_t numTriangles;
     inFile >> numTriangles;
-    std::vector<LookupPNT1> lookups(3 * numTriangles);
+    std::vector<LookupPNT1> lookups(3 * static_cast<size_t>(numTriangles));
     std::vector<LookupPNT1> PNT1Array;
-    std::map<LookupPNT1, unsigned int> PNT1Map;
-    std::vector<unsigned int> indices;
-    for (unsigned int t = 0; t < numTriangles; ++t)
+    std::map<LookupPNT1, uint32_t> PNT1Map;
+    std::vector<uint32_t> indices;
+    for (uint32_t t = 0; t < numTriangles; ++t)
     {
-        for (unsigned int j = 0, k = 3 * t; j < 3; ++j, ++k)
+        for (uint32_t j = 0, k = 3 * t; j < 3; ++j, ++k)
         {
             LookupPNT1& lookup = lookups[k];
             inFile >> lookup.PIndex;
@@ -35,7 +35,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
             inFile >> lookup.TIndex;
 
             auto iter = PNT1Map.find(lookup);
-            unsigned int index;
+            uint32_t index;
             if (iter != PNT1Map.end())
             {
                 // Second or later time the vertex is encountered.
@@ -44,7 +44,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
             else
             {
                 // First time the vertex is encountered.
-                index = static_cast<unsigned int>(PNT1Array.size());
+                index = static_cast<uint32_t>(PNT1Array.size());
                 PNT1Map.insert(std::make_pair(lookup, index));
                 PNT1Array.push_back(lookup);
             }
@@ -55,10 +55,10 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
 
     // Build the meshes.  Generate the unique vertices.  Keep track of indices
     // to remap the index buffers.
-    unsigned int numVertices = static_cast<unsigned int>(PNT1Array.size());
-    std::vector<unsigned int> remap(numVertices);
-    std::map<VertexPNT1, std::vector<unsigned int>> uniqueVertices;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    uint32_t numVertices = static_cast<uint32_t>(PNT1Array.size());
+    std::vector<uint32_t> remap(numVertices);
+    std::map<VertexPNT1, std::vector<uint32_t>> uniqueVertices;
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         LookupPNT1& lookup = PNT1Array[i];
         VertexPNT1 vertex;
@@ -68,7 +68,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
         auto iter = uniqueVertices.find(vertex);
         if (iter == uniqueVertices.end())
         {
-            uniqueVertices.insert(std::make_pair(vertex, std::vector<unsigned int>{ i }));
+            uniqueVertices.insert(std::make_pair(vertex, std::vector<uint32_t>{ i }));
         }
         else
         {
@@ -76,10 +76,10 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
         }
     }
 
-    numVertices = static_cast<unsigned int>(uniqueVertices.size());
+    numVertices = static_cast<uint32_t>(uniqueVertices.size());
     auto vbuffer = std::make_shared<VertexBuffer>(mPNT1Format, numVertices);
     VertexPNT1* vertex = vbuffer->Get<VertexPNT1>();
-    unsigned int v = 0;
+    uint32_t v = 0;
     for (auto const& element : uniqueVertices)
     {
         vertex[v] = element.first;
@@ -90,13 +90,13 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT1(std::string const& name)
         ++v;
     }
 
-    unsigned int numIndices = static_cast<unsigned int>(indices.size());
+    uint32_t numIndices = static_cast<uint32_t>(indices.size());
     for (auto& index : indices)
     {
         index = remap[index];
     }
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(unsigned int));
-    std::memcpy(ibuffer->GetData(), indices.data(), numIndices * sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(uint32_t));
+    std::memcpy(ibuffer->GetData(), indices.data(), numIndices * sizeof(uint32_t));
 
     std::shared_ptr<Visual> mesh = std::make_shared<Visual>(vbuffer, ibuffer);
     return mesh;
@@ -115,15 +115,15 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
     GetTuple2(inFile, tcoords1);
 
     // Get the vertices and indices.
-    unsigned int numTriangles;
+    uint32_t numTriangles;
     inFile >> numTriangles;
-    std::vector<LookupPNT2> lookups(3 * numTriangles);
+    std::vector<LookupPNT2> lookups(3 * static_cast<size_t>(numTriangles));
     std::vector<LookupPNT2> PNT2Array;
-    std::map<LookupPNT2, unsigned int> PNT2Map;
-    std::vector<unsigned int> indices;
-    for (unsigned int t = 0; t < numTriangles; ++t)
+    std::map<LookupPNT2, uint32_t> PNT2Map;
+    std::vector<uint32_t> indices;
+    for (uint32_t t = 0; t < numTriangles; ++t)
     {
-        for (unsigned int j = 0, k = 3 * t; j < 3; ++j, ++k)
+        for (uint32_t j = 0, k = 3 * t; j < 3; ++j, ++k)
         {
             LookupPNT2& lookup = lookups[k];
             inFile >> lookup.PIndex;
@@ -132,7 +132,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
             inFile >> lookup.T1Index;
 
             auto iter = PNT2Map.find(lookup);
-            unsigned int index;
+            uint32_t index;
             if (iter != PNT2Map.end())
             {
                 // Second or later time the vertex is encountered.
@@ -141,7 +141,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
             else
             {
                 // First time the vertex is encountered.
-                index = static_cast<unsigned int>(PNT2Array.size());
+                index = static_cast<uint32_t>(PNT2Array.size());
                 PNT2Map.insert(std::make_pair(lookup, index));
                 PNT2Array.push_back(lookup);
             }
@@ -152,10 +152,10 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
 
     // Build the meshes.  Generate the unique vertices.  Keep track of indices
     // to remap the index buffers.
-    unsigned int numVertices = static_cast<unsigned int>(PNT2Array.size());
-    std::vector<unsigned int> remap(numVertices);
-    std::map<VertexPNT2, std::vector<unsigned int>> uniqueVertices;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    uint32_t numVertices = static_cast<uint32_t>(PNT2Array.size());
+    std::vector<uint32_t> remap(numVertices);
+    std::map<VertexPNT2, std::vector<uint32_t>> uniqueVertices;
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         LookupPNT2& lookup = PNT2Array[i];
         VertexPNT2 vertex;
@@ -166,7 +166,7 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
         auto iter = uniqueVertices.find(vertex);
         if (iter == uniqueVertices.end())
         {
-            uniqueVertices.insert(std::make_pair(vertex, std::vector<unsigned int>{ i }));
+            uniqueVertices.insert(std::make_pair(vertex, std::vector<uint32_t>{ i }));
         }
         else
         {
@@ -174,10 +174,10 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
         }
     }
 
-    numVertices = static_cast<unsigned int>(uniqueVertices.size());
+    numVertices = static_cast<uint32_t>(uniqueVertices.size());
     auto vbuffer = std::make_shared<VertexBuffer>(mPNT2Format, numVertices);
     VertexPNT2* vertex = vbuffer->Get<VertexPNT2>();
-    unsigned int v = 0;
+    uint32_t v = 0;
     for (auto const& element : uniqueVertices)
     {
         vertex[v] = element.first;
@@ -188,13 +188,13 @@ std::shared_ptr<Visual> CastleWindow3::LoadMeshPNT2(std::string const& name)
         ++v;
     }
 
-    unsigned int numIndices = static_cast<unsigned int>(indices.size());
+    uint32_t numIndices = static_cast<uint32_t>(indices.size());
     for (auto& index : indices)
     {
         index = remap[index];
     }
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(unsigned int));
-    std::memcpy(ibuffer->GetData(), indices.data(), numIndices * sizeof(unsigned int));
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(uint32_t));
+    std::memcpy(ibuffer->GetData(), indices.data(), numIndices * sizeof(uint32_t));
 
     std::shared_ptr<Visual> mesh = std::make_shared<Visual>(vbuffer, ibuffer);
     return mesh;
@@ -212,25 +212,25 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
     GetTuple2(inFile, tcoords);
 
     // Get the vertices and indices.
-    unsigned int numMeshes;
+    uint32_t numMeshes;
     inFile >> numMeshes;
-    std::vector<unsigned int> numTriangles(numMeshes);
-    unsigned int numTotalTriangles = 0;
-    for (unsigned int m = 0; m < numMeshes; ++m)
+    std::vector<uint32_t> numTriangles(numMeshes);
+    uint32_t numTotalTriangles = 0;
+    for (uint32_t m = 0; m < numMeshes; ++m)
     {
         inFile >> numTriangles[m];
         numTotalTriangles += numTriangles[m];
     }
 
-    std::vector<std::vector<unsigned int>> indices(numMeshes);
-    std::vector<LookupPNT1> lookups(3 * numTotalTriangles);
+    std::vector<std::vector<uint32_t>> indices(numMeshes);
+    std::vector<LookupPNT1> lookups(3 * static_cast<size_t>(numTotalTriangles));
     std::vector<LookupPNT1> PNT1Array;
-    std::map<LookupPNT1, unsigned int> PNT1Map;
-    for (unsigned int m = 0; m < numMeshes; ++m)
+    std::map<LookupPNT1, uint32_t> PNT1Map;
+    for (uint32_t m = 0; m < numMeshes; ++m)
     {
-        for (unsigned int t = 0; t < numTriangles[m]; ++t)
+        for (uint32_t t = 0; t < numTriangles[m]; ++t)
         {
-            for (unsigned int j = 0, k = 3 * t; j < 3; ++j, ++k)
+            for (uint32_t j = 0, k = 3 * t; j < 3; ++j, ++k)
             {
                 LookupPNT1& lookup = lookups[k];
                 inFile >> lookup.PIndex;
@@ -238,7 +238,7 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
                 inFile >> lookup.TIndex;
 
                 auto iter = PNT1Map.find(lookup);
-                unsigned int index;
+                uint32_t index;
                 if (iter != PNT1Map.end())
                 {
                     // Second or later time the vertex is encountered.
@@ -247,7 +247,7 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
                 else
                 {
                     // First time the vertex is encountered.
-                    index = static_cast<unsigned int>(PNT1Array.size());
+                    index = static_cast<uint32_t>(PNT1Array.size());
                     PNT1Map.insert(std::make_pair(lookup, index));
                     PNT1Array.push_back(lookup);
                 }
@@ -259,10 +259,10 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
 
     // Build the meshes.  Generate the unique vertices.  Keep track of indices
     // to remap the index buffers.
-    unsigned int numVertices = static_cast<unsigned int>(PNT1Array.size());
-    std::vector<unsigned int> remap(numVertices);
-    std::map<VertexPNT1, std::vector<unsigned int>> uniqueVertices;
-    for (unsigned int i = 0; i < numVertices; ++i)
+    uint32_t numVertices = static_cast<uint32_t>(PNT1Array.size());
+    std::vector<uint32_t> remap(numVertices);
+    std::map<VertexPNT1, std::vector<uint32_t>> uniqueVertices;
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         LookupPNT1& lookup = PNT1Array[i];
         VertexPNT1 vertex;
@@ -272,7 +272,7 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
         auto iter = uniqueVertices.find(vertex);
         if (iter == uniqueVertices.end())
         {
-            uniqueVertices.insert(std::make_pair(vertex, std::vector<unsigned int>{ i }));
+            uniqueVertices.insert(std::make_pair(vertex, std::vector<uint32_t>{ i }));
         }
         else
         {
@@ -280,10 +280,10 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
         }
     }
 
-    numVertices = static_cast<unsigned int>(uniqueVertices.size());
+    numVertices = static_cast<uint32_t>(uniqueVertices.size());
     auto vbuffer = std::make_shared<VertexBuffer>(mPNT1Format, numVertices);
     VertexPNT1* vertex = vbuffer->Get<VertexPNT1>();
-    unsigned int v = 0;
+    uint32_t v = 0;
     for (auto const& element : uniqueVertices)
     {
         vertex[v] = element.first;
@@ -295,15 +295,15 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
     }
 
     std::vector<std::shared_ptr<Visual>> meshes(numMeshes);
-    for (unsigned int m = 0; m < numMeshes; ++m)
+    for (uint32_t m = 0; m < numMeshes; ++m)
     {
-        unsigned int numIndices = static_cast<unsigned int>(indices[m].size());
+        uint32_t numIndices = static_cast<uint32_t>(indices[m].size());
         for (auto& index : indices[m])
         {
             index = remap[index];
         }
-        auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(unsigned int));
-        std::memcpy(ibuffer->GetData(), indices[m].data(), numIndices * sizeof(unsigned int));
+        auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numIndices, sizeof(uint32_t));
+        std::memcpy(ibuffer->GetData(), indices[m].data(), numIndices * sizeof(uint32_t));
         meshes[m] = std::make_shared<Visual>(vbuffer, ibuffer);
     }
 
@@ -312,10 +312,10 @@ std::vector<std::shared_ptr<Visual>> CastleWindow3::LoadMeshPNT1Multi(std::strin
 
 void CastleWindow3::GetTuple3(std::ifstream& inFile, std::vector<Vector3<float>>& elements)
 {
-    int numElements;
+    int32_t numElements;
     inFile >> numElements;
     elements.resize(numElements);
-    for (int i = 0; i < numElements; ++i)
+    for (int32_t i = 0; i < numElements; ++i)
     {
         inFile >> elements[i][0];
         inFile >> elements[i][1];
@@ -325,10 +325,10 @@ void CastleWindow3::GetTuple3(std::ifstream& inFile, std::vector<Vector3<float>>
 
 void CastleWindow3::GetTuple2(std::ifstream& inFile, std::vector<Vector2<float>>& elements)
 {
-    int numElements;
+    int32_t numElements;
     inFile >> numElements;
     elements.resize(numElements);
-    for (int i = 0; i < numElements; ++i)
+    for (int32_t i = 0; i < numElements; ++i)
     {
         inFile >> elements[i][0];
         inFile >> elements[i][1];

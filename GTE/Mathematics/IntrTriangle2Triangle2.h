@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -54,10 +54,10 @@ namespace gte
         // return value is +1 if all t >= 0, -1 if all t <= 0, but 0 otherwise
         // in which case the line splits the triangle into two subtriangles,
         // each of positive area.
-        int WhichSide(Triangle2<T> const& triangle, Vector2<T> const& P, Vector2<T> const& D) const
+        int32_t WhichSide(Triangle2<T> const& triangle, Vector2<T> const& P, Vector2<T> const& D) const
         {
-            int positive = 0, negative = 0;
-            for (int i = 0; i < 3; ++i)
+            int32_t positive = 0, negative = 0;
+            for (int32_t i = 0; i < 3; ++i)
             {
                 T t = Dot(D, triangle.v[i] - P);
                 if (t > (T)0)
@@ -89,7 +89,7 @@ namespace gte
             // triangle0 is [T,0] for some T < 0.  Determine whether
             // triangle1 is on the positive side of the line; if it is,
             // the triangles are separated.
-            for (int i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+            for (int32_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
             {
                 // The potential separating axis is P+t*D.
                 Vector2<T> P = triangle0.v[i0];
@@ -137,7 +137,7 @@ namespace gte
             typedef FIQuery<T, std::vector<Vector<2, T>>, Hyperplane<2, T>> PPQuery;
             PPQuery ppQuery;
 
-            for (int i1 = 2, i0 = 0; i0 < 3; i1 = i0++)
+            for (int32_t i1 = 2, i0 = 0; i0 < 3; i1 = i0++)
             {
                 // Create the clipping line for the current edge.  The edge
                 // normal N points inside the triangle.

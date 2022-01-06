@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -25,7 +25,7 @@ public:
     MassSprings3DWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
@@ -34,7 +34,7 @@ private:
     void UpdateTransforms();
     void UpdateMassSpringSystem();
 
-    inline int GetIndex(int x, int y, int z) const
+    inline int32_t GetIndex(int32_t x, int32_t y, int32_t z) const
     {
         return x + mDimension[0] * (y + mDimension[1] * z);
     }
@@ -45,5 +45,5 @@ private:
     std::shared_ptr<VisualEffect> mEffect[6];
     std::unique_ptr<MassSpringSystem> mMassSprings;
     float mSimulationTime, mSimulationDelta;
-    int mDimension[3];
+    int32_t mDimension[3];
 };

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -11,6 +11,7 @@
 #include <Graphics/Camera.h>
 #include <Graphics/MeshFactory.h>
 #include <Mathematics/Vector2.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -25,7 +26,7 @@ namespace gte
         //      row-major order.
         //   4. The elevation extremes satisfy minElevation <= maxElevation.
         //   5. The tile pixels are square with spacing > 0.
-        //   6. The vformat has first Bind call using VA_POSITION.  The data
+        //   6. The vformat has first Bind call using VASemantic::POSITION.  The data
         //      type can be DF_R32G32B32_FLOAT or DF_R32G32B32A32_FLOAT.  The
         //      unit must be 0.
         //   7. The camera is not null.
@@ -72,11 +73,11 @@ namespace gte
         // The heights of all the terrain pages should be set after the
         // terrain constructor is called.  During program execution, the
         // heights can be modified according to the application's needs.
-        void SetHeights(size_t row, size_t col, std::vector<unsigned short> const& heights);
+        void SetHeights(size_t row, size_t col, std::vector<uint16_t> const& heights);
 
         // Get the height array of the specified terrain page.  If the input
         // (row,col) is invalid, return the height array of page (0,0).
-        std::vector<unsigned short> const& GetHeights(size_t row, size_t col) const;
+        std::vector<uint16_t> const& GetHeights(size_t row, size_t col) const;
 
         // Compute the terrain height at the world (x,y) coordinate and uses
         // wrap-around when necessary.
@@ -110,9 +111,9 @@ namespace gte
             // If the vertex buffer has been copied from CPU to GPU, the
             // caller must re-copy the buffer after a call to setting the
             // heights.
-            void SetHeights(std::vector<unsigned short> const& heights);
+            void SetHeights(std::vector<uint16_t> const& heights);
 
-            inline std::vector<unsigned short> const& GetHeights() const
+            inline std::vector<uint16_t> const& GetHeights() const
             {
                 return mHeights;
             }
@@ -129,7 +130,7 @@ namespace gte
             size_t mSize;
             float mMinElevation, mMaxElevation, mSpacing;
             Vector2<float> mOrigin;
-            std::vector<unsigned short> mHeights;
+            std::vector<uint16_t> mHeights;
         };
 
         std::shared_ptr<Page> GetPage(float x, float y) const;

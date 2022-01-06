@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PlanarReflectionEffect.h>
@@ -18,25 +18,25 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     mPlaneOrigins(planes.size()),
     mPlaneNormals(planes.size())
 {
-    unsigned int const numPlanes = static_cast<unsigned int>(mPlanes.size());
-    for (unsigned int i = 0; i < numPlanes; ++i)
+    uint32_t const numPlanes = static_cast<uint32_t>(mPlanes.size());
+    for (uint32_t i = 0; i < numPlanes; ++i)
     {
         std::shared_ptr<Visual> plane = mPlanes[i];
 
         // The culling flag is set to "always" because this effect is
         // responsible for drawing the triangle mesh.  This prevents drawing
         // attempts by another scene graph for which 'plane' is a leaf node.
-        plane->culling = CULL_ALWAYS;
+        plane->culling = CullingMode::ALWAYS;
 
         // Compute the model-space origin and normal for the plane.
 
         // Get the position data.
         std::shared_ptr<VertexBuffer> vbuffer = plane->GetVertexBuffer();
-        unsigned int vstride = vbuffer->GetElementSize();
-        std::set<DFType> required;
+        uint32_t vstride = vbuffer->GetElementSize();
+        std::set<uint32_t> required;
         required.insert(DF_R32G32B32_FLOAT);
         required.insert(DF_R32G32B32A32_FLOAT);
-        char const* positions = vbuffer->GetChannel(VA_POSITION, 0, required);
+        char const* positions = vbuffer->GetChannel(VASemantic::POSITION, 0, required);
         if (!positions)
         {
             LogError("Expecting 3D positions.");
@@ -44,14 +44,14 @@ PlanarReflectionEffect::PlanarReflectionEffect(
 
         // Verify the plane topology involves triangles.
         std::shared_ptr<IndexBuffer> ibuffer = plane->GetIndexBuffer();
-        IPType primitiveType = ibuffer->GetPrimitiveType();
+        uint32_t primitiveType = ibuffer->GetPrimitiveType();
         if (!(primitiveType & IP_HAS_TRIANGLES))
         {
             LogError("Expecting triangle topology.");
         }
 
         // Get the vertex indices for the first triangle defining the plane.
-        unsigned int v[3];
+        std::array<uint32_t, 3> v{};
         if (ibuffer->IsIndexed())
         {
             ibuffer->GetTriangle(i, v[0], v[1], v[2]);
@@ -62,19 +62,20 @@ PlanarReflectionEffect::PlanarReflectionEffect(
             v[1] = v[0] + 1;
             v[2] = v[0] + 2;
         }
-        else  // primitiveType == IP_TRISTRIP
+        else  // primitiveType.value == IP_TRISTRIP
         {
-            int offset = (i & 1);
+            uint32_t offset = (i & 1);
             v[0] = i + offset;
             v[1] = i + 1 + offset;
             v[2] = i + 2 - offset;
         }
 
         // Get the model-space positions of the triangle vertices.
-        Vector4<float> p[3];
-        for (int j = 0; j < 3; ++j)
+        std::array<Vector4<float>, 3> p{};
+        for (size_t j = 0; j < 3; ++j)
         {
-            auto temp = *reinterpret_cast<Vector3<float> const*>(positions + v[j] * vstride);
+            auto temp = *reinterpret_cast<Vector3<float> const*>(positions +
+                static_cast<size_t>(v[j]) * vstride);
             p[j] = HLift<3, float>(temp, 1.0f);
         }
 
@@ -91,10 +92,10 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     // reflecting plane.
     mReflectanceBlend = std::make_shared<BlendState>();
     mReflectanceBlend->target[0].enable = true;
-    mReflectanceBlend->target[0].srcColor = BlendState::BM_INV_FACTOR;
-    mReflectanceBlend->target[0].dstColor = BlendState::BM_FACTOR;
-    mReflectanceBlend->target[0].srcAlpha = BlendState::BM_INV_FACTOR;
-    mReflectanceBlend->target[0].dstAlpha = BlendState::BM_FACTOR;
+    mReflectanceBlend->target[0].srcColor = BlendState::Mode::INV_FACTOR;
+    mReflectanceBlend->target[0].dstColor = BlendState::Mode::FACTOR;
+    mReflectanceBlend->target[0].srcAlpha = BlendState::Mode::INV_FACTOR;
+    mReflectanceBlend->target[0].dstAlpha = BlendState::Mode::FACTOR;
 
     // For toggling the current cull mode to the opposite of what is active.
     mCullReverse = std::make_shared<RasterizerState>();
@@ -103,33 +104,33 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     // reflecting plane.
     mDSPass0 = std::make_shared<DepthStencilState>();
     mDSPass0->depthEnable = true;
-    mDSPass0->writeMask = DepthStencilState::MASK_ZERO;
-    mDSPass0->comparison = DepthStencilState::LESS_EQUAL;
+    mDSPass0->writeMask = DepthStencilState::WriteMask::ZERO;
+    mDSPass0->comparison = DepthStencilState::Comparison::LESS_EQUAL;
     mDSPass0->stencilEnable = true;
-    mDSPass0->frontFace.fail = DepthStencilState::OP_KEEP;
-    mDSPass0->frontFace.depthFail = DepthStencilState::OP_KEEP;
-    mDSPass0->frontFace.pass = DepthStencilState::OP_REPLACE;
-    mDSPass0->frontFace.comparison = DepthStencilState::ALWAYS;
+    mDSPass0->frontFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass0->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass0->frontFace.pass = DepthStencilState::Operation::OP_REPLACE;
+    mDSPass0->frontFace.comparison = DepthStencilState::Comparison::ALWAYS;
 
     mDSPass1 = std::make_shared<DepthStencilState>();
     mDSPass1->depthEnable = true;
-    mDSPass1->writeMask = DepthStencilState::MASK_ALL;
-    mDSPass1->comparison = DepthStencilState::ALWAYS;
+    mDSPass1->writeMask = DepthStencilState::WriteMask::ALL;
+    mDSPass1->comparison = DepthStencilState::Comparison::ALWAYS;
     mDSPass1->stencilEnable = true;
-    mDSPass1->frontFace.fail = DepthStencilState::OP_KEEP;
-    mDSPass1->frontFace.depthFail = DepthStencilState::OP_KEEP;
-    mDSPass1->frontFace.pass = DepthStencilState::OP_KEEP;
-    mDSPass1->frontFace.comparison = DepthStencilState::EQUAL;
+    mDSPass1->frontFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->frontFace.pass = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->frontFace.comparison = DepthStencilState::Comparison::EQUAL;
 
     mDSPass2 = std::make_shared<DepthStencilState>();
     mDSPass2->depthEnable = true;
-    mDSPass2->writeMask = DepthStencilState::MASK_ALL;
-    mDSPass2->comparison = DepthStencilState::LESS_EQUAL;
+    mDSPass2->writeMask = DepthStencilState::WriteMask::ALL;
+    mDSPass2->comparison = DepthStencilState::Comparison::LESS_EQUAL;
     mDSPass2->stencilEnable = true;
-    mDSPass2->frontFace.fail = DepthStencilState::OP_KEEP;
-    mDSPass2->frontFace.depthFail = DepthStencilState::OP_KEEP;
-    mDSPass2->frontFace.pass = DepthStencilState::OP_ZERO;
-    mDSPass2->frontFace.comparison = DepthStencilState::EQUAL;
+    mDSPass2->frontFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass2->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass2->frontFace.pass = DepthStencilState::Operation::OP_ZERO;
+    mDSPass2->frontFace.comparison = DepthStencilState::Comparison::EQUAL;
 }
 
 void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
@@ -150,22 +151,22 @@ void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
 
     // Get the current cull mode and reverse it.  Allow for models that are
     // not necessarily set up with front or back face culling.
-    if (saveRState->cullMode == RasterizerState::CULL_BACK)
+    if (saveRState->cull == RasterizerState::Cull::BACK)
     {
-        mCullReverse->cullMode = RasterizerState::CULL_FRONT;
+        mCullReverse->cull = RasterizerState::Cull::FRONT;
     }
-    else if (saveRState->cullMode == RasterizerState::CULL_FRONT)
+    else if (saveRState->cull == RasterizerState::Cull::FRONT)
     {
-        mCullReverse->cullMode = RasterizerState::CULL_BACK;
+        mCullReverse->cull = RasterizerState::Cull::BACK;
     }
     else
     {
-        mCullReverse->cullMode = RasterizerState::CULL_NONE;
+        mCullReverse->cull = RasterizerState::Cull::NONE;
     }
     engine->Bind(mCullReverse);
 
-    unsigned int const numPlanes = static_cast<unsigned int>(mPlanes.size());
-    for (unsigned int i = 0, reference = 1; i < numPlanes; ++i, ++reference)
+    uint32_t const numPlanes = static_cast<uint32_t>(mPlanes.size());
+    for (uint32_t i = 0, reference = 1; i < numPlanes; ++i, ++reference)
     {
         std::shared_ptr<Visual> plane = mPlanes[i];
 
@@ -256,7 +257,7 @@ void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
     }
 }
 
-std::pair<Vector4<float>, Vector4<float>> PlanarReflectionEffect::GetPlane(int i) const
+std::pair<Vector4<float>, Vector4<float>> PlanarReflectionEffect::GetPlane(int32_t i) const
 {
     if (0 <= i && i < GetNumPlanes())
     {
@@ -268,7 +269,7 @@ std::pair<Vector4<float>, Vector4<float>> PlanarReflectionEffect::GetPlane(int i
     }
 }
 
-std::shared_ptr<Visual> PlanarReflectionEffect::GetPlaneVisual(int i) const
+std::shared_ptr<Visual> PlanarReflectionEffect::GetPlaneVisual(int32_t i) const
 {
     if (0 <= i && i < GetNumPlanes())
     {
@@ -280,7 +281,7 @@ std::shared_ptr<Visual> PlanarReflectionEffect::GetPlaneVisual(int i) const
     }
 }
 
-void PlanarReflectionEffect::SetReflectance(int i, float reflectance)
+void PlanarReflectionEffect::SetReflectance(int32_t i, float reflectance)
 {
     if (0 <= i && i < GetNumPlanes())
     {
@@ -288,7 +289,7 @@ void PlanarReflectionEffect::SetReflectance(int i, float reflectance)
     }
 }
 
-float PlanarReflectionEffect::GetReflectance(int i) const
+float PlanarReflectionEffect::GetReflectance(int32_t i) const
 {
     if (0 <= i && i < GetNumPlanes())
     {

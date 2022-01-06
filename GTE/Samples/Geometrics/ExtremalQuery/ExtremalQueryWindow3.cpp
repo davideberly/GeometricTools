@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.01.14
+// Version: 6.0.2022.01.06
 
 #include "ExtremalQueryWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -22,7 +22,7 @@ ExtremalQueryWindow3::ExtremalQueryWindow3(Parameters& parameters)
     Window3(parameters)
 {
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     // Set up an orthogonal camera.  This projection type is used to make it
     // clear that the displayed extreme points really are extreme; the
@@ -55,7 +55,7 @@ void ExtremalQueryWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool ExtremalQueryWindow3::OnCharPress(unsigned char key, int x, int y)
+bool ExtremalQueryWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -75,7 +75,7 @@ bool ExtremalQueryWindow3::OnCharPress(unsigned char key, int x, int y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool ExtremalQueryWindow3::OnMouseMotion(MouseButton button, int x, int y, unsigned int modifiers)
+bool ExtremalQueryWindow3::OnMouseMotion(MouseButton button, int32_t x, int32_t y, uint32_t modifiers)
 {
     if (Window3::OnMouseMotion(button, x, y, modifiers))
     {
@@ -90,14 +90,14 @@ void ExtremalQueryWindow3::CreateScene()
 
     // Create a convex polyhedron that is the hull of numVertices randomly
     // generated points.
-    int const numVertices = 32;
+    int32_t const numVertices = 32;
     CreateConvexPolyhedron(numVertices);
     CreateVisualConvexPolyhedron();
 
     // Use small spheres to show the extreme points in the camera's right
     // direction.
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
 
@@ -121,7 +121,7 @@ void ExtremalQueryWindow3::CreateScene()
     UpdateExtremePoints();
 }
 
-void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
+void ExtremalQueryWindow3::CreateConvexPolyhedron(int32_t numVertices)
 {
     // Create the convex hull of a randomly generated set of points on the unit sphere.
     auto vertexPool = std::make_shared<std::vector<Vector3<float>>>(numVertices);
@@ -130,7 +130,7 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
     std::uniform_real_distribution<float> rnd(-1.0f, 1.0f);
     for (auto& vertex : vertices)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertex[j] = rnd(mte);
         }
@@ -141,12 +141,12 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
     ch3(vertices, 0);
 
     auto const& triangles = ch3.GetHull();
-    int numIndices = 3 * static_cast<int>(triangles.size());
-    std::vector<int> indices(numIndices);
+    int32_t numIndices = 3 * static_cast<int32_t>(triangles.size());
+    std::vector<int32_t> indices(numIndices);
     size_t k = 0;
     for (auto index : triangles)
     {
-        indices[k++] = static_cast<int>(index);
+        indices[k++] = static_cast<int32_t>(index);
     }
     mConvexPolyhedron = std::make_unique<Polyhedron3<float>>(vertexPool, numIndices,
         indices.data(), true);
@@ -159,11 +159,11 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
 
 #ifdef MEASURE_TIMING_OF_QUERY
     // For timing purposes and determination of asymptotic order.
-    int const imax = 10000000;
+    int32_t const imax = 10000000;
     std::vector<Vector3<float>> directions(imax);
     for (auto& direction : directions)
     {
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             direction[j] = rnd(mte);
         }
@@ -171,9 +171,9 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int numVertices)
     }
 
     Timer timer;
-    for (int i = 0; i < imax; ++i)
+    for (int32_t i = 0; i < imax; ++i)
     {
-        int pos, neg;
+        int32_t pos, neg;
         mExtremalQuery->GetExtremeVertices(directions[i], pos, neg);
     }
     double duration = timer.GetSeconds();
@@ -187,8 +187,8 @@ void ExtremalQueryWindow3::CreateVisualConvexPolyhedron()
 {
     auto vertexPool = mConvexPolyhedron->GetVertices();
     auto const& polyIndices = mConvexPolyhedron->GetIndices();
-    int const numIndices = static_cast<int>(polyIndices.size());
-    int const numTriangles = numIndices / 3;
+    int32_t const numIndices = static_cast<int32_t>(polyIndices.size());
+    int32_t const numTriangles = numIndices / 3;
 
     // Visualize the convex polyhedron as a collection of face-colored triangles.
     struct Vertex
@@ -197,14 +197,14 @@ void ExtremalQueryWindow3::CreateVisualConvexPolyhedron()
         Vector4<float> color;
     };
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_COLOR, DF_R32G32B32A32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::COLOR, DF_R32G32B32A32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, numIndices);
     auto vertices = vbuffer->Get<Vertex>();
 
-    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(unsigned int));
-    auto indices = ibuffer->Get<int>();
-    for (int i = 0; i < numIndices; ++i)
+    auto ibuffer = std::make_shared<IndexBuffer>(IP_TRIMESH, numTriangles, sizeof(uint32_t));
+    auto indices = ibuffer->Get<int32_t>();
+    for (int32_t i = 0; i < numIndices; ++i)
     {
         vertices[i].position = vertexPool[polyIndices[i]];
         indices[i] = i;
@@ -213,10 +213,10 @@ void ExtremalQueryWindow3::CreateVisualConvexPolyhedron()
     // Use randomly generated vertex colors.
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.0f, 1.0f);
-    for (int t = 0; t < numTriangles; ++t)
+    for (int32_t t = 0; t < numTriangles; ++t)
     {
         Vector4<float> color{ rnd(mte), rnd(mte), rnd(mte), 1.0f };
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             vertices[3 * t + j].color = color;
         }
@@ -235,7 +235,7 @@ void ExtremalQueryWindow3::UpdateExtremePoints()
     Vector4<float> rVector = DoTransform(invWMatrix, mCamera->GetRVector());
     Vector3<float> direction = HProject<4, float>(rVector);
 
-    int posDir, negDir;
+    int32_t posDir, negDir;
     mExtremalQuery->GetExtremeVertices(direction, posDir, negDir);
 
     auto vertexPool = mConvexPolyhedron->GetVertices();

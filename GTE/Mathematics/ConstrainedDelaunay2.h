@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.04.22
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -80,7 +80,7 @@ namespace gte
         // This operator computes the Delaunay triangulation only. Read the
         // Delaunay2 constructor comments about 'vertices' and 'epsilon'. For
         // ComputeType chosen to be a rational type, pass zero for epsilon.
-        bool operator()(int numVertices, Vector2<InputType> const* vertices, InputType epsilon)
+        bool operator()(int32_t numVertices, Vector2<InputType> const* vertices, InputType epsilon)
         {
             return Delaunay2<InputType, ComputeType>::operator()(numVertices, vertices, epsilon);
         }
@@ -98,7 +98,7 @@ namespace gte
         // into the triangulation vertices that are on the edge. It is
         // guaranteed that partitionedEdge.front() = edge[0] and
         // partitionedEdge.back() = edge[1].
-        void Insert(std::array<int, 2> edge, std::vector<int>& partitionedEdge)
+        void Insert(std::array<int32_t, 2> edge, std::vector<int32_t>& partitionedEdge)
         {
             LogAssert(
                 edge[0] != edge[1] &&
@@ -113,7 +113,7 @@ namespace gte
             // into subedges, each subedge having vertex endpoints but no
             // interior point is a vertex. The partition is stored in the
             // partitionedEdge vector.
-            std::vector<std::array<int, 2>> partition;
+            std::vector<std::array<int32_t, 2>> partition;
 
             // When using exact arithmetic, a while(!edgeConsumed) loop
             // suffices. When using floating-point arithmetic (which you
@@ -134,7 +134,7 @@ namespace gte
 
                 // Get the link edges for the vertex edge[0]. These edges are
                 // opposite the link vertex.
-                std::vector<std::array<int, 2>> linkEdges;
+                std::vector<std::array<int32_t, 2>> linkEdges;
                 GetLinkEdges(edge[0], linkEdges);
 
                 // Determine which link triangle contains the to-be-inserted
@@ -144,10 +144,10 @@ namespace gte
                     // Compute on which side of the to-be-inserted edge the
                     // link vertices live. The triangles are not degenerate,
                     // so it is not possible for sign0 = sign1 = 0.
-                    int v0 = linkEdge[0];
-                    int v1 = linkEdge[1];
-                    int sign0 = this->mQuery.ToLine(v0, edge[0], edge[1]);
-                    int sign1 = this->mQuery.ToLine(v1, edge[0], edge[1]);
+                    int32_t v0 = linkEdge[0];
+                    int32_t v1 = linkEdge[1];
+                    int32_t sign0 = this->mQuery.ToLine(v0, edge[0], edge[1]);
+                    int32_t sign1 = this->mQuery.ToLine(v1, edge[0], edge[1]);
                     if (sign0 >= 0 && sign1 <= 0)
                     {
                         if (sign0 > 0)
@@ -226,7 +226,7 @@ namespace gte
         // For a vertex at index v, return the edges of the adjacent triangles,
         // each triangle having v as a vertex and the returned edge is
         // opposite v.
-        void GetLinkEdges(int v, std::vector<std::array<int, 2>>& linkEdges)
+        void GetLinkEdges(int32_t v, std::vector<std::array<int32_t, 2>>& linkEdges)
         {
             auto const& vmap = this->mGraph.GetVertices();
             auto viter = vmap.find(v);
@@ -255,11 +255,11 @@ namespace gte
         // The return value is 'false' if it does have such a point, in
         // which case edge[0] is updated to the index of that vertex. The
         // caller must process the new edge.
-        bool ProcessTriangleStrip(std::array<int, 2>& edge, int v0, int v1,
-            std::vector<std::array<int, 2>>& partitionedEdge)
+        bool ProcessTriangleStrip(std::array<int32_t, 2>& edge, int32_t v0, int32_t v1,
+            std::vector<std::array<int32_t, 2>>& partitionedEdge)
         {
             bool edgeConsumed = true;
-            std::array<int, 2> localEdge = edge;
+            std::array<int32_t, 2> localEdge = edge;
 
             // Locate and store the triangles in the triangle strip containing
             // the edge.
@@ -278,7 +278,7 @@ namespace gte
             // strip shares an edge with a previous triangle in the strip
             // and the previous triangle is not the immediate predecessor
             // to the current triangle.
-            std::vector<int> rightPolygon, leftPolygon;
+            std::vector<int32_t> rightPolygon, leftPolygon;
             rightPolygon.push_back(localEdge[0]);
             rightPolygon.push_back(v0);
             leftPolygon.push_back(localEdge[0]);
@@ -298,7 +298,7 @@ namespace gte
                 tristrip.emplace_back(adj->V[0], adj->V[1], adj->V[2]);
 
                 // Get the vertex of adj that is opposite edge <v0,v1>.
-                int vOpposite = 0;
+                int32_t vOpposite = 0;
                 bool found = adj->GetOppositeVertexOfEdge(v0, v1, vOpposite);
                 LogAssert(found, CDTMessage());
                 if (vOpposite == localEdge[1])
@@ -310,7 +310,7 @@ namespace gte
                 // The next triangle in the strip depends on whether the
                 // opposite vertex is left-of the edge, right-of the edge
                 // or on the edge.
-                int querySign = this->mQuery.ToLine(vOpposite, localEdge[0], localEdge[1]);
+                int32_t querySign = this->mQuery.ToLine(vOpposite, localEdge[0], localEdge[1]);
                 if (querySign > 0)
                 {
                     tri = adj;
@@ -370,8 +370,8 @@ namespace gte
 
         // Process a to-be-inserted edge that is coincident with an already
         // existing triangulation edge.
-        bool ProcessCoincidentEdge(std::array<int, 2>& edge, int v,
-            std::vector<std::array<int, 2>>& partitionedEdge)
+        bool ProcessCoincidentEdge(std::array<int32_t, 2>& edge, int32_t v,
+            std::vector<std::array<int32_t, 2>>& partitionedEdge)
         {
             mInsertedEdges.insert(EdgeKey<false>(edge[0], v));
             partitionedEdge.push_back({ edge[0], v });
@@ -384,10 +384,10 @@ namespace gte
         // vertices closest to the current polygon base edge. The function
         // is naturally recursive, but simulated recursion is used to avoid
         // a large program stack by instead using the heap.
-        void Retriangulate(std::vector<int> const& polygon)
+        void Retriangulate(std::vector<int32_t> const& polygon)
         {
             std::vector<std::array<size_t, 2>> stack(polygon.size());
-            int top = -1;
+            int32_t top = -1;
             stack[++top] = { 0, polygon.size() - 1 };
             while (top != -1)
             {
@@ -395,15 +395,15 @@ namespace gte
                 if (i[1] > i[0] + 1)
                 {
                     // Get the vertex indices for the specified i-values.
-                    int v0 = polygon[i[0]];
-                    int v1 = polygon[i[1]];
+                    int32_t v0 = polygon[i[0]];
+                    int32_t v1 = polygon[i[1]];
 
                     // Select isplit in the index range [i[0]+1,i[1]-1] so
                     // that the vertex at index polygon[isplit] attains the
                     // minimum distance to the edge with vertices at the
                     // indices polygon[i[0]] and polygon[i[1]].
                     size_t isplit = SelectSplit(polygon, i[0], i[1]);
-                    int vsplit = polygon[isplit];
+                    int32_t vsplit = polygon[isplit];
 
                     // Insert the triangle into the Delaunay graph.
                     this->mGraph.Insert(v0, vsplit, v1);
@@ -417,7 +417,7 @@ namespace gte
         // Determine the polygon vertex with index strictly between i0 and i1
         // that minimizes the pseudosquared distance from that vertex to the
         // line segment whose endpoints are at indices i0 and i1.
-        size_t SelectSplit(std::vector<int> const& polygon, size_t i0, size_t i1)
+        size_t SelectSplit(std::vector<int32_t> const& polygon, size_t i0, size_t i1)
         {
             size_t i2;
             if (i1 == i0 + 2)
@@ -432,9 +432,9 @@ namespace gte
                 // To allow exact arithmetic, use a pseudosquared distance
                 // that avoids divisions and square roots.
                 i2 = i0 + 1;
-                int v0 = polygon[i0];
-                int v1 = polygon[i1];
-                int v2 = polygon[i2];
+                int32_t v0 = polygon[i0];
+                int32_t v1 = polygon[i1];
+                int32_t v2 = polygon[i2];
 
                 // Precompute some common values that are used in all calls
                 // to ComputePSD.
@@ -464,7 +464,7 @@ namespace gte
         // involve division. This allows ComputeType to be BSNumber<UInteger>
         // rather than BSRational<UInteger>, which leads to better
         // performance.
-        ComputeType ComputePSD(int v0, int v1, int v2,
+        ComputeType ComputePSD(int32_t v0, int32_t v1, int32_t v2,
             Vector2<ComputeType> const& V1mV0, ComputeType const& sqrlen10)
         {
             ComputeType const zero = static_cast<ComputeType>(0);

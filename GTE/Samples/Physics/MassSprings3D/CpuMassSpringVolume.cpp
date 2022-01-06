@@ -1,14 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "CpuMassSpringVolume.h"
 
 CpuMassSpringVolume::CpuMassSpringVolume(std::shared_ptr<ProgramFactory> const&,
-    int numColumns, int numRows, int numSlices, float step, float viscosity,
+    int32_t numColumns, int32_t numRows, int32_t numSlices, float step, float viscosity,
     Environment&, bool& created)
     :
     mNumColumns(numColumns),
@@ -38,9 +38,9 @@ CpuMassSpringVolume::CpuMassSpringVolume(std::shared_ptr<ProgramFactory> const&,
     created = true;
 }
 
-void CpuMassSpringVolume::SetMass(int c, int r, int s, float mass)
+void CpuMassSpringVolume::SetMass(int32_t c, int32_t r, int32_t s, float mass)
 {
-    int i = GetIndex(c, r, s);
+    int32_t i = GetIndex(c, r, s);
     if (0.0f < mass && mass < std::numeric_limits<float>::max())
     {
         mMass[i] = mass;
@@ -53,49 +53,49 @@ void CpuMassSpringVolume::SetMass(int c, int r, int s, float mass)
     }
 }
 
-void CpuMassSpringVolume::SetPosition(int c, int r, int s,
+void CpuMassSpringVolume::SetPosition(int32_t c, int32_t r, int32_t s,
     Vector3<float> const& position)
 {
     mPosition[GetIndex(c, r, s)] = position;
 }
 
-void CpuMassSpringVolume::SetVelocity(int c, int r, int s,
+void CpuMassSpringVolume::SetVelocity(int32_t c, int32_t r, int32_t s,
     Vector3<float> const& velocity)
 {
     mVelocity[GetIndex(c, r, s)] = velocity;
 }
 
-void CpuMassSpringVolume::SetConstantC(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetConstantC(int32_t c, int32_t r, int32_t s, float v)
 {
     mConstantC[GetIndex(c, r, s)] = v;
 }
 
-void CpuMassSpringVolume::SetLengthC(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetLengthC(int32_t c, int32_t r, int32_t s, float v)
 {
     mLengthC[GetIndex(c, r, s)] = v;
 }
 
-void CpuMassSpringVolume::SetConstantR(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetConstantR(int32_t c, int32_t r, int32_t s, float v)
 {
     mConstantR[GetIndex(c, r, s)] = v;
 }
 
-void CpuMassSpringVolume::SetLengthR(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetLengthR(int32_t c, int32_t r, int32_t s, float v)
 {
     mLengthR[GetIndex(c, r, s)] = v;
 }
 
-void CpuMassSpringVolume::SetConstantS(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetConstantS(int32_t c, int32_t r, int32_t s, float v)
 {
     mConstantS[GetIndex(c, r, s)] = v;
 }
 
-void CpuMassSpringVolume::SetLengthS(int c, int r, int s, float v)
+void CpuMassSpringVolume::SetLengthS(int32_t c, int32_t r, int32_t s, float v)
 {
     mLengthS[GetIndex(c, r, s)] = v;
 }
 
-Vector3<float> CpuMassSpringVolume::GetPosition(int c, int r, int s) const
+Vector3<float> CpuMassSpringVolume::GetPosition(int32_t c, int32_t r, int32_t s) const
 {
     return mPosition[GetIndex(c, r, s)];
 }
@@ -112,7 +112,7 @@ void CpuMassSpringVolume::Update(float time)
     float fullTime = time + mStep;
 
     // Compute the first step.
-    int c, r, s, i;
+    int32_t c, r, s, i;
     for (s = 0, i = 0; s < mNumSlices; ++s)
     {
         for (r = 0; r < mNumRows; ++r)
@@ -256,7 +256,7 @@ void CpuMassSpringVolume::Update(float time)
     }
 }
 
-Vector3<float> CpuMassSpringVolume::Acceleration(int i, int c, int r, int s,
+Vector3<float> CpuMassSpringVolume::Acceleration(int32_t i, int32_t c, int32_t r, int32_t s,
     float, std::vector<Vector3<float>> const& position,
     std::vector<Vector3<float>> const& velocity)
 {
@@ -269,7 +269,7 @@ Vector3<float> CpuMassSpringVolume::Acceleration(int i, int c, int r, int s,
 
     Vector3<float> diff, force;
     float ratio;
-    int prev, next;
+    int32_t prev, next;
 
     Vector3<float> acceleration = -mViscosity*velocity[i];
 
@@ -330,7 +330,7 @@ Vector3<float> CpuMassSpringVolume::Acceleration(int i, int c, int r, int s,
     return acceleration;
 }
 
-int CpuMassSpringVolume::GetIndex(int c, int r, int s) const
+int32_t CpuMassSpringVolume::GetIndex(int32_t c, int32_t r, int32_t s) const
 {
     return c + mNumColumns * (r + mNumRows * s);
 }

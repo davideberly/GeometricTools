@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -18,18 +18,18 @@ namespace gte
         // Construction and destruction.
         virtual ~TrackObject() = default;
         TrackObject();
-        TrackObject(int xSize, int ySize, std::shared_ptr<Camera> const& camera);
+        TrackObject(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera);
 
         // Member access.  The Set functions are for deferred construction
         // after a default construction of a trackball.
-        void Set(int xSize, int ySize, std::shared_ptr<Camera> const& camera);
+        void Set(int32_t xSize, int32_t ySize, std::shared_ptr<Camera> const& camera);
 
-        inline int GetXSize() const
+        inline int32_t GetXSize() const
         {
             return mXSize;
         }
 
-        inline int GetYSize() const
+        inline int32_t GetYSize() const
         {
             return mYSize;
         }
@@ -93,12 +93,12 @@ namespace gte
 
         // Set the initial point of the track object.  The current track
         // object orientation is recorded.
-        void SetInitialPoint(int x, int y);
+        void SetInitialPoint(int32_t x, int32_t y);
 
         // Set the final point of the track object.  The track object
         // orientation is updated by the incremental rotation implied by the
         // initial and final points.
-        void SetFinalPoint(int x, int y);
+        void SetFinalPoint(int32_t x, int32_t y);
 
     protected:
         virtual void OnSetInitialPoint() = 0;
@@ -108,7 +108,7 @@ namespace gte
 
         std::shared_ptr<Camera> mCamera;
         std::shared_ptr<Spatial> mRoot;
-        int mXSize, mYSize;
+        int32_t mXSize, mYSize;
         float mX0, mY0, mX1, mY1, mMultiplier;
         bool mActive, mValid;
     };

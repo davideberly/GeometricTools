@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BspNode.h>
@@ -60,8 +60,8 @@ Plane3<float> BspNode::GetWorldPlane() const
 
 Spatial* BspNode::GetContainingNode(Vector4<float> const& point)
 {
-    std::shared_ptr<Spatial> posChild = GetPositiveChild();
-    std::shared_ptr<Spatial> negChild = GetNegativeChild();
+    Spatial* posChild = GetPositiveChild();
+    Spatial* negChild = GetNegativeChild();
 
     if (posChild || negChild)
     {
@@ -69,26 +69,26 @@ Spatial* BspNode::GetContainingNode(Vector4<float> const& point)
 
         if (WhichSide(point) < 0)
         {
-            bspChild = dynamic_cast<BspNode*>(negChild.get());
+            bspChild = dynamic_cast<BspNode*>(negChild);
             if (bspChild)
             {
                 return bspChild->GetContainingNode(point);
             }
             else
             {
-                return negChild.get();
+                return negChild;
             }
         }
         else
         {
-            bspChild = dynamic_cast<BspNode*>(posChild.get());
+            bspChild = dynamic_cast<BspNode*>(posChild);
             if (bspChild)
             {
                 return bspChild->GetContainingNode(point);
             }
             else
             {
-                return posChild.get();
+                return posChild;
             }
         }
     }
@@ -133,12 +133,12 @@ void BspNode::GetVisibleSet(Culler& culler,
 {
     // Get visible geometry in back-to-front order.  If a global effect is
     // active, the geometry objects in the subtree will be drawn using it.
-    std::shared_ptr<Spatial> posChild = GetPositiveChild();
-    std::shared_ptr<Spatial> copChild = GetCoplanarChild();
-    std::shared_ptr<Spatial> negChild = GetNegativeChild();
+    Spatial* posChild = GetPositiveChild();
+    Spatial* copChild = GetCoplanarChild();
+    Spatial* negChild = GetNegativeChild();
 
-    int positionSide = WhichSide(camera->GetPosition());
-    int frustumSide = WhichSide(camera);
+    int32_t positionSide = WhichSide(camera->GetPosition());
+    int32_t frustumSide = WhichSide(camera);
 
     if (positionSide > 0)
     {
@@ -256,13 +256,13 @@ void BspNode::GetVisibleSet(Culler& culler,
     }
 }
 
-int BspNode::WhichSide(Vector4<float> const& point) const
+int32_t BspNode::WhichSide(Vector4<float> const& point) const
 {
     float dot = Dot(mWorldPlane, point);
     return (dot > 0.0f ? +1 : (dot < 0.0f ? -1 : 0));
 }
 
-int BspNode::WhichSide(std::shared_ptr<Camera> const& camera) const
+int32_t BspNode::WhichSide(std::shared_ptr<Camera> const& camera) const
 {
     auto const& frustum = camera->GetFrustum();
 
@@ -276,7 +276,7 @@ int BspNode::WhichSide(std::shared_ptr<Camera> const& camera) const
     float NdR = Dot(normal, camera->GetRVector());
     float FdN = frustum[Camera::VF_DMAX] / frustum[Camera::VF_DMIN];
 
-    int positive = 0, negative = 0;
+    int32_t positive = 0, negative = 0;
     float sgnDist;
 
     // Check near-plane vertices.

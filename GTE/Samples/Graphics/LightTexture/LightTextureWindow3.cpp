@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "LightTextureWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -48,7 +48,7 @@ void LightTextureWindow3::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool LightTextureWindow3::OnCharPress(unsigned char key, int x, int y)
+bool LightTextureWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -127,11 +127,11 @@ void LightTextureWindow3::CreateScene()
 
     mDLTEffect = std::make_shared<DirectionalLightTextureEffect>(mProgramFactory,
         mUpdater, material, lighting, geometry, stoneTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     mPLTEffect = std::make_shared<PointLightTextureEffect>(mProgramFactory,
         mUpdater, material, lighting, geometry, stoneTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     // Create the height field for terrain using heights from a gray-scale
     // bitmap image.
@@ -142,9 +142,9 @@ void LightTextureWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     std::string heightFile = mEnvironment.GetPath("BTHeightField.png");
     auto heightTexture = WICFileIO::Load(heightFile, false);
@@ -159,10 +159,10 @@ void LightTextureWindow3::CreateScene()
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(-1.0f, 1.0f);
     std::shared_ptr<VertexBuffer> vbuffer = mTerrain->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto* vertices = vbuffer->Get<Vertex>();
-    unsigned char* heights = heightTexture->Get<unsigned char>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    uint8_t* heights = heightTexture->Get<uint8_t>();
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         float height = static_cast<float>(heights[4 * i]) / 255.0f;
         float perturb = 0.05f * rnd(mte);
@@ -178,7 +178,7 @@ void LightTextureWindow3::UpdateConstants()
 {
     Matrix4x4<float> invWMatrix = mTerrain->worldTransform.GetHInverse();
     Vector4<float> cameraWorldPosition = mCamera->GetPosition();
-    auto geometry = mDLTEffect->GetGeometry();
+    auto const& geometry = mDLTEffect->GetGeometry();
     geometry->cameraModelPosition = DoTransform(invWMatrix, cameraWorldPosition);
     if (mUseDirectional)
     {

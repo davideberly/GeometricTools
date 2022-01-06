@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "FreeTopFixedTipWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -24,7 +24,7 @@ FreeTopFixedTipWindow3::FreeTopFixedTipWindow3(Parameters& parameters)
     }
 
     mWireState = std::make_shared<RasterizerState>();
-    mWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     CreateScene();
     float angle = static_cast<float>(0.1 * GTE_C_PI);
@@ -53,7 +53,7 @@ void FreeTopFixedTipWindow3::OnIdle()
     }
 }
 
-bool FreeTopFixedTipWindow3::OnCharPress(unsigned char key, int x, int y)
+bool FreeTopFixedTipWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -158,8 +158,8 @@ void FreeTopFixedTipWindow3::CreateScene()
 void FreeTopFixedTipWindow3::CreateFloor()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto visual = mf.CreateRectangle(2, 2, 32.0f, 32.0f);
@@ -167,7 +167,7 @@ void FreeTopFixedTipWindow3::CreateFloor()
     auto texture = WICFileIO::Load(mEnvironment.GetPath("Wood.png"), true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     visual->SetEffect(effect);
     mPVWMatrices.Subscribe(visual->worldTransform, effect->GetPVWMatrixConstant());
@@ -178,7 +178,7 @@ void FreeTopFixedTipWindow3::CreateFloor()
 void FreeTopFixedTipWindow3::CreateAxisVertical()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { 0.0f, 0.0f, 0.0f };
@@ -205,18 +205,18 @@ void FreeTopFixedTipWindow3::CreateTop()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
     auto visual = mf.CreateCylinderOpen(32, 32, 1.0f, 2.0f);
     visual->localTransform.SetTranslation(0.0f, 0.0f, 1.0f);
 
     // Adjust the shape.
-    auto vbuffer = visual->GetVertexBuffer();
-    unsigned int numVertices = vbuffer->GetNumElements();
+    auto const& vbuffer = visual->GetVertexBuffer();
+    uint32_t numVertices = vbuffer->GetNumElements();
     auto vertices = vbuffer->Get<Vertex>();
-    for (unsigned int i = 0; i < numVertices; ++i)
+    for (uint32_t i = 0; i < numVertices; ++i)
     {
         Vector3<float>& pos = vertices[i].position;
         float z = pos[2] + 1.0f;
@@ -230,7 +230,8 @@ void FreeTopFixedTipWindow3::CreateTop()
     auto texture = WICFileIO::Load(mEnvironment.GetPath("TopTexture.png"), true);
     texture->AutogenerateMipmaps();
     auto effect = std::make_shared<Texture2Effect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::WRAP, SamplerState::WRAP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::WRAP,
+        SamplerState::Mode::WRAP);
 
     visual->SetEffect(effect);
     mPVWMatrices.Subscribe(visual->worldTransform, effect->GetPVWMatrixConstant());
@@ -241,7 +242,7 @@ void FreeTopFixedTipWindow3::CreateTop()
 void FreeTopFixedTipWindow3::CreateAxisTop()
 {
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
     auto vbuffer = std::make_shared<VertexBuffer>(vformat, 2);
     auto vertices = vbuffer->Get<Vector3<float>>();
     vertices[0] = { 0.0f, 0.0f, 0.0f };

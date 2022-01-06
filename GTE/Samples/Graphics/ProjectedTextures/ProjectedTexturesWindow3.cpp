@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ProjectedTexturesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -74,8 +74,8 @@ void ProjectedTexturesWindow3::CreateScene()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_NORMAL, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::NORMAL, DF_R32G32B32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -99,8 +99,8 @@ void ProjectedTexturesWindow3::CreateScene()
     std::string path = mEnvironment.GetPath("Magician.png");
     auto texture = WICFileIO::Load(path, false);
     mPTEffect = std::make_shared<ProjectedTextureEffect>(mProgramFactory, mUpdater,
-        material, lighting, geometry, texture, SamplerState::MIN_L_MAG_L_MIP_P,
-        SamplerState::CLAMP, SamplerState::CLAMP);
+        material, lighting, geometry, texture, SamplerState::Filter::MIN_L_MAG_L_MIP_P,
+        SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
 
     mProjector = std::make_shared<Camera>(true, mEngine->HasDepthRange01());
 
@@ -143,7 +143,7 @@ void ProjectedTexturesWindow3::UpdateConstants()
     Matrix4x4<float> projPVMatrix = mProjector->GetProjectionViewMatrix();
     Matrix4x4<float> invWMatrix = mTorus->worldTransform.GetHInverse();
     Vector4<float> cameraWorldPosition = mCamera->GetPosition();
-    auto geometry = mPTEffect->GetGeometry();
+    auto const& geometry = mPTEffect->GetGeometry();
     Matrix4x4<float> projPVWMatrix = DoTransform(projPVMatrix, wMatrix);
     geometry->cameraModelPosition = DoTransform(invWMatrix, cameraWorldPosition);
     geometry->lightModelDirection = DoTransform(invWMatrix, mLightWorldDirection);

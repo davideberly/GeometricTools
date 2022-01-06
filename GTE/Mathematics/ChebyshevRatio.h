@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -69,7 +69,7 @@ namespace gte
         // f1 is the estimate for f(t,y).  The approximating function is a
         // polynomial of two variables. The template parameter N must be in
         // {1..16}.  The degree in t is 2*N+1 and the degree in Y is N.
-        template <int N>
+        template <int32_t N>
         static void GetEstimate(Real t, Real y, Real & f0, Real & f1)
         {
             static_assert(1 <= N && N <= 16, "Invalid degree.");
@@ -143,7 +143,7 @@ namespace gte
             Real sqr0 = term0 * term0, sqr1 = term1 * term1;
             f0 = term0;
             f1 = term1;
-            for (int i = 0; i < N; ++i)
+            for (int32_t i = 0; i < N; ++i)
             {
                 term0 *= (b[i] - a[i] * sqr0) * y;
                 term1 *= (b[i] - a[i] * sqr1) * y;

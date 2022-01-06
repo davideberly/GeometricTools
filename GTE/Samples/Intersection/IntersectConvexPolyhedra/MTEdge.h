@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -12,7 +12,7 @@
 class MTEdge
 {
 public:
-    MTEdge(int label = -1)
+    MTEdge(int32_t label = -1)
         :
         mLabel(label),
         mVertex{ -1, -1 },
@@ -22,29 +22,29 @@ public:
 
     ~MTEdge() = default;
 
-    inline int GetLabel() const
+    inline int32_t GetLabel() const
     {
         return mLabel;
     }
 
-    inline void SetLabel(int label)
+    inline void SetLabel(int32_t label)
     {
         mLabel = label;
     }
 
-    inline int GetVertex(int i) const
+    inline int32_t GetVertex(int32_t i) const
     {
         return mVertex[i];
     }
 
-    inline void SetVertex(int i, int label)
+    inline void SetVertex(int32_t i, int32_t label)
     {
         mVertex[i] = label;
     }
 
-    bool ReplaceVertex(int vOld, int vNew)
+    bool ReplaceVertex(int32_t vOld, int32_t vNew)
     {
-        for (int i = 0; i < 2; ++i)
+        for (int32_t i = 0; i < 2; ++i)
         {
             if (mVertex[i] == vOld)
             {
@@ -55,19 +55,19 @@ public:
         return false;
     }
 
-    inline int GetTriangle(int i) const
+    inline int32_t GetTriangle(int32_t i) const
     {
         return mTriangle[i];
     }
 
-    inline void SetTriangle(int i, int label)
+    inline void SetTriangle(int32_t i, int32_t label)
     {
         mTriangle[i] = label;
     }
 
-    bool ReplaceTriangle(int tOld, int tNew)
+    bool ReplaceTriangle(int32_t tOld, int32_t tNew)
     {
-        for (int i = 0; i < 2; ++i)
+        for (int32_t i = 0; i < 2; ++i)
         {
             if (mTriangle[i] == tOld)
             {
@@ -88,7 +88,7 @@ public:
     }
 
 protected:
-    int mLabel;
-    std::array<int, 2> mVertex;
-    std::array<int, 2> mTriangle;
+    int32_t mLabel;
+    std::array<int32_t, 2> mVertex;
+    std::array<int32_t, 2> mTriangle;
 };

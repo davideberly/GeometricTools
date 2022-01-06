@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ConvolutionWindow2.h"
 #include <Applications/WICFileIO.h>
@@ -26,22 +26,22 @@ ConvolutionWindow2::ConvolutionWindow2(Parameters& parameters)
     // Load the color image to be convolved.
     std::string path = mEnvironment.GetPath("MedicineBag.png");
     auto original = WICFileIO::Load(path, false);
-    unsigned int const txWidth = original->GetWidth();
-    unsigned int const txHeight = original->GetHeight();
+    uint32_t const txWidth = original->GetWidth();
+    uint32_t const txHeight = original->GetHeight();
 
     // Create images for shader inputs and outputs.
-    for (int i = 0; i < 3; ++i)
+    for (int32_t i = 0; i < 3; ++i)
     {
         mImage[i] = std::make_shared<Texture2>(DF_R32G32B32A32_FLOAT, txWidth, txHeight);
-        mImage[i]->SetUsage(Resource::SHADER_OUTPUT);
+        mImage[i]->SetUsage(Resource::Usage::SHADER_OUTPUT);
     }
 
     // Map the 8-bit RGBA image to 32-bit RGBA for the numerical convolution.
-    unsigned int const* src = original->Get<unsigned int>();
+    uint32_t const* src = original->Get<uint32_t>();
     float* trg = mImage[0]->Get<float>();
-    for (unsigned int j = 0; j < txWidth*txHeight; ++j)
+    for (uint32_t j = 0; j < txWidth*txHeight; ++j)
     {
-        unsigned int rgba = *src++;
+        uint32_t rgba = *src++;
         *trg++ = (rgba & 0x000000FF) / 255.0f;
         *trg++ = ((rgba & 0x0000FF00) >> 8) / 255.0f;
         *trg++ = ((rgba & 0x00FF0000) >> 16) / 255.0f;
@@ -50,15 +50,15 @@ ConvolutionWindow2::ConvolutionWindow2(Parameters& parameters)
 
     // Create two overlays, one for the original image and one for the
     // convolved image.
-    std::array<int, 4> rect[2] =
+    std::array<int32_t, 4> rect[2] =
     {
         { 0, 0, mXSize / 2, mYSize },
         { mXSize / 2, 0, mXSize / 2, mYSize }
     };
-    for (int i = 0; i < 2; ++i)
+    for (int32_t i = 0; i < 2; ++i)
     {
         mOverlay[i] = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, txWidth, txHeight,
-            SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP, true);
+            SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
         mOverlay[i]->SetOverlayRectangle(rect[i]);
         mOverlay[i]->SetTexture(mImage[i]);
     }
@@ -86,7 +86,7 @@ void ConvolutionWindow2::OnIdle()
     mTimer.UpdateFrameCount();
 }
 
-bool ConvolutionWindow2::OnCharPress(unsigned char key, int x, int y)
+bool ConvolutionWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -359,16 +359,16 @@ void ConvolutionWindow2::ExecuteShaders()
     }
 }
 
-std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel1(int radius)
+std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel1(int32_t radius)
 {
     // If radius/sigma = ratio, then exp(-ratio^2/2) = 0.001.
     float const ratio = 3.7169221888498384469524067613045f;
     float sigma = radius / ratio;
 
-    int const numWeights = 2 * radius + 1;
+    int32_t const numWeights = 2 * radius + 1;
     std::vector<float> weight(numWeights);
     float totalWeight = 0.0f;
-    for (int x = -radius, i = 0; x <= radius; ++x, ++i)
+    for (int32_t x = -radius, i = 0; x <= radius; ++x, ++i)
     {
         float fx = x / sigma;
         float value = std::exp(-0.5f * fx * fx);
@@ -385,7 +385,7 @@ std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel1(int radius)
     std::shared_ptr<ConstantBuffer> cbuffer = std::make_shared<ConstantBuffer>(
         numWeights * sizeof(Vector4<float>), false);
     Vector4<float>* data = cbuffer->Get<Vector4<float>>();
-    for (int i = 0; i < numWeights; ++i)
+    for (int32_t i = 0; i < numWeights; ++i)
     {
         Vector4<float>& entry = data[i];
         entry[0] = weight[i];
@@ -396,20 +396,20 @@ std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel1(int radius)
     return cbuffer;
 }
 
-std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel2(int radius)
+std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel2(int32_t radius)
 {
     // If radius/sigma = ratio, then exp(-ratio^2/2) = 0.001.
     float const ratio = 3.7169221888498384469524067613045f;
     float sigma = radius / ratio;
 
-    int const length = 2 * radius + 1;
-    int const numWeights = length * length;
+    int32_t const length = 2 * radius + 1;
+    int32_t const numWeights = length * length;
     std::vector<float> weight(numWeights);
     float totalWeight = 0.0f;
-    for (int y = -radius, i = 0; y <= radius; ++y)
+    for (int32_t y = -radius, i = 0; y <= radius; ++y)
     {
         float fy = y / sigma;
-        for (int x = -radius; x <= radius; ++x, ++i)
+        for (int32_t x = -radius; x <= radius; ++x, ++i)
         {
             float fx = x / sigma;
             float value = std::exp(-0.5f*(fx*fx + fy*fy));
@@ -427,7 +427,7 @@ std::shared_ptr<ConstantBuffer> ConvolutionWindow2::GetKernel2(int radius)
     std::shared_ptr<ConstantBuffer> cbuffer = std::make_shared<ConstantBuffer>(
         numWeights * sizeof(Vector4<float>), false);
     Vector4<float>* data = cbuffer->Get<Vector4<float>>();
-    for (int i = 0; i < numWeights; ++i)
+    for (int32_t i = 0; i < numWeights; ++i)
     {
         Vector4<float>& entry = data[i];
         entry[0] = weight[i];

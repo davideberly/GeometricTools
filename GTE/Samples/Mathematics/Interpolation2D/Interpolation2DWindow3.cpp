@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "Interpolation2DWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -44,7 +44,7 @@ void Interpolation2DWindow3::OnIdle()
     mEngine->DisplayColorBuffer(0);
 }
 
-bool Interpolation2DWindow3::OnCharPress(unsigned char key, int x, int y)
+bool Interpolation2DWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -152,27 +152,27 @@ void Interpolation2DWindow3::CreateCommonObjects()
     mTexture = WICFileIO::Load(path, true);
     mTexture->AutogenerateMipmaps();
     mEffect = std::make_shared<Texture2Effect>(mProgramFactory, mTexture,
-        SamplerState::MIN_L_MAG_L_MIP_L, SamplerState::CLAMP,
-        SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_L, SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP);
 
     mNoCullSolidState = std::make_shared<RasterizerState>();
-    mNoCullSolidState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullSolidState->fillMode = RasterizerState::FILL_SOLID;
+    mNoCullSolidState->cull = RasterizerState::Cull::NONE;
+    mNoCullSolidState->fill = RasterizerState::Fill::SOLID;
     mEngine->SetRasterizerState(mNoCullSolidState);
 
     mNoCullWireState = std::make_shared<RasterizerState>();
-    mNoCullWireState->cullMode = RasterizerState::CULL_NONE;
-    mNoCullWireState->fillMode = RasterizerState::FILL_WIREFRAME;
+    mNoCullWireState->cull = RasterizerState::Cull::NONE;
+    mNoCullWireState->fill = RasterizerState::Fill::WIREFRAME;
 
     float const maxRnd = 0.125f;
     std::mt19937 mte;
     std::uniform_real_distribution<float> rnd(0.0f, maxRnd);
     mFSample.resize(SAMPLE_BOUNDSQR);
-    for (int y = 0; y < SAMPLE_BOUND; ++y)
+    for (int32_t y = 0; y < SAMPLE_BOUND; ++y)
     {
-        for (int x = 0; x < SAMPLE_BOUND; ++x)
+        for (int32_t x = 0; x < SAMPLE_BOUND; ++x)
         {
-            mFSample[x + SAMPLE_BOUND*y] = rnd(mte);
+            mFSample[x + static_cast<size_t>(SAMPLE_BOUND) * y] = rnd(mte);
         }
     }
 
@@ -216,18 +216,18 @@ void Interpolation2DWindow3::CreateBilinearMesh()
         -1.0f, spacing, &mFSample[0]);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 64;
+    int32_t const numSamples = 64;
     mMesh = mf.CreateRectangle(numSamples, numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    for (int y = 0, i = 0; y < numSamples; ++y)
+    for (int32_t y = 0, i = 0; y < numSamples; ++y)
     {
         float fy = vertices[i].position[1];
-        for (int x = 0; x < numSamples; ++x, ++i)
+        for (int32_t x = 0; x < numSamples; ++x, ++i)
         {
             float fx = vertices[i].position[0];
             vertices[i].position[2] = interp(fx, fy);
@@ -255,18 +255,18 @@ void Interpolation2DWindow3::CreateBicubicMesh(bool catmullRom)
         -1.0f, spacing, &mFSample[0], catmullRom);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 64;
+    int32_t const numSamples = 64;
     mMesh = mf.CreateRectangle(numSamples, numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    for (int y = 0, i = 0; y < numSamples; ++y)
+    for (int32_t y = 0, i = 0; y < numSamples; ++y)
     {
         float fy = vertices[i].position[1];
-        for (int x = 0; x < numSamples; ++x, ++i)
+        for (int32_t x = 0; x < numSamples; ++x, ++i)
         {
             float fx = vertices[i].position[0];
             vertices[i].position[2] = interp(fx, fy);
@@ -287,18 +287,18 @@ void Interpolation2DWindow3::CreateAkimaUniformMesh()
         spacing, -1.0f, spacing, &mFSample[0]);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 64;
+    int32_t const numSamples = 64;
     mMesh = mf.CreateRectangle(numSamples, numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    for (int y = 0, i = 0; y < numSamples; ++y)
+    for (int32_t y = 0, i = 0; y < numSamples; ++y)
     {
         float fy = vertices[i].position[1];
-        for (int x = 0; x < numSamples; ++x, ++i)
+        for (int32_t x = 0; x < numSamples; ++x, ++i)
         {
             float fx = vertices[i].position[0];
             vertices[i].position[2] = interp(fx, fy);
@@ -328,10 +328,10 @@ void Interpolation2DWindow3::CreateThinPlateSplineMesh(float smooth)
     float const spacing = 2.0f / static_cast<float>(SAMPLE_BOUND - 1);
     std::vector<float> xDomain(SAMPLE_BOUNDSQR);
     std::vector<float> yDomain(SAMPLE_BOUNDSQR);
-    for (int y = 0, i = 0; y < SAMPLE_BOUND; ++y)
+    for (int32_t y = 0, i = 0; y < SAMPLE_BOUND; ++y)
     {
         float fy = -1.0f + spacing * y;
-        for (int x = 0; x < SAMPLE_BOUND; ++x, ++i)
+        for (int32_t x = 0; x < SAMPLE_BOUND; ++x, ++i)
         {
             float fx = -1.0f + spacing * x;
             xDomain[i] = fx;
@@ -343,18 +343,18 @@ void Interpolation2DWindow3::CreateThinPlateSplineMesh(float smooth)
         &yDomain[0], &mFSample[0], smooth, false);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 64;
+    int32_t const numSamples = 64;
     mMesh = mf.CreateRectangle(numSamples, numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    for (int y = 0, i = 0; y < numSamples; ++y)
+    for (int32_t y = 0, i = 0; y < numSamples; ++y)
     {
         float fy = vertices[i].position[1];
-        for (int x = 0; x < numSamples; ++x, ++i)
+        for (int32_t x = 0; x < numSamples; ++x, ++i)
         {
             float fx = vertices[i].position[0];
             vertices[i].position[2] = interp(fx, fy);
@@ -373,19 +373,19 @@ void Interpolation2DWindow3::CreateLinearNonuniform()
     IntpLinearNonuniform2<float, SimpleMesh> interp(mSimpleMesh, &mF[0]);
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 64;
+    int32_t const numSamples = 64;
     mMesh = mf.CreateTriangle(numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    Vector2<float> P;
-    float F;
-    for (int y = 0, i = 0; y < numSamples; ++y)
+    Vector2<float> P{};
+    float F{};
+    for (int32_t y = 0, i = 0; y < numSamples; ++y)
     {
-        for (int x = 0; x + y < numSamples; ++x, ++i)
+        for (int32_t x = 0; x + y < numSamples; ++x, ++i)
         {
             // For the sake of the demonstration, ensure P is inside the
             // domain of the interpolator for all (x,y).
@@ -433,20 +433,20 @@ void Interpolation2DWindow3::CreateQuadraticNonuniform(bool useGradients)
     }
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
-    int const numSamples = 128;
+    int32_t const numSamples = 128;
     mMesh = mf.CreateTriangle(numSamples, 1.0f, 1.0f);
     auto vertices = mMesh->GetVertexBuffer()->Get<Vertex>();
-    Vector2<float> P;
-    float F, FX, FY;
-    int i = 0;
-    for (int y = 0; y < numSamples; ++y)
+    Vector2<float> P{};
+    float F{}, FX{}, FY{};
+    int32_t i = 0;
+    for (int32_t y = 0; y < numSamples; ++y)
     {
-        for (int x = 0; x + y < numSamples; ++x, ++i)
+        for (int32_t x = 0; x + y < numSamples; ++x, ++i)
         {
             // For the sake of the demonstration, ensure P is inside the
             // domain of the interpolator for all (x,y).
@@ -494,12 +494,12 @@ Interpolation2DWindow3::SimpleMesh::SimpleMesh()
     mAdjacencies[9] = 0;  mAdjacencies[10] = 1;  mAdjacencies[11] = 2;
 }
 
-int Interpolation2DWindow3::SimpleMesh::GetNumVertices() const
+int32_t Interpolation2DWindow3::SimpleMesh::GetNumVertices() const
 {
     return 6;
 }
 
-int Interpolation2DWindow3::SimpleMesh::GetNumTriangles() const
+int32_t Interpolation2DWindow3::SimpleMesh::GetNumTriangles() const
 {
     return 4;
 }
@@ -509,15 +509,15 @@ Vector2<float> const* Interpolation2DWindow3::SimpleMesh::GetVertices() const
     return &mVertices[0];
 }
 
-int const* Interpolation2DWindow3::SimpleMesh::GetIndices() const
+int32_t const* Interpolation2DWindow3::SimpleMesh::GetIndices() const
 {
     return &mIndices[0];
 }
 
-bool Interpolation2DWindow3::SimpleMesh::GetVertices(int t,
+bool Interpolation2DWindow3::SimpleMesh::GetVertices(int32_t t,
     std::array<Vector2<float>, 3>& vertices) const
 {
-    std::array<int, 3> indices;
+    std::array<int32_t, 3> indices;
     if (GetIndices(t, indices))
     {
         vertices[0] = mVertices[indices[0]];
@@ -528,33 +528,35 @@ bool Interpolation2DWindow3::SimpleMesh::GetVertices(int t,
     return false;
 }
 
-bool Interpolation2DWindow3::SimpleMesh::GetIndices(int t,
-    std::array<int, 3>& indices) const
+bool Interpolation2DWindow3::SimpleMesh::GetIndices(int32_t t,
+    std::array<int32_t, 3>& indices) const
 {
     if (0 <= t && t < 4)
     {
-        indices[0] = mIndices[3 * t + 0];
-        indices[1] = mIndices[3 * t + 1];
-        indices[2] = mIndices[3 * t + 2];
+        size_t threeT = 3 * static_cast<size_t>(t);
+        indices[0] = mIndices[threeT + 0];
+        indices[1] = mIndices[threeT + 1];
+        indices[2] = mIndices[threeT + 2];
         return true;
     }
     return false;
 }
 
-bool Interpolation2DWindow3::SimpleMesh::GetAdjacencies(int t,
-    std::array<int, 3>& adjacencies) const
+bool Interpolation2DWindow3::SimpleMesh::GetAdjacencies(int32_t t,
+    std::array<int32_t, 3>& adjacencies) const
 {
     if (0 <= t && t < 4)
     {
-        adjacencies[0] = mAdjacencies[3 * t + 0];
-        adjacencies[1] = mAdjacencies[3 * t + 1];
-        adjacencies[2] = mAdjacencies[3 * t + 2];
+        size_t threeT = 3 * static_cast<size_t>(t);
+        adjacencies[0] = mAdjacencies[threeT + 0];
+        adjacencies[1] = mAdjacencies[threeT + 1];
+        adjacencies[2] = mAdjacencies[threeT + 2];
         return true;
     }
     return false;
 }
 
-bool Interpolation2DWindow3::SimpleMesh::GetBarycentrics(int t,
+bool Interpolation2DWindow3::SimpleMesh::GetBarycentrics(int32_t t,
     Vector2<float> const& P, std::array<float, 3>& bary) const
 {
     std::array<Vector2<float>, 3> V;
@@ -565,7 +567,7 @@ bool Interpolation2DWindow3::SimpleMesh::GetBarycentrics(int t,
     return false;
 }
 
-int Interpolation2DWindow3::SimpleMesh::GetContainingTriangle(
+int32_t Interpolation2DWindow3::SimpleMesh::GetContainingTriangle(
     Vector2<float> const& P) const
 {
     if (P[0] < 0.0f || P[1] < 0.0f || P[0] + P[1] > 1.0f)

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "VertexTexturesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -70,8 +70,8 @@ void VertexTexturesWindow3::CreateMesh()
     };
 
     VertexFormat vformat;
-    vformat.Bind(VA_POSITION, DF_R32G32B32_FLOAT, 0);
-    vformat.Bind(VA_TEXCOORD, DF_R32G32_FLOAT, 0);
+    vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    vformat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
 
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -80,7 +80,7 @@ void VertexTexturesWindow3::CreateMesh()
     std::string path = mEnvironment.GetPath("HeightField.png");
     auto texture = WICFileIO::Load(path, false);
     mEffect = std::make_shared<DisplacementEffect>(mProgramFactory, texture,
-        SamplerState::MIN_L_MAG_L_MIP_P, SamplerState::CLAMP, SamplerState::CLAMP);
+        SamplerState::Filter::MIN_L_MAG_L_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
     mHeightMesh->SetEffect(mEffect);
 
     mPVWMatrices.Subscribe(mHeightMesh->worldTransform, mEffect->GetPVWMatrixConstant());

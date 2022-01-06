@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -20,7 +20,7 @@ public:
     SurfaceExtractionWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
-    virtual bool OnCharPress(unsigned char key, int x, int y) override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     enum
@@ -28,14 +28,14 @@ private:
         XBOUND = 64,
         YBOUND = 64,
         ZBOUND = 64,
-        NUM_VOXELS = XBOUND*YBOUND*ZBOUND,
+        NUM_VOXELS = XBOUND * YBOUND * ZBOUND,
         NUM_GAUSSIANS = 32,
         XTHREADS = 4,
         YTHREADS = 4,
         ZTHREADS = 4,
-        XGROUPS = XBOUND/XTHREADS,
-        YGROUPS = YBOUND/YTHREADS,
-        ZGROUPS = ZBOUND/ZTHREADS
+        XGROUPS = XBOUND / XTHREADS,
+        YGROUPS = YBOUND / YTHREADS,
+        ZGROUPS = ZBOUND / ZTHREADS
     };
 
     bool SetEnvironment();
@@ -63,20 +63,20 @@ private:
 
     struct DirectVoxel
     {
-        // GLSL will store the first 3 'int' members in a 4-tuple, so the
+        // GLSL will store the first 3 'int32_t' members in a 4-tuple, so the
         // 'unused0' member is padding.
-        int configuration;
-        int numVertices;
-        int numTriangles;
-        int unused0;
+        int32_t configuration;
+        int32_t numVertices;
+        int32_t numTriangles;
+        int32_t unused0;
 
         Vector4<float> vertices[12];
 
         // GLSL will store the array in a 16-element chunk of memory, so the
         // 'unused1' member is padding.
         // 'unused0' member is padding.
-        int indices[15];
-        int unused1;
+        int32_t indices[15];
+        int32_t unused1;
     };
 
     struct Vertex
@@ -95,8 +95,8 @@ private:
 
     struct IndirectVoxel
     {
-        unsigned int index;
-        unsigned int configuration;
+        uint32_t index;
+        uint32_t configuration;
     };
 
     std::shared_ptr<Visual> mVoxelMesh;

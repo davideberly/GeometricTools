@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -16,9 +16,9 @@
 // (x[i],y[i],z[i]) to Delaunay3.
 //
 // The TetrahedronMesh interface must support the following:
-//   int GetContainingTetrahedron(Vector3<Real> const&) const;
-//   bool GetIndices(int, std::array<int, 4>&) const;
-//   bool GetBarycentrics(int, Vector3<Real> const&, Real[4]) const;
+//   int32_t GetContainingTetrahedron(Vector3<Real> const&) const;
+//   bool GetIndices(int32_t, std::array<int32_t, 4>&) const;
+//   bool GetBarycentrics(int32_t, Vector3<Real> const&, Real[4]) const;
 
 namespace gte
 {
@@ -40,7 +40,7 @@ namespace gte
         // which case the interpolation is valid.
         bool operator()(Vector3<Real> const& P, Real& F) const
         {
-            int t = mMesh->GetContainingTetrahedron(P);
+            int32_t t = mMesh->GetContainingTetrahedron(P);
             if (t == -1)
             {
                 // The point is outside the tetrahedralization.
@@ -58,7 +58,7 @@ namespace gte
             }
 
             // The result is a barycentric combination of function values.
-            std::array<int, 4> indices{ 0, 0, 0, 0 };
+            std::array<int32_t, 4> indices{ 0, 0, 0, 0 };
             mMesh->GetIndices(t, indices);
             F = bary[0] * mF[indices[0]] + bary[1] * mF[indices[1]] +
                 bary[2] * mF[indices[2]] + bary[3] * mF[indices[3]];

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,7 +17,7 @@ namespace gte
     public:
         // Construction and destruction.  The interpolator is for uniformly
         // spaced x-values.
-        IntpAkimaUniform1(int quantity, Real xMin, Real xSpacing, Real const* F)
+        IntpAkimaUniform1(int32_t quantity, Real xMin, Real xSpacing, Real const* F)
             :
             IntpAkima1<Real>(quantity, F),
             mXMin(xMin),
@@ -30,7 +30,7 @@ namespace gte
             // Compute slopes.
             Real invDX = (Real)1 / mXSpacing;
             std::vector<Real> slope(static_cast<size_t>(quantity) + 3);
-            int i, ip1, ip2;
+            int32_t i, ip1, ip2;
             for (i = 0, ip1 = 1, ip2 = 2; i < quantity - 1; ++i, ++ip1, ++ip2)
             {
                 slope[ip2] = (this->mF[ip1] - this->mF[i]) * invDX;
@@ -87,10 +87,10 @@ namespace gte
         }
 
     protected:
-        virtual void Lookup(Real x, int& index, Real& dx) const override
+        virtual void Lookup(Real x, int32_t& index, Real& dx) const override
         {
             // The caller has ensured that mXMin <= x <= mXMax.
-            int indexP1;
+            int32_t indexP1;
             for (index = 0, indexP1 = 1; indexP1 < this->mQuantity; ++index, ++indexP1)
             {
                 if (x < mXMin + mXSpacing * (indexP1))

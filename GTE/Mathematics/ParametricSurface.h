@@ -1,17 +1,18 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Mathematics/Vector.h>
+#include <cstdint>
 
 namespace gte
 {
-    template <int N, typename Real>
+    template <int32_t N, typename Real>
     class ParametricSurface
     {
     protected:
@@ -81,7 +82,7 @@ namespace gte
         // derivatives dX/du, dX/dv; second-order derivatives d2X/du2,
         // d2X/dudv, d2X/dv2.
         enum { SUP_ORDER = 6 };
-        virtual void Evaluate(Real u, Real v, unsigned int order, Vector<N, Real>* jet) const = 0;
+        virtual void Evaluate(Real u, Real v, uint32_t order, Vector<N, Real>* jet) const = 0;
 
         // Differential geometric quantities.
         Vector<N, Real> GetPosition(Real u, Real v) const

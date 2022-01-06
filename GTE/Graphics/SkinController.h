@@ -1,15 +1,16 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/Controller.h>
 #include <Graphics/VertexBuffer.h>
 #include <Mathematics/Vector4.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -25,17 +26,17 @@ namespace gte
         // unit 0.  The post-update function is used to allow a graphics
         // engine object to copy the modified vertex buffer to graphics memory.
         virtual ~SkinController() = default;
-        SkinController(int numVertices, int numBones, BufferUpdater const& postUpdate);
+        SkinController(int32_t numVertices, int32_t numBones, BufferUpdater const& postUpdate);
 
         // Member access.  After calling the constructor, you must set the
         // data using these functions.  The bone array uses weak pointers to
         // avoid reference-count cycles in the scene graph.
-        inline int GetNumVertices() const
+        inline int32_t GetNumVertices() const
         {
             return mNumVertices;
         }
 
-        inline int GetNumBones() const
+        inline int32_t GetNumBones() const
         {
             return mNumBones;
         }
@@ -65,8 +66,8 @@ namespace gte
         // is constructed.
         void OnFirstUpdate();
 
-        int mNumVertices;
-        int mNumBones;
+        int32_t mNumVertices;
+        int32_t mNumBones;
 
         // bones[numBones]
         std::vector<std::weak_ptr<Node>> mBones;
@@ -79,7 +80,7 @@ namespace gte
 
         BufferUpdater mPostUpdate;
         char* mPosition;
-        unsigned int mStride;
+        uint32_t mStride;
         bool mFirstUpdate, mCanUpdate;
     };
 }

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -57,7 +57,7 @@ namespace gte
             }
 
             // Test direction of box faces.
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 D = box.axis[i];
                 GetProjection(D, triangle, min0, max0);
@@ -73,9 +73,9 @@ namespace gte
 
             // Test direction of triangle-box edge cross products.
             edge[2] = edge[1] - edge[0];
-            for (int i0 = 0; i0 < 3; ++i0)
+            for (int32_t i0 = 0; i0 < 3; ++i0)
             {
-                for (int i1 = 0; i1 < 3; ++i1)
+                for (int32_t i1 = 0; i1 < 3; ++i1)
                 {
                     D = Cross(edge[i0], box.axis[i1]);
                     GetProjection(D, triangle, min0, max0);
@@ -162,7 +162,7 @@ namespace gte
             // box.  The largest number of vertices for the polygon of
             // intersection is 7.
             result.insidePolygon.resize(3);
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 result.insidePolygon[i] = triangle.v[i];
             }
@@ -172,9 +172,9 @@ namespace gte
             Plane3<Real> plane{};
             PPQuery ppQuery{};
             typename PPQuery::Result ppResult{};
-            for (int dir = -1; dir <= 1; dir += 2)
+            for (int32_t dir = -1; dir <= 1; dir += 2)
             {
-                for (int side = 0; side < 3; ++side)
+                for (int32_t side = 0; side < 3; ++side)
                 {
                     // Create a plane for the box face that points inside the box.
                     plane.normal = ((Real)dir) * box.axis[side];

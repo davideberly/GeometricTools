@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "ExtractLevelCurvesWindow2.h"
 
@@ -30,21 +30,22 @@ ExtractLevelCurvesWindow2::ExtractLevelCurvesWindow2(Parameters& parameters)
     input.close();
 
     // Enlarge the image.
-    int const numer = IMAGE_SIZE - 1, denom = MAX_PIXEL - 1;
-    for (int y = 0, index = 0; y < IMAGE_SIZE; ++y)
+    int32_t const numer = IMAGE_SIZE - 1, denom = MAX_PIXEL - 1;
+    for (int32_t y = 0, index = 0; y < IMAGE_SIZE; ++y)
     {
-        for (int x = 0; x < IMAGE_SIZE; ++x, ++index)
+        for (int32_t x = 0; x < IMAGE_SIZE; ++x, ++index)
         {
             // Scale the pixel value to [0,256).
             uint8_t value = static_cast<uint8_t>(mOriginal[index] * numer / denom);
             uint32_t gray = value | (value << 8) | (value << 16) | 0xFF000000;
-            for (int dy = 0; dy < MAGNIFY; ++dy)
+            for (int32_t dy = 0; dy < MAGNIFY; ++dy)
             {
-                int my = MAGNIFY * y + dy;
-                for (int dx = 0; dx < MAGNIFY; ++dx)
+                int32_t my = MAGNIFY * y + dy;
+                for (int32_t dx = 0; dx < MAGNIFY; ++dx)
                 {
-                    int mx = MAGNIFY * x + dx;
-                    mEnlarged[mx + ENLARGED_SIZE * my] = gray;
+                    int32_t mx = MAGNIFY * x + dx;
+                    int32_t lookup = mx + ENLARGED_SIZE * my;
+                    mEnlarged[static_cast<size_t>(lookup)] = gray;
                 }
             }
         }
@@ -67,10 +68,10 @@ void ExtractLevelCurvesWindow2::OnDisplay()
     uint32_t const color = (mUseSquares ? 0xFF00FF00 : 0xFF0000FF);
     for (auto const& edge : mEdges)
     {
-        int x0 = MAGNIFY * static_cast<int>(mVertices[edge.v[0]][0]);
-        int y0 = MAGNIFY * static_cast<int>(mVertices[edge.v[0]][1]);
-        int x1 = MAGNIFY * static_cast<int>(mVertices[edge.v[1]][0]);
-        int y1 = MAGNIFY * static_cast<int>(mVertices[edge.v[1]][1]);
+        int32_t x0 = MAGNIFY * static_cast<int32_t>(mVertices[edge.v[0]][0]);
+        int32_t y0 = MAGNIFY * static_cast<int32_t>(mVertices[edge.v[0]][1]);
+        int32_t x1 = MAGNIFY * static_cast<int32_t>(mVertices[edge.v[1]][0]);
+        int32_t y1 = MAGNIFY * static_cast<int32_t>(mVertices[edge.v[1]][1]);
         DrawLine(x0, y0, x1, y1, color);
     }
 
@@ -78,7 +79,7 @@ void ExtractLevelCurvesWindow2::OnDisplay()
     Window2::OnDisplay();
 }
 
-bool ExtractLevelCurvesWindow2::OnCharPress(unsigned char key, int x, int y)
+bool ExtractLevelCurvesWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -91,7 +92,7 @@ bool ExtractLevelCurvesWindow2::OnCharPress(unsigned char key, int x, int y)
     return Window2::OnCharPress(key, x, y);
 }
 
-bool ExtractLevelCurvesWindow2::OnMouseClick(int button, int state, int x, int y, unsigned int)
+bool ExtractLevelCurvesWindow2::OnMouseClick(int32_t button, int32_t state, int32_t x, int32_t y, uint32_t)
 {
     if (button == MOUSE_LEFT)
     {
@@ -109,7 +110,7 @@ bool ExtractLevelCurvesWindow2::OnMouseClick(int button, int state, int x, int y
     return false;
 }
 
-bool ExtractLevelCurvesWindow2::OnMouseMotion(int button, int x, int y, unsigned int)
+bool ExtractLevelCurvesWindow2::OnMouseMotion(int32_t button, int32_t x, int32_t y, uint32_t)
 {
     if (button == MOUSE_LEFT && mMouseDown)
     {
@@ -136,7 +137,7 @@ bool ExtractLevelCurvesWindow2::SetEnvironment()
     return true;
 }
 
-void ExtractLevelCurvesWindow2::ExtractLevelCurves(int x, int y)
+void ExtractLevelCurvesWindow2::ExtractLevelCurves(int32_t x, int32_t y)
 {
     // If you uncomment the MakeUnique calls, the performance takes a minor
     // hit for mExtractorSquares but a major hit for mExtractorTriangles.
@@ -144,7 +145,8 @@ void ExtractLevelCurvesWindow2::ExtractLevelCurves(int x, int y)
     {
         x = x / MAGNIFY;
         y = y / MAGNIFY;
-        int16_t level = mOriginal[x + IMAGE_SIZE * y];
+        int32_t index = x + IMAGE_SIZE * y;
+        int16_t level = mOriginal[static_cast<size_t>(index)];
         std::vector<CurveExtractor<int16_t, double>::Vertex> rationalVertices;
         if (mUseSquares)
         {

@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace gte
 {
@@ -39,7 +40,7 @@ namespace gte
         }
 
         // Member access.
-        inline int GetQuantity() const
+        inline int32_t GetQuantity() const
         {
             return mQuantity;
         }
@@ -75,7 +76,7 @@ namespace gte
         }
 
     protected:
-        PdeFilter(int quantity, Real const* data, Real borderValue, ScaleType scaleType)
+        PdeFilter(int32_t quantity, Real const* data, Real borderValue, ScaleType scaleType)
             :
             mQuantity(quantity),
             mBorderValue(borderValue),
@@ -87,7 +88,7 @@ namespace gte
         {
             Real maxValue = data[0];
             mMin = maxValue;
-            for (int i = 1; i < mQuantity; i++)
+            for (int32_t i = 1; i < mQuantity; i++)
             {
                 Real value = data[i];
                 if (value < mMin)
@@ -148,7 +149,7 @@ namespace gte
         virtual void OnPostUpdate() = 0;
 
         // The number of image elements.
-        int mQuantity;
+        int32_t mQuantity;
 
         // When set to std::numeric_limits<Real>::max(), Neumann conditions
         // are in use (zero-valued derivatives on the image border).

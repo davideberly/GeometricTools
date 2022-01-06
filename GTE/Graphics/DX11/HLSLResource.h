@@ -1,13 +1,14 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
 #include <Graphics/DX11/DX11.h>
+#include <cstdint>
 #include <fstream>
 
 // The renaming of the D3D11 items will be necessary when the DX12 engine
@@ -37,20 +38,33 @@ namespace gte
         virtual ~HLSLResource() = default;
     protected:
         // Construction.
-        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, unsigned int numBytes);
-        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, unsigned int index, unsigned int numBytes);
+        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, uint32_t numBytes);
+        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, uint32_t index, uint32_t numBytes);
 
     public:
         struct Description
         {
+            Description()
+                :
+                name(""),
+                type(D3D_SIT_CBUFFER),
+                bindPoint(0),
+                bindCount(0),
+                flags(0),
+                returnType(D3D_RETURN_TYPE_UNORM),
+                dimension(D3D_SRV_DIMENSION_UNKNOWN),
+                numSamples(0)
+            {
+            }
+
             std::string name;
             D3D_SHADER_INPUT_TYPE type;
-            unsigned int bindPoint;
-            unsigned int bindCount;
-            unsigned int flags;
+            uint32_t bindPoint;
+            uint32_t bindCount;
+            uint32_t flags;
             D3D_RESOURCE_RETURN_TYPE returnType;
             D3D_SRV_DIMENSION dimension;
-            unsigned int numSamples;
+            uint32_t numSamples;
         };
 
         // Member access.
@@ -64,17 +78,17 @@ namespace gte
             return mDesc.type;
         }
 
-        inline unsigned int GetBindPoint() const
+        inline uint32_t GetBindPoint() const
         {
             return mDesc.bindPoint;
         }
 
-        inline unsigned int GetBindCount() const
+        inline uint32_t GetBindCount() const
         {
             return mDesc.bindCount;
         }
 
-        inline unsigned int GetFlags() const
+        inline uint32_t GetFlags() const
         {
             return mDesc.flags;
         }
@@ -89,12 +103,12 @@ namespace gte
             return mDesc.dimension;
         }
 
-        inline unsigned int GetNumSamples() const
+        inline uint32_t GetNumSamples() const
         {
             return mDesc.numSamples;
         }
 
-        inline unsigned int GetNumBytes() const
+        inline uint32_t GetNumBytes() const
         {
             return mNumBytes;
         }
@@ -104,7 +118,7 @@ namespace gte
 
     private:
         Description mDesc;
-        unsigned int mNumBytes;
+        uint32_t mNumBytes;
 
         // Support for Print.
         static std::string const msSIType[];

@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.07.21
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -234,7 +234,7 @@ namespace gte
 
             // Get the leading '+' or '-' if it exists.
             std::string fpNumber;
-            int sign;
+            int32_t sign;
             if (number[0] == '+')
             {
                 fpNumber = number.substr(1);
@@ -344,7 +344,7 @@ namespace gte
         }
 
         // Member access.
-        inline void SetSign(int sign)
+        inline void SetSign(int32_t sign)
         {
             mNumerator.SetSign(sign);
             mDenominator.SetSign(1);
@@ -353,7 +353,7 @@ namespace gte
 #endif
         }
 
-        inline int GetSign() const
+        inline int32_t GetSign() const
         {
             return mNumerator.GetSign() * mDenominator.GetSign();
         }
@@ -573,7 +573,7 @@ namespace gte
             BSRational y(0), ten(10), pow10(10);
             for (size_t i = 0; i < number.size(); ++i)
             {
-                int digit = static_cast<int>(number[i]) - static_cast<int>('0');
+                int32_t digit = static_cast<int32_t>(number[i]) - static_cast<int32_t>('0');
                 if (digit > 0)
                 {
                      y += BSRational(digit) / pow10;
@@ -661,7 +661,7 @@ namespace gte
         auto& bits = w.GetBits();
         int32_t current = size - 1;
         int32_t lastBit = -1;
-        for (int i = precisionM1; i >= 0; --i)
+        for (int32_t i = precisionM1; i >= 0; --i)
         {
             if (n < d)
             {
@@ -878,7 +878,7 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int* exponent)
+    inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int32_t* exponent)
     {
         gte::BSRational<UInteger> result = x;
         auto& numer = result.GetNumerator();
@@ -899,10 +899,10 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSRational<UInteger> ldexp(gte::BSRational<UInteger> const& x, int exponent)
+    inline gte::BSRational<UInteger> ldexp(gte::BSRational<UInteger> const& x, int32_t exponent)
     {
         gte::BSRational<UInteger> result = x;
-        int biasedExponent = result.GetNumerator().GetBiasedExponent();
+        int32_t biasedExponent = result.GetNumerator().GetBiasedExponent();
         biasedExponent += exponent;
         result.GetNumerator().SetBiasedExponent(biasedExponent);
         return result;
@@ -1006,7 +1006,7 @@ namespace gte
     }
 
     template <typename UInteger>
-    inline int isign(BSRational<UInteger> const& x)
+    inline int32_t isign(BSRational<UInteger> const& x)
     {
         return isign((double)x);
     }

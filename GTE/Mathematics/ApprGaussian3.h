@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -38,13 +38,13 @@ namespace gte
         // functions that you can call.
         virtual bool FitIndexed(
             size_t numPoints, Vector3<Real> const* points,
-            size_t numIndices, int const* indices) override
+            size_t numIndices, int32_t const* indices) override
         {
             if (this->ValidIndices(numPoints, points, numIndices, indices))
             {
                 // Compute the mean of the points.
                 Vector3<Real> mean = Vector3<Real>::Zero();
-                int const* currentIndex = indices;
+                int32_t const* currentIndex = indices;
                 for (size_t i = 0; i < numIndices; ++i)
                 {
                     mean += points[*currentIndex++];
@@ -113,7 +113,7 @@ namespace gte
         {
             Vector3<Real> diff = point - mParameters.center;
             Real error = (Real)0;
-            for (int i = 0; i < 3; ++i)
+            for (int32_t i = 0; i < 3; ++i)
             {
                 if (mParameters.extent[i] > (Real)0)
                 {

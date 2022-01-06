@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,7 +17,7 @@ namespace gte
     // average of the points.  The box axes are the eigenvectors of the
     // covariance matrix.
     template <typename Real>
-    bool GetContainer(int numPoints, Vector3<Real> const* points, OrientedBox3<Real>& box)
+    bool GetContainer(int32_t numPoints, Vector3<Real> const* points, OrientedBox3<Real>& box)
     {
         // Fit the points with a Gaussian distribution.
         ApprGaussian3<Real> fitter;
@@ -36,10 +36,10 @@ namespace gte
             Vector3<Real> pmin{ Dot(diff, box.axis[0]), Dot(diff, box.axis[1]),
                 Dot(diff, box.axis[2]) };
             Vector3<Real> pmax = pmin;
-            for (int i = 1; i < numPoints; ++i)
+            for (int32_t i = 1; i < numPoints; ++i)
             {
                 diff = points[i] - box.center;
-                for (int j = 0; j < 3; ++j)
+                for (int32_t j = 0; j < 3; ++j)
                 {
                     Real dot = Dot(diff, box.axis[j]);
                     if (dot < pmin[j])
@@ -53,7 +53,7 @@ namespace gte
                 }
             }
 
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 box.center += ((Real)0.5 * (pmin[j] + pmax[j])) * box.axis[j];
                 box.extent[j] = (Real)0.5 * (pmax[j] - pmin[j]);
@@ -67,7 +67,7 @@ namespace gte
     template <typename Real>
     bool GetContainer(std::vector<Vector3<Real>> const& points, OrientedBox3<Real>& box)
     {
-        return GetContainer(static_cast<int>(points.size()), points.data(), box);
+        return GetContainer(static_cast<int32_t>(points.size()), points.data(), box);
     }
 
     // Test for containment.  Let X = C + y0*U0 + y1*U1 + y2*U2 where C is the
@@ -77,7 +77,7 @@ namespace gte
     bool InContainer(Vector3<Real> const& point, OrientedBox3<Real> const& box)
     {
         Vector3<Real> diff = point - box.center;
-        for (int i = 0; i < 3; ++i)
+        for (int32_t i = 0; i < 3; ++i)
         {
             Real coeff = Dot(diff, box.axis[i]);
             if (std::fabs(coeff) > box.extent[i])
@@ -127,7 +127,7 @@ namespace gte
         Quaternion<Real> q = q0 + q1;
         Normalize(q);
         Matrix3x3<Real> rot = Rotation<3, Real>(q);
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             merge.axis[j] = rot.GetCol(j);
         }
@@ -148,10 +148,10 @@ namespace gte
         Vector3<Real> pmax{ (Real)0, (Real)0, (Real)0 };
 
         box0.GetVertices(vertex);
-        for (int i = 0; i < 8; ++i)
+        for (int32_t i = 0; i < 8; ++i)
         {
             Vector3<Real> diff = vertex[i] - merge.center;
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 Real dot = Dot(diff, merge.axis[j]);
                 if (dot > pmax[j])
@@ -166,10 +166,10 @@ namespace gte
         }
 
         box1.GetVertices(vertex);
-        for (int i = 0; i < 8; ++i)
+        for (int32_t i = 0; i < 8; ++i)
         {
             Vector3<Real> diff = vertex[i] - merge.center;
-            for (int j = 0; j < 3; ++j)
+            for (int32_t j = 0; j < 3; ++j)
             {
                 Real dot = Dot(diff, merge.axis[j]);
                 if (dot > pmax[j])
@@ -187,7 +187,7 @@ namespace gte
         // merged box axes.  Update the current box center to be the center of
         // the new box.  Compute the extents based on the new center.
         Real const half = (Real)0.5;
-        for (int j = 0; j < 3; ++j)
+        for (int32_t j = 0; j < 3; ++j)
         {
             merge.center += half * (pmax[j] + pmin[j]) * merge.axis[j];
             merge.extent[j] = half * (pmax[j] - pmin[j]);

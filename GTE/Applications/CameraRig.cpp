@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/CameraRig.h>
@@ -47,13 +47,13 @@ void CameraRig::ComputeWorldAxes()
     }
 }
 
-bool CameraRig::PushMotion(int trigger)
+bool CameraRig::PushMotion(int32_t trigger)
 {
     auto element = mIndirectMap.find(trigger);
     return (element != mIndirectMap.end() ? SetActive(element->second) : false);
 }
 
-bool CameraRig::PopMotion(int trigger)
+bool CameraRig::PopMotion(int32_t trigger)
 {
     auto element = mIndirectMap.find(trigger);
     return (element != mIndirectMap.end() ? SetInactive(element->second) : false);
@@ -68,7 +68,7 @@ bool CameraRig::Move()
     // idle loop.
     if (mNumActiveMotions > 0)
     {
-        for (int i = 0; i < mNumActiveMotions; ++i)
+        for (int32_t i = 0; i < mNumActiveMotions; ++i)
         {
             (this->*mActiveMotions[i])();
         }
@@ -278,7 +278,7 @@ void CameraRig::RollCounterclockwise()
     }
 }
 
-void CameraRig::Register(int trigger, MoveFunction function)
+void CameraRig::Register(int32_t trigger, MoveFunction function)
 {
     if (trigger >= 0)
     {
@@ -290,7 +290,7 @@ void CameraRig::Register(int trigger, MoveFunction function)
     }
     else
     {
-        for (auto element : mIndirectMap)
+        for (auto const& element : mIndirectMap)
         {
             if (element.second == function)
             {
@@ -303,7 +303,7 @@ void CameraRig::Register(int trigger, MoveFunction function)
 
 bool CameraRig::SetActive(MoveFunction function)
 {
-    for (int i = 0; i < mNumActiveMotions; ++i)
+    for (int32_t i = 0; i < mNumActiveMotions; ++i)
     {
         if (mActiveMotions[i] == function)
         {
@@ -324,11 +324,11 @@ bool CameraRig::SetActive(MoveFunction function)
 
 bool CameraRig::SetInactive(MoveFunction function)
 {
-    for (int i = 0; i < mNumActiveMotions; ++i)
+    for (int32_t i = 0; i < mNumActiveMotions; ++i)
     {
         if (mActiveMotions[i] == function)
         {
-            for (int j0 = i, j1 = j0 + 1; j1 < mNumActiveMotions; j0 = j1++)
+            for (int32_t j0 = i, j1 = j0 + 1; j1 < mNumActiveMotions; j0 = j1++)
             {
                 mActiveMotions[j0] = mActiveMotions[j1];
             }
@@ -336,7 +336,7 @@ bool CameraRig::SetInactive(MoveFunction function)
             mActiveMotions[mNumActiveMotions] = nullptr;
             if (mNumActiveMotions > 0)
             {
-                mMotion = mActiveMotions[mNumActiveMotions - 1];
+                mMotion = mActiveMotions[static_cast<size_t>(mNumActiveMotions) - 1];
             }
             else
             {

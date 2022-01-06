@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2019.08.13
+// Version: 6.0.2022.01.06
 
 #include "SimplePendulumConsole.h"
 #include <Applications/WICFileIO.h>
@@ -17,11 +17,11 @@ SimplePendulumConsole::SimplePendulumConsole(Parameters& parameters)
     mOutput(mSize),
     mPendulumConstant(1.0f)
 {
-    mDrawPixel = [this](int x, int y)
+    mDrawPixel = [this](int32_t x, int32_t y)
     {
         if (0 <= x && x < mSize && 0 <= y && y < mSize)
         {
-            unsigned int* pixels = mImage->Get<unsigned int>();
+            uint32_t* pixels = mImage->Get<uint32_t>();
             pixels[x + mSize * y] = 0xFF000000;
         }
     };
@@ -50,7 +50,7 @@ float SimplePendulumConsole::F1(float t, float x, float y)
 
 void SimplePendulumConsole::ExplicitEuler(float x0, float y0, float h)
 {
-    for (int i = 0; i < mSize; ++i)
+    for (int32_t i = 0; i < mSize; ++i)
     {
         float x1 = x0 + h * y0;
         float y1 = y0 - h * mPendulumConstant * std::sin(x0);
@@ -64,12 +64,12 @@ void SimplePendulumConsole::ExplicitEuler(float x0, float y0, float h)
 void SimplePendulumConsole::ImplicitEuler(float x0, float y0, float h)
 {
     float const k0 = mPendulumConstant * h * h;
-    for (int i = 0; i < mSize; ++i)
+    for (int32_t i = 0; i < mSize; ++i)
     {
         float k1 = x0 + h * y0;
         float x1 = x0;
-        int const maxIteration = 32;
-        for (int j = 0; j < maxIteration; ++j)
+        int32_t const maxIteration = 32;
+        for (int32_t j = 0; j < maxIteration; ++j)
         {
             float g = x1 + k0 * std::sin(x1) - k1;
             float gDer = 1.0f + k0 * std::cos(x1);
@@ -85,7 +85,7 @@ void SimplePendulumConsole::ImplicitEuler(float x0, float y0, float h)
 
 void SimplePendulumConsole::RungeKutta(float x0, float y0, float h)
 {
-    for (int i = 0; i < mSize; ++i)
+    for (int32_t i = 0; i < mSize; ++i)
     {
         float k1X = h * y0;
         float k1Y = -h * mPendulumConstant * std::sin(x0);
@@ -117,7 +117,7 @@ void SimplePendulumConsole::LeapFrog(float x0, float y0, float h)
     float y1 = y0 - h * mPendulumConstant * std::sin(x0);
     mOutput[0] = x1;
 
-    for (int i = 1; i < mSize; ++i)
+    for (int32_t i = 1; i < mSize; ++i)
     {
         float x2 = x0 + 2.0f * h * y1;
         float y2 = y0 - 2.0f * h * mPendulumConstant * std::sin(x1);
@@ -138,7 +138,7 @@ void SimplePendulumConsole::SolveODE(SolverFunction solver, std::string const& o
 
     // Write the approximation solution as text.
     std::ofstream outFile(outText);
-    for (int i = 0; i < mSize; ++i)
+    for (int32_t i = 0; i < mSize; ++i)
     {
         outFile << "i = " << i << ", " << mOutput[i] << std::endl;
     }
@@ -147,11 +147,11 @@ void SimplePendulumConsole::SolveODE(SolverFunction solver, std::string const& o
     // Draw the approximate solution as an image.
     std::memset(mImage->GetData(), 0xFF, mImage->GetNumBytes());
     float y = 256.0f * (mOutput[0] + 3.0f) / 6.0f;
-    int iY0 = mSize - 1 - static_cast<int>(y);
-    for (int i = 1; i < mSize; ++i)
+    int32_t iY0 = mSize - 1 - static_cast<int32_t>(y);
+    for (int32_t i = 1; i < mSize; ++i)
     {
         y = 256.0f * (mOutput[i] + 3.0f) / 6.0f;
-        int iY1 = mSize - 1 - static_cast<int>(y);
+        int32_t iY1 = mSize - 1 - static_cast<int32_t>(y);
         ImageUtility2::DrawLine(i - 1, iY0, i, iY1, mDrawPixel);
         iY0 = iY1;
     }
@@ -160,7 +160,7 @@ void SimplePendulumConsole::SolveODE(SolverFunction solver, std::string const& o
 
 void SimplePendulumConsole::Stiff1()
 {
-    int const maxIterations = 1024 + 256;
+    int32_t const maxIterations = 1024 + 256;
     float const cSqr = 2.0f, c = std::sqrt(2.0f);
 
     float h = 0.01f;
@@ -168,7 +168,7 @@ void SimplePendulumConsole::Stiff1()
     float y0 = -c * x0;
 
     std::vector<float> approx(maxIterations);
-    int i;
+    int32_t i;
     for (i = 0; i < maxIterations; ++i)
     {
         float k1X = h * y0;
@@ -204,12 +204,12 @@ void SimplePendulumConsole::Stiff1()
     // Draw the true solution.
     std::memset(mImage->GetData(), 0xFF, mImage->GetNumBytes());
     float y = 256.0f * (x0Save + 3.0f) / 6.0f;
-    int iY0 = mSize - 1 - static_cast<int>(y);
+    int32_t iY0 = mSize - 1 - static_cast<int32_t>(y);
     for (i = 1; i < mSize; ++i)
     {
-        int j = (maxIterations - 1) * i / (mSize - 1);
+        int32_t j = (maxIterations - 1) * i / (mSize - 1);
         y = 256.0f * (x0Save * std::exp(-c * j * h) + 3.0f) / 6.0f;
-        int iY1 = mSize - 1 - static_cast<int>(y);
+        int32_t iY1 = mSize - 1 - static_cast<int32_t>(y);
         ImageUtility2::DrawLine(i - 1, iY0, i, iY1, mDrawPixel);
         iY0 = iY1;
     }
@@ -218,12 +218,12 @@ void SimplePendulumConsole::Stiff1()
     // Draw the approximate solution as an image.
     std::memset(mImage->GetData(), 0xFF, mImage->GetNumBytes());
     y = 256.0f * (approx[0] + 3.0f) / 6.0f;
-    iY0 = mSize - 1 - static_cast<int>(y);
+    iY0 = mSize - 1 - static_cast<int32_t>(y);
     for (i = 1; i < mSize; ++i)
     {
-        int j = (maxIterations - 1) * i / (mSize - 1);
+        int32_t j = (maxIterations - 1) * i / (mSize - 1);
         y = 256.0f * (approx[j] + 3.0f) / 6.0f;
-        int iY1 = mSize - 1 - static_cast<int>(y);
+        int32_t iY1 = mSize - 1 - static_cast<int32_t>(y);
         ImageUtility2::DrawLine(i - 1, iY0, i, iY1, mDrawPixel);
         iY0 = iY1;
     }
@@ -238,8 +238,8 @@ void SimplePendulumConsole::Stiff2TrueSolution()
     float t0 = 0.0f;
 
     std::ofstream outFile("stiff2_true.txt");
-    int const maxIterations = 20;
-    for (int i = 0; i <= maxIterations; ++i, t0 += h)
+    int32_t const maxIterations = 20;
+    for (int32_t i = 0; i <= maxIterations; ++i, t0 += h)
     {
         float e0 = std::exp(-3.0f * t0);
         float e1 = std::exp(-39.0f * t0);
@@ -262,11 +262,11 @@ void SimplePendulumConsole::Stiff2ApproximateSolution()
     float y0 = 2.0f / 3.0f;
     float t0 = 0.0f;
 
-    int const maxIterations = 20;
+    int32_t const maxIterations = 20;
     std::vector<float> approx0(maxIterations + 1), approx1(maxIterations + 1);
     approx0[0] = x0;
     approx1[0] = y0;
-    int i;
+    int32_t i;
     for (i = 1; i <= maxIterations; ++i)
     {
         float k1X = h * F0(t0, x0, y0);

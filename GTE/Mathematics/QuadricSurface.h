@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2021.11.11
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -173,7 +173,7 @@ namespace gte
             RReps reps(mCoefficient);
 
             // Use Sturm sequences to determine the signs of the roots.
-            int positiveRoots, negativeRoots, zeroRoots;
+            int32_t positiveRoots, negativeRoots, zeroRoots;
             GetRootSigns(reps, positiveRoots, negativeRoots, zeroRoots);
 
             // Classify the solution set to the equation.
@@ -246,10 +246,10 @@ namespace gte
             Rational k3, k4, k5;
         };
 
-        static void GetRootSigns(RReps& reps, int& positiveRoots, int& negativeRoots, int& zeroRoots)
+        static void GetRootSigns(RReps& reps, int32_t& positiveRoots, int32_t& negativeRoots, int32_t& zeroRoots)
         {
             // Use Sturm sequences to determine the signs of the roots.
-            int signChangeMI, signChange0, signChangePI, distinctNonzeroRoots;
+            int32_t signChangeMI, signChange0, signChangePI, distinctNonzeroRoots;
             std::array<Rational, 4> value;
             Rational const zero(0);
             if (reps.k0 != zero)
@@ -396,13 +396,13 @@ namespace gte
             zeroRoots = 3;
         }
 
-        static int GetSignChanges(int quantity, std::array<Rational, 4> const& value)
+        static int32_t GetSignChanges(int32_t quantity, std::array<Rational, 4> const& value)
         {
-            int signChanges = 0;
+            int32_t signChanges = 0;
             Rational const zero(0);
 
             Rational prev = value[0];
-            for (int i = 1; i < quantity; ++i)
+            for (int32_t i = 1; i < quantity; ++i)
             {
                 Rational next = value[i];
                 if (next != zero)
@@ -419,7 +419,7 @@ namespace gte
             return signChanges;
         }
 
-        static Classification ClassifyZeroRoots0(RReps const& reps, int positiveRoots)
+        static Classification ClassifyZeroRoots0(RReps const& reps, int32_t positiveRoots)
         {
             // The inverse matrix is
             // +-                      -+
@@ -485,7 +485,7 @@ namespace gte
             return Classification::ELLIPTIC_CONE;
         }
 
-        static Classification ClassifyZeroRoots1(RReps const& reps, int positiveRoots)
+        static Classification ClassifyZeroRoots1(RReps const& reps, int32_t positiveRoots)
         {
             // Generate an orthonormal set {p0,p1,p2}, where p0 is an
             // eigenvector of A corresponding to eigenvalue zero.
@@ -517,7 +517,7 @@ namespace gte
             return ClassifyZeroRoots1(reps, positiveRoots, P0, P1, P2);
         }
 
-        static Classification ClassifyZeroRoots1(RReps const& reps, int positiveRoots,
+        static Classification ClassifyZeroRoots1(RReps const& reps, int32_t positiveRoots,
             RVector3 const& P0, RVector3 const& P1, RVector3 const& P2)
         {
             Rational const zero(0);
@@ -594,7 +594,7 @@ namespace gte
             return (positiveRoots == 1 ? Classification::TWO_PLANES : Classification::LINE);
         }
 
-        static Classification ClassifyZeroRoots2(const RReps& reps, int positiveRoots)
+        static Classification ClassifyZeroRoots2(const RReps& reps, int32_t positiveRoots)
         {
             // Generate an orthonormal set {p0,p1,p2}, where p0 and p1 are
             // eigenvectors of A corresponding to eigenvalue zero.  The vector
@@ -635,7 +635,7 @@ namespace gte
             return ClassifyZeroRoots2(reps, positiveRoots, P0, P1, P2);
         }
 
-        static Classification ClassifyZeroRoots2(RReps const& reps, int positiveRoots,
+        static Classification ClassifyZeroRoots2(RReps const& reps, int32_t positiveRoots,
             RVector3 const& P0, RVector3 const& P1, RVector3 const& P2)
         {
             Rational const zero(0);

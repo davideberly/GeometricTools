@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2021
+// Copyright (c) 1998-2022
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.10
+// Version: 6.0.2022.01.06
 
 #pragma once
 
@@ -17,11 +17,11 @@ namespace gte
     public:
         // Construction and destruction.
         ~Command() = default;
-        Command(int numArguments, char const* arguments[]);
-        Command(int numArguments, char* arguments[]);
+        Command(int32_t numArguments, char const* arguments[]);
+        Command(int32_t numArguments, char* arguments[]);
 
         // The return value is the index of the first excess argument.
-        int ExcessArguments() const;
+        size_t ExcessArguments() const;
 
         // Set bounds for numerical arguments.  If bounds are required, they
         // must be set for each argument.
@@ -38,13 +38,13 @@ namespace gte
         //     myprogram -debug -x 10 -y 20 filename
         // the option -debug has no argument.  The first GetBoolean function
         // returns only the existence of the option.
-        int GetBoolean(std::string const& name);
-        int GetBoolean(std::string const& name, bool& value);
-        int GetInteger(std::string const& name, int& value);
-        int GetFloat(std::string const& name, float& value);
-        int GetDouble(std::string const& name, double& value);
-        int GetString(std::string const& name, std::string& value);
-        int GetFilename(std::string& value, int startArgIndex = 1);
+        size_t GetBoolean(std::string const& name);
+        size_t GetBoolean(std::string const& name, bool& value);
+        size_t GetInteger(std::string const& name, int32_t& value);
+        size_t GetFloat(std::string const& name, float& value);
+        size_t GetDouble(std::string const& name, double& value);
+        size_t GetString(std::string const& name, std::string& value);
+        size_t GetFilename(std::string& value, size_t startArgIndex = 1);
 
         // Last-error reporting.
         inline std::string GetLastError() const
