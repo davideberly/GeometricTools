@@ -18,12 +18,12 @@ mathematics library with GPU-based implementations is provided,
 GTMathematicsGPU. The CPU-based common graphics engine code is in its
 own library, GTGraphics. DirectX 11 wrappers are provided for graphics
 and applications, GTGraphicsDX11 and GTApplicationsDX11, on Microsoft
-Windows 10. OpenGL 4.5 wrappers are provided for graphics and
+Windows 10/11. OpenGL 4.5 wrappers are provided for graphics and
 applications, GTGraphicsGL45 and GTApplicationsGL45, on Microsoft
-Windows 10 and on Linux. A small number of files exist to use GLX
+Windows 10/11 and on Linux. A small number of files exist to use GLX
 and X-Windows on Linux.
 
-On Microsoft Windows 10, the code is maintained using Microsoft Visual
+On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
 Studio 2015, 2017 and 2019 with Microsoft's compilers or with Intel
 C++ Compilers 17, 18 and 19.1.
 
