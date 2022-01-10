@@ -49,13 +49,13 @@ int main(int numArguments, char* arguments[])
     std::string projectName = arguments[3];
     bool success = false;
 
-    //TemplateV16 generatev16(gteRelativePath);
-    //success = generatev16.Execute(projectName, appType);
-    //if (!success)
-    //{
-    //    std::cout << "Could not create the V16 project files." << std::endl;
-    //    return -4;
-    //}
+    TemplateV16 generatev16(gteRelativePath);
+    success = generatev16.Execute(projectName, appType);
+    if (!success)
+    {
+        std::cout << "Could not create the V16 project files." << std::endl;
+        return -4;
+    }
 
     TemplateV17 generatev17(gteRelativePath);
     success = generatev17.Execute(projectName, appType);

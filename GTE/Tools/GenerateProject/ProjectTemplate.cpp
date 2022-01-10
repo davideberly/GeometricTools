@@ -21,27 +21,6 @@ Template::Template(std::string const& gteRelativePath)
 
 bool Template::Execute(std::string const& projectName, std::string const& appType)
 {
-#if 1
-    if (appType == "c")
-    {
-        return CreateDX11System(projectName, "Console")
-            && CreateGL45System(projectName, "Console");
-    }
-    else if (appType == "w2")
-    {
-        return CreateDX11System(projectName, "Window2")
-            && CreateGL45System(projectName, "Window2");
-    }
-    else if (appType == "w3")
-    {
-        return CreateDX11System(projectName, "Window3")
-            && CreateGL45System(projectName, "Window3");
-    }
-    else
-    {
-        return false;
-    }
-#else
     if (appType == "c")
     {
         return CreateSource(projectName, projectName + "Console.h", msConsoleH)
@@ -70,7 +49,6 @@ bool Template::Execute(std::string const& projectName, std::string const& appTyp
     {
         return false;
     }
-#endif
 }
 
 bool Template::CreateSource(
