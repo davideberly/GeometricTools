@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2022.01.08
 
 #pragma once
 
@@ -12,7 +12,7 @@
 class TemplateV16 : public Template
 {
 public:
-    TemplateV16(std::string const& gt4Path);
+    TemplateV16(std::string const& gteRelativePath);
     virtual ~TemplateV16() = default;
 
 private:

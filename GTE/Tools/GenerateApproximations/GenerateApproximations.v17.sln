@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GenerateApproximations.v17", "GenerateApproximations.v17.vcxproj", "{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Required", "Required", "{BD3F508C-F165-4D23-894C-0EA813A536E6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v17", "..\..\GTMathematics.v17.vcxproj", "{0CADDB12-31D9-4F60-A8C0-678D1773DA03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Debug|x64.ActiveCfg = Debug|x64
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Debug|x64.Build.0 = Debug|x64
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Debug|x86.ActiveCfg = Debug|Win32
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Debug|x86.Build.0 = Debug|Win32
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Release|x64.ActiveCfg = Release|x64
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Release|x64.Build.0 = Release|x64
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Release|x86.ActiveCfg = Release|Win32
+		{2DAA3A00-BE9F-4CBB-9D6D-9AE99B031DE2}.Release|x86.Build.0 = Release|Win32
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Debug|x64.ActiveCfg = Debug|x64
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Debug|x64.Build.0 = Debug|x64
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Debug|x86.ActiveCfg = Debug|Win32
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Debug|x86.Build.0 = Debug|Win32
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Release|x64.ActiveCfg = Release|x64
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Release|x64.Build.0 = Release|x64
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Release|x86.ActiveCfg = Release|Win32
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0CADDB12-31D9-4F60-A8C0-678D1773DA03} = {BD3F508C-F165-4D23-894C-0EA813A536E6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60CF2E5E-C95B-4CF6-9671-65A81CFC9105}
+	EndGlobalSection
+EndGlobal

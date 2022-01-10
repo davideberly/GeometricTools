@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2022.01.08
 
 #include "ProjectTemplate.h"
 #include <cctype>
@@ -13,14 +13,35 @@
 #include <regex>
 #include <Rpc.h>
 
-Template::Template(std::string const& gt4RelativePath)
+Template::Template(std::string const& gteRelativePath)
     :
-    mGT4RelativePath(gt4RelativePath)
+    mGTERelativePath(gteRelativePath)
 {
 }
 
 bool Template::Execute(std::string const& projectName, std::string const& appType)
 {
+#if 1
+    if (appType == "c")
+    {
+        return CreateDX11System(projectName, "Console")
+            && CreateGL45System(projectName, "Console");
+    }
+    else if (appType == "w2")
+    {
+        return CreateDX11System(projectName, "Window2")
+            && CreateGL45System(projectName, "Window2");
+    }
+    else if (appType == "w3")
+    {
+        return CreateDX11System(projectName, "Window3")
+            && CreateGL45System(projectName, "Window3");
+    }
+    else
+    {
+        return false;
+    }
+#else
     if (appType == "c")
     {
         return CreateSource(projectName, projectName + "Console.h", msConsoleH)
@@ -49,6 +70,7 @@ bool Template::Execute(std::string const& projectName, std::string const& appTyp
     {
         return false;
     }
+#endif
 }
 
 bool Template::CreateSource(
@@ -91,7 +113,7 @@ bool Template::CreateSolution(
         std::string requiredGUID = GetGUIDString();
 
         std::string target = text;
-        target = std::regex_replace(target, msGT4RelativePathPattern, mGT4RelativePath);
+        target = std::regex_replace(target, msGTERelativePathPattern, mGTERelativePath);
         target = std::regex_replace(target, msProjectNamePattern, projectName);
         target = std::regex_replace(target, msSolutionGUIDPattern, solutionGUID);
         target = std::regex_replace(target, msRequiredGUIDPattern, requiredGUID);
@@ -125,7 +147,7 @@ bool Template::CreateProject(
     if (outFile)
     {
         std::string target = text;
-        target = std::regex_replace(target, msGT4RelativePathPattern, mGT4RelativePath);
+        target = std::regex_replace(target, msGTERelativePathPattern, mGTERelativePath);
         target = std::regex_replace(target, msAppTypePattern, appType);
         target = std::regex_replace(target, msProjectNamePattern, projectName);
         target = std::regex_replace(target, msProjectGUIDGPattern, projectGUID);
@@ -286,7 +308,7 @@ std::string Template::GetGUIDString()
 }
 
 
-std::regex const Template::msGT4RelativePathPattern("_GT4_RELATIVE_PATH_");
+std::regex const Template::msGTERelativePathPattern("_GTE_RELATIVE_PATH_");
 std::regex const Template::msAppTypePattern("_APPTYPE_");
 std::regex const Template::msSolutionGUIDPattern("_SOLUTION_GUID_");
 std::regex const Template::msRequiredGUIDPattern("_REQUIRED_GUID_");

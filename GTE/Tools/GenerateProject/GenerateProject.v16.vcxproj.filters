@@ -17,13 +17,10 @@
     <ClCompile Include="ProjectTemplate.v16.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ProjectTemplate.v15.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectTemplate.v14.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ProjectTemplate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectTemplate.v17.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,13 +28,10 @@
     <ClInclude Include="ProjectTemplate.v16.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectTemplate.v15.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectTemplate.v14.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectTemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectTemplate.v17.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

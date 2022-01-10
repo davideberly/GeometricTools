@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{96B7067B-1944-4616-B24F-5986B590123A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Terrain.v17</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\DX11\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="TerrainEffect.cpp" />
+    <ClCompile Include="TerrainWindow3.cpp" />
+    <ClCompile Include="TerrainMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TerrainEffect.h" />
+    <ClInclude Include="TerrainWindow3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GTApplicationsDX11.v17.vcxproj">
+      <Project>{8BB237C2-2D3A-41AD-9B98-A35BA75D5DEA}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphics.v17.vcxproj">
+      <Project>{B15CB711-F650-4063-9C7C-E7A5F88139A2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GTGraphicsDX11.v17.vcxproj">
+      <Project>{00DEFF42-0F7C-4A7C-9C1F-59322B9E9004}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\height.0.0.binary" />
+    <None Include="Data\height.0.1.binary" />
+    <None Include="Data\height.0.2.binary" />
+    <None Include="Data\height.0.3.binary" />
+    <None Include="Data\height.0.4.binary" />
+    <None Include="Data\height.0.5.binary" />
+    <None Include="Data\height.0.6.binary" />
+    <None Include="Data\height.0.7.binary" />
+    <None Include="Data\height.1.0.binary" />
+    <None Include="Data\height.1.1.binary" />
+    <None Include="Data\height.1.2.binary" />
+    <None Include="Data\height.1.3.binary" />
+    <None Include="Data\height.1.4.binary" />
+    <None Include="Data\height.1.5.binary" />
+    <None Include="Data\height.1.6.binary" />
+    <None Include="Data\height.1.7.binary" />
+    <None Include="Data\height.2.0.binary" />
+    <None Include="Data\height.2.1.binary" />
+    <None Include="Data\height.2.2.binary" />
+    <None Include="Data\height.2.3.binary" />
+    <None Include="Data\height.2.4.binary" />
+    <None Include="Data\height.2.5.binary" />
+    <None Include="Data\height.2.6.binary" />
+    <None Include="Data\height.2.7.binary" />
+    <None Include="Data\height.3.0.binary" />
+    <None Include="Data\height.3.1.binary" />
+    <None Include="Data\height.3.2.binary" />
+    <None Include="Data\height.3.3.binary" />
+    <None Include="Data\height.3.4.binary" />
+    <None Include="Data\height.3.5.binary" />
+    <None Include="Data\height.3.6.binary" />
+    <None Include="Data\height.3.7.binary" />
+    <None Include="Data\height.4.0.binary" />
+    <None Include="Data\height.4.1.binary" />
+    <None Include="Data\height.4.2.binary" />
+    <None Include="Data\height.4.3.binary" />
+    <None Include="Data\height.4.4.binary" />
+    <None Include="Data\height.4.5.binary" />
+    <None Include="Data\height.4.6.binary" />
+    <None Include="Data\height.4.7.binary" />
+    <None Include="Data\height.5.0.binary" />
+    <None Include="Data\height.5.1.binary" />
+    <None Include="Data\height.5.2.binary" />
+    <None Include="Data\height.5.3.binary" />
+    <None Include="Data\height.5.4.binary" />
+    <None Include="Data\height.5.5.binary" />
+    <None Include="Data\height.5.6.binary" />
+    <None Include="Data\height.5.7.binary" />
+    <None Include="Data\height.6.0.binary" />
+    <None Include="Data\height.6.1.binary" />
+    <None Include="Data\height.6.2.binary" />
+    <None Include="Data\height.6.3.binary" />
+    <None Include="Data\height.6.4.binary" />
+    <None Include="Data\height.6.5.binary" />
+    <None Include="Data\height.6.6.binary" />
+    <None Include="Data\height.6.7.binary" />
+    <None Include="Data\height.7.0.binary" />
+    <None Include="Data\height.7.1.binary" />
+    <None Include="Data\height.7.2.binary" />
+    <None Include="Data\height.7.3.binary" />
+    <None Include="Data\height.7.4.binary" />
+    <None Include="Data\height.7.5.binary" />
+    <None Include="Data\height.7.6.binary" />
+    <None Include="Data\height.7.7.binary" />
+    <None Include="Shaders\BaseMulDetailFogExpSqr.ps.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Shaders\BaseMulDetailFogExpSqr.vs.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\color.0.0.png" />
+    <Image Include="Data\color.0.1.png" />
+    <Image Include="Data\color.0.2.png" />
+    <Image Include="Data\color.0.3.png" />
+    <Image Include="Data\color.0.4.png" />
+    <Image Include="Data\color.0.5.png" />
+    <Image Include="Data\color.0.6.png" />
+    <Image Include="Data\color.0.7.png" />
+    <Image Include="Data\color.1.0.png" />
+    <Image Include="Data\color.1.1.png" />
+    <Image Include="Data\color.1.2.png" />
+    <Image Include="Data\color.1.3.png" />
+    <Image Include="Data\color.1.4.png" />
+    <Image Include="Data\color.1.5.png" />
+    <Image Include="Data\color.1.6.png" />
+    <Image Include="Data\color.1.7.png" />
+    <Image Include="Data\color.2.0.png" />
+    <Image Include="Data\color.2.1.png" />
+    <Image Include="Data\color.2.2.png" />
+    <Image Include="Data\color.2.3.png" />
+    <Image Include="Data\color.2.4.png" />
+    <Image Include="Data\color.2.5.png" />
+    <Image Include="Data\color.2.6.png" />
+    <Image Include="Data\color.2.7.png" />
+    <Image Include="Data\color.3.0.png" />
+    <Image Include="Data\color.3.1.png" />
+    <Image Include="Data\color.3.2.png" />
+    <Image Include="Data\color.3.3.png" />
+    <Image Include="Data\color.3.4.png" />
+    <Image Include="Data\color.3.5.png" />
+    <Image Include="Data\color.3.6.png" />
+    <Image Include="Data\color.3.7.png" />
+    <Image Include="Data\color.4.0.png" />
+    <Image Include="Data\color.4.1.png" />
+    <Image Include="Data\color.4.2.png" />
+    <Image Include="Data\color.4.3.png" />
+    <Image Include="Data\color.4.4.png" />
+    <Image Include="Data\color.4.5.png" />
+    <Image Include="Data\color.4.6.png" />
+    <Image Include="Data\color.4.7.png" />
+    <Image Include="Data\color.5.0.png" />
+    <Image Include="Data\color.5.1.png" />
+    <Image Include="Data\color.5.2.png" />
+    <Image Include="Data\color.5.3.png" />
+    <Image Include="Data\color.5.4.png" />
+    <Image Include="Data\color.5.5.png" />
+    <Image Include="Data\color.5.6.png" />
+    <Image Include="Data\color.5.7.png" />
+    <Image Include="Data\color.6.0.png" />
+    <Image Include="Data\color.6.1.png" />
+    <Image Include="Data\color.6.2.png" />
+    <Image Include="Data\color.6.3.png" />
+    <Image Include="Data\color.6.4.png" />
+    <Image Include="Data\color.6.5.png" />
+    <Image Include="Data\color.6.6.png" />
+    <Image Include="Data\color.6.7.png" />
+    <Image Include="Data\color.7.0.png" />
+    <Image Include="Data\color.7.1.png" />
+    <Image Include="Data\color.7.2.png" />
+    <Image Include="Data\color.7.3.png" />
+    <Image Include="Data\color.7.4.png" />
+    <Image Include="Data\color.7.5.png" />
+    <Image Include="Data\color.7.6.png" />
+    <Image Include="Data\color.7.7.png" />
+    <Image Include="Data\Detail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\height.information.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

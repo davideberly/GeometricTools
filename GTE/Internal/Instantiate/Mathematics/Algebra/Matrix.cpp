@@ -1,0 +1,70 @@
+#include <Mathematics/Matrix.h>
+
+namespace gte
+{
+    template class Matrix<2, 3, float>;
+    template class Matrix<2, 2, float>;
+    template Matrix<2, 3, float> operator+(Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> operator-(Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> operator+(Matrix<2, 3, float> const&, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> operator-(Matrix<2, 3, float> const&, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> gte::operator*(Matrix<2, 3, float> const&, float);
+    template Matrix<2, 3, float> gte::operator*(float, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> gte::operator/(Matrix<2, 3, float> const&, float);
+    template Matrix<2, 3, float>& operator+=(Matrix<2, 3, float>&, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float>& operator-=(Matrix<2, 3, float>&, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float>& gte::operator*=(Matrix<2, 3, float>&, float);
+    template Matrix<2, 3, float>& gte::operator/=(Matrix<2, 3, float>&, float);
+    template float L1Norm(Matrix<2, 3, float> const&);
+    template float L2Norm(Matrix<2, 3, float> const&);
+    template float LInfinityNorm(Matrix<2, 3, float> const&);
+    template Matrix<2, 2, float> Inverse(Matrix<2, 2, float> const&, bool*);
+    template float Determinant(Matrix<2, 2, float> const&);
+    template Matrix<2, 3, float> Transpose(Matrix<3, 2, float> const&);
+    template Vector<2, float> operator*(Matrix<2, 3, float> const&, Vector<3, float> const&);
+    template Vector<3, float> operator*(Vector<2, float> const&, Matrix<2, 3, float> const&);
+    template Matrix<2, 4, float> operator*(Matrix<2, 3, float> const&, Matrix<3, 4, float> const&);
+    template Matrix<2, 4, float> MultiplyAB(Matrix<2, 3, float> const&, Matrix<3, 4, float> const&);
+    template Matrix<2, 4, float> MultiplyABT(Matrix<2, 3, float> const&, Matrix<4, 3, float> const&);
+    template Matrix<2, 4, float> MultiplyATB(Matrix<3, 2, float> const&, Matrix<3, 4, float> const&);
+    template Matrix<2, 4, float> MultiplyATBT(Matrix<3, 2, float> const&, Matrix<4, 3, float> const&);
+    template Matrix<2, 3, float> MultiplyMD(Matrix<2, 3, float> const&, Vector<3, float> const&);
+    template Matrix<2, 3, float> MultiplyDM(Vector<2, float> const&, Matrix<2, 3, float> const&);
+    template Matrix<2, 3, float> OuterProduct(Vector<2, float> const&, Vector<3, float> const&);
+    template void MakeDiagonal(Vector<2, float> const&, Matrix<2, 2, float>&);
+    template Matrix<4, 4, float> HLift(Matrix<3, 3, float> const&);
+    template Matrix<3, 3, float> HProject(Matrix<4, 4, float> const&);
+
+    template class Matrix<2, 3, double>;
+    template class Matrix<2, 2, double>;
+    template Matrix<2, 3, double> operator+(Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> operator-(Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> operator+(Matrix<2, 3, double> const&, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> operator-(Matrix<2, 3, double> const&, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> gte::operator*(Matrix<2, 3, double> const&, double);
+    template Matrix<2, 3, double> gte::operator*(double, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> gte::operator/(Matrix<2, 3, double> const&, double);
+    template Matrix<2, 3, double>& operator+=(Matrix<2, 3, double>&, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double>& operator-=(Matrix<2, 3, double>&, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double>& gte::operator*=(Matrix<2, 3, double>&, double);
+    template Matrix<2, 3, double>& gte::operator/=(Matrix<2, 3, double>&, double);
+    template double L1Norm(Matrix<2, 3, double> const&);
+    template double L2Norm(Matrix<2, 3, double> const&);
+    template double LInfinityNorm(Matrix<2, 3, double> const&);
+    template Matrix<2, 2, double> Inverse(Matrix<2, 2, double> const&, bool*);
+    template double Determinant(Matrix<2, 2, double> const&);
+    template Matrix<2, 3, double> Transpose(Matrix<3, 2, double> const&);
+    template Vector<2, double> operator*(Matrix<2, 3, double> const&, Vector<3, double> const&);
+    template Vector<3, double> operator*(Vector<2, double> const&, Matrix<2, 3, double> const&);
+    template Matrix<2, 4, double> operator*(Matrix<2, 3, double> const&, Matrix<3, 4, double> const&);
+    template Matrix<2, 4, double> MultiplyAB(Matrix<2, 3, double> const&, Matrix<3, 4, double> const&);
+    template Matrix<2, 4, double> MultiplyABT(Matrix<2, 3, double> const&, Matrix<4, 3, double> const&);
+    template Matrix<2, 4, double> MultiplyATB(Matrix<3, 2, double> const&, Matrix<3, 4, double> const&);
+    template Matrix<2, 4, double> MultiplyATBT(Matrix<3, 2, double> const&, Matrix<4, 3, double> const&);
+    template Matrix<2, 3, double> MultiplyMD(Matrix<2, 3, double> const&, Vector<3, double> const&);
+    template Matrix<2, 3, double> MultiplyDM(Vector<2, double> const&, Matrix<2, 3, double> const&);
+    template Matrix<2, 3, double> OuterProduct(Vector<2, double> const&, Vector<3, double> const&);
+    template void MakeDiagonal(Vector<2, double> const&, Matrix<2, 2, double>&);
+    template Matrix<4, 4, double> HLift(Matrix<3, 3, double> const&);
+    template Matrix<3, 3, double> HProject(Matrix<4, 4, double> const&);
+}

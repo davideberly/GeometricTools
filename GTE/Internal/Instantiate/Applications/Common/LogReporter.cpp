@@ -1,0 +1,1 @@
+#include <Applications/LogReporter.h>

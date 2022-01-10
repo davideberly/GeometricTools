@@ -7,9 +7,8 @@
 
 #include <cstdlib>
 #include <iostream>
-#include "ProjectTemplate.v14.h"
-#include "ProjectTemplate.v15.h"
 #include "ProjectTemplate.v16.h"
+#include "ProjectTemplate.v17.h"
 
 int main(int numArguments, char* arguments[])
 {
@@ -40,38 +39,30 @@ int main(int numArguments, char* arguments[])
     }
 
     // Generate the relative path to GeometricTools/GTE.
-    std::string gt4RelativePath;
+    std::string gteRelativePath;
     for (int i = 0; i < nesting; ++i)
     {
-        gt4RelativePath += "..\\";
+        gteRelativePath += "..\\";
     }
 
     // Generate the files for the project.
     std::string projectName = arguments[3];
     bool success = false;
 
-    TemplateV14 generatev14(gt4RelativePath);
-    success = generatev14.Execute(projectName, appType);
-    if (!success)
-    {
-        std::cout << "Could not create the V14 project files." << std::endl;
-        return -4;
-    }
+    //TemplateV16 generatev16(gteRelativePath);
+    //success = generatev16.Execute(projectName, appType);
+    //if (!success)
+    //{
+    //    std::cout << "Could not create the V16 project files." << std::endl;
+    //    return -4;
+    //}
 
-    TemplateV15 generatev15(gt4RelativePath);
-    success = generatev15.Execute(projectName, appType);
+    TemplateV17 generatev17(gteRelativePath);
+    success = generatev17.Execute(projectName, appType);
     if (!success)
     {
-        std::cout << "Could not create the V15 project files." << std::endl;
+        std::cout << "Could not create the V17 project files." << std::endl;
         return -5;
-    }
-
-    TemplateV16 generatev16(gt4RelativePath);
-    success = generatev16.Execute(projectName, appType);
-    if (!success)
-    {
-        std::cout << "Could not create the V16 project files." << std::endl;
-        return -6;
     }
 
     return 0;

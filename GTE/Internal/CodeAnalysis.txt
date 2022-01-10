@@ -1,0 +1,82 @@
+TODO:
+GTL - Logger, see GTE changes
+
+GTL - ensure <stdheaders> are #included in .h files (do not rely on other headers providing these)
+
+GTL - use Multiarray instead of 1D indexing of 2D data (example: control points in BSplineSurface.h)
+
+DX11Engine.cpp - BindTexture returns raw pointer from shared_ptr on stack
+
+GL45InputLayoutManager.cpp - Bind returns raw pointer from shared_ptr on stack
+
+GL45SamplerState.cpp - Code analysis wants scoped enum for sampler state filter
+
+IncrementalDelaunay2.h - potential stack overflow in ComputeWeight
+
+LDLTDecomposition.h - BlockLDLTDecomposition<double, 4, 10> leads to code analysis warning
+    line 430: warning C6262: Function uses '25632' bytes of stack:  exceeds /analyze:stacksize '16384'.  Consider moving some data to heap.
+
+MinimumAreaBox2.h -
+    Code analysis line 459: warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=4-1' is not true at this call.
+    complains about A[numA++]
+
+MinimumVolumeBox3.h - many complaints about potential stack overflow,
+    Code analysis line 459: warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=4-1' is not true at this call.
+    complains about A[numA++]
+
+NearestNeighborQuery.h -
+    Code analysis line 247: warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=32-1' is not true at this call.
+    stack[++top] = node.right;
+    Code analysis line 195: warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=32-1' is not true at this call.
+    stack[++top] = node.right;
+
+PrimalQuery2.h -
+    potential stack overflow when type is BSNumber<UIntegerFP32<526>> (obsolete Delaunay2 code)
+    same issue with (obsolete) ConstrainedDelaunay2
+
+TriangulateCDT.h -
+    obsolete code generates potential stack overflow warnings
+
+SingularValueDecomposition.h -
+    Code analysis warnings do not look correct.
+    line 548: warning C6385: Reading invalid data from 'x':  the readable size is '_Old_3`mNumRows*sizeof(Real)' bytes, but '16' bytes may be read.
+    line 616: warning C6385: Reading invalid data from 'x':  the readable size is '_Old_3`mNumCols*sizeof(Real)' bytes, but '16' bytes may be read.
+
+SymmetricEigensolver.h -
+    Code analysis warning does not look correct.
+    line 413: warning C6385: Reading invalid data from 'x':  the readable size is '_Old_3`mSize*sizeof(Real)' bytes, but '16' bytes may be read.
+
+IntrPlane3Cylinder3.h - NEEDS FIXING
+
+Code analysis wants to eliminate unscoped enums:
+    GraphicsObjectType, IPType, Resource::Usage, Resource::CopyType,
+    StructuredBuffer::CounterType, VASemantic, SamplerState::Filter,
+    HLSLStructuredBuffer::Type
+
+
+TYPICAL CODE ANALYSIS FAILURE
+{
+    int numIntersections = 0;
+    for (int i = 0; i < ccResult.numIntersections; ++i)
+    {
+        if (arc0.Contains(ccResult.point[i]) && arc1.Contains(ccResult.point[i]))
+        {
+            result.point[numIntersections++] = ccResult.point[i];
+            result.intersect = true;
+        }
+    }
+}
+The tool complains about result.point[numIntersections++] being an out-of-range
+lookup. However, if you use the following code, all is well.
+{
+    int numIntersections = 0;
+    for (int i = 0; i < ccResult.numIntersections; ++i)
+    {
+        if (arc0.Contains(ccResult.point[i]) && arc1.Contains(ccResult.point[i]))
+        {
+            result.point[numIntersections] = ccResult.point[i];
+            ++numIntersection;
+            result.intersect = true;
+        }
+    }
+}

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{51C6EBFE-AC0C-4626-A205-11F380094865}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ChangePlatformToolset.v16</RootNamespace>

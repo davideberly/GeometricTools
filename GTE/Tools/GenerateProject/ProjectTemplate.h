@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2022.01.08
 
 #pragma once
 
@@ -13,7 +13,7 @@
 class Template
 {
 public:
-    Template(std::string const& gt4RelativePath);
+    Template(std::string const& gteRelativePath);
     virtual ~Template() = default;
 
     bool Execute(std::string const& projectName, std::string const& appType);
@@ -71,11 +71,11 @@ protected:
     virtual std::string GetFilterLines() const = 0;
 
     // The relative path from the generated project to the folder that
-    // contains the GTE4 library projects.
-    std::string mGT4RelativePath;
+    // contains the GTE library projects.
+    std::string mGTERelativePath;
 
     // Matching patterns that are common across all versions.
-    static std::regex const msGT4RelativePathPattern;
+    static std::regex const msGTERelativePathPattern;
     static std::regex const msAppTypePattern;
     static std::regex const msSolutionGUIDPattern;
     static std::regex const msRequiredGUIDPattern;

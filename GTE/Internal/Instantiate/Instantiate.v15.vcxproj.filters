@@ -1,0 +1,2266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6a0a936f-c144-451f-9fd7-3e6916292927}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Applications">
+      <UniqueIdentifier>{c2884b08-2a40-451a-9568-b5ab39f79f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{4892546b-9cc6-448b-9fb0-d659b2117910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11">
+      <UniqueIdentifier>{2a491645-a5e4-4e98-9e21-27ffd3ffe3ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45">
+      <UniqueIdentifier>{913d07e4-0d31-4008-b2d8-3c2585254731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics">
+      <UniqueIdentifier>{2fa0e8ad-13cf-4ac3-8126-537a8f28b0e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathematicsGPU">
+      <UniqueIdentifier>{f4114a1b-6c84-482e-a14c-1a4aebad69dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Applications\Common">
+      <UniqueIdentifier>{ed6a73b6-049b-4228-8d29-e4eadf933ab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Applications\MSW">
+      <UniqueIdentifier>{8a42d5d4-4a42-4c67-959f-7d02ee673778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Base">
+      <UniqueIdentifier>{07c0366a-bc6f-473f-921a-f0f87279a7ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Effects">
+      <UniqueIdentifier>{fe36fe12-56e1-4f1d-b78c-c187761ecc27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Resources">
+      <UniqueIdentifier>{eb73dab0-d19f-4d72-bede-2ba6f6ac3cbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph">
+      <UniqueIdentifier>{155335c0-8cf7-4d06-95a5-0c0777a89d17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Shaders">
+      <UniqueIdentifier>{62e3d369-f808-4360-bd75-b41115929c25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\State">
+      <UniqueIdentifier>{58b45a87-fd2b-4834-add3-5466ba2935bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Resources\Buffers">
+      <UniqueIdentifier>{32e13b9d-5028-4404-9542-c6383f1a7b1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Resources\Textures">
+      <UniqueIdentifier>{4d694959-5909-4d56-9726-b9fee8bec6cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Controllers">
+      <UniqueIdentifier>{3876d453-65c9-41f1-a638-e415b975341e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Detail">
+      <UniqueIdentifier>{9c794621-78fe-4c3e-a3ee-98f33a9e8eb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Hierarchy">
+      <UniqueIdentifier>{a9084be7-e669-424b-b492-198a201a1915}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Picking">
+      <UniqueIdentifier>{867c157e-31b4-4904-bf9e-db604c5c49ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Sorting">
+      <UniqueIdentifier>{223ea955-6b05-4e26-a081-7a7bdfc76d4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Terrain">
+      <UniqueIdentifier>{a6ad62b4-fbbb-4e53-8827-d1b548289537}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\SceneGraph\Visibility">
+      <UniqueIdentifier>{5701f3d4-fb76-4cc9-a992-b86d9e2c0492}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\DXGI">
+      <UniqueIdentifier>{2e3fac47-0ea2-4775-b8c7-0f816c42ef60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine">
+      <UniqueIdentifier>{ae79f61c-491b-4342-85e7-7505e07571e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\HLSL">
+      <UniqueIdentifier>{f0fa18f0-7372-4c36-b8f8-42c411da4d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\InputLayout">
+      <UniqueIdentifier>{7827e5ed-37cf-49ba-9f95-491f005ab9bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\Resources">
+      <UniqueIdentifier>{0c248399-f38c-42cd-950f-c28aedfef31a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\Shaders">
+      <UniqueIdentifier>{502eedf2-c5de-4c6b-b8cc-6e15e6b14e85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\State">
+      <UniqueIdentifier>{954a3097-8899-41bb-ba0a-2d09e5cfe93e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\Resources\Buffers">
+      <UniqueIdentifier>{37a07c27-19de-4525-9256-63f5a1ea538a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsDX11\Engine\Resources\Textures">
+      <UniqueIdentifier>{ee9bde91-1391-4ee6-be73-d3f828dd0d9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine">
+      <UniqueIdentifier>{07dbc7ae-4fd4-4cdb-b626-7e774139a73a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\GLSL">
+      <UniqueIdentifier>{dead0123-bedd-4a22-9e51-eeb5671f9cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\WGL">
+      <UniqueIdentifier>{4e04c288-5cab-4b6e-8690-f05f9203a4f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine\InputLayout">
+      <UniqueIdentifier>{8c109086-d4df-4f05-960b-4442ae2e6f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine\Resources">
+      <UniqueIdentifier>{a9e480be-5294-4bae-a6df-5131131a6221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine\State">
+      <UniqueIdentifier>{b4f0076f-931b-46da-af17-34a892864715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine\Resources\Buffers">
+      <UniqueIdentifier>{2fca2690-7a41-4357-84f5-bece0a2b96df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GraphicsGL45\Engine\Resources\Textures">
+      <UniqueIdentifier>{a32a2c3b-360d-4b7c-980d-d5b35b829ff3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Algebra">
+      <UniqueIdentifier>{ccf1a08d-e35f-4d8c-a7f4-be6a8ef5dff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Approximation">
+      <UniqueIdentifier>{c68ce857-3e1b-427a-9eab-5f750f10263a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Arithmetic">
+      <UniqueIdentifier>{8fdb576b-1cdf-4900-ba38-99c7e101c822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\ComputationalGeometry">
+      <UniqueIdentifier>{ebf12cb1-78f8-4cb2-882e-8e73f331a26a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Containment">
+      <UniqueIdentifier>{2fa44231-569b-4dd6-a51c-2be0930b1782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\CurvesSurfacesVolumes">
+      <UniqueIdentifier>{f8f39474-9fe8-4352-b6ba-72c333b33dd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Distance">
+      <UniqueIdentifier>{98bdab9d-f30b-4738-a0c4-f003806056f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics">
+      <UniqueIdentifier>{857c4d5c-7f72-4f7b-88f6-adb468a0b457}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Interpolation">
+      <UniqueIdentifier>{a4f13b16-c187-427b-b6bd-b645fa16c53a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Intersection">
+      <UniqueIdentifier>{f4ded950-66c7-47c8-a617-b88849d52b4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\LowLevel">
+      <UniqueIdentifier>{00c1551d-01b9-4241-b14a-322a5eb7ea50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Meshes">
+      <UniqueIdentifier>{ad597310-9751-4cbe-bbb0-c82668147499}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\NumericalMethods">
+      <UniqueIdentifier>{7aeda428-8c63-4075-a0db-11f2c0238e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Physics">
+      <UniqueIdentifier>{9621deb2-9f76-41d8-b2da-dc88d87463d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Primitives">
+      <UniqueIdentifier>{b56413bc-8230-41a7-844f-70e7d347898c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Projection">
+      <UniqueIdentifier>{90b3dfe7-445a-4753-9ac0-b94aa4b83365}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Distance\2D">
+      <UniqueIdentifier>{7354152d-e406-4d0a-a771-e326a43ab57f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Distance\3D">
+      <UniqueIdentifier>{1c3bd0ce-3dbe-4806-8ca7-f861800321c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Distance\ND">
+      <UniqueIdentifier>{73f4006e-4735-4ecc-ad5b-0c59de09833d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics\Extraction">
+      <UniqueIdentifier>{07ba2174-9103-4ee4-9f45-0f55fcb5cc19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics\Filters">
+      <UniqueIdentifier>{2c821d19-7b72-4060-8436-9adf54dbf3a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics\Images">
+      <UniqueIdentifier>{14d836e0-236c-40f1-80ac-c1f098912537}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics\Segmenters">
+      <UniqueIdentifier>{128d4b65-09e4-4eb9-aba8-570f18c59f55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Imagics\Utilities">
+      <UniqueIdentifier>{d403cf16-82ee-4ed2-8d49-99b516cb19ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Intersection\1D">
+      <UniqueIdentifier>{bd6e62f9-7f8c-4245-8f9b-4d6b32ee05e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Intersection\2D">
+      <UniqueIdentifier>{e1e05a9a-e905-4032-b8d6-d31d6f4a5c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Intersection\3D">
+      <UniqueIdentifier>{7e1f965c-4134-4005-90a1-028a6808985d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Intersection\ND">
+      <UniqueIdentifier>{5fe0dd5b-60a4-414a-babd-eb21b01388a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Primitives\2D">
+      <UniqueIdentifier>{4dfbbcc6-7188-4e07-ac6b-a210bb9fab15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Primitives\3D">
+      <UniqueIdentifier>{74ffb8aa-4dad-4999-925b-535e164cfade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Primitives\ND">
+      <UniqueIdentifier>{385bf667-216b-410e-b950-771bd045de2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathematicsGPU\ComputationalGeometry">
+      <UniqueIdentifier>{24a7299d-04e8-4b83-a252-adf417ca9f0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathematicsGPU\Physics">
+      <UniqueIdentifier>{ec1f112f-e552-4a84-b25d-4208dc8b9db5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathematicsGPU\Physics\Fluid2">
+      <UniqueIdentifier>{eb7032b5-1036-4eab-ad1c-1d09bff418d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathematicsGPU\Physics\Fluid3">
+      <UniqueIdentifier>{51034bc6-c4ec-4d49-94b6-cc6d50b5f013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mathematics\Miscellaneous">
+      <UniqueIdentifier>{8b1acd8d-5f70-4e95-a4b4-5251459aade6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Instantiate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\CameraRig.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Command.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Environment.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\OnIdleTimer.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Timer.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\TrackBall.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\TrackCylinder.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\TrackObject.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIO.cpp">
+      <Filter>Source Files\Applications\MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\BaseEngine.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\GEDrawTarget.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\GEInputLayoutManager.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\GEObject.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\GraphicsEngine.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Base\GraphicsObject.cpp">
+      <Filter>Source Files\Graphics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\AmbientLightEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\ConstantColorEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\DirectionalLightEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\DirectionalLightTextureEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\Font.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW400H18.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\LightCameraGeometry.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\LightEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\Lighting.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\Material.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\OverlayEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\PlanarReflectionEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\PointLightEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\PointLightTextureEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\SpotLightEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\TextEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\Texture2Effect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\Texture3Effect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\VertexColorEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\VisualEffect.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\DataFormat.cpp">
+      <Filter>Source Files\Graphics\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Resource.cpp">
+      <Filter>Source Files\Graphics\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\Buffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\ConstantBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\IndexBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\IndexBuffer_throw.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\IndexFormat.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\IndirectArgumentsBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\MemberLayout.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\RawBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\StructuredBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\TextureBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\TypedBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\VertexBuffer.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Buffers\VertexFormat.cpp">
+      <Filter>Source Files\Graphics\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\DrawTarget.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture1.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture1Array.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture2.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture2Array.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\Texture3.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureArray.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureCube.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureCubeArray.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureDS.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureRT.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Resources\Textures\TextureSingle.cpp">
+      <Filter>Source Files\Graphics\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\MeshFactory.cpp">
+      <Filter>Source Files\Graphics\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\BlendTransformController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\ControlledObject.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\Controller.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\IKController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\KeyframeController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\MorphController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\ParticleController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\PointController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\SkinController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Controllers\TransformController.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Detail\BillboardNode.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Detail</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\BoundingSphere.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Camera.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Light.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Node.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Particles.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Particles_throw.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\PVWUpdater.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Spatial.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\ViewVolume.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\ViewVolumeNode.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Hierarchy\Visual.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Picking\Picker.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Picking\PickRecord.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Sorting\BspNode.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Terrain\Terrain.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Visibility\Culler.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Visibility</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\SceneGraph\Visibility\CullingPlane.cpp">
+      <Filter>Source Files\Graphics\SceneGraph\Visibility</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\ComputeProgram.cpp">
+      <Filter>Source Files\Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\ProgramDefines.cpp">
+      <Filter>Source Files\Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\ProgramFactory.cpp">
+      <Filter>Source Files\Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\Shader.cpp">
+      <Filter>Source Files\Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Shaders\VisualProgram.cpp">
+      <Filter>Source Files\Graphics\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\State\BlendState.cpp">
+      <Filter>Source Files\Graphics\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\State\DepthStencilState.cpp">
+      <Filter>Source Files\Graphics\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\State\DrawingState.cpp">
+      <Filter>Source Files\Graphics\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\State\RasterizerState.cpp">
+      <Filter>Source Files\Graphics\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\State\SamplerState.cpp">
+      <Filter>Source Files\Graphics\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\DXGI\DXGIAdapter.cpp">
+      <Filter>Source Files\GraphicsDX11\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\DXGI\DXGIOutput.cpp">
+      <Filter>Source Files\GraphicsDX11\DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\DX11.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\DX11Engine.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\DX11GraphicsObject.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\DX11PerformanceCounter.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\InputLayout\DX11InputLayout.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\InputLayout\DX11InputLayoutManager.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\DX11Resource.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11Buffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11ConstantBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11IndexBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11IndirectArgumentsBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11RawBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11StructuredBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11TextureBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Buffers\DX11VertexBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11DrawTarget.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture1.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture1Array.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture2.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture2Array.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11Texture3.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureArray.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureCube.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureCubeArray.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureDS.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureRT.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Resources\Textures\DX11TextureSingle.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Shaders\DX11ComputeShader.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Shaders\DX11GeometryShader.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Shaders\DX11PixelShader.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Shaders\DX11Shader.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\Shaders\DX11VertexShader.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\State\DX11BlendState.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\State\DX11DepthStencilState.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\State\DX11DrawingState.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\State\DX11RasterizerState.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\Engine\State\DX11SamplerState.cpp">
+      <Filter>Source Files\GraphicsDX11\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLBaseBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLByteAddressBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLComputeProgram.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLConstantBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLFactory.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLParameter.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLProgramFactory.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLReflection.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLResource.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLResourceBindInfo.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLSamplerState.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLShader.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLShaderFactory.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLShaderType.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLShaderVariable.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLStructuredBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLTexture.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLTextureArray.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLTextureBuffer.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDX11\HLSL\HLSLVisualProgram.cpp">
+      <Filter>Source Files\GraphicsDX11\HLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\GL45.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\GL45Engine.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\GL45GraphicsObject.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\InputLayout\GL45InputLayout.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\InputLayout\GL45InputLayoutManager.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\GL45Resource.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45AtomicCounterBuffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45Buffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45ConstantBuffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45IndexBuffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45StructuredBuffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Buffers\GL45VertexBuffer.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45DrawTarget.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture1.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture1Array.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture2.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture2Array.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45Texture3.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureArray.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureCube.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureCubeArray.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureDS.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureRT.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\Resources\Textures\GL45TextureSingle.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\State\GL45BlendState.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\State\GL45DepthStencilState.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\State\GL45DrawingState.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\State\GL45RasterizerState.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\Engine\State\GL45SamplerState.cpp">
+      <Filter>Source Files\GraphicsGL45\Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\GLSL\GLSLComputeProgram.cpp">
+      <Filter>Source Files\GraphicsGL45\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\GLSL\GLSLProgramFactory.cpp">
+      <Filter>Source Files\GraphicsGL45\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\GLSL\GLSLReflection.cpp">
+      <Filter>Source Files\GraphicsGL45\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\GLSL\GLSLShader.cpp">
+      <Filter>Source Files\GraphicsGL45\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\GLSL\GLSLVisualProgram.cpp">
+      <Filter>Source Files\GraphicsGL45\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsGL45\WGL\WGLEngine.cpp">
+      <Filter>Source Files\GraphicsGL45\WGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\AxisAngle.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\BandedMatrix.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\ConvertCoordinates.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\EulerAngles.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\GMatrix.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\GVector.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Matrix.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Matrix2x2.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Matrix3x3.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Matrix4x4.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Polynomial1.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Quaternion.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Rotation.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Transform.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Vector.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Vector2.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Vector3.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Algebra\Vector4.cpp">
+      <Filter>Source Files\Mathematics\Algebra</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprCircle2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprCone3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprCylinder3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprEllipse2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprEllipseByArcs.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprEllipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprGaussian2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprGaussian3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprGreatCircle3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprHeightLine2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprHeightPlane3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprOrthogonalLine2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprOrthogonalLine3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprOrthogonalPlane3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprParaboloid3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomial2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomial3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomial4.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomialSpecial2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomialSpecial3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprPolynomialSpecial4.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprQuadratic2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprQuadratic3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprSphere3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprTorus3.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\ArbitraryPrecision.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\BitHacks.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\BSNumber.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\BSPrecision.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\BSRational.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\IEEEBinary.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\IEEEBinary16.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\Math.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\UIntegerAP.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\UIntegerAP_stats.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\UIntegerFP.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\BSPPolygon2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\CLODPolyline.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ConformalMapGenus0.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ConstrainedDelaunay2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ConvexHull2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ConvexHull3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\Delaunay2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\Delaunay2Mesh.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\Delaunay3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\Delaunay3Mesh.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\DisjointIntervals.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\DisjointRectangles.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ExtremalQuery3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ExtremalQuery3BSP.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\ExtremalQuery3PRJ.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\GenerateMeshUV.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\MinimalCycleBasis.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\MinimumAreaBox2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\MinimumAreaCircle2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\MinimumVolumeBox3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\MinimumVolumeSphere3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\NearestNeighborQuery.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\OBBTreeForPoints.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\PrimalQuery2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\PrimalQuery3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\SeparatePoints2.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\SeparatePoints3.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\SplitMeshByPlane.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\TriangulateCDT.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\TriangulateEC.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\VertexCollapseMesh.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContAlignedBox.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContCapsule3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContCircle2.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContCone.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContCylinder3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContEllipse2.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContEllipse2MinCR.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContEllipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContEllipsoid3MinCR.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContLozenge3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContOrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContOrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContPointInPolygon2.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContPointInPolyhedron3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContScribeCircle2.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContScribeCircle3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Containment\ContSphere3.cpp">
+      <Filter>Source Files\Mathematics\Containment</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BasisFunction.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BezierCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineCurveFit.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineGeodesic.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineReduction.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineSurface.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineSurfaceFit.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\BSplineVolume.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\DarbouxFrame.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\EllipsoidGeodesic.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\FrenetFrame.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NaturalSplineCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NURBSCircle.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NURBSCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NURBSSphere.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NURBSSurface.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\NURBSVolume.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\ParametricCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\ParametricSurface.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\PolynomialCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\QuadricSurface.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\RiemannianGeodesic.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\CurvesSurfacesVolumes\TCBSplineCurve.cpp">
+      <Filter>Source Files\Mathematics\CurvesSurfacesVolumes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistAlignedBox3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistCircle3Circle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistLine3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistLine3Circle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistLine3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistLine3Rectangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistLine3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistOrientedBox3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistPoint3Circle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistPoint3ConvexPolyhedron3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistPoint3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistPoint3Frustum3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistPoint3Tetrahedron3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRay3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRay3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRay3Rectangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRay3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRectangle3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRectangle3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistRectangle3Rectangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistSegment3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistSegment3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistSegment3Rectangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistSegment3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistTriangle3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistTriangle3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistTriangle3Rectangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistTriangle3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistAlignedBoxAlignedBox.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistLineLine.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistLineRay.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistLineSegment.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointAlignedBox.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointHyperellipsoid.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointLine.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointOrientedBox.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointRay.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointSegment.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointTriangle.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistRayRay.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistRaySegment.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistSegmentSegment.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\AdaptiveSkeletonClimbing2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\AdaptiveSkeletonClimbing3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\CurveExtractor.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\CurveExtractorSquares.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\CurveExtractorTriangles.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\MarchingCubes.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\SurfaceExtractor.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\SurfaceExtractorCubes.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\SurfaceExtractorMC.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Extraction\SurfaceExtractorTetrahedra.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Extraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\CurvatureFlow2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\CurvatureFlow3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\FastGaussianBlur1.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\FastGaussianBlur2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\FastGaussianBlur3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\GaussianBlur2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\GaussianBlur3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\GradientAnisotropic2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\GradientAnisotropic3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\PdeFilter.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\PdeFilter1.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\PdeFilter2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Filters\PdeFilter3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Images\Image.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Images\Image2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Images\Image2_throw.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Images\Image3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Images\Image3_throw.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Segmenters\FastMarch.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Segmenters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Segmenters\FastMarch2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Segmenters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Segmenters\FastMarch3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Segmenters</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Utilities\Histogram.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Utilities\ImageUtility2.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Imagics\Utilities\ImageUtility3.cpp">
+      <Filter>Source Files\Mathematics\Imagics\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpAkima1.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpAkimaNonuniform1.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpAkimaUniform1.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpAkimaUniform2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpAkimaUniform3.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpBicubic2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpBilinear2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpBSplineUniform.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpBSplineUniformLowDims.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpLinearNonuniform2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpLinearNonuniform3.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpQuadraticNonuniform2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpSphere2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpThinPlateSpline2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpThinPlateSpline3.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpTricubic3.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpTrilinear3.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Interpolation\IntpVectorField2.cpp">
+      <Filter>Source Files\Mathematics\Interpolation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\1D\IntrIntervals.cpp">
+      <Filter>Source Files\Mathematics\Intersection\1D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrAlignedBox2AlignedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrAlignedBox2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrAlignedBox2OrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrArc2Arc2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrCircle2Arc2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrCircle2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrDisk2Sector2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrEllipse2Ellipse2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrHalfspace2Polygon2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2AlignedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Arc2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Line2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2OrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Ray2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Segment2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrLine2Triangle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrOrientedBox2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrOrientedBox2Cone2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrOrientedBox2OrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrOrientedBox2Sector2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2AlignedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2Arc2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2OrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2Ray2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2Segment2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrRay2Triangle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2AlignedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2Arc2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2Circle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2OrientedBox2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2Segment2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrSegment2Triangle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\2D\IntrTriangle2Triangle2.cpp">
+      <Filter>Source Files\Mathematics\Intersection\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrAlignedBox3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrAlignedBox3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrAlignedBox3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrAlignedBox3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrAlignedBox3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrCapsule3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrEllipsoid3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Segment3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrHalfspace3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Plane3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrLine3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrOrientedBox3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrOrientedBox3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrOrientedBox3Frustum3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrOrientedBox3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrOrientedBox3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Circle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Plane3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrPlane3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Plane3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrRay3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3AlignedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Capsule3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Ellipsoid3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Plane3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSegment3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSphere3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSphere3Frustum3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSphere3Sphere3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrSphere3Triangle3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrTriangle3OrientedBox3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\ND\IntrConvexPolygonHyperplane.cpp">
+      <Filter>Source Files\Mathematics\Intersection\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\Array2.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\Array3.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\Array4.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\AtomicMinMax.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\LexicoArray2.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\MinHeap.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\RangeIteration.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\SharedPtrCompare.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\ThreadSafeMap.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\ThreadSafeQueue.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\WeakPtrCompare.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\EdgeKey.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\ETManifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\ETNonmanifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\FeatureKey.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\IndexAttribute.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\IsPlanarGraph.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\Mesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\MeshCurvature.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\PlanarMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\RectangleMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\RectanglePatchMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\RevolutionMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\TetrahedronKey.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\TriangleKey.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\TSManifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\TubeMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\VEManifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\VertexAttribute.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\VETManifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\VETNonmanifoldMesh.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\ACosEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\ASinEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\ATanEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\ChebyshevRatio.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\CholeskyDecomposition.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\CosEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\CubicRootsQR.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\Exp2Estimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\ExpEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\GaussianElimination.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\GaussNewtonMinimizer.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\Integration.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\InvSqrtEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\LCPSolver.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\LevenbergMarquardtMinimizer.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\LinearSystem.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\Log2Estimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\LogEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\Minimize1.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\MinimizeN.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\OdeEuler.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\OdeImplicitEuler.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\OdeMidpoint.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\OdeRungeKutta4.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\QuarticRootsQR.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RootsBisection.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RootsBrentsMethod.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RootsPolynomial.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SinEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SingularValueDecomposition.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SlerpEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SqrtEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SymmetricEigensolver.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SymmetricEigensolver2x2.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\SymmetricEigensolver3x3.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\TanEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\UnsymmetricEigenvalues.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\BoxManager.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\MassSpringArbitrary.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\MassSpringCurve.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\MassSpringSurface.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\MassSpringVolume.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\ParticleSystem.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\PolyhedralMassProperties.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\RectangleManager.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Physics\RigidBody.cpp">
+      <Filter>Source Files\Mathematics\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\2D\Arc2.cpp">
+      <Filter>Source Files\Mathematics\Primitives\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\2D\Polygon2.cpp">
+      <Filter>Source Files\Mathematics\Primitives\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\2D\Sector2.cpp">
+      <Filter>Source Files\Mathematics\Primitives\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Circle3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\ConvexPolyhedron3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Ellipse3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Frustum3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Lozenge3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Polyhedron3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Tetrahedron3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\Torus3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\AlignedBox.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Capsule.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Cone.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Halfspace.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Hyperellipsoid.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Hyperplane.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Hypersphere.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Line.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\OrientedBox.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Ray.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Rectangle.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Segment.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\ND\Triangle.cpp">
+      <Filter>Source Files\Mathematics\Primitives\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Projection\Projection.cpp">
+      <Filter>Source Files\Mathematics\Projection</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\ComputationalGeometry\GPUGenerateMeshUV.cpp">
+      <Filter>Source Files\MathematicsGPU\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2AdjustVelocity.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2ComputeDivergence.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2EnforceStateBoundary.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2InitializeSource.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2InitializeState.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2Parameters.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2SolvePoisson.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid2\GPUFluid2UpdateState.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid2</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3AdjustVelocity.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3ComputeDivergence.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3EnforceStateBoundary.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3InitializeSource.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3InitializeState.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3Parameters.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3SolvePoisson.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="MathematicsGPU\Physics\Fluid3\GPUFluid3UpdateState.cpp">
+      <Filter>Source Files\MathematicsGPU\Physics\Fluid3</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\QFNumber.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\APConversion.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprQuery.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\StringUtility.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW400H12.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW400H14.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW400H16.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW700H12.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW700H14.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW700H16.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Effects\FontArialW700H18.cpp">
+      <Filter>Source Files\Graphics\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Application.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\ConsoleApplication.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Window2.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\Window3.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Common\WindowApplication.cpp">
+      <Filter>Source Files\Applications\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\Console.cpp">
+      <Filter>Source Files\Applications\MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\ConsoleSystem.cpp">
+      <Filter>Source Files\Applications\MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\Window.cpp">
+      <Filter>Source Files\Applications\MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Approximation\ApprParallelLines2.cpp">
+      <Filter>Source Files\Mathematics\Approximation</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\APInterval.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RootsBisection1.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RootsBisection2.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Primitives\3D\ConvexMesh3.cpp">
+      <Filter>Source Files\Mathematics\Primitives\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrConvexMesh3Plane3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIONative.cpp">
+      <Filter>Source Files\Applications\MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RemezAlgorithm.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\RotationEstimate.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Meshes\UniqueVerticesSimplices.cpp">
+      <Filter>Source Files\Mathematics\Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\LowLevel\HashCombine.cpp">
+      <Filter>Source Files\Mathematics\LowLevel</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\ComputationalGeometry\TetrahedraRasterizer.cpp">
+      <Filter>Source Files\Mathematics\ComputationalGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Arithmetic\SWInterval.cpp">
+      <Filter>Source Files\Mathematics\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Intersection\3D\IntrTriangle3Cylinder3.cpp">
+      <Filter>Source Files\Mathematics\Intersection\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\NumericalMethods\LDLTDecomposition.cpp">
+      <Filter>Source Files\Mathematics\NumericalMethods</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\3D\DistOrientedBox3Cone3.cpp">
+      <Filter>Source Files\Mathematics\Distance\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointHyperplane.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Distance\ND\DistPointRectangle.cpp">
+      <Filter>Source Files\Mathematics\Distance\ND</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Miscellaneous\CircleThroughTwoPointsSpecifiedRadius.cpp">
+      <Filter>Source Files\Mathematics\Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathematics\Miscellaneous\CircleThroughPointSpecifiedTangentAndRadius.cpp">
+      <Filter>Source Files\Mathematics\Miscellaneous</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

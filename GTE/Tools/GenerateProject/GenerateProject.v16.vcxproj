@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>15.0</VCProjectVersion>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{019F62EC-B949-4DC6-94C3-0AE8D603526F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GenerateProjectv14</RootNamespace>
+    <RootNamespace>GenerateProject.v16</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -189,15 +189,13 @@ xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(C
   <ItemGroup>
     <ClCompile Include="GenerateProject.cpp" />
     <ClCompile Include="ProjectTemplate.cpp" />
-    <ClCompile Include="ProjectTemplate.v14.cpp" />
-    <ClCompile Include="ProjectTemplate.v15.cpp" />
     <ClCompile Include="ProjectTemplate.v16.cpp" />
+    <ClCompile Include="ProjectTemplate.v17.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProjectTemplate.h" />
-    <ClInclude Include="ProjectTemplate.v14.h" />
-    <ClInclude Include="ProjectTemplate.v15.h" />
     <ClInclude Include="ProjectTemplate.v16.h" />
+    <ClInclude Include="ProjectTemplate.v17.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

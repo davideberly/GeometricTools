@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2022.01.08
 
 #include "ProjectTemplate.v16.h"
 
-TemplateV16::TemplateV16(std::string const& gt4RelativePath)
+TemplateV16::TemplateV16(std::string const& gteRelativePath)
     :
-    Template(gt4RelativePath)
+    Template(gteRelativePath)
 {
 }
 
@@ -29,13 +29,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "_PROJECT_NAME__GRAPHICS_API
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Required", "Required", "{_REQUIRED_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v16", "_GT4_RELATIVE_PATH_GTMathematics.v16.vcxproj", "{_GTMATHEMATICS_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTMathematics.v16", "_GTE_RELATIVE_PATH_GTMathematics.v16.vcxproj", "{_GTMATHEMATICS_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v16", "_GT4_RELATIVE_PATH_GTGraphics.v16.vcxproj", "{_GTGRAPHICS_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics.v16", "_GTE_RELATIVE_PATH_GTGraphics.v16.vcxproj", "{_GTGRAPHICS_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics_GRAPHICS_API_.v16", "_GT4_RELATIVE_PATH_GTGraphics_GRAPHICS_API_.v16.vcxproj", "{_GTGRAPHICSAPI_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTGraphics_GRAPHICS_API_.v16", "_GTE_RELATIVE_PATH_GTGraphics_GRAPHICS_API_.v16.vcxproj", "{_GTGRAPHICSAPI_GUID_}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplications_GRAPHICS_API_.v16", "_GT4_RELATIVE_PATH_GTApplications_GRAPHICS_API_.v16.vcxproj", "{_GTAPPLICATIONSAPI_GUID_}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTApplications_GRAPHICS_API_.v16", "_GTE_RELATIVE_PATH_GTApplications_GRAPHICS_API_.v16.vcxproj", "{_GTAPPLICATIONSAPI_GUID_}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,7 +122,7 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>15.0</VCProjectVersion>
+    <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{_PROJECT_GUID_}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>_PROJECT_NAME_.v16</RootNamespace>
@@ -200,7 +200,7 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;_GRAPHICS_MACRO_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>_GT4_RELATIVE_PATH_.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>_GTE_RELATIVE_PATH_.</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
@@ -219,7 +219,7 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;_GRAPHICS_MACRO_;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>_GT4_RELATIVE_PATH_.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>_GTE_RELATIVE_PATH_.</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
@@ -240,7 +240,7 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;_GRAPHICS_MACRO_;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>_GT4_RELATIVE_PATH_.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>_GTE_RELATIVE_PATH_.</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
@@ -263,7 +263,7 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;_GRAPHICS_MACRO_;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>_GT4_RELATIVE_PATH_.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>_GTE_RELATIVE_PATH_.</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
@@ -285,13 +285,13 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
     <ClInclude Include="_PROJECT_NAME__APPTYPE_.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="_GT4_RELATIVE_PATH_GTApplications_GRAPHICS_API_.v16.vcxproj">
+    <ProjectReference Include="_GTE_RELATIVE_PATH_GTApplications_GRAPHICS_API_.v16.vcxproj">
       <Project>{_GTAPPLICATIONSAPI_GUID_}</Project>
     </ProjectReference>
-    <ProjectReference Include="_GT4_RELATIVE_PATH_GTGraphics.v16.vcxproj">
+    <ProjectReference Include="_GTE_RELATIVE_PATH_GTGraphics.v16.vcxproj">
       <Project>{_GTGRAPHICS_GUID_}</Project>
     </ProjectReference>
-    <ProjectReference Include="_GT4_RELATIVE_PATH_GTGraphics_GRAPHICS_API_.v16.vcxproj">
+    <ProjectReference Include="_GTE_RELATIVE_PATH_GTGraphics_GRAPHICS_API_.v16.vcxproj">
       <Project>{_GTGRAPHICSAPI_GUID_}</Project>
     </ProjectReference>
   </ItemGroup>
