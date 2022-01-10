@@ -1,1 +1,0 @@
-#include <Mathematics/VertexAttribute.h>

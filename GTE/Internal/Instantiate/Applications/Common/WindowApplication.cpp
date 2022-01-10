@@ -1,1 +1,0 @@
-#include <Applications/WindowApplication.h>

@@ -1,1 +1,0 @@
-#include <Mathematics/VETManifoldMesh.h>

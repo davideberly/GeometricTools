@@ -1,1 +1,0 @@
-#include <Graphics/ConstantColorEffect.h>

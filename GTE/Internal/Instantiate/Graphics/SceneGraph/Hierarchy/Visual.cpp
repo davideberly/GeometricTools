@@ -1,1 +1,0 @@
-#include <Graphics/Visual.h>

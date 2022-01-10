@@ -1,1 +1,0 @@
-#include <Graphics/PointLightEffect.h>
