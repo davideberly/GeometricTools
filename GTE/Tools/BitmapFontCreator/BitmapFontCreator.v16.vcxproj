@@ -107,9 +107,8 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -131,9 +130,8 @@ xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(C
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,9 +157,8 @@ xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(C
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -187,9 +184,8 @@ xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(C
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-xcopy /DFYV "$(TargetPath)" "..\..\Executable\$(PlatformToolset)\$(Platform)\$(Configuration)"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
