@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.10
+// Version: 6.1.2022.01.10
 
 #pragma once
 
@@ -11,6 +11,9 @@
 #include <Mathematics/Timer.h>
 #include "PhysicsModule.h"
 using namespace gte;
+
+// This is an implementation of an algorithm in Section 6 of
+// https://www.geometrictools.com/Documentation/RoughPlaneAnalysis.pdf
 
 class RoughPlaneSolidBoxWindow3 : public Window3
 {
