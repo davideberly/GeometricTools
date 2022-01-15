@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.01.14
 
 #pragma once
 
@@ -40,7 +40,7 @@ namespace gte
         }
 
         // Set rigid body state.
-        void SetMass(float mass)
+        void SetMass(Real mass)
         {
             if ((Real)0 < mass && mass < std::numeric_limits<Real>::max())
             {
