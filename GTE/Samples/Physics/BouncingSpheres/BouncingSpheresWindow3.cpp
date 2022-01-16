@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.14
+// Version: 6.1.2022.01.16
 
 #include "BouncingSpheresWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -11,8 +11,6 @@
 #include <Graphics/Texture2Effect.h>
 #include <Graphics/VertexColorEffect.h>
 #include <fstream>
-
-//#define SINGLE_STEP
 
 BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
     :
@@ -24,8 +22,8 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
     mPlaneMesh{},
     mSphereMesh{},
     mPhysicsTimer{},
-    mPhysicsTime(0.0),
-    mPhysicsDeltaTime(0.001)
+    mLastPhysicsTime(0.0),
+    mCurrPhysicsTime(0.0)
 {
     if (!SetEnvironment())
     {
@@ -55,9 +53,7 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
 void BouncingSpheresWindow3::OnIdle()
 {
     mTimer.Measure();
-#if !defined(SINGLE_STEP)
     PhysicsTick();
-#endif
     GraphicsTick();
     mTimer.UpdateFrameCount();
 }
@@ -76,12 +72,6 @@ bool BouncingSpheresWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
         {
             mEngine->SetRasterizerState(mNoCullWireState);
         }
-        return true;
-
-    case ' ':
-#if defined(SINGLE_STEP)
-        PhysicsTick();
-#endif
         return true;
     }
 
@@ -252,8 +242,14 @@ void BouncingSpheresWindow3::CreateWall(
 
 void BouncingSpheresWindow3::PhysicsTick()
 {
-    mModule->DoTick(mPhysicsTime, mPhysicsDeltaTime);
-    mPhysicsTime += mPhysicsDeltaTime;
+    // Execute the physics system at 60 frames per second.
+    mCurrPhysicsTime = mPhysicsTimer.GetSeconds();
+    double physicsDeltaTime = mCurrPhysicsTime - mLastPhysicsTime;
+    if (physicsDeltaTime >= 1.0 / 60.0)
+    {
+        mModule->DoTick(mCurrPhysicsTime, physicsDeltaTime);
+        mLastPhysicsTime = mCurrPhysicsTime;
+    }
 }
 
 void BouncingSpheresWindow3::GraphicsTick()
@@ -300,7 +296,7 @@ void BouncingSpheresWindow3::GraphicsTick()
     std::array<float, 4> black{ 0.0f, 0.0f, 0.0f, 1.0f };
     mEngine->Draw(8, mYSize - 8, black, mTimer.GetFPS());
     mEngine->Draw(90, mYSize - 8, black,
-        std::string("Time = ") + std::to_string(mPhysicsTime));
+        std::string("Time = ") + std::to_string(mCurrPhysicsTime));
 
     mEngine->DisplayColorBuffer(0);
 }

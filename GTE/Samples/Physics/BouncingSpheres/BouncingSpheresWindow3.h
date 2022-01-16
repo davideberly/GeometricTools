@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.14
+// Version: 6.1.2022.01.16
 
 #pragma once
 
@@ -14,6 +14,14 @@
 #include <Mathematics/Timer.h>
 #include "PhysicsModule.h"
 using namespace gte;
+
+// The physics module is implemented based on the algorithms described in my
+// book "Game Physics, 2nd edition" by CRC Press (April 2020). The relevant
+// material is in Section 6.6 Acceleration-Based Constrained Motion. The
+// masses of the spheres are NOT proportional to the volumes of the spheres,
+// which can make portions of the simulation appear to be nonrealistic. Feel
+// free to modify Initial.txt to use masses that are proportional to the
+// volumes.
 
 class BouncingSpheresWindow3 : public Window3
 {
@@ -72,5 +80,5 @@ private:
     std::array<std::shared_ptr<Visual>, NUM_SPHERES> mSphereMesh;
 
     Timer mPhysicsTimer;
-    double mPhysicsTime, mPhysicsDeltaTime;
+    double mLastPhysicsTime, mCurrPhysicsTime;
 };
