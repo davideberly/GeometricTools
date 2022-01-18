@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.01.17
 
 #pragma once
 
@@ -49,7 +49,7 @@ namespace gte
 
         // Get the vertex indices for the specified face. The input 'face'
         // must be in {0,1,2,3}.
-        void GetFaceIndices(size_t face, std::array<int32_t, 3>& index) const
+        static void GetFaceIndices(size_t face, std::array<size_t, 3>& index)
         {
             if (face == 0)
             {
@@ -75,6 +75,11 @@ namespace gte
                 index[1] = 2;
                 index[2] = 3;
             }
+        }
+
+        static std::array<size_t, 12> GetAllFaceIndices()
+        {
+            return std::array<size_t, 12>{ 0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3};
         }
 
         // Construct the planes of the faces. The planes have outer pointing
