@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.01.17
 
 #pragma once
 
@@ -48,7 +48,9 @@ namespace gte
                 Real invSize = (Real)1 / (Real)numIndices;
                 mean *= invSize;
 
-                if (std::isfinite(mean[0]) && std::isfinite(mean[1]))
+                if (std::isfinite(mean[0]) &&
+                    std::isfinite(mean[1]) &&
+                    std::isfinite(mean[2]))
                 {
                     // Compute the covariance matrix of the points.
                     Real covar00 = (Real)0, covar01 = (Real)0, covar02 = (Real)0;
