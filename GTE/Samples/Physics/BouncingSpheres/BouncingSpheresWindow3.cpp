@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.16
+// Version: 6.1.2022.01.26
 
 #include "BouncingSpheresWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -23,7 +23,10 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
     mSphereMesh{},
     mPhysicsTimer{},
     mLastPhysicsTime(0.0),
-    mCurrPhysicsTime(0.0)
+    mCurrPhysicsTime(0.0),
+    mSimulationTime(0.0),
+    mSimulationDeltaTime(0.005),
+    mSingleStep(false)
 {
     if (!SetEnvironment())
     {
@@ -45,7 +48,7 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
 
     CreateScene();
 
-    // Initialize the balls with the correct transformations.
+    // Initialize the spheres with the correct transformations.
     PhysicsTick();
     GraphicsTick();
 }
@@ -53,7 +56,10 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
 void BouncingSpheresWindow3::OnIdle()
 {
     mTimer.Measure();
-    PhysicsTick();
+    if (!mSingleStep)
+    {
+        PhysicsTick();
+    }
     GraphicsTick();
     mTimer.UpdateFrameCount();
 }
@@ -73,6 +79,17 @@ bool BouncingSpheresWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
             mEngine->SetRasterizerState(mNoCullWireState);
         }
         return true;
+
+    case ' ':
+        if (mSingleStep)
+        {
+            PhysicsTick();
+        }
+        return true;
+    case 's':
+    case 'S':
+        mSingleStep = !mSingleStep;
+        return true;
     }
 
     return Window3::OnCharPress(key, x, y);
@@ -91,7 +108,7 @@ bool BouncingSpheresWindow3::SetEnvironment()
 
     std::vector<std::string> inputs =
     {
-        "BallTexture.png",
+        "BallTextureWrap.png",
         "Initial.txt"
     };
 
@@ -115,22 +132,24 @@ void BouncingSpheresWindow3::CreateScene()
 
 void BouncingSpheresWindow3::CreatePhysicsObjects()
 {
-    // The file has 16 lines, each containing
-    //   radius mass pos[0] pos[1] pos[2] linmom[0] linmom[1] linmom[2]
     mModule = std::make_unique<PhysicsModule>(
         NUM_SPHERES, -24.0, 24.0, -24.0, 24.0, 0.0, 40.0);
 
     std::string initialFile = mEnvironment.GetPath("Initial.txt");
     std::ifstream input(initialFile);
-    double radius{}, mass{};
-    Vector3<double> position{}, linearMomentum{};
+    double radius{}, massDensity{};
+    Vector3<double> position{}, linearVelocity{}, angularVelocity{};
+    Quaternion<double> qOrientation{};
     for (size_t i = 0; i < NUM_SPHERES; ++i)
     {
         input >> radius;
-        input >> mass;
+        input >> massDensity;
         input >> position[0] >> position[1] >> position[2];
-        input >> linearMomentum[0] >> linearMomentum[1] >> linearMomentum[2];
-        mModule->InitializeSphere(i, radius, mass, position, linearMomentum);
+        input >> linearVelocity[0] >> linearVelocity[1] >> linearVelocity[2];
+        input >> qOrientation[0] >> qOrientation[1] >> qOrientation[2] >> qOrientation[3];
+        input >> angularVelocity[0] >> angularVelocity[1] >> angularVelocity[2];
+        mModule->InitializeSphere(i, radius, massDensity, position,
+            linearVelocity, qOrientation, angularVelocity);
     }
     input.close();
 }
@@ -195,14 +214,15 @@ void BouncingSpheresWindow3::CreateGraphicsObjects()
     // Create the spheres.
     MeshFactory mf{};
     mf.SetVertexFormat(ptFormat);
-    std::string textureFile = mEnvironment.GetPath("BallTexture.png");
-    auto texture = WICFileIO::Load(textureFile, false);
+    std::string textureFile = mEnvironment.GetPath("BallTextureWrap.png");
+    auto texture = WICFileIO::Load(textureFile, true);
+    texture->AutogenerateMipmaps();
     for (size_t i = 0; i < NUM_SPHERES; ++i)
     {
         float radius = static_cast<float>(mModule->GetSphere(i).radius);
         auto mesh = mf.CreateSphere(16, 16, radius);
         auto effect = std::make_shared<Texture2Effect>(mProgramFactory,
-            texture, SamplerState::Filter::MIN_L_MAG_L_MIP_P,
+            texture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
             SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
         mesh->SetEffect(effect);
         mPVWMatrices.Subscribe(mesh);
@@ -242,12 +262,14 @@ void BouncingSpheresWindow3::CreateWall(
 
 void BouncingSpheresWindow3::PhysicsTick()
 {
-    // Execute the physics system at 60 frames per second.
+    // Execute the physics system at 480 frames per second, but use the
+    // simulation time for a reproducible simulation.
     mCurrPhysicsTime = mPhysicsTimer.GetSeconds();
     double physicsDeltaTime = mCurrPhysicsTime - mLastPhysicsTime;
-    if (physicsDeltaTime >= 1.0 / 60.0)
+    if (physicsDeltaTime >= 1.0 / 480.0)
     {
-        mModule->DoTick(mCurrPhysicsTime, physicsDeltaTime);
+        mModule->DoTick(mSimulationTime, mSimulationDeltaTime);
+        mSimulationTime += mSimulationDeltaTime;
         mLastPhysicsTime = mCurrPhysicsTime;
     }
 }
@@ -267,6 +289,22 @@ void BouncingSpheresWindow3::GraphicsTick()
             static_cast<float>(position[2])
         };
         mSphereMesh[i]->localTransform.SetTranslation(translate);
+
+        Matrix3x3<double> const& orientation = mModule->GetOrientation(i);
+        Matrix3x3<float> rotate{};
+        for (int32_t r = 0; r < 3; ++r)
+        {
+            for (int32_t c = 0; c < 3; ++c)
+            {
+                rotate(r, c) = static_cast<float>(orientation(r, c));
+            }
+        }
+        if (rotate != Matrix3x3<float>::Identity())
+        {
+            int stophere;
+            stophere = 0;
+        }
+        mSphereMesh[i]->localTransform.SetRotation(rotate);
     }
 
     // Update the world transforms of the graphics objects.
@@ -296,7 +334,7 @@ void BouncingSpheresWindow3::GraphicsTick()
     std::array<float, 4> black{ 0.0f, 0.0f, 0.0f, 1.0f };
     mEngine->Draw(8, mYSize - 8, black, mTimer.GetFPS());
     mEngine->Draw(90, mYSize - 8, black,
-        std::string("Time = ") + std::to_string(mCurrPhysicsTime));
+        std::string("Time = ") + std::to_string(mSimulationTime));
 
     mEngine->DisplayColorBuffer(0);
 }

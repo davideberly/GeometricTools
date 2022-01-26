@@ -3,25 +3,22 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.16
+// Version: 6.1.2022.01.26
 
 #pragma once
 
 #include <Applications/Window3.h>
 #include <Mathematics/RigidBody.h>
-#include <Mathematics/Hyperplane.h>
-#include <Mathematics/Hypersphere.h>
 #include <Mathematics/Timer.h>
 #include "PhysicsModule.h"
 using namespace gte;
 
-// The physics module is implemented based on the algorithms described in my
-// book "Game Physics, 2nd edition" by CRC Press (April 2020). The relevant
-// material is in Section 6.6 Acceleration-Based Constrained Motion. The
-// masses of the spheres are NOT proportional to the volumes of the spheres,
-// which can make portions of the simulation appear to be nonrealistic. Feel
-// free to modify Initial.txt to use masses that are proportional to the
-// volumes.
+// The PhysicsModule is an implementation of the collision detection and
+// impulse-based collision response described in "Game Physics, 2nd edition."
+// The code comments have relevant equation numbers from the book. However,
+// the DoCollisionResponse function uses a variation for computing impulses,
+// described in
+//   https://www.geometrictools.com/Documentation/ComputingImpulsiveForces.pdf
 
 class BouncingSpheresWindow3 : public Window3
 {
@@ -81,4 +78,6 @@ private:
 
     Timer mPhysicsTimer;
     double mLastPhysicsTime, mCurrPhysicsTime;
+    double mSimulationTime, mSimulationDeltaTime;
+    bool mSingleStep;
 };

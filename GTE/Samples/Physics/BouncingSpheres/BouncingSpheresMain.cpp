@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.14
+// Version: 6.1.2022.01.26
 
 #include "BouncingSpheresWindow3.h"
 #include <iostream>
@@ -12,7 +12,7 @@ int main()
 {
     try
     {
-        Window::Parameters parameters(L"BouncingSpheresWindow3", 0, 0, 640, 480);
+        Window::Parameters parameters(L"BouncingSpheresWindow3", 0, 0, 1024, 768);
         auto window = TheWindowSystem.Create<BouncingSpheresWindow3>(parameters);
         TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
         TheWindowSystem.Destroy(window);

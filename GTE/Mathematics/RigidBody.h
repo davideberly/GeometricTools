@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.14
+// Version: 6.0.2022.01.26
 
 #pragma once
 
@@ -13,340 +13,494 @@
 
 namespace gte
 {
-    template <typename Real>
-    class RigidBody
+    // The rigid body state is stored in a separate structure so that
+    // the Force and Torque functionals can be passed a single object
+    // to avoid a large number of parameters that would otherwise have
+    // to be passed to the functionals. This makes the Runge-Kutta ODE
+    // solver easier to read. The RigidBody<T> class provides wrappers
+    // around the state accessors to avoid exposing a public state member.
+    template <typename T>
+    class RigidBodyState
     {
     public:
-        // Construction and destruction.  The rigid body state is
-        // uninitialized.  Use the set functions to initialize the state
-        // before starting the simulation.
-        virtual ~RigidBody() = default;
-
-        RigidBody()
+        RigidBodyState()
             :
-            mMass(std::numeric_limits<Real>::max()),
-            mInvMass((Real)0),
-            mInertia(Matrix3x3<Real>::Identity()),
-            mInvInertia(Matrix3x3<Real>::Zero()),
-            mPosition(Vector3<Real>::Zero()),
-            mQuatOrient(Quaternion<Real>::Identity()),
-            mLinearMomentum(Vector3<Real>::Zero()),
-            mAngularMomentum(Vector3<Real>::Zero()),
-            mRotOrient(Matrix3x3<Real>::Identity()),
-            mLinearVelocity(Vector3<Real>::Zero()),
-            mAngularVelocity(Vector3<Real>::Zero())
+            mMass(static_cast<T>(0)),
+            mInvMass(static_cast<T>(0)),
+            mBodyInertia(Matrix3x3<T>::Zero()),
+            mBodyInverseInertia(Matrix3x3<T>::Zero()),
+            mPosition(Vector3<T>::Zero()),
+            mQOrientation(Quaternion<T>::Identity()),
+            mLinearMomentum(Vector3<T>::Zero()),
+            mAngularMomentum(Vector3<T>::Zero()),
+            mWorldInertia(Matrix3x3<T>::Zero()),
+            mWorldInverseInertia(Matrix3x3<T>::Zero()),
+            mROrientation(Matrix3x3<T>::Identity()),
+            mLinearVelocity(Vector3<T>::Zero()),
+            mAngularVelocity(Vector3<T>::Zero()),
+            mQAngularVelocity{}
         {
-            // The default body is immovable.
         }
 
-        // Set rigid body state.
-        void SetMass(Real mass)
+        // Set the mass to a positive number for movable bodies. Set the mass
+        // to zero for immovable objects. A body is immovable in the physics
+        // simulation, but you can position and orient the immovable body
+        // manually, typically during the creation of the physics objects.
+        void SetMass(T mass)
         {
-            if ((Real)0 < mass && mass < std::numeric_limits<Real>::max())
+            T const zero = static_cast<T>(0);
+
+            if (mass > zero)
             {
                 mMass = mass;
-                mInvMass = (Real)1 / mass;
+                mInvMass = static_cast<T>(1) / mass;
             }
             else
             {
-                // Assume the body as immovable.
-                mMass = std::numeric_limits<Real>::max();
-                mInvMass = (Real)0;
-                mInertia = Matrix3x3<Real>::Identity();
-                mInvInertia = Matrix3x3<Real>::Zero();
-                mQuatOrient = Quaternion<Real>::Identity();
-                mLinearMomentum = Vector3<Real>::Zero();
-                mAngularMomentum = Vector3<Real>::Zero();
-                mRotOrient = Matrix3x3<Real>::Identity();
-                mLinearVelocity = Vector3<Real>::Zero();
-                mAngularVelocity = Vector3<Real>::Zero();
+                mMass = zero;
+                mInvMass = zero;
             }
         }
 
-        void SetBodyInertia(Matrix3x3<Real> const& inertia)
+        // Set the body inertia to a positive definite matrix for movable
+        // bodies. Set the body inertia to the zero matrix for immovable
+        // objects, but you can position and orient the immovable body
+        // manually, typically during the creation of the physics objects.
+        void SetBodyInertia(Matrix3x3<T> const& bodyInertia)
         {
-            mInertia = inertia;
-            mInvInertia = Inverse(mInertia);
+            Matrix3x3<T> const zero = Matrix3x3<T>::Zero();
+
+            if (bodyInertia != zero)
+            {
+                mBodyInertia = bodyInertia;
+                mBodyInverseInertia = Inverse(bodyInertia);
+                UpdateWorldInertialQuantities();
+            }
+            else
+            {
+                mBodyInertia = zero;
+                mBodyInverseInertia = zero;
+                mWorldInertia = zero;
+                mWorldInverseInertia = zero;
+            }
         }
 
-        inline void SetPosition(Vector3<Real> const& position)
+        inline bool IsMovable() const
+        {
+            return mMass > static_cast<T>(0);
+        }
+
+        inline bool IsImmovable() const
+        {
+            return mMass == static_cast<T>(0);
+        }
+
+        inline void SetPosition(Vector3<T> const& position)
         {
             mPosition = position;
         }
 
-        void SetQOrientation(Quaternion<Real> const& quatOrient)
+        void SetQOrientation(Quaternion<T> const& qOrientation, bool normalize = false)
         {
-            mQuatOrient = quatOrient;
-            mRotOrient = Rotation<3, Real>(mQuatOrient);
+            mQOrientation = qOrientation;
+            if (normalize)
+            {
+                Normalize(mQOrientation);
+            }
+
+            mROrientation = Rotation<3, T>(qOrientation);
+            if (IsMovable())
+            {
+                UpdateWorldInertialQuantities();
+            }
         }
 
-        void SetLinearMomentum(Vector3<Real> const& linearMomentum)
+        void SetLinearMomentum(Vector3<T> const& linearMomentum)
         {
-            mLinearMomentum = linearMomentum;
-            mLinearVelocity = mInvMass * mLinearMomentum;
+            if (IsMovable())
+            {
+                mLinearMomentum = linearMomentum;
+                mLinearVelocity = mInvMass * linearMomentum;
+            }
         }
 
-        void SetAngularMomentum(Vector3<Real> const& angularMomentum)
+        void SetAngularMomentum(Vector3<T> const& angularMomentum)
         {
-            mAngularMomentum = angularMomentum;
-
-            // V = R^T*M
-            mAngularVelocity = mAngularMomentum * mRotOrient;
-
-            // V = J^{-1}*R^T*M
-            mAngularVelocity = mInvInertia * mAngularVelocity;
-
-            // V = R*J^{-1}*R^T*M
-            mAngularVelocity = mRotOrient * mAngularVelocity;
+            if (IsMovable())
+            {
+                mAngularMomentum = angularMomentum;
+                mAngularVelocity = mWorldInverseInertia * angularMomentum;
+                mQAngularVelocity[0] = mAngularVelocity[0];
+                mQAngularVelocity[1] = mAngularVelocity[1];
+                mQAngularVelocity[2] = mAngularVelocity[2];
+                mQAngularVelocity[3] = static_cast<T>(0);
+            }
         }
 
-        void SetROrientation(Matrix3x3<Real> const& rotOrient)
+        void SetROrientation(Matrix3x3<T> const& rOrientation)
         {
-            mRotOrient = rotOrient;
-            mQuatOrient = Rotation<3, Real>(mRotOrient);
+            mROrientation = rOrientation;
+            mQOrientation = Rotation<3, T>(rOrientation);
+            if (IsMovable())
+            {
+                UpdateWorldInertialQuantities();
+            }
         }
 
-        void SetLinearVelocity(Vector3<Real> const& linearVelocity)
+        void SetLinearVelocity(Vector3<T> const& linearVelocity)
         {
-            mLinearVelocity = linearVelocity;
-            mLinearMomentum = mMass * mLinearVelocity;
+            if (IsMovable())
+            {
+                mLinearVelocity = linearVelocity;
+                mLinearMomentum = mMass * linearVelocity;
+            }
         }
 
-        void SetAngularVelocity(Vector3<Real> const& angularVelocity)
+        void SetAngularVelocity(Vector3<T> const& angularVelocity)
         {
-            mAngularVelocity = angularVelocity;
-
-            // M = R^T*V
-            mAngularMomentum = mAngularVelocity * mRotOrient;
-
-            // M = J*R^T*V
-            mAngularMomentum = mInertia * mAngularMomentum;
-
-            // M = R*J*R^T*V
-            mAngularMomentum = mRotOrient * mAngularMomentum;
+            if (IsMovable())
+            {
+                mAngularVelocity = angularVelocity;
+                mAngularMomentum = mWorldInertia * angularVelocity;
+                mQAngularVelocity[0] = mAngularVelocity[0];
+                mQAngularVelocity[1] = mAngularVelocity[1];
+                mQAngularVelocity[2] = mAngularVelocity[2];
+                mQAngularVelocity[3] = static_cast<T>(0);
+            }
         }
 
-        // Get rigid body state.
-        inline Real GetMass() const
+        inline T const& GetMass() const
         {
             return mMass;
         }
 
-        inline Real GetInverseMass() const
+        inline T const& GetInverseMass() const
         {
             return mInvMass;
         }
 
-        inline Matrix3x3<Real> const& GetBodyInertia() const
+        inline Matrix3x3<T> const& GetBodyInertia() const
         {
-            return mInertia;
+            return mBodyInertia;
         }
 
-        inline Matrix3x3<Real> const& GetBodyInverseInertia() const
+        inline Matrix3x3<T> const& GetBodyInverseInertia() const
         {
-            return mInvInertia;
+            return mBodyInverseInertia;
         }
 
-        Matrix3x3<Real> GetWorldInertia() const
+        inline Matrix3x3<T> const& GetWorldInertia() const
         {
-            return MultiplyABT(mRotOrient * mInertia, mRotOrient);  // R*J*R^T
+            return mWorldInertia;
         }
 
-        Matrix3x3<Real> GetWorldInverseInertia() const
+        inline Matrix3x3<T> const& GetWorldInverseInertia() const
         {
-            // R*J^{-1}*R^T
-            return MultiplyABT(mRotOrient * mInvInertia, mRotOrient);
+            return mWorldInverseInertia;
         }
 
-        inline Vector3<Real> const& GetPosition() const
+        inline Vector3<T> const& GetPosition() const
         {
             return mPosition;
         }
 
-        Quaternion<Real> const& GetQOrientation() const
+        inline Quaternion<T> const& GetQOrientation() const
         {
-            return mQuatOrient;
+            return mQOrientation;
         }
 
-        inline Vector3<Real> const& GetLinearMomentum() const
+        inline Vector3<T> const& GetLinearMomentum() const
         {
             return mLinearMomentum;
         }
 
-        inline Vector3<Real> const& GetAngularMomentum() const
+        inline Vector3<T> const& GetAngularMomentum() const
         {
             return mAngularMomentum;
         }
 
-        inline Matrix3x3<Real> const& GetROrientation() const
+        inline Matrix3x3<T> const& GetROrientation() const
         {
-            return mRotOrient;
+            return mROrientation;
         }
 
-        inline Vector3<Real> const& GetLinearVelocity() const
+        inline Vector3<T> const& GetLinearVelocity() const
         {
             return mLinearVelocity;
         }
 
-        inline Vector3<Real> const& GetAngularVelocity() const
+        inline Vector3<T> const& GetAngularVelocity() const
         {
             return mAngularVelocity;
         }
 
-        // Force/torque function format.
-        typedef std::function
-            <
-            Vector3<Real>
-            (
-                Real,                       // time of application
-                Real,                       // mass
-                Vector3<Real> const&,       // position
-                Quaternion<Real> const&,    // orientation
-                Vector3<Real> const&,       // linear momentum
-                Vector3<Real> const&,       // angular momentum
-                Matrix3x3<Real> const&,     // orientation
-                Vector3<Real> const&,       // linear velocity
-                Vector3<Real> const&        // angular velocity
-                )
-            >
-            Function;
+        inline Quaternion<T> const& GetQAngularVelocity() const
+        {
+            return mQAngularVelocity;
+        }
 
-        // Force and torque functions.
-        Function mForce;
-        Function mTorque;
+    private:
+        void UpdateWorldInertialQuantities()
+        {
+            mWorldInertia = MultiplyABT(
+                mROrientation * mBodyInertia, mROrientation);
+
+            mWorldInverseInertia = MultiplyABT(
+                mROrientation * mBodyInverseInertia, mROrientation);
+        }
+
+        // Constant quantities during the simulation.
+        T mMass;
+        T mInvMass;
+        Matrix3x3<T> mBodyInertia;
+        Matrix3x3<T> mBodyInverseInertia;
+
+        // State variables in the differential equations of motion.
+        Vector3<T> mPosition;
+        Quaternion<T> mQOrientation;
+        Vector3<T> mLinearMomentum;
+        Vector3<T> mAngularMomentum;
+
+        // Quantities derived from the state variables.
+        Matrix3x3<T> mWorldInertia;
+        Matrix3x3<T> mWorldInverseInertia;
+        Matrix3x3<T> mROrientation;
+        Vector3<T> mLinearVelocity;
+        Vector3<T> mAngularVelocity;
+        Quaternion<T> mQAngularVelocity;
+    };
+
+    template <typename T>
+    class RigidBody
+    {
+    public:
+        // The rigid body state is initialized to zero values. Set the members
+        // before starting the simulation. For immovable objects, set mass to
+        // zero.
+        RigidBody()
+            :
+            Force{},
+            Torque{},
+            mState{}
+        {
+        }
+
+        virtual ~RigidBody() = default;
+
+        // Set the mass to a positive number for movable bodies. Set the mass
+        // to zero for immovable objects. A body is immovable in the physics
+        // simulation, but you can position and orient the immovable body
+        // manually, typically during the creation of the physics objects.
+        inline void SetMass(T mass)
+        {
+            mState.SetMass(mass);
+        }
+
+        // Set the body inertia to a positive definite matrix for movable
+        // bodies. Set the body inertia to the zero matrix for immovable
+        // objects, but you can position and orient the immovable body
+        // manually, typically during the creation of the physics objects.
+        inline void SetBodyInertia(Matrix3x3<T> const& bodyInertia)
+        {
+            mState.SetBodyInertia(bodyInertia);
+        }
+
+        inline bool IsMovable() const
+        {
+            return mState.IsMovable();
+        }
+
+        inline bool IsImmovable() const
+        {
+            return mState.IsImmovable();
+        }
+
+        inline void SetPosition(Vector3<T> const& position)
+        {
+            mState.SetPosition(position);
+        }
+
+        inline void SetQOrientation(Quaternion<T> const& qOrientation, bool normalize = false)
+        {
+            mState.SetQOrientation(qOrientation, normalize);
+        }
+
+        inline void SetLinearMomentum(Vector3<T> const& linearMomentum)
+        {
+            mState.SetLinearMomentum(linearMomentum);
+        }
+
+        inline void SetAngularMomentum(Vector3<T> const& angularMomentum)
+        {
+            mState.SetAngularMomentum(angularMomentum);
+        }
+
+        inline void SetROrientation(Matrix3x3<T> const& rOrientation)
+        {
+            mState.SetROrientation(rOrientation);
+        }
+
+        inline void SetLinearVelocity(Vector3<T> const& linearVelocity)
+        {
+            mState.SetLinearMomentum(linearVelocity);
+        }
+
+        inline void SetAngularVelocity(Vector3<T> const& angularVelocity)
+        {
+            mState.SetAngularVelocity(angularVelocity);
+        }
+
+        inline T const& GetMass() const
+        {
+            return mState.GetMass();
+        }
+
+        inline T const& GetInverseMass() const
+        {
+            return mState.GetInverseMass();
+        }
+
+        inline Matrix3x3<T> const& GetBodyInertia() const
+        {
+            return mState.GetBodyInertia();
+        }
+
+        inline Matrix3x3<T> const& GetBodyInverseInertia() const
+        {
+            return mState.GetBodyInverseInertia();
+        }
+
+        inline Matrix3x3<T> const& GetWorldInertia() const
+        {
+            return mState.GetWorldInertia();
+        }
+
+        inline Matrix3x3<T> const& GetWorldInverseInertia() const
+        {
+            return mState.GetWorldInverseInertia();
+        }
+
+        inline Vector3<T> const& GetPosition() const
+        {
+            return mState.GetPosition();
+        }
+
+        inline Quaternion<T> const& GetQOrientation() const
+        {
+            return mState.GetQOrientation();
+        }
+
+        inline Vector3<T> const& GetLinearMomentum() const
+        {
+            return mState.GetLinearMomentum();
+        }
+
+        inline Vector3<T> const& GetAngularMomentum() const
+        {
+            return mState.GetAngularMomentum();
+        }
+
+        inline Matrix3x3<T> const& GetROrientation() const
+        {
+            return mState.GetROrientation();
+        }
+
+        inline Vector3<T> const& GetLinearVelocity() const
+        {
+            return mState.GetLinearVelocity();
+        }
+
+        inline Vector3<T> const& GetAngularVelocity() const
+        {
+            return mState.GetAngularVelocity();;
+        }
+
+        inline Quaternion<T> const& GetQAngularVelocity() const
+        {
+            return mState.GetQAngularVelocity();
+        }
+
+        // Force and torque functions. The first input (type T) is the
+        // simulation time. The second input is rigid body state. These
+        // functions must be set before starting the simulation.
+        using Function = std::function<Vector3<T>(T, RigidBodyState<T> const&)>;
+        Function Force;
+        Function Torque;
 
         // Runge-Kutta fourth-order differential equation solver
-        void Update(Real t, Real dt)
+        void Update(T const& t, T const& dt)
         {
             // TODO: When GTE_MAT_VEC is not defined (i.e. use vec-mat),
             // test to see whether dq/dt = 0.5 * w * q (mat-vec convention)
             // needs to become a different equation.
-            Real halfDT = (Real)0.5 * dt;
-            Real sixthDT = dt / (Real)6;
-            Real TpHalfDT = t + halfDT;
-            Real TpDT = t + dt;
 
-            Vector3<Real> newPosition, newLinearMomentum, newAngularMomentum;
-            Vector3<Real> newLinearVelocity, newAngularVelocity;
-            Quaternion<Real> newQuatOrient;
-            Matrix3x3<Real> newRotOrient;
+            T const half = static_cast<T>(0.5);
+            T const two = static_cast<T>(2);
+            T const six = static_cast<T>(6);
+
+            T halfDT = half * dt;
+            T sixthDT = dt / six;
+            T TpHalfDT = t + halfDT;
+            T TpDT = t + dt;
+
+            RigidBodyState<T> newState{};
+            newState.SetMass(GetMass());
+            newState.SetBodyInertia(GetBodyInertia());
 
             // A1 = G(T,S0), B1 = S0 + (DT/2)*A1
-            Vector3<Real> A1DXDT = mLinearVelocity;
-            Quaternion<Real> W = Quaternion<Real>(mAngularVelocity[0],
-                mAngularVelocity[1], mAngularVelocity[2], (Real)0);
-            Quaternion<Real> A1DQDT = (Real)0.5 * W * mQuatOrient;
-
-            Vector3<Real> A1DPDT = mForce(t, mMass, mPosition, mQuatOrient,
-                mLinearMomentum, mAngularMomentum, mRotOrient, mLinearVelocity,
-                mAngularVelocity);
-
-            Vector3<Real> A1DLDT = mTorque(t, mMass, mPosition, mQuatOrient,
-                mLinearMomentum, mAngularMomentum, mRotOrient, mLinearVelocity,
-                mAngularVelocity);
-
-            newPosition = mPosition + halfDT * A1DXDT;
-            newQuatOrient = mQuatOrient + halfDT * A1DQDT;
-            Normalize(newQuatOrient);
-            newLinearMomentum = mLinearMomentum + halfDT * A1DPDT;
-            newAngularMomentum = mAngularMomentum + halfDT * A1DLDT;
-            newRotOrient = Rotation<3, Real>(newQuatOrient);
-            newLinearVelocity = mInvMass * newLinearMomentum;
-            newAngularVelocity = newAngularMomentum * newRotOrient;
-            newAngularVelocity = mInvInertia * newAngularVelocity;
-            newAngularVelocity = newRotOrient * newAngularVelocity;
+            Vector3<T> A1DXDT = GetLinearVelocity();
+            Quaternion<T> W = GetQAngularVelocity();
+            Quaternion<T> A1DQDT = half * W * GetQOrientation();
+            Vector3<T> A1DPDT = Force(t, mState);
+            Vector3<T> A1DLDT = Torque(t, mState);
+            newState.SetPosition(GetPosition() + halfDT * A1DXDT);
+            newState.SetQOrientation(GetQOrientation() + halfDT * A1DQDT, true);
+            newState.SetLinearMomentum(GetLinearMomentum() + halfDT * A1DPDT);
+            newState.SetAngularMomentum(GetAngularMomentum() + halfDT * A1DLDT);
 
             // A2 = G(T+DT/2,B1), B2 = S0 + (DT/2)*A2
-            Vector3<Real> A2DXDT = newLinearVelocity;
-            W = Quaternion<Real>(newAngularVelocity[0], newAngularVelocity[1],
-                newAngularVelocity[2], (Real)0);
-            Quaternion<Real> A2DQDT = (Real)0.5 * W * newQuatOrient;
-
-            Vector3<Real> A2DPDT = mForce(TpHalfDT, mMass, newPosition,
-                newQuatOrient, newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
-
-            Vector3<Real> A2DLDT = mTorque(TpHalfDT, mMass, newPosition,
-                newQuatOrient, newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
-
-            newPosition = mPosition + halfDT * A2DXDT;
-            newQuatOrient = mQuatOrient + halfDT * A2DQDT;
-            Normalize(newQuatOrient);
-            newLinearMomentum = mLinearMomentum + halfDT * A2DPDT;
-            newAngularMomentum = mAngularMomentum + halfDT * A2DLDT;
-            newRotOrient = Rotation<3, Real>(newQuatOrient);
-            newLinearVelocity = mInvMass * newLinearMomentum;
-            newAngularVelocity = newAngularMomentum * newRotOrient;
-            newAngularVelocity = mInvInertia * newAngularVelocity;
-            newAngularVelocity = newRotOrient * newAngularVelocity;
+            Vector3<T> A2DXDT = newState.GetLinearVelocity();
+            W = newState.GetQAngularVelocity();
+            Quaternion<T> A2DQDT = half * W * newState.GetQOrientation();
+            Vector3<T> A2DPDT = Force(TpHalfDT, newState);
+            Vector3<T> A2DLDT = Torque(TpHalfDT, newState);
+            newState.SetPosition(GetPosition() + halfDT * A2DXDT);
+            newState.SetQOrientation(GetQOrientation() + halfDT * A2DQDT, true);
+            newState.SetLinearMomentum(GetLinearMomentum() + halfDT * A2DPDT);
+            newState.SetAngularMomentum(GetAngularMomentum() + halfDT * A2DLDT);
 
             // A3 = G(T+DT/2,B2), B3 = S0 + DT*A3
-            Vector3<Real> A3DXDT = newLinearVelocity;
-            W = Quaternion<Real>(newAngularVelocity[0], newAngularVelocity[1],
-                newAngularVelocity[2], (Real)0);
-            Quaternion<Real> A3DQDT = (Real)0.5 * W * newQuatOrient;
-
-            Vector3<Real> A3DPDT = mForce(TpHalfDT, mMass, newPosition,
-                newQuatOrient, newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
-
-            Vector3<Real> A3DLDT = mTorque(TpHalfDT, mMass, newPosition,
-                newQuatOrient, newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
-
-            newPosition = mPosition + dt * A3DXDT;
-            newQuatOrient = mQuatOrient + dt * A3DQDT;
-            Normalize(newQuatOrient);
-            newLinearMomentum = mLinearMomentum + dt * A3DPDT;
-            newAngularMomentum = mAngularMomentum + dt * A3DLDT;
-            newRotOrient = Rotation<3, Real>(newQuatOrient);
-            newLinearVelocity = mInvMass * newLinearMomentum;
-            newAngularVelocity = newAngularMomentum * newRotOrient;
-            newAngularVelocity = mInvInertia * newAngularVelocity;
-            newAngularVelocity = newRotOrient * newAngularVelocity;
+            Vector3<T> A3DXDT = newState.GetLinearVelocity();
+            W = newState.GetQAngularVelocity();
+            Quaternion<T> A3DQDT = half * W * newState.GetQOrientation();
+            Vector3<T> A3DPDT = Force(TpHalfDT, newState);
+            Vector3<T> A3DLDT = Torque(TpHalfDT, newState);
+            newState.SetPosition(GetPosition() + dt * A3DXDT);
+            newState.SetQOrientation(GetQOrientation() + dt * A3DQDT, true);
+            newState.SetLinearMomentum(GetLinearMomentum() + dt * A3DPDT);
+            newState.SetAngularMomentum(GetAngularMomentum() + dt * A3DLDT);
 
             // A4 = G(T+DT,B3), S1 = S0 + (DT/6)*(A1+2*(A2+A3)+A4)
-            Vector3<Real> A4DXDT = newLinearVelocity;
-            W = Quaternion<Real>(newAngularVelocity[0], newAngularVelocity[1],
-                newAngularVelocity[2], (Real)0);
-            Quaternion<Real> A4DQDT = (Real)0.5 * W * newQuatOrient;
+            Vector3<T> A4DXDT = newState.GetLinearVelocity();
+            W = newState.GetQAngularVelocity();
+            Quaternion<T> A4DQDT = half * W * newState.GetQOrientation();
+            Vector3<T> A4DPDT = Force(TpDT, newState);
+            Vector3<T> A4DLDT = Torque(TpDT, newState);
 
-            Vector3<Real> A4DPDT = mForce(TpDT, mMass, newPosition,
-                newQuatOrient, newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
+            SetPosition(GetPosition() +
+                sixthDT * (A1DXDT + two * (A2DXDT + A3DXDT) + A4DXDT));
 
-            Vector3<Real> A4DLDT = mTorque(TpDT, mMass, newPosition, newQuatOrient,
-                newLinearMomentum, newAngularMomentum, newRotOrient,
-                newLinearVelocity, newAngularVelocity);
+            SetQOrientation(GetQOrientation() +
+                sixthDT * (A1DQDT + two * (A2DQDT + A3DQDT) + A4DQDT), true);
 
-            mPosition += sixthDT * (A1DXDT + (Real)2 * (A2DXDT + A3DXDT) + A4DXDT);
-            mQuatOrient += sixthDT * (A1DQDT + (Real)2 * (A2DQDT + A3DQDT) + A4DQDT);
-            mLinearMomentum += sixthDT * (A1DPDT + (Real)2 * (A2DPDT + A3DPDT) + A4DPDT);
-            mAngularMomentum += sixthDT * (A1DLDT + (Real)2 * (A2DLDT + A3DLDT) + A4DLDT);
+            SetLinearMomentum(GetLinearMomentum() +
+                sixthDT * (A1DPDT + two * (A2DPDT + A3DPDT) + A4DPDT));
 
-            Normalize(mQuatOrient);
-            mRotOrient = Rotation<3, Real>(mQuatOrient);
-            mLinearVelocity = mInvMass * mLinearMomentum;
-            mAngularVelocity = mAngularMomentum * mRotOrient;
-            mAngularVelocity = mInvInertia * mAngularVelocity;
-            mAngularVelocity = mRotOrient * mAngularVelocity;
+            SetAngularMomentum(GetAngularMomentum() +
+                sixthDT * (A1DLDT + two * (A2DLDT + A3DLDT) + A4DLDT));
         }
 
-    protected:
-        // Constant quantities (matrices in body coordinates).
-        Real mMass, mInvMass;
-        Matrix3x3<Real> mInertia, mInvInertia;
-
-        // State variables.
-        Vector3<Real> mPosition;
-        Quaternion<Real> mQuatOrient;
-        Vector3<Real> mLinearMomentum;
-        Vector3<Real> mAngularMomentum;
-
-        // Derived state variables.
-        Matrix3x3<Real> mRotOrient;
-        Vector3<Real> mLinearVelocity;
-        Vector3<Real> mAngularVelocity;
+    private:
+        RigidBodyState<T> mState;
     };
 }

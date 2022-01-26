@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.14
+// Version: 6.1.2022.01.26
 
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/Hypersphere.h>
@@ -11,6 +11,13 @@
 #include <memory>
 #include <vector>
 using namespace gte;
+
+// The PhysicsModule is an implementation of the collision detection and
+// impulse-based collision response described in "Game Physics, 2nd edition."
+// The code comments have relevant equation numbers from the book. However,
+// the DoCollisionResponse function uses a variation for computing impulses,
+// described in
+//   https://www.geometrictools.com/Documentation/ComputingImpulsiveForces.pdf
 
 class PhysicsModule
 {
@@ -20,8 +27,9 @@ public:
 
     // This function must be called for each of the numSpheres sphere objects
     // before starting the simulation.
-    void InitializeSphere(size_t i, double radius, double mass,
-        Vector3<double> const& position, Vector3<double> const& linearMomentum);
+    void InitializeSphere(size_t i, double radius, double massDensity,
+        Vector3<double> const& position, Vector3<double> const& linearVelocity,
+        Quaternion<double> const& qOrientation, Vector3<double> const& angularVelocity);
 
     inline size_t GetNumSpheres() const
     {
@@ -48,6 +56,11 @@ public:
         return mSphere[i];
     }
 
+    inline Matrix3x3<double> const& GetOrientation(size_t i) const
+    {
+        return mRigidSphere[i]->GetROrientation();
+    }
+
     // Execute the physics simulation. The caller of this function maintains
     // the physics clock.
     void DoTick(double time, double deltaTime);
@@ -55,10 +68,12 @@ public:
 private:
     // Support for the physics simulation including the external forces
     // (Force function) and torques (Torque function). TODO: Make the force
-    // and torque/ functions of type std::function? This requires modifying
+    // and torque functions of type std::function? This requires modifying
     // the RigidBody class.
     struct Contact
     {
+        // The details for a colliding contact point are described in
+        // Section 6.2.2 of "Game Physics, 2nd edition."
         Contact()
             :
             A{},
@@ -68,54 +83,26 @@ private:
         {
         }
 
-        // ball containing face
+        // Body A is a sphere for a sphere-sphere contact.
         std::shared_ptr<RigidBody<double>> A;
 
-        // ball containing vertex
+        // Body B is a sphere for a sphere-sphere contact or the plane
+        // for a sphere-plane contact.
         std::shared_ptr<RigidBody<double>> B;
 
-        // contact point
+        // The intersection point for a sphere-sphere contact or for a
+        // sphere-plane contact.
         Vector3<double> P;
 
-        // outward unit-length normal to face
+        // The outward unit-length normal to the face at the contact
+        // point. It is a sphere normal for a sphere-sphere contact
+        // or the plane normal for a sphere-plane contact.
         Vector3<double> N;
     };
-
-    void SetPlaneContact(size_t sIndex, size_t bIndex,
-        Vector3<double> const& spherePosition, double radius,
-        Contact& contact);
 
     void DoCollisionDetection();
 
     void DoCollisionResponse(double time, double deltaTime);
-
-    void ComputePreimpulseVelocity(std::vector<double>& preRelVelocities);
-
-    void ComputeImpulseMagnitude(std::vector<double>& preRelVelocities,
-        std::vector<double>& impulseMagnitudes);
-
-    static Vector3<double> Force(
-        double time,
-        double mass,
-        Vector3<double> const& position,
-        Quaternion<double> const& quatOrient,
-        Vector3<double> const& linearMomentum,
-        Vector3<double> const& angularMomentum,
-        Matrix3x3<double> const& rotOrient,
-        Vector3<double> const& linearVelocity,
-        Vector3<double> const& angularVelocity);
-
-    static Vector3<double> Torque(
-        double time,
-        double mass,
-        Vector3<double> const& position,
-        Quaternion<double> const& quatOrient,
-        Vector3<double> const& linearMomentum,
-        Vector3<double> const& angularMomentum,
-        Matrix3x3<double> const& rotOrient,
-        Vector3<double> const& linearVelocity,
-        Vector3<double> const& angularVelocity);
-
 
     // Physical representations of solid spheres. The rigid spheres are the
     // rigid bodies that move.
@@ -138,5 +125,5 @@ private:
     std::array<Plane3<double>, 6> mPlane;
 
     // Contact points during one pass of the physical simulation.
-    std::vector<Contact> mPlaneContact;
+    std::vector<Contact> mContacts;
 };
