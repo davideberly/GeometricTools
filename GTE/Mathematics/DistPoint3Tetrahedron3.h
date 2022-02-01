@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.30
+// Version: 6.0.2022.02.01
 
 #pragma once
 
@@ -98,17 +98,10 @@ namespace gte
             }
             result.distance = std::sqrt(result.sqrDistance);
 
-            // GTL has a new interface for ComputeBarycentrics that takes a
-            // barycentric argument of type std::array<T, 4>. This avoids the
-            // unnecessary copy here.
-            T barycentric[4] = { zero, zero, zero, zero };
-            ComputeBarycentrics(result.closest[1], tetrahedron.v[0],
+            std::array<T, 4> barycentric{};
+            (void)ComputeBarycentrics(result.closest[1], tetrahedron.v[0],
                 tetrahedron.v[1], tetrahedron.v[2], tetrahedron.v[3],
-                barycentric, zero);
-            for (size_t i = 0; i < 4; ++i)
-            {
-                result.barycentric[i] = barycentric[i];
-            }
+                barycentric);
 
             return result;
         }

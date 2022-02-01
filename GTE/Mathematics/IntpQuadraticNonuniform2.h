@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.02.01
 
 #pragma once
 
@@ -120,7 +120,12 @@ namespace gte
                     sub2 = tData.intersect[lookup];
                 }
 
-                bool valid = ComputeBarycentrics(P, sub0, sub1, sub2, &bary[0]);
+                std::array<Real, 3> localBary{};
+                bool valid = ComputeBarycentrics(P, sub0, sub1, sub2, localBary);
+                for (int32_t k = 0; k < 3; ++k)
+                {
+                    bary[k] = localBary[k];
+                }
                 if (valid
                     && zero <= bary[0] && bary[0] <= one
                     && zero <= bary[1] && bary[1] <= one

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.02.01
 
 #pragma once
 
@@ -107,7 +107,7 @@ namespace gte
                     }
                 };
 
-                RationalType rtBary[4];
+                std::array<RationalType, 4> rtBary{};
                 if (ComputeBarycentrics(rtP, rtV[0], rtV[1], rtV[2], rtV[3], rtBary))
                 {
                     for (int32_t i = 0; i < 4; ++i)
