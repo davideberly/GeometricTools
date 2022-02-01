@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.01.31
 
 #pragma once
 
 #include <Mathematics/Vector.h>
+#include <array>
 
 namespace gte
 {
@@ -101,26 +102,22 @@ namespace gte
     template <typename Real>
     bool ComputeBarycentrics(Vector3<Real> const& p, Vector3<Real> const& v0,
         Vector3<Real> const& v1, Vector3<Real> const& v2, Vector3<Real> const& v3,
-        Real bary[4], Real epsilon = (Real)0)
+        std::array<Real, 4>& bary, Real epsilon = static_cast<Real>(0))
     {
         // Compute the vectors relative to V3 of the tetrahedron.
-        Vector3<Real> diff[4] = { v0 - v3, v1 - v3, v2 - v3, p - v3 };
+        std::array<Vector3<Real>, 4> diff = { v0 - v3, v1 - v3, v2 - v3, p - v3 };
 
         Real det = DotCross(diff[0], diff[1], diff[2]);
         if (det < -epsilon || det > epsilon)
         {
-            Real invDet = ((Real)1) / det;
-            bary[0] = DotCross(diff[3], diff[1], diff[2]) * invDet;
-            bary[1] = DotCross(diff[3], diff[2], diff[0]) * invDet;
-            bary[2] = DotCross(diff[3], diff[0], diff[1]) * invDet;
-            bary[3] = (Real)1 - bary[0] - bary[1] - bary[2];
+            bary[0] = DotCross(diff[3], diff[1], diff[2]) / det;
+            bary[1] = DotCross(diff[3], diff[2], diff[0]) / det;
+            bary[2] = DotCross(diff[3], diff[0], diff[1]) / det;
+            bary[3] = static_cast<Real>(1) - bary[0] - bary[1] - bary[2];
             return true;
         }
 
-        for (int32_t i = 0; i < 4; ++i)
-        {
-            bary[i] = (Real)0;
-        }
+        bary.fill(static_cast<Real>(0));
         return false;
     }
 
@@ -159,7 +156,8 @@ namespace gte
                 // Compute the axis-aligned bounding box for the input vectors.
                 // Keep track of the indices into 'vectors' for the current
                 // min and max.
-                int32_t j, indexMin[3], indexMax[3];
+                int32_t j{};
+                std::array<int32_t, 3> indexMin{}, indexMax{};
                 for (j = 0; j < 3; ++j)
                 {
                     min[j] = v[0][j];

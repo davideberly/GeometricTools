@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.01.31
 
 #pragma once
 
 #include <Mathematics/Vector.h>
+#include <array>
 
 namespace gte
 {
@@ -68,26 +69,22 @@ namespace gte
     // zero when the return value is 'false'.
     template <typename Real>
     bool ComputeBarycentrics(Vector2<Real> const& p, Vector2<Real> const& v0,
-        Vector2<Real> const& v1, Vector2<Real> const& v2, Real bary[3],
-        Real epsilon = (Real)0)
+        Vector2<Real> const& v1, Vector2<Real> const& v2,
+        std::array<Real, 3>& bary, Real epsilon = static_cast<Real>(0))
     {
         // Compute the vectors relative to V2 of the triangle.
-        Vector2<Real> diff[3] = { v0 - v2, v1 - v2, p - v2 };
+        std::array<Vector2<Real>, 3> diff = { v0 - v2, v1 - v2, p - v2 };
 
         Real det = DotPerp(diff[0], diff[1]);
         if (det < -epsilon || det > epsilon)
         {
-            Real invDet = (Real)1 / det;
-            bary[0] = DotPerp(diff[2], diff[1]) * invDet;
-            bary[1] = DotPerp(diff[0], diff[2]) * invDet;
-            bary[2] = (Real)1 - bary[0] - bary[1];
+            bary[0] = DotPerp(diff[2], diff[1]) / det;
+            bary[1] = DotPerp(diff[0], diff[2]) / det;
+            bary[2] = static_cast<Real>(1) - bary[0] - bary[1];
             return true;
         }
 
-        for (int32_t i = 0; i < 3; ++i)
-        {
-            bary[i] = (Real)0;
-        }
+        bary.fill(static_cast<Real>(0));
         return false;
     }
 
@@ -122,7 +119,8 @@ namespace gte
                 // Compute the axis-aligned bounding box for the input
                 // vectors.  Keep track of the indices into 'vectors' for the
                 // current min and max.
-                int32_t j, indexMin[2], indexMax[2];
+                int32_t j{};
+                std::array<int32_t, 2> indexMin{}, indexMax{};
                 for (j = 0; j < 2; ++j)
                 {
                     min[j] = v[0][j];
