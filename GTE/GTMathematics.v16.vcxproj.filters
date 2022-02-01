@@ -1503,5 +1503,11 @@
     <ClInclude Include="Mathematics\CircleThroughPointSpecifiedTangentAndRadius.h">
       <Filter>Miscellaneous</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\ContTetrahedron3.h">
+      <Filter>Containment</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

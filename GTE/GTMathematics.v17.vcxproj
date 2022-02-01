@@ -96,6 +96,7 @@
     <ClInclude Include="Mathematics\ContScribeCircle2.h" />
     <ClInclude Include="Mathematics\ContScribeCircle3Sphere3.h" />
     <ClInclude Include="Mathematics\ContSphere3.h" />
+    <ClInclude Include="Mathematics\ContTetrahedron3.h" />
     <ClInclude Include="Mathematics\ConvertCoordinates.h" />
     <ClInclude Include="Mathematics\ConvexHull2.h" />
     <ClInclude Include="Mathematics\ConvexHull3.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\EllipsoidGeodesic.h" />
     <ClInclude Include="Mathematics\EulerAngles.h" />
