@@ -114,6 +114,11 @@ namespace gte
             }
         }
 
+        Vector3<T> ComputeCentroid() const
+        {
+            return (v[0] + v[1] + v[2] + v[3]) * static_cast<T>(0.25);
+        }
+
         // Public member access.
         std::array<Vector3<T>, 4> v;
 
