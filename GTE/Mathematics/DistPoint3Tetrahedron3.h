@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2022.02.06
 
 #pragma once
 
@@ -69,8 +69,7 @@ namespace gte
             {
                 if (Dot(planes[i].normal, point) >= planes[i].constant)
                 {
-                    std::array<size_t, 3> indices{ 0, 0, 0 };
-                    tetrahedron.GetFaceIndices(i, indices);
+                    auto const& indices = tetrahedron.GetFaceIndices(i);
                     Triangle3<T> triangle(
                         tetrahedron.v[indices[0]],
                         tetrahedron.v[indices[1]],
