@@ -1509,5 +1509,8 @@
     <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h">
       <Filter>Distance\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

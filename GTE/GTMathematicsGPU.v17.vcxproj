@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="GTGraphics.v16.vcxproj">
+    <ProjectReference Include="GTGraphics.v17.vcxproj">
       <Project>{B15CB711-F650-4063-9C7C-E7A5F88139A2}</Project>
     </ProjectReference>
   </ItemGroup>

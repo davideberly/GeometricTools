@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 0)
+set(GTE_VERSION_MINOR 1)
 
 project(Physics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -15,6 +15,7 @@ add_subdirectory(BeadSlide)
 add_subdirectory(BlownGlass)
 add_subdirectory(BouncingBall)
 add_subdirectory(BouncingSpheres)
+add_subdirectory(BouncingTetrahedra)
 add_subdirectory(Cloth)
 add_subdirectory(DoublePendulum)
 add_subdirectory(FlowingSkirt)
