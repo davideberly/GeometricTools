@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.02.06
 
 #pragma once
 
@@ -23,23 +23,22 @@
 // robustness problems when the two edges are nearly parallel. The cross
 // product of the edges is nearly the zero vector, so normalization of the
 // cross product may produce unit-length directions that are not close to the
-// true direction. Such a pair of edges occurs when a box0 face normal N0 and
-// a box1 face normal N1 are nearly parallel. In this case, you may skip the
-// edge-edge directions, which is equivalent to projecting the boxes onto the
-// plane with normal N0 and applying a 2D separating axis test. The ability
-// to do so involves choosing a small nonnegative epsilon. It is used to
-// determine whether two face normals, one from each box, are nearly parallel:
-// |Dot(N0,N1)| >= 1 - epsilon. If the epsilon input to the operator()(...)
-// function is negative, it is clamped to zero.
+// true direction. Such a pair of edges occurs when an object0 face normal N0
+// and an object1 face normal N1 are nearly parallel. In this case, you may
+// skip the edge-edge directions, which is equivalent to projecting the
+// objects onto the plane with normal N0 and applying a 2D separating axis
+// test. The ability to do so involves choosing a small nonnegative epsilon.
+// It is used to determine whether two face normals, one from each object, are
+// nearly parallel: |Dot(N0,N1)| >= 1 - epsilon. If the epsilon input to the
+// operator()(...) function is negative, it is clamped to zero.
 //
 // The pair of integers 'separating', say, (i0,i1), identifies the axes that
 // reported separation; there may be more than one but only one is reported.
-// If the separating axis is a face normal N[i0] of the aligned box0 in
-// dimension i0, then (i0,-1) is returned. If the axis is a face normal
-// box1.Axis[i1], then (-1,i1) is returned. If the axis is a cross product
-// of edges, Cross(N[i0],box1.Axis[i1]), then (i0,i1) is returned. If
-// 'intersect' is true, the separating[] values are invalid because there is
-// no separation.
+// If the separating axis is a face normal N[i0] of object0, then (i0,-1) is
+// returned. If the axis is a face normal N[i1], then (-1,i1) is returned. If
+// the axis is a cross product of edges, Cross(N[i0],N[i1]), then (i0,i1) is
+// returned. If 'intersect' is true, the separating[] values are invalid
+// because there is no separation.
 
 namespace gte
 {
