@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.02.01
+// Version: 6.1.2022.02.06
 
 #pragma once
 
@@ -66,8 +66,7 @@ namespace gte
             for (size_t face0 = 0; face0 < 4; ++face0)
             {
                 Triangle3<T> triangle0{};
-                std::array<size_t, 3> indices0{};
-                Tetrahedron3<T>::GetFaceIndices(face0, indices0);
+                auto const& indices0 = Tetrahedron3<T>::GetFaceIndices(face0);
                 for (size_t j = 0; j < 3; ++j)
                 {
                     triangle0.v[j] = tetra0.v[indices0[j]];
@@ -76,8 +75,7 @@ namespace gte
                 for (size_t face1 = 0; face1 < 4; ++face1)
                 {
                     Triangle3<T> triangle1{};
-                    std::array<size_t, 3> indices1{};
-                    Tetrahedron3<T>::GetFaceIndices(face1, indices1);
+                    auto const& indices1 = Tetrahedron3<T>::GetFaceIndices(face1);
                     for (size_t j = 0; j < 3; ++j)
                     {
                         triangle1.v[j] = tetra1.v[indices1[j]];
@@ -112,96 +110,40 @@ namespace gte
 
             if (!foundZeroDistance)
             {
-                // The tetrahedra are either nested or separated. Let cv0 be
-                // the number of vertices of tetra0 strictly inside tetra1
-                // and let cv1 be the number of vertices of tetra1 strictly
-                // inside tetra0. In theory, cv0 = 4 and cv1 = 0 (tetra0 is
-                // nested inside tetra1) or cv0 = 0 and cv1 = 4 (tetra1 is
-                // nested inside tetra0) or cv0 = 0 and cv1 = 0 (tetra0 and
-                // tetra1 are separated). When using floating-point
-                // arithmetic, counts of contained points are used in case
-                // of rounding errors. If cv0 = 0 and cv1 = 0, the tetrahedra
-                // are separated; otherwise, the fuzzy test for nesting is
-                // cv0 > cv1 or cv1 > cv0.
-                size_t cv0 = 0;
-                for (size_t j = 0; j < 4; ++j)
+                // The tetrahedra are either nested or separated. Test
+                // for containment of the centroids to decide which case.
+                Vector3<T> centroid0 = tetra0.ComputeCentroid();
+                bool centroid0InTetra1 = InContainer(centroid0, tetra1);
+                if (centroid0InTetra1)
                 {
-                    if (InContainer(tetra0.v[j], tetra1))
-                    {
-                        ++cv0;
-                    }
-                }
-
-                size_t cv1 = 0;
-                for (size_t j = 0; j < 4; ++j)
-                {
-                    if (InContainer(tetra1.v[j], tetra0))
-                    {
-                        ++cv1;
-                    }
-                }
-
-                if (cv0 != 0 || cv1 != 0)
-                {
-                    // One tetrahedra is nested inside the other.
+                    // Tetra0 is nested inside tetra1. Choose the centroid
+                    // of tetra0 as the closest point for both tetrahedra.
                     result.distance = zero;
                     result.sqrDistance = zero;
-
-                    if (cv0 > 0 && cv1 == 0)
-                    {
-                        // The tetra0 is nested inside tetra1. Choose the
-                        // centroid of tetra0 as the closest point for both
-                        // tetrahedra.
-                        Vector3<T> centroid0 = tetra0.ComputeCentroid();
-                        result.closest[0] = centroid0;
-                        result.closest[1] = centroid0;
-                    }
-                    else if (cv0 == 0 && cv1 > 0)
-                    {
-                        // The tetra1 is nested inside tetra0. Choose the
-                        // centroid of tetra1 as the closest point for both
-                        // tetrahedra.
-                        Vector3<T> centroid1 = tetra1.ComputeCentroid();
-                        result.closest[0] = centroid1;
-                        result.closest[1] = centroid1;
-                    }
-                    else  // cv0 > 0 and cv1 > 0
-                    {
-                        // Rounding errors occurred in the point-tetrahedron
-                        // containment query.
-                        if (cv0 > cv1)
-                        {
-                            // The tetra0 is assumed to be nested inside
-                            // tetra1. Choose the centroid of tetra0 as the
-                            // closest point for both tetrahedra.
-                            Vector3<T> centroid0 = tetra0.ComputeCentroid();
-                            result.closest[0] = centroid0;
-                            result.closest[1] = centroid0;
-                        }
-                        else if (cv1 > cv0)
-                        {
-                            // The tetra1 is assumed to be nested inside
-                            // tetra0. Choose the centroid of tetra1 as the
-                            // closest point for both tetrahedra.
-                            Vector3<T> centroid1 = tetra1.ComputeCentroid();
-                            result.closest[0] = centroid1;
-                            result.closest[1] = centroid1;
-                        }
-                        else  // cv0 = cv1
-                        {
-                            // Numerically this can occur if the tetrahedra
-                            // are (nearly) the same. Choose the closest point
-                            // to be the average of the centroids.
-                            Vector3<T> centroid0 = tetra0.ComputeCentroid();
-                            Vector3<T> centroid1 = tetra1.ComputeCentroid();
-                            Vector3<T> average = (centroid0 + centroid1) * static_cast<T>(0.5);
-                            result.closest[0] = average;
-                            result.closest[1] = average;
-                        }
-                    }
+                    result.closest[0] = centroid0;
+                    result.closest[1] = centroid0;
                 }
-                // else: The tetrahedra are separated. The result already
-                // stores the distance, sqrDistance and closest[] values.
+
+                Vector3<T> centroid1 = tetra1.ComputeCentroid();
+                bool centroid1InTetra0 = InContainer(centroid1, tetra0);
+                if (centroid1InTetra0)
+                {
+                    // Tetra1 is nested inside tetra0. Choose the centroid
+                    // of tetra1 as the closest point for both tetrahedra.
+                    result.distance = zero;
+                    result.sqrDistance = zero;
+                    result.closest[0] = centroid1;
+                    result.closest[1] = centroid1;
+                }
+
+                // With exact arithmetic, at this point the tetrahedra are
+                // separated. The output object already contains the distance
+                // information. However, with floating-point arithmetic, it
+                // is possible that a tetrahedron with volume nearly zero is
+                // close enough to the other tetrahedron yet separated, but
+                // rounding errors make it appear that the nearly-zero-volume
+                // tetrahedron has centroid inside the other tetrahedron. This
+                // situation is trapped by the previous two if-blocks.
             }
 
             // Compute the barycentric coordinates of the closest points.
