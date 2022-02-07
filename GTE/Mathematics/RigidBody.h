@@ -3,13 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.26
+// Version: 6.0.2022.02.06
 
 #pragma once
 
 #include <Mathematics/Matrix3x3.h>
 #include <Mathematics/Rotation.h>
+#include <Mathematics/LinearSystem.h>
 #include <functional>
+#include <memory>
+
+// The classes in this file support an implementation of collision response
+// for acceleration-based constrained motion using impulse functions. The
+// description is in Chapter 6 of "Game Physics, 2nd edition". For a
+// description of the construction of impulse forces, see
+// https://www.geometrictools.com/Documentation/ComputingImpulsiveForces.pdf
 
 namespace gte
 {
@@ -270,6 +278,7 @@ namespace gte
         Quaternion<T> mQAngularVelocity;
     };
 
+
     template <typename T>
     class RigidBody
     {
@@ -342,7 +351,7 @@ namespace gte
 
         inline void SetLinearVelocity(Vector3<T> const& linearVelocity)
         {
-            mState.SetLinearMomentum(linearVelocity);
+            mState.SetLinearVelocity(linearVelocity);
         }
 
         inline void SetAngularVelocity(Vector3<T> const& angularVelocity)
@@ -502,5 +511,156 @@ namespace gte
 
     private:
         RigidBodyState<T> mState;
+    };
+
+
+    // The rigid body contact stores basic information. The class can be
+    // extended by derivation to allow for additional information that is
+    // specific to a simulation.
+    template <typename T>
+    class RigidBodyContact
+    {
+    public:
+        RigidBodyContact()
+            :
+            A{},
+            B{},
+            P(Vector3<T>::Zero()),
+            N(Vector3<T>::Zero()),
+            restitution(static_cast<T>(0))
+        {
+        }
+
+        virtual ~RigidBodyContact() = default;
+
+        // Call ApplyImpulse for each rigid body in your simulation at the
+        // the current simulation time. After all such calls are made,
+        // then iterate over all your rigid bodies and call their
+        // Update(time, deltaTime) functions.
+        virtual void ApplyImpulse()
+        {
+            // The positions of the centers of mass.
+            auto const& XA = A->GetPosition();
+            auto const& XB = B->GetPosition();
+
+            // The location of the contact points relative to the centers of
+            // mass.
+            auto rA = P - XA;
+            auto rB = P - XB;
+
+            // The preimpulse linear velocities of the centers of mass.
+            auto const& linvelANeg = A->GetLinearVelocity();
+            auto const& linvelBNeg = B->GetLinearVelocity();
+
+            // The preimpulse angular velocities about the centers of mass.
+            auto const& angvelANeg = A->GetAngularVelocity();
+            auto const& angvelBNeg = B->GetAngularVelocity();
+
+            // The preimpulse velocities of P0.
+            auto velANeg = linvelANeg + Cross(angvelANeg, rA);
+            auto velBNeg = linvelBNeg + Cross(angvelBNeg, rB);
+            auto velDiffNeg = velANeg - velBNeg;
+
+            // The preimpulse linear momenta of the centers of mass.
+            auto const& linmomANeg = A->GetLinearMomentum();
+            auto const& linmomBNeg = B->GetLinearMomentum();
+
+            // The preimpulse angular momenta about the centers of mass.
+            auto const& angmomANeg = A->GetAngularMomentum();
+            auto const& angmomBNeg = B->GetAngularMomentum();
+
+            // The inverse masses, inverse world inertia tensors and quadratic
+            // forms associated with these tensors.
+            T sumInvMasses = A->GetInverseMass() + B->GetInverseMass();
+            auto const& invJA = A->GetWorldInverseInertia();
+            auto const& invJB = B->GetWorldInverseInertia();
+
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            Vector3<T> T0 = velDiffNeg - Dot(N, velDiffNeg) * N;
+            Normalize(T0);
+            if (T0 != Vector3<T>::Zero())
+            {
+                // T0 is tangent at P, unit length and perpendicular to N.
+                Vector3<T> T1 = Cross(N, T0);
+                auto rAxN = Cross(rA, N);
+                auto rAxT0 = Cross(rA, T0);
+                auto rAxT1 = Cross(rA, T1);
+                auto rBxN = Cross(rB, N);
+                auto rBxT0 = Cross(rB, T0);
+                auto rBxT1 = Cross(rB, T1);
+
+                // The matrix constructed here is positive definite. This
+                // ensures the linear system always has a solution, so the
+                // bool return value from LinearSystem<T>::Solve is
+                // ignored.
+                Matrix3x3<T> sysMatrix{};
+                sysMatrix(0, 0) = sumInvMasses + Dot(rAxN, invJA * rAxN) + Dot(rBxN, invJB * rBxN);
+                sysMatrix(1, 1) = sumInvMasses + Dot(rAxT0, invJA * rAxT0) + Dot(rBxT0, invJB * rBxT0);
+                sysMatrix(2, 2) = sumInvMasses + Dot(rAxT1, invJA * rAxT1) + Dot(rBxT1, invJB * rBxT1);
+                sysMatrix(0, 1) = Dot(rAxN, invJA * rAxT0) + Dot(rBxN, invJB * rBxT0);
+                sysMatrix(0, 2) = Dot(rAxN, invJA * rAxT1) + Dot(rBxN, invJB * rBxT1);
+                sysMatrix(1, 2) = Dot(rAxT0, invJA * rAxT1) + Dot(rBxT0, invJB * rBxT1);
+                sysMatrix(1, 0) = sysMatrix(0, 1);
+                sysMatrix(2, 0) = sysMatrix(0, 2);
+                sysMatrix(2, 1) = sysMatrix(1, 2);
+                Vector3<T> sysInput{};
+                sysInput[0] = -(one + restitution) * Dot(N, velDiffNeg);
+                sysInput[1] = zero;
+                sysInput[2] = zero;
+                Vector3<T> sysOutput{};
+                (void)LinearSystem<T>::Solve(sysMatrix, sysInput, sysOutput);
+
+                // Apply the impulsive force to the bodies to change linear and
+                // angular momentum.
+                auto impulse = sysOutput[0] * N + sysOutput[1] * T0 + sysOutput[2] * T1;
+                A->SetLinearMomentum(linmomANeg + impulse);
+                B->SetLinearMomentum(linmomBNeg - impulse);
+                A->SetAngularMomentum(angmomANeg + Cross(rA, impulse));
+                B->SetAngularMomentum(angmomBNeg - Cross(rB, impulse));
+            }
+            else
+            {
+                // Fall back to the impulse force f*N0 when the relative
+                // velocity at the contact P0 is parallel to N0.
+                auto rAxN = Cross(rA, N);
+                auto rBxN = Cross(rB, N);
+                T quadformA = Dot(rAxN, invJA * rAxN);
+                T quadformB = Dot(rBxN, invJB * rBxN);
+
+                // The magnitude of the impulse force.
+                T numer = -(one + restitution) * Dot(N, velDiffNeg);
+                T denom = sumInvMasses + quadformA + quadformB;
+                T f = numer / denom;
+
+                // Apply the impulsive force to the bodies to change linear and
+                // angular momentum.
+                auto impulse = f * N;
+                A->SetLinearMomentum(linmomANeg + impulse);
+                B->SetLinearMomentum(linmomBNeg - impulse);
+                A->SetAngularMomentum(angmomANeg + Cross(rA, impulse));
+                B->SetAngularMomentum(angmomBNeg - Cross(rB, impulse));
+            }
+        }
+
+        // Body A has the vertex in a vertex-face contact or edge-edge
+        // contact.
+        std::shared_ptr<RigidBody<T>> A;
+
+        // Body B has the face in a vertex-face contact, and the normal N
+        // is for that face. If there is instead an edge-edge contact, the
+        // normal N is the cross product of the edges.
+        std::shared_ptr<RigidBody<T>> B;
+
+        // The intersection point at contact.
+        Vector3<T> P;
+
+        // The outward unit-length normal to the face at the contact
+        // point.
+        Vector3<T> N;
+
+        // The coefficient of restitution which is in [0,1]. This allows for
+        // the loss of kinetic energy at a contact point.
+        T restitution;
     };
 }
