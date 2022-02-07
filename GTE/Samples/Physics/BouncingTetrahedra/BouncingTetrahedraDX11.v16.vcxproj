@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,36 +19,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{80DA27F1-BE43-40E2-93F1-A8A93012A94F}</ProjectGuid>
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{38A18028-B053-4E9E-BB3A-3605352D052E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>BouncingSpheres.v17</RootNamespace>
+    <RootNamespace>BouncingTetrahedra.v16</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -98,7 +98,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -117,7 +117,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -138,7 +138,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -161,7 +161,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>GTE_USE_MSWINDOWS;GTE_USE_ROW_MAJOR;GTE_USE_MAT_VEC;GTE_USE_DIRECTX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\.</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>6262;26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile />
@@ -175,27 +175,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BouncingSpheresWindow3.cpp" />
-    <ClCompile Include="BouncingSpheresMain.cpp" />
+    <ClCompile Include="BouncingTetrahedraWindow3.cpp" />
+    <ClCompile Include="BouncingTetrahedraMain.cpp" />
     <ClCompile Include="PhysicsModule.cpp" />
     <ClCompile Include="RigidPlane.cpp" />
-    <ClCompile Include="RigidSphere.cpp" />
+    <ClCompile Include="RigidTetrahedron.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BouncingSpheresWindow3.h" />
+    <ClInclude Include="BouncingTetrahedraWindow3.h" />
     <ClInclude Include="PhysicsModule.h" />
     <ClInclude Include="RigidPlane.h" />
-    <ClInclude Include="RigidSphere.h" />
+    <ClInclude Include="RigidTetrahedron.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GTApplicationsDX11.v17.vcxproj">
-      <Project>{8BB237C2-2D3A-41AD-9B98-A35BA75D5DEA}</Project>
+    <ProjectReference Include="..\..\..\GTApplicationsDX11.v16.vcxproj">
+      <Project>{85367BB5-0DE5-477A-B880-0005612F8D1C}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphics.v17.vcxproj">
-      <Project>{B15CB711-F650-4063-9C7C-E7A5F88139A2}</Project>
+    <ProjectReference Include="..\..\..\GTGraphics.v16.vcxproj">
+      <Project>{ED37722A-40DE-4B07-9A4A-65E978D43643}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTGraphicsDX11.v17.vcxproj">
-      <Project>{00DEFF42-0F7C-4A7C-9C1F-59322B9E9004}</Project>
+    <ProjectReference Include="..\..\..\GTGraphicsDX11.v16.vcxproj">
+      <Project>{B24EA8FC-D596-42A1-AA46-72DEF1BE24BC}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

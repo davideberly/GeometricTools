@@ -13,35 +13,15 @@
 #include "PhysicsModule.h"
 using namespace gte;
 
-// The PhysicsModule is an implementation of the collision detection and
-// impulse-based collision response described in "Game Physics, 2nd edition."
-// The code comments have relevant equation numbers from the book. However,
-// the DoCollisionResponse function uses a variation for computing impulses,
-// described in
-//   https://www.geometrictools.com/Documentation/ComputingImpulsiveForces.pdf
-
-class BouncingSpheresWindow3 : public Window3
+class BouncingTetrahedraWindow3 : public Window3
 {
 public:
-    BouncingSpheresWindow3(Parameters& parameters);
+    BouncingTetrahedraWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
     virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
-    struct VertexPT
-    {
-        VertexPT()
-            :
-            position(Vector3<float>::Zero()),
-            tcoord(Vector2<float>::Zero())
-        {
-        }
-
-        Vector3<float> position;
-        Vector2<float> tcoord;
-    };
-
     struct VertexPC
     {
         VertexPC()
@@ -67,14 +47,14 @@ private:
     void PhysicsTick();
     void GraphicsTick();
 
-    enum { NUM_SPHERES = 16 };
+    enum { NUM_TETRAHEDRA = 16 };
     std::unique_ptr<PhysicsModule> mModule;
 
     std::shared_ptr<RasterizerState> mNoCullState;
     std::shared_ptr<RasterizerState> mNoCullWireState;
     std::shared_ptr<Node> mScene;
     std::array<std::shared_ptr<Visual>, 4> mPlaneMesh;
-    std::array<std::shared_ptr<Visual>, NUM_SPHERES> mSphereMesh;
+    std::array<std::shared_ptr<Visual>, NUM_TETRAHEDRA> mTetraMesh;
 
     Timer mPhysicsTimer, mGraphicsTimer;
     double mLastPhysicsTime, mCurrPhysicsTime;

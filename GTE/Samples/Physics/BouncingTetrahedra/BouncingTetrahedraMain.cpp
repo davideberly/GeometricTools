@@ -5,15 +5,15 @@
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 // Version: 6.1.2022.02.06
 
-#include "BouncingSpheresWindow3.h"
+#include "BouncingTetrahedraWindow3.h"
 #include <iostream>
 
 int main()
 {
     try
     {
-        Window::Parameters parameters(L"BouncingSpheresWindow3", 0, 0, 1024, 768);
-        auto window = TheWindowSystem.Create<BouncingSpheresWindow3>(parameters);
+        Window::Parameters parameters(L"BouncingTetrahedraWindow3", 0, 0, 1024, 768);
+        auto window = TheWindowSystem.Create<BouncingTetrahedraWindow3>(parameters);
         TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
         TheWindowSystem.Destroy(window);
     }

@@ -178,10 +178,14 @@
     <ClCompile Include="BouncingSpheresWindow3.cpp" />
     <ClCompile Include="BouncingSpheresMain.cpp" />
     <ClCompile Include="PhysicsModule.cpp" />
+    <ClCompile Include="RigidPlane.cpp" />
+    <ClCompile Include="RigidSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BouncingSpheresWindow3.h" />
     <ClInclude Include="PhysicsModule.h" />
+    <ClInclude Include="RigidPlane.h" />
+    <ClInclude Include="RigidSphere.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\GTApplicationsGL45.v16.vcxproj">

@@ -5,14 +5,12 @@
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 // Version: 6.1.2022.02.06
 
-#include "BouncingSpheresWindow3.h"
-#include <Applications/WICFileIO.h>
+#include "BouncingTetrahedraWindow3.h"
 #include <Graphics/MeshFactory.h>
-#include <Graphics/Texture2Effect.h>
 #include <Graphics/VertexColorEffect.h>
 #include <fstream>
 
-BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
+BouncingTetrahedraWindow3::BouncingTetrahedraWindow3(Parameters& parameters)
     :
     Window3(parameters),
     mModule{},
@@ -20,7 +18,7 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
     mNoCullWireState{},
     mScene{},
     mPlaneMesh{},
-    mSphereMesh{},
+    mTetraMesh{},
     mPhysicsTimer{},
     mGraphicsTimer{},
     mLastPhysicsTime(0.0),
@@ -51,12 +49,12 @@ BouncingSpheresWindow3::BouncingSpheresWindow3(Parameters& parameters)
 
     CreateScene();
 
-    // Initialize the spheres with the correct transformations.
+    // Initialize the balls with the correct transformations.
     PhysicsTick();
     GraphicsTick();
 }
 
-void BouncingSpheresWindow3::OnIdle()
+void BouncingTetrahedraWindow3::OnIdle()
 {
     if (!mSingleStep)
     {
@@ -64,8 +62,8 @@ void BouncingSpheresWindow3::OnIdle()
     }
     GraphicsTick();
 }
- 
-bool BouncingSpheresWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
+
+bool BouncingTetrahedraWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
     switch (key)
     {
@@ -96,7 +94,7 @@ bool BouncingSpheresWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
     return Window3::OnCharPress(key, x, y);
 }
 
-bool BouncingSpheresWindow3::SetEnvironment()
+bool BouncingTetrahedraWindow3::SetEnvironment()
 {
     std::string path = GetGTEPath();
     if (path == "")
@@ -104,12 +102,10 @@ bool BouncingSpheresWindow3::SetEnvironment()
         return false;
     }
 
-    mEnvironment.Insert(path + "/Samples/Data/");
-    mEnvironment.Insert(path + "/Samples/Physics/BouncingSpheres/");
+    mEnvironment.Insert(path + "/Samples/Physics/BouncingTetrahedra/");
 
     std::vector<std::string> inputs =
     {
-        "BallTextureWrap.png",
         "Initial.txt"
     };
 
@@ -125,37 +121,45 @@ bool BouncingSpheresWindow3::SetEnvironment()
     return true;
 }
 
-void BouncingSpheresWindow3::CreateScene()
+void BouncingTetrahedraWindow3::CreateScene()
 {
     CreatePhysicsObjects();
     CreateGraphicsObjects();
 }
 
-void BouncingSpheresWindow3::CreatePhysicsObjects()
+void BouncingTetrahedraWindow3::CreatePhysicsObjects()
 {
     mModule = std::make_unique<PhysicsModule>(
-        NUM_SPHERES, -24.0, 24.0, -24.0, 24.0, 0.0, 40.0);
+        NUM_TETRAHEDRA, -24.0, 24.0, -24.0, 24.0, 0.0, 40.0);
 
     std::string initialFile = mEnvironment.GetPath("Initial.txt");
     std::ifstream input(initialFile);
     double radius{}, massDensity{};
     Vector3<double> position{}, linearVelocity{}, angularVelocity{};
     Quaternion<double> qOrientation{};
-    for (size_t i = 0; i < NUM_SPHERES; ++i)
+    Tetrahedron3<double> bodyTetra{};
+    for (size_t i = 0; i < NUM_TETRAHEDRA; ++i)
     {
         input >> radius;
+        double a = radius / std::sqrt(3.0);
+        a *= 2.0;
+        bodyTetra.v[0] = { -a, -a, -a };
+        bodyTetra.v[1] = { a, 0.0, 0.0 };
+        bodyTetra.v[2] = { 0.0, a, 0.0 };
+        bodyTetra.v[3] = { 0.0, 0.0, a };
+
         input >> massDensity;
         input >> position[0] >> position[1] >> position[2];
         input >> linearVelocity[0] >> linearVelocity[1] >> linearVelocity[2];
         input >> qOrientation[0] >> qOrientation[1] >> qOrientation[2] >> qOrientation[3];
         input >> angularVelocity[0] >> angularVelocity[1] >> angularVelocity[2];
-        mModule->InitializeSphere(i, radius, massDensity, position,
+        mModule->InitializeTetrahedron(i, massDensity, bodyTetra, position,
             linearVelocity, qOrientation, angularVelocity);
     }
     input.close();
 }
 
-void BouncingSpheresWindow3::CreateGraphicsObjects()
+void BouncingTetrahedraWindow3::CreateGraphicsObjects()
 {
     // ** layout of scene graph **
     // trackball
@@ -164,9 +168,9 @@ void BouncingSpheresWindow3::CreateGraphicsObjects()
     //         sidewall1Mesh
     //         sidewall2Mesh
     //         backwallMesh
-    //         sphereMesh[0]
+    //         tetraMesh[0]
     //         :
-    //         sphereMesh[15]
+    //         tetraMesh[3]
 
     mScene = std::make_shared<Node>();
     mTrackBall.Attach(mScene);
@@ -208,31 +212,72 @@ void BouncingSpheresWindow3::CreateGraphicsObjects()
         { -24.0f, -24.0f, 40.0f },
         { 209.0f / 255.0f, 204.0f / 255.0f, 180.0f / 255.0f, 1.0f });
 
-    VertexFormat ptFormat{};
-    ptFormat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
-    ptFormat.Bind(VASemantic::TEXCOORD, DF_R32G32_FLOAT, 0);
-
-    // Create the spheres.
+    // Create the tetrahedra.
     MeshFactory mf{};
-    mf.SetVertexFormat(ptFormat);
-    std::string textureFile = mEnvironment.GetPath("BallTextureWrap.png");
-    auto texture = WICFileIO::Load(textureFile, true);
-    texture->AutogenerateMipmaps();
-    for (size_t i = 0; i < NUM_SPHERES; ++i)
+    mf.SetVertexFormat(pcFormat);
+    mf.SetVertexBufferUsage(Resource::Usage::DYNAMIC_UPDATE);
+
+    std::array<Vector4<float>, 4> color
+    {{
+        { 1.0f, 1.0f, 1.0f, 1.0f },
+        { 1.0f, 0.0f, 0.0f, 1.0f },
+        { 0.0f, 1.0f, 0.0f, 1.0f },
+        { 0.0f, 0.0f, 1.0f, 1.0f }
+    }};
+
+    std::array<size_t, 12> faceIndices = Tetrahedron3<double>::GetAllFaceIndices();
+    auto ibuffer = std::make_shared<IndexBuffer>(IPType::IP_TRIMESH, 4, sizeof(uint32_t));
+    auto* indices = ibuffer->Get<uint32_t>();
+    for (size_t j = 0; j < 12; ++j)
     {
-        float radius = static_cast<float>(mModule->GetWorldSphere(i).radius);
-        auto mesh = mf.CreateSphere(16, 16, radius);
-        auto effect = std::make_shared<Texture2Effect>(mProgramFactory,
-            texture, SamplerState::Filter::MIN_L_MAG_L_MIP_L,
-            SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP);
+        indices[j] = static_cast<uint32_t>(faceIndices[j]);
+    }
+
+    for (size_t i = 0; i < NUM_TETRAHEDRA; ++i)
+    {
+        auto mesh = mf.CreateTetrahedron();
+
+        Tetrahedron3<double> const& tetra = mModule->GetBodyTetrahedron(i);
+        auto const& vbuffer = mesh->GetVertexBuffer();
+        auto* vertices = vbuffer->Get<VertexPC>();
+        for (size_t j = 0; j < 4; ++j)
+        {
+            vertices[j].position =
+            {
+                static_cast<float>(tetra.v[j][0]),
+                static_cast<float>(tetra.v[j][1]),
+                static_cast<float>(tetra.v[j][2])
+            };
+
+            vertices[j].color = color[j];
+        }
+
+        auto const& dRotate = mModule->GetOrientation(i);
+        auto const& dTranslate = mModule->GetPosition(i);
+        Matrix3x3<float> rotate{};
+        Vector3<float> translate{};
+        for (int32_t r = 0; r < 3; ++r)
+        {
+            for (int32_t c = 0; c < 3; ++c)
+            {
+                rotate(r, c) = static_cast<float>(dRotate(r, c));
+            }
+            translate[r] = static_cast<float>(dTranslate[r]);
+        }
+        mesh->localTransform.SetRotation(rotate);
+        mesh->localTransform.SetTranslation(translate);
+
+        mesh->SetIndexBuffer(ibuffer);
+
+        auto effect = std::make_shared<VertexColorEffect>(mProgramFactory);
         mesh->SetEffect(effect);
         mPVWMatrices.Subscribe(mesh);
-        mSphereMesh[i] = mesh;
+        mTetraMesh[i] = mesh;
         mScene->AttachChild(mesh);
     }
 }
 
-void BouncingSpheresWindow3::CreateWall(
+void BouncingTetrahedraWindow3::CreateWall(
     size_t index, VertexFormat const& vformat,
     Vector3<float> const& pos0, Vector3<float> const& pos1,
     Vector3<float> const& pos2, Vector3<float> const& pos3,
@@ -261,21 +306,23 @@ void BouncingSpheresWindow3::CreateWall(
     mScene->AttachChild(wall);
 }
 
-void BouncingSpheresWindow3::PhysicsTick()
+void BouncingTetrahedraWindow3::PhysicsTick()
 {
     // Execute the physics system at 2400 frames per second, but use the
     // simulation time for a reproducible simulation.
     mCurrPhysicsTime = mPhysicsTimer.GetSeconds();
     double physicsDeltaTime = mCurrPhysicsTime - mLastPhysicsTime;
-    if (physicsDeltaTime >= 1.0 / 2400.0)
+    if (physicsDeltaTime < 1.0 / 2400.0)
     {
-        mModule->DoTick(mSimulationTime, mSimulationDeltaTime);
-        mSimulationTime += mSimulationDeltaTime;
-        mLastPhysicsTime = mCurrPhysicsTime;
+        return;
     }
+
+    mModule->DoTick(mSimulationTime, mSimulationDeltaTime);
+    mSimulationTime += mSimulationDeltaTime;
+    mLastPhysicsTime = mCurrPhysicsTime;
 }
 
-void BouncingSpheresWindow3::GraphicsTick()
+void BouncingTetrahedraWindow3::GraphicsTick()
 {
     // The graphics tick is called after the physics tick. The graphics
     // objects corresponding to the physical objects must be moved for
@@ -286,16 +333,17 @@ void BouncingSpheresWindow3::GraphicsTick()
     if (graphicsDeltaTime >= 1.0 / 60.0)
     {
         mTimer.Measure();
-        for (size_t i = 0; i < NUM_SPHERES; ++i)
+
+        for (size_t i = 0; i < NUM_TETRAHEDRA; ++i)
         {
-            Vector3<double> const& position = mModule->GetWorldSphere(i).center;
+            Vector3<double> const& position = mModule->GetPosition(i);
             Vector3<float> translate
             {
                 static_cast<float>(position[0]),
                 static_cast<float>(position[1]),
                 static_cast<float>(position[2])
             };
-            mSphereMesh[i]->localTransform.SetTranslation(translate);
+            mTetraMesh[i]->localTransform.SetTranslation(translate);
 
             Matrix3x3<double> const& orientation = mModule->GetOrientation(i);
             Matrix3x3<float> rotate{};
@@ -306,7 +354,7 @@ void BouncingSpheresWindow3::GraphicsTick()
                     rotate(r, c) = static_cast<float>(orientation(r, c));
                 }
             }
-            mSphereMesh[i]->localTransform.SetRotation(rotate);
+            mTetraMesh[i]->localTransform.SetRotation(rotate);
         }
 
         // Update the world transforms of the graphics objects.
@@ -328,7 +376,7 @@ void BouncingSpheresWindow3::GraphicsTick()
             mEngine->Draw(visual);
         }
 
-        for (auto const& visual : mSphereMesh)
+        for (auto const& visual : mTetraMesh)
         {
             mEngine->Draw(visual);
         }

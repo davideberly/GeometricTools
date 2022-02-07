@@ -10,20 +10,20 @@
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
     <Filter Include="Data Files">
-      <UniqueIdentifier>{32e6c271-afb2-4600-b608-3b81a78b65ef}</UniqueIdentifier>
+      <UniqueIdentifier>{6ab1464b-8756-448b-85b9-f43ef54db4c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BouncingSpheresWindow3.cpp">
+    <ClCompile Include="BouncingTetrahedraWindow3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BouncingSpheresMain.cpp">
+    <ClCompile Include="BouncingTetrahedraMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RigidSphere.cpp">
+    <ClCompile Include="RigidTetrahedron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RigidPlane.cpp">
@@ -31,16 +31,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BouncingSpheresWindow3.h">
+    <ClInclude Include="BouncingTetrahedraWindow3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RigidSphere.h">
+    <ClInclude Include="RigidPlane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RigidPlane.h">
+    <ClInclude Include="RigidTetrahedron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

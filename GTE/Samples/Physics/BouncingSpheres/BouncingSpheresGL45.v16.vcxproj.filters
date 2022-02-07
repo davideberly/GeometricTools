@@ -23,12 +23,24 @@
     <ClCompile Include="PhysicsModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RigidPlane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BouncingSpheresWindow3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidPlane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidSphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
