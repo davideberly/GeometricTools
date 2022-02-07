@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.11
+// Version: 6.1.2022.02.07
 
 #pragma once
 
@@ -50,7 +50,7 @@ private:
     std::shared_ptr<Visual> mSnakeHead;
 
     // The curve and parameters for the snake body.
-    int mNumCtrlPoints, mDegree;
+    size_t mNumCtrlPoints, mDegree;
     float mRadius;
     std::shared_ptr<BSplineCurve<3, float>> mMedial;
     std::shared_ptr<std::function<float(float)>> mRadial;
