@@ -325,6 +325,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PointControllersGL45.v17", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainGL45.v17", "Samples\SceneGraphs\Terrain\TerrainGL45.v17.vcxproj", "{050DCF0C-F1D2-4BC5-9495-9453100F2CE8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BouncingTetrahedraGL45.v17", "Samples\Physics\BouncingTetrahedra\BouncingTetrahedraGL45.v17.vcxproj", "{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1541,6 +1543,14 @@ Global
 		{050DCF0C-F1D2-4BC5-9495-9453100F2CE8}.Release|x64.Build.0 = Release|x64
 		{050DCF0C-F1D2-4BC5-9495-9453100F2CE8}.Release|x86.ActiveCfg = Release|Win32
 		{050DCF0C-F1D2-4BC5-9495-9453100F2CE8}.Release|x86.Build.0 = Release|Win32
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Debug|x64.ActiveCfg = Debug|x64
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Debug|x64.Build.0 = Debug|x64
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Debug|x86.ActiveCfg = Debug|Win32
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Debug|x86.Build.0 = Debug|Win32
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Release|x64.ActiveCfg = Release|x64
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Release|x64.Build.0 = Release|x64
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Release|x86.ActiveCfg = Release|Win32
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1705,6 +1715,7 @@ Global
 		{36A99E52-B99C-402A-A3F1-FDE0F09DB942} = {E54CDC7C-108C-4ED8-ADE3-19686D08F6C5}
 		{E7553666-22B1-43A9-A1B5-5BC5CB4EA1B1} = {E54CDC7C-108C-4ED8-ADE3-19686D08F6C5}
 		{050DCF0C-F1D2-4BC5-9495-9453100F2CE8} = {E54CDC7C-108C-4ED8-ADE3-19686D08F6C5}
+		{BF8CE9F2-33CD-44EA-9F0D-AD31F9EED320} = {C12349E3-9108-474A-A1D9-7759467431AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED7EAE6E-B55C-4B19-9F14-6DF816AB8730}
