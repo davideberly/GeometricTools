@@ -3,12 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2022.02.11
 
 #include <cstdlib>
 #include <iostream>
 #include "ProjectTemplate.v16.h"
 #include "ProjectTemplate.v17.h"
+#include "ProjectTemplateVSCode.h"
 
 int main(int numArguments, char* arguments[])
 {
@@ -62,6 +63,14 @@ int main(int numArguments, char* arguments[])
     if (!success)
     {
         std::cout << "Could not create the V17 project files." << std::endl;
+        return -5;
+    }
+
+    TemplateVSCode generateVSCode{};
+    success = generateVSCode.Execute(projectName, appType);
+    if (!success)
+    {
+        std::cout << "Could not create the VSCode project files." << std::endl;
         return -5;
     }
 
