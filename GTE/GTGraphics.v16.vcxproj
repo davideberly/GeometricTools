@@ -39,6 +39,7 @@
     <ClCompile Include="Graphics\DepthStencilState.cpp" />
     <ClCompile Include="Graphics\DirectionalLightEffect.cpp" />
     <ClCompile Include="Graphics\DirectionalLightTextureEffect.cpp" />
+    <ClCompile Include="Graphics\DLODNode.cpp" />
     <ClCompile Include="Graphics\DrawingState.cpp" />
     <ClCompile Include="Graphics\DrawTarget.cpp" />
     <ClCompile Include="Graphics\Font.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Graphics\DepthStencilState.h" />
     <ClInclude Include="Graphics\DirectionalLightEffect.h" />
     <ClInclude Include="Graphics\DirectionalLightTextureEffect.h" />
+    <ClInclude Include="Graphics\DLODNode.h" />
     <ClInclude Include="Graphics\DrawingState.h" />
     <ClInclude Include="Graphics\DrawTarget.h" />
     <ClInclude Include="Graphics\Font.h" />

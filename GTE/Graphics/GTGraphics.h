@@ -101,6 +101,7 @@
 
 // SceneGraph/Detail
 #include <Graphics/BillboardNode.h>
+#include <Graphics/DLODNode.h>
 #include <Graphics/SwitchNode.h>
 
 // SceneGraph/Hierarchy

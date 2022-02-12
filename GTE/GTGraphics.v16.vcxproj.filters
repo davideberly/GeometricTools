@@ -343,6 +343,9 @@
     <ClCompile Include="Graphics\SwitchNode.cpp">
       <Filter>SceneGraph\Detail</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\DLODNode.cpp">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\GEDrawTarget.h">
@@ -663,6 +666,9 @@
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\SwitchNode.h">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DLODNode.h">
       <Filter>SceneGraph\Detail</Filter>
     </ClInclude>
   </ItemGroup>
