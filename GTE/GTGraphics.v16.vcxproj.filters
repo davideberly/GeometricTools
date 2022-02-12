@@ -340,6 +340,9 @@
     <ClCompile Include="Graphics\FontArialW700H18.cpp">
       <Filter>Effects</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\SwitchNode.cpp">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\GEDrawTarget.h">
@@ -658,6 +661,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\Graphics.h">
       <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\SwitchNode.h">
+      <Filter>SceneGraph\Detail</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -327,6 +327,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WrigglingSnakeDX11.v16", "S
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BouncingTetrahedraDX11.v16", "Samples\Physics\BouncingTetrahedra\BouncingTetrahedraDX11.v16.vcxproj", "{38A18028-B053-4E9E-BB3A-3605352D052E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SwitchNodesDX11.v16", "Samples\SceneGraphs\SwitchNodes\SwitchNodesDX11.v16.vcxproj", "{B6046C7D-C548-4530-8542-F0E2E4A9CA52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1551,6 +1553,14 @@ Global
 		{38A18028-B053-4E9E-BB3A-3605352D052E}.Release|x64.Build.0 = Release|x64
 		{38A18028-B053-4E9E-BB3A-3605352D052E}.Release|x86.ActiveCfg = Release|Win32
 		{38A18028-B053-4E9E-BB3A-3605352D052E}.Release|x86.Build.0 = Release|Win32
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Debug|x64.ActiveCfg = Debug|x64
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Debug|x64.Build.0 = Debug|x64
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Debug|x86.ActiveCfg = Debug|Win32
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Debug|x86.Build.0 = Debug|Win32
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Release|x64.ActiveCfg = Release|x64
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Release|x64.Build.0 = Release|x64
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Release|x86.ActiveCfg = Release|Win32
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1716,6 +1726,7 @@ Global
 		{5E4F2E26-5230-4C4A-8AC4-B311627138BC} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
 		{CF559F9E-EF38-4EEF-8E45-2DEAA0F3E49C} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
 		{38A18028-B053-4E9E-BB3A-3605352D052E} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
+		{B6046C7D-C548-4530-8542-F0E2E4A9CA52} = {7572A45C-CD71-4915-80AB-46CB96142436}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}

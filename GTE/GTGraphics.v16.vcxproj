@@ -96,6 +96,7 @@
     <ClCompile Include="Graphics\SphereMapEffect.cpp" />
     <ClCompile Include="Graphics\SpotLightEffect.cpp" />
     <ClCompile Include="Graphics\StructuredBuffer.cpp" />
+    <ClCompile Include="Graphics\SwitchNode.cpp" />
     <ClCompile Include="Graphics\Terrain.cpp" />
     <ClCompile Include="Graphics\TextEffect.cpp" />
     <ClCompile Include="Graphics\Texture.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Graphics\SphereMapEffect.h" />
     <ClInclude Include="Graphics\SpotLightEffect.h" />
     <ClInclude Include="Graphics\StructuredBuffer.h" />
+    <ClInclude Include="Graphics\SwitchNode.h" />
     <ClInclude Include="Graphics\Terrain.h" />
     <ClInclude Include="Graphics\TextEffect.h" />
     <ClInclude Include="Graphics\Texture.h" />
