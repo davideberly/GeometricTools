@@ -1512,5 +1512,8 @@
     <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\ApprCone3EllipseAndPoints.h">
+      <Filter>Approximation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
