@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.11
+// Version: 6.0.2022.02.24
 
 #pragma once
 
@@ -101,6 +101,9 @@
 
 // SceneGraph/Detail
 #include <Graphics/BillboardNode.h>
+#include <Graphics/CLODCollapseRecord.h>
+#include <Graphics/CLODMesh.h>
+#include <Graphics/CLODMeshCreator.h>
 #include <Graphics/DLODNode.h>
 #include <Graphics/SwitchNode.h>
 

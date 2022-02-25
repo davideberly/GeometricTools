@@ -346,6 +346,9 @@
     <ClCompile Include="Graphics\DLODNode.cpp">
       <Filter>SceneGraph\Detail</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\CLODMesh.cpp">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\GEDrawTarget.h">
@@ -669,6 +672,15 @@
       <Filter>SceneGraph\Detail</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\DLODNode.h">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CLODMeshCreator.h">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CLODMesh.h">
+      <Filter>SceneGraph\Detail</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CLODCollapseRecord.h">
       <Filter>SceneGraph\Detail</Filter>
     </ClInclude>
   </ItemGroup>

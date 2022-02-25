@@ -29,6 +29,7 @@
     <ClCompile Include="Graphics\Buffer.cpp" />
     <ClCompile Include="Graphics\BumpMapEffect.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
+    <ClCompile Include="Graphics\CLODMesh.cpp" />
     <ClCompile Include="Graphics\ConstantBuffer.cpp" />
     <ClCompile Include="Graphics\ConstantColorEffect.cpp" />
     <ClCompile Include="Graphics\ControlledObject.cpp" />
@@ -137,6 +138,9 @@
     <ClInclude Include="Graphics\Buffer.h" />
     <ClInclude Include="Graphics\BumpMapEffect.h" />
     <ClInclude Include="Graphics\Camera.h" />
+    <ClInclude Include="Graphics\CLODCollapseRecord.h" />
+    <ClInclude Include="Graphics\CLODMesh.h" />
+    <ClInclude Include="Graphics\CLODMeshCreator.h" />
     <ClInclude Include="Graphics\ComputeProgram.h" />
     <ClInclude Include="Graphics\ConstantBuffer.h" />
     <ClInclude Include="Graphics\ConstantColorEffect.h" />
