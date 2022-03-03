@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.03
 
 #pragma once
 
@@ -14,7 +14,7 @@
 // arithmetic and rational arithmetic for the predicate.
 
 #include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/FPInterval.h>
+#include <Mathematics/SWInterval.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/Vector2.h>
 
@@ -33,7 +33,7 @@ namespace gte
         // the exact predicate for sign computations.
         static int32_t constexpr NumWords = std::is_same<Real, float>::value ? 18 : 132;
         using Rational = BSNumber<UIntegerFP32<NumWords>>;
-        using Interval = FPInterval<Real>;
+        using Interval = SWInterval<Real>;
 
         // The class is a functor to support computing the convex hull of
         // multiple data sets using the same class object.
