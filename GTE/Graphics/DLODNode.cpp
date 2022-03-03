@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.02.11
+// Version: 6.2.2022.03.03
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/DLODNode.h>
@@ -12,6 +12,8 @@ using namespace gte;
 
 DLODNode::DLODNode(int32_t numLevelsOfDetail)
     :
+    mModelLODCenter(Vector4<float>::Zero()),
+    mWorldLODCenter(Vector4<float>::Zero()),
     mNumLevelsOfDetail(numLevelsOfDetail),
     mModelMinDistance{},
     mModelMaxDistance{},
