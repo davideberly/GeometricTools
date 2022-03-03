@@ -3,16 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.03
 
 #include "MinimumAreaBox2DWindow2.h"
-#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/MinimumWidthPoints2.h>
 #include <Mathematics/MinimumAreaBox2.h>
 #include <random>
 
 MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     :
-    Window2(parameters)
+    Window2(parameters),
+    mVertices{},
+    mMinimalBox{},
+    mHull{},
+    mMinimumWidth(0.0f),
+    mMinimumWidthLines{}
 {
     if (!SetEnvironment())
     {
@@ -22,8 +27,10 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
 
     // Compute the convex hull internally using arbitrary precision
     // arithmetic.
-    typedef BSRational<UIntegerAP32> MABRational;
-    MinimumAreaBox2<float, MABRational> mab2;
+    //typedef BSRational<UIntegerAP32> MABRational;
+    using MABRational = double;
+    MinimumAreaBox2<float, MABRational> mab2{};
+    MinimumWidthPoints2<float> mwp2{};
 
 #if 1
     // Randomly generated points.
@@ -42,19 +49,32 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
         float radius = rnd(mte);
         // The casting is to avoid an incorrect compiler warning by g++
         // on Fedora 21 Linux.
-        float u[2];
-        u[0] = extent[0] * static_cast<float>(std::cos(angle));
-        u[1] = extent[1] * static_cast<float>(std::sin(angle));
+        std::array<float, 2> u =
+        {
+            extent[0] * static_cast<float>(std::cos(angle)),
+            extent[1] * static_cast<float>(std::sin(angle))
+        };
         v = center + radius * (u[0] * axis[0] + u[1] * axis[1]);
     }
 
     mMinimalBox = mab2(numVertices, &mVertices[0]);
+
+    auto result = mwp2(mVertices, false);
+    mMinimumWidth = result.width;
+    auto const& V = mVertices[result.vertex];
+    auto const& E0 = mVertices[result.edge[0]];
+    auto const& E1 = mVertices[result.edge[1]];
+    mMinimumWidthLines[0].origin = E0;
+    mMinimumWidthLines[0].direction = E1 - E0;
+    Normalize(mMinimumWidthLines[0].direction);
+    mMinimumWidthLines[1].origin = V;
+    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
 #endif
 
 #if 0
     std::string path = mEnvironment.GetPath("convexpolygon.txt");
     std::ifstream input(path);
-    int32_t numVertices;
+    int32_t numVertices{};
     input >> numVertices;
     mVertices.resize(numVertices);
     std::vector<int32_t> indices(numVertices);
@@ -68,8 +88,30 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
 
 #if 1
     mMinimalBox = mab2(numVertices, &mVertices[0], numVertices, &indices[0]);
+
+    auto result = mwp2(mVertices, false);
+    mMinimumWidth = result.width;
+    auto const& V = mVertices[result.vertex];
+    auto const& E0 = mVertices[result.edge[0]];
+    auto const& E1 = mVertices[result.edge[1]];
+    mMinimumWidthLines[0].origin = E0;
+    mMinimumWidthLines[0].direction = E1 - E0;
+    Normalize(mMinimumWidthLines[0].direction);
+    mMinimumWidthLines[1].origin = V;
+    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
 #else
     mMinimalBox = mab2(numVertices, &mVertices[0], 0, nullptr);
+
+    auto result = mwp2(mVertices, false);
+    mMinimumWidth = result.width;
+    auto const& V = mVertices[result.vertex];
+    auto const& E0 = mVertices[result.edge[0]];
+    auto const& E1 = mVertices[result.edge[1]];
+    mMinimumWidthLines[0].origin = E0;
+    mMinimumWidthLines[0].direction = E1 - E0;
+    Normalize(mMinimumWidthLines[0].direction);
+    mMinimumWidthLines[1].origin = V;
+    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
 #endif
 
 #endif
@@ -102,8 +144,8 @@ void MinimumAreaBox2DWindow2::OnDisplay()
 {
     ClearScreen(0xFFFFFFFF);
 
-    // Draw the convex hull.
-    int32_t i0, i1, x0, y0, x1, y1;
+    // Draw the convex hull (red).
+    int32_t i0{}, i1{}, x0{}, y0{}, x1{}, y1{};
     int32_t numHull = static_cast<int32_t>(mHull.size());
     for (i0 = numHull - 1, i1 = 0; i1 < numHull; i0 = i1++)
     {
@@ -114,7 +156,7 @@ void MinimumAreaBox2DWindow2::OnDisplay()
         DrawLine(x0, y0, x1, y1, 0xFF0000FF);
     }
 
-    // Draw the minimum area box.
+    // Draw the minimum area box (blue).
     int32_t const lookup[4][2] = { { 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 } };
     std::array<Vector2<float>, 4> vertex;
     mMinimalBox.GetVertices(vertex);
@@ -127,7 +169,22 @@ void MinimumAreaBox2DWindow2::OnDisplay()
         DrawLine(x0, y0, x1, y1, 0xFFFF0000);
     }
 
-    // Draw the input points.
+    // Draw the minimum width lines (green);
+    float const extent = 2.0f * static_cast<float>(mXSize);
+    for (size_t i = 0; i < 2; ++i)
+    {
+        Vector2<float> const& V = mMinimumWidthLines[i].origin;
+        Vector2<float> const& D = mMinimumWidthLines[i].direction;
+        Vector2<float> end0 = V - extent * D;
+        Vector2<float> end1 = V + extent * D;
+        x0 = static_cast<int32_t>(std::lrint(end0[0]));
+        y0 = static_cast<int32_t>(std::lrint(end0[1]));
+        x1 = static_cast<int32_t>(std::lrint(end1[0]));
+        y1 = static_cast<int32_t>(std::lrint(end1[1]));
+        DrawLine(x0, y0, x1, y1, 0xFF00FF00);
+    }
+
+    // Draw the input points (gray).
     for (auto const& v : mVertices)
     {
         int32_t x = static_cast<int32_t>(std::lrint(v[0]));
@@ -137,6 +194,23 @@ void MinimumAreaBox2DWindow2::OnDisplay()
 
     mScreenTextureNeedsUpdate = true;
     Window2::OnDisplay();
+}
+
+void MinimumAreaBox2DWindow2::DrawScreenOverlay()
+{
+    float minimumArea = mMinimalBox.extent[0] * mMinimalBox.extent[1];
+
+    std::string message = "minimum area = " + std::to_string(minimumArea);
+    mEngine->Draw(8, 24, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+
+    message = "box side-length[0] = " + std::to_string(2.0f * mMinimalBox.extent[0]);
+    mEngine->Draw(8, 48, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+
+    message = "box side-length[1] = " + std::to_string(2.0f * mMinimalBox.extent[1]);
+    mEngine->Draw(8, 72, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+
+    message = "minimum width = " + std::to_string(mMinimumWidth);
+    mEngine->Draw(8, 96, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
 }
 
 bool MinimumAreaBox2DWindow2::SetEnvironment()

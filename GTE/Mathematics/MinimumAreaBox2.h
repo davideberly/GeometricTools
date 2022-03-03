@@ -3,29 +3,30 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.03
 
 #pragma once
 
 #include <Mathematics/OrientedBox.h>
 #include <Mathematics/ConvexHull2.h>
 
-// Compute a minimum-area oriented box containing the specified points.  The
-// algorithm uses the rotating calipers method.
-//   http://www-cgrl.cs.mcgill.ca/~godfried/research/calipers.html
-//   http://cgm.cs.mcgill.ca/~orm/rotcal.html
+// Compute a minimum-area oriented box containing the specified points. The
+// algorithm uses the rotating calipers method, but with a dual pair of
+// calipers. For details, see
+// http://www-cgrl.cs.mcgill.ca/~godfried/research/calipers.html
+// https://web.archive.org/web/20150330010154/http://cgm.cs.mcgill.ca/~orm/rotcal.html
 // The box is supported by the convex hull of the points, so the algorithm
 // is really about computing the minimum-area box containing a convex polygon.
 // The rotating calipers approach is O(n) in time for n polygon edges.
 //
 // A detailed description of the algorithm and implementation is found in
-//   https://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
+// https://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
 //
 // NOTE: This algorithm guarantees a correct output only when ComputeType is
-// an exact arithmetic type that supports division.  In GTEngine, one such
-// type is BSRational<UIntegerAP32> (arbitrary precision).  Another such type
+// an exact arithmetic type that supports division. In GTEngine, one such
+// type is BSRational<UIntegerAP32> (arbitrary precision). Another such type
 // is BSRational<UIntegerFP32<N>> (fixed precision), where N is chosen large
-// enough for your input data sets.  If you choose ComputeType to be 'float'
+// enough for your input data sets. If you choose ComputeType to be 'float'
 // or 'double', the output is not guaranteed to be correct.
 //
 // See GeometricTools/GTEngine/Samples/Geometrics/MinimumAreaBox2 for an
@@ -44,56 +45,52 @@ namespace gte
             mNumPoints(0),
             mPoints(nullptr),
             mSupportIndices{ 0, 0, 0, 0 },
-            mArea((InputType)0),
-            mZero(0),
-            mOne(1),
-            mNegOne(-1),
-            mHalf((InputType)0.5)
+            mArea(static_cast<InputType>(0))
         {
         }
 
         // The points are arbitrary, so we must compute the convex hull from
-        // them in order to compute the minimum-area box.  The input
-        // parameters are necessary for using ConvexHull2.  NOTE:  ConvexHull2
-        // guarantees that the hull does not have three consecutive collinear
-        // points.
+        // them in order to compute the minimum-area box. The input parameters
+        // are necessary for using ConvexHull2. NOTE: ConvexHull2 guarantees
+        // that the hull does not have three consecutive collinear points.
         OrientedBox2<InputType> operator()(int32_t numPoints,
             Vector2<InputType> const* points,
             bool useRotatingCalipers = !std::is_floating_point<ComputeType>::value)
         {
+            InputType const zero = static_cast<InputType>(0);
             mNumPoints = numPoints;
             mPoints = points;
             mHull.clear();
 
             // Get the convex hull of the points.
-            ConvexHull2<InputType> ch2;
-            ch2(mNumPoints, mPoints, (InputType)0);
+            ConvexHull2<InputType> ch2{};
+            ch2(mNumPoints, mPoints, zero);
             int32_t dimension = ch2.GetDimension();
 
-            OrientedBox2<InputType> minBox;
+            OrientedBox2<InputType> minBox{};
 
             if (dimension == 0)
             {
-                // The points are all effectively the same (using fuzzy
-                // epsilon).
+                // The points are all the same.
                 minBox.center = mPoints[0];
                 minBox.axis[0] = Vector2<InputType>::Unit(0);
                 minBox.axis[1] = Vector2<InputType>::Unit(1);
-                minBox.extent[0] = (InputType)0;
-                minBox.extent[1] = (InputType)0;
+                minBox.extent[0] = zero;
+                minBox.extent[1] = zero;
                 mHull.resize(1);
                 mHull[0] = 0;
                 return minBox;
             }
 
+            InputType const half = static_cast<InputType>(0.5);
             if (dimension == 1)
             {
-                // The points effectively lie on a line (using fuzzy epsilon).
-                // Determine the extreme t-values for the points represented
-                // as P = origin + t*direction.  We know that 'origin' is an
-                // input vertex, so we can start both t-extremes at zero.
+                // The points lie on a line. Determine the extreme t-values
+                // for the points represented as P = origin + t*direction. We
+                // know that 'origin' is an/ input vertex, so we can start
+                // both t-extremes at zero.
                 Line2<InputType> const& line = ch2.GetLine();
-                InputType tmin = (InputType)0, tmax = (InputType)0;
+                InputType tmin = zero, tmax = zero;
                 int32_t imin = 0, imax = 0;
                 for (int32_t i = 0; i < mNumPoints; ++i)
                 {
@@ -111,9 +108,9 @@ namespace gte
                     }
                 }
 
-                minBox.center = line.origin + (InputType)0.5 * (tmin + tmax) * line.direction;
-                minBox.extent[0] = (InputType)0.5 * (tmax - tmin);
-                minBox.extent[1] = (InputType)0;
+                minBox.center = line.origin + half * (tmin + tmax) * line.direction;
+                minBox.extent[0] = half * (tmax - tmin);
+                minBox.extent[1] = zero;
                 minBox.axis[0] = line.direction;
                 minBox.axis[1] = -Perp(line.direction);
                 mHull.resize(2);
@@ -135,7 +132,7 @@ namespace gte
 
             RemoveCollinearPoints(computePoints);
 
-            Box box;
+            Box box{};
             if (useRotatingCalipers)
             {
                 box = ComputeBoxForEdgeOrderN(computePoints);
@@ -149,10 +146,21 @@ namespace gte
             return minBox;
         }
 
+        // The points are arbitrary, so the convex hull must be computed from
+        // them to obtain the convex polygon whose minimum width is the
+        // desired output.
+        OrientedBox2<InputType> operator()(
+            std::vector<Vector2<InputType>> const& points,
+            bool useRotatingCalipers = !std::is_floating_point<ComputeType>::value)
+        {
+            return operator()(static_cast<int32_t>(points.size()),
+                points.data(), useRotatingCalipers);
+        }
+
         // The points already form a counterclockwise, nondegenerate convex
-        // polygon.  If the points directly are the convex polygon, set
-        // numIndices to 0 and indices to nullptr.  If the polygon vertices
-        // are a subset of the incoming points, that subset is identified by
+        // polygon. If the points directly are the convex polygon, pass an
+        // indices object with 0 elements. If the polygon vertices are a
+        // subset of the incoming points, that subset is identified by
         // numIndices >= 3 and indices having numIndices elements.
         OrientedBox2<InputType> operator()(int32_t numPoints,
             Vector2<InputType> const* points, int32_t numIndices, int32_t const* indices,
@@ -160,7 +168,7 @@ namespace gte
         {
             mHull.clear();
 
-            OrientedBox2<InputType> minBox;
+            OrientedBox2<InputType> minBox{};
 
             if (numPoints < 3 || !points || (indices && numIndices < 3))
             {
@@ -196,7 +204,7 @@ namespace gte
 
             RemoveCollinearPoints(computePoints);
 
-            Box box;
+            Box box{};
             if (useRotatingCalipers)
             {
                 box = ComputeBoxForEdgeOrderN(computePoints);
@@ -208,6 +216,28 @@ namespace gte
 
             ConvertTo(box, computePoints, minBox);
             return minBox;
+        }
+
+        // The points already form a counterclockwise, nondegenerate convex
+        // polygon. If the points directly are the convex polygon, pass an
+        // indices object with 0 elements. If the polygon vertices are a
+        // subset of the incoming points, that subset is identified by
+        // numIndices >= 3 and indices having numIndices elements.
+        OrientedBox2<InputType> operator()(
+            std::vector<Vector2<InputType>> const& points,
+            std::vector<int32_t> const& indices,
+            bool useRotatingCalipers = !std::is_floating_point<ComputeType>::value)
+        {
+            if (indices.size() > 0)
+            {
+                return operator()(static_cast<int32_t>(points.size()),
+                    points.data(), static_cast<int32_t>(indices.size()),
+                    indices.data(), useRotatingCalipers);
+            }
+            else
+            {
+                return operator()(points, useRotatingCalipers);
+            }
         }
 
         // Member access.
@@ -238,9 +268,9 @@ namespace gte
 
     private:
         // The box axes are U[i] and are usually not unit-length in order to
-        // allow exact arithmetic.  The box is supported by mPoints[index[i]],
-        // where i is one of the enumerations above.  The box axes are not
-        // necessarily unit length, but they have the same length.  They need
+        // allow exact arithmetic. The box is supported by mPoints[index[i]],
+        // where i is one of the enumerations above. The box axes are not
+        // necessarily unit length, but they have the same length. They need
         // to be normalized for conversion back to InputType.
         struct Box
         {
@@ -259,13 +289,14 @@ namespace gte
         };
 
         // The rotating calipers algorithm has a loop invariant that requires
-        // the convex polygon not to have collinear points.  Any such points
-        // must be removed first.  The code is also executed for the O(n^2)
+        // the convex polygon not to have collinear points. Any such points
+        // must be removed first. The code is also executed for the O(n^2)
         // algorithm to reduce the number of process edges.
         void RemoveCollinearPoints(std::vector<Vector2<ComputeType>>& vertices)
         {
             std::vector<Vector2<ComputeType>> tmpVertices = vertices;
 
+            ComputeType const zero = static_cast<ComputeType>(0);
             int32_t const numVertices = static_cast<int32_t>(vertices.size());
             int32_t numNoncollinear = 0;
             Vector2<ComputeType> ePrev = tmpVertices[0] - tmpVertices.back();
@@ -274,7 +305,7 @@ namespace gte
                 Vector2<ComputeType> eNext = tmpVertices[i1] - tmpVertices[i0];
 
                 ComputeType dp = DotPerp(ePrev, eNext);
-                if (dp != mZero)
+                if (dp != zero)
                 {
                     vertices[numNoncollinear++] = tmpVertices[i0];
                 }
@@ -292,13 +323,14 @@ namespace gte
         // This is the slow O(n^2) search.
         Box ComputeBoxForEdgeOrderNSqr(std::vector<Vector2<ComputeType>> const& vertices)
         {
-            Box minBox;
-            minBox.area = mNegOne;
+            ComputeType const negOne = static_cast<ComputeType>(-1);
+            Box minBox{};
+            minBox.area = negOne;
             int32_t const numIndices = static_cast<int32_t>(vertices.size());
             for (int32_t i0 = numIndices - 1, i1 = 0; i1 < numIndices; i0 = i1++)
             {
                 Box box = SmallestBox(i0, i1, vertices);
-                if (minBox.area == mNegOne || box.area < minBox.area)
+                if (minBox.area == negOne || box.area < minBox.area)
                 {
                     minBox = box;
                 }
@@ -310,20 +342,20 @@ namespace gte
         Box ComputeBoxForEdgeOrderN(std::vector<Vector2<ComputeType>> const& vertices)
         {
             // The inputs are assumed to be the vertices of a convex polygon
-            // that is counterclockwise ordered.  The input points must not
+            // that is counterclockwise ordered. The input points must not
             // contain three consecutive collinear points.
 
             // When the bounding box corresponding to a polygon edge is
-            // computed, we mark the edge as visited.  If the edge is
+            // computed, we mark the edge as visited. If the edge is
             // encountered later, the algorithm terminates.
             std::vector<bool> visited(vertices.size());
             std::fill(visited.begin(), visited.end(), false);
 
             // Start the minimum-area rectangle search with the edge from the
-            // last polygon vertex to the first.  When updating the extremes,
+            // last polygon vertex to the first. When updating the extremes,
             // we want the bottom-most point on the left edge, the top-most
             // point on the right edge, the left-most point on the top edge,
-            // and the right-most point on the bottom edge.  The polygon edges
+            // and the right-most point on the bottom edge. The polygon edges
             // starting at these points are then guaranteed not to coincide
             // with a box edge except when an extreme point is shared by two
             // box edges (at a corner).
@@ -334,8 +366,8 @@ namespace gte
             Box box = minBox;
             for (size_t i = 0; i < vertices.size(); ++i)
             {
-                std::array<std::pair<ComputeType, int32_t>, 4> A;
-                int32_t numA;
+                std::array<std::pair<ComputeType, int32_t>, 4> A{};
+                int32_t numA{};
                 if (!ComputeAngles(vertices, box, A, numA))
                 {
                     // The polygon is a rectangle, so the search is over.
@@ -366,17 +398,18 @@ namespace gte
         // Compute the smallest box for the polygon edge <V[i0],V[i1]>.
         Box SmallestBox(int32_t i0, int32_t i1, std::vector<Vector2<ComputeType>> const& vertices)
         {
-            Box box;
+            Box box{};
             box.U[0] = vertices[i1] - vertices[i0];
             box.U[1] = -Perp(box.U[0]);
             box.index = { i1, i1, i1, i1 };
             box.sqrLenU0 = Dot(box.U[0], box.U[0]);
 
+            ComputeType const zero = static_cast<ComputeType>(0);
             Vector2<ComputeType> const& origin = vertices[i1];
-            Vector2<ComputeType> support[4];
-            for (int32_t j = 0; j < 4; ++j)
+            std::array<Vector2<ComputeType>, 4> support{};
+            for (size_t j = 0; j < 4; ++j)
             {
-                support[j] = { mZero, mZero };
+                support[j] = { zero, zero };
             }
 
             int32_t i = 0;
@@ -432,11 +465,12 @@ namespace gte
         }
 
         // Compute (sin(angle))^2 for the polygon edges emanating from the
-        // support vertices of the box.  The return value is 'true' if at
+        // support vertices of the box. The return value is 'true' if at
         // least one angle is in [0,pi/2); otherwise, the return value is
         // 'false' and the original polygon must be a rectangle.
         bool ComputeAngles(std::vector<Vector2<ComputeType>> const& vertices,
-            Box const& box, std::array<std::pair<ComputeType, int32_t>, 4>& A, int32_t& numA) const
+            Box const& box, std::array<std::pair<ComputeType, int32_t>, 4>& A,
+            int32_t& numA) const
         {
             int32_t const numVertices = static_cast<int32_t>(vertices.size());
             numA = 0;
@@ -463,10 +497,12 @@ namespace gte
             return numA > 0;
         }
 
-        // Sort the angles indirectly.  The sorted indices are returned.
-        // This avoids swapping elements of A[], which can be expensive when
+        // Sort the angles indirectly. The sorted indices are returned. This
+        // avoids swapping elements of A[], which can be expensive when
         // ComputeType is an exact rational type.
-        std::array<int32_t, 4> SortAngles(std::array<std::pair<ComputeType, int32_t>, 4> const& A, int32_t numA) const
+        std::array<int32_t, 4> SortAngles(
+            std::array<std::pair<ComputeType, int32_t>, 4> const& A,
+            int32_t numA) const
         {
             std::array<int32_t, 4> sort = { 0, 1, 2, 3 };
             if (numA > 1)
@@ -520,8 +556,8 @@ namespace gte
             return sort;
         }
 
-        bool UpdateSupport(std::array<std::pair<ComputeType, int32_t>, 4> const& A,
-            int32_t numA, std::array<int32_t, 4> const& sort,
+        bool UpdateSupport(std::array<std::pair<ComputeType,
+            int32_t>, 4> const& A, int32_t numA, std::array<int32_t, 4> const& sort,
             std::vector<Vector2<ComputeType>> const& vertices,
             std::vector<bool>& visited, Box& box)
         {
@@ -539,10 +575,6 @@ namespace gte
                         box.index[a.second] = 0;
                     }
                 }
-                else
-                {
-                    break;
-                }
             }
 
             int32_t bottom = box.index[amin.second];
@@ -554,7 +586,7 @@ namespace gte
             visited[bottom] = true;
 
             // Cycle the vertices so that the bottom support occurs first.
-            std::array<int32_t, 4> nextIndex;
+            std::array<int32_t, 4> nextIndex{};
             for (int32_t k = 0; k < 4; ++k)
             {
                 nextIndex[k] = box.index[(amin.second + k) % 4];
@@ -572,7 +604,7 @@ namespace gte
             box.sqrLenU0 = Dot(box.U[0], box.U[0]);
 
             // Compute the box area.
-            Vector2<ComputeType> diff[2] =
+            std::array<Vector2<ComputeType>, 2> diff =
             {
                 vertices[box.index[1]] - vertices[box.index[3]],
                 vertices[box.index[2]] - vertices[box.index[0]]
@@ -581,7 +613,7 @@ namespace gte
             return true;
         }
 
-        // Convert the ComputeType box to the InputType box.  When the
+        // Convert the ComputeType box to the InputType box. When the
         // ComputeType is an exact rational type, the conversions are
         // performed to avoid precision loss until necessary at the last step.
         void ConvertTo(Box const& minBox,
@@ -589,36 +621,38 @@ namespace gte
             OrientedBox2<InputType>& itMinBox)
         {
             // The sum, difference, and center are all computed exactly.
-            Vector2<ComputeType> sum[2] =
+            std::array<Vector2<ComputeType>, 2> sum =
             {
                 computePoints[minBox.index[1]] + computePoints[minBox.index[3]],
                 computePoints[minBox.index[2]] + computePoints[minBox.index[0]]
             };
 
-            Vector2<ComputeType> difference[2] =
+            std::array<Vector2<ComputeType>, 2> difference =
             {
                 computePoints[minBox.index[1]] - computePoints[minBox.index[3]],
                 computePoints[minBox.index[2]] - computePoints[minBox.index[0]]
             };
 
-            Vector2<ComputeType> center = mHalf * (
+            ComputeType const half = static_cast<ComputeType>(0.5);
+            Vector2<ComputeType> center = half * (
                 Dot(minBox.U[0], sum[0]) * minBox.U[0] +
                 Dot(minBox.U[1], sum[1]) * minBox.U[1]) / minBox.sqrLenU0;
 
             // Calculate the squared extent using ComputeType to avoid loss of
             // precision before computing a squared root.
-            Vector2<ComputeType> sqrExtent;
+            Vector2<ComputeType> sqrExtent{};
             for (int32_t i = 0; i < 2; ++i)
             {
-                sqrExtent[i] = mHalf * Dot(minBox.U[i], difference[i]);
+                sqrExtent[i] = half * Dot(minBox.U[i], difference[i]);
                 sqrExtent[i] *= sqrExtent[i];
                 sqrExtent[i] /= minBox.sqrLenU0;
             }
 
+            ComputeType const one = static_cast<ComputeType>(1);
             for (int32_t i = 0; i < 2; ++i)
             {
-                itMinBox.center[i] = (InputType)center[i];
-                itMinBox.extent[i] = std::sqrt((InputType)sqrExtent[i]);
+                itMinBox.center[i] = static_cast<InputType>(center[i]);
+                itMinBox.extent[i] = std::sqrt(static_cast<InputType>(sqrExtent[i]));
 
                 // Before converting to floating-point, factor out the maximum
                 // component using ComputeType to generate rational numbers in
@@ -626,16 +660,16 @@ namespace gte
                 // and normalization.
                 Vector2<ComputeType> const& axis = minBox.U[i];
                 ComputeType cmax = std::max(std::fabs(axis[0]), std::fabs(axis[1]));
-                ComputeType invCMax = mOne / cmax;
+                ComputeType invCMax = one / cmax;
                 for (int32_t j = 0; j < 2; ++j)
                 {
-                    itMinBox.axis[i][j] = (InputType)(axis[j] * invCMax);
+                    itMinBox.axis[i][j] = static_cast<InputType>(axis[j] * invCMax);
                 }
                 Normalize(itMinBox.axis[i]);
             }
 
             mSupportIndices = minBox.index;
-            mArea = (InputType)minBox.area;
+            mArea = static_cast<InputType>(minBox.area);
         }
 
         // The input points to be bound.
@@ -649,14 +683,10 @@ namespace gte
         // The support indices for the minimum-area box.
         std::array<int32_t, 4> mSupportIndices;
 
-        // The area of the minimum-area box.  The ComputeType value is
-        // exact,  so the only rounding errors occur in the conversion from
+        // The area of the minimum-area box. The ComputeType value is exact,
+        // so the only rounding errors occur in the conversion from
         // ComputeType to InputType (default rounding mode is
         // round-to-nearest-ties-to-even).
         InputType mArea;
-
-        // Convenient values that occur regularly in the code.  When using
-        // rational ComputeType, we construct these numbers only once.
-        ComputeType mZero, mOne, mNegOne, mHalf;
     };
 }

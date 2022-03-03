@@ -1515,5 +1515,11 @@
     <ClInclude Include="Mathematics\ApprCone3EllipseAndPoints.h">
       <Filter>Approximation</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\RotatingCalipers.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\MinimumWidthPoints2.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

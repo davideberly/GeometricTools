@@ -371,6 +371,7 @@
     <ClInclude Include="Mathematics\MeshCurvature.h" />
     <ClInclude Include="Mathematics\Minimize1.h" />
     <ClInclude Include="Mathematics\MinimizeN.h" />
+    <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
     <ClInclude Include="Mathematics\OdeEuler.h" />
     <ClInclude Include="Mathematics\OdeImplicitEuler.h" />
     <ClInclude Include="Mathematics\OdeMidpoint.h" />
@@ -403,6 +404,7 @@
     <ClInclude Include="Mathematics\RootsBisection2.h" />
     <ClInclude Include="Mathematics\RootsBrentsMethod.h" />
     <ClInclude Include="Mathematics\RootsPolynomial.h" />
+    <ClInclude Include="Mathematics\RotatingCalipers.h" />
     <ClInclude Include="Mathematics\RotationEstimate.h" />
     <ClInclude Include="Mathematics\Sector2.h" />
     <ClInclude Include="Mathematics\Segment.h" />

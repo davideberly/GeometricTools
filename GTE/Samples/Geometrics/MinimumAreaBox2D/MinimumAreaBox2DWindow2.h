@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.03
 
 #pragma once
 
 #include <Applications/Window2.h>
+#include <Mathematics/Line.h>
 #include <Mathematics/OrientedBox.h>
 using namespace gte;
 
@@ -17,6 +18,7 @@ public:
     MinimumAreaBox2DWindow2(Parameters& parameters);
 
     virtual void OnDisplay() override;
+    virtual void DrawScreenOverlay();
 
 private:
     bool SetEnvironment();
@@ -24,4 +26,6 @@ private:
     std::vector<Vector2<float>> mVertices;
     OrientedBox2<float> mMinimalBox;
     std::vector<int32_t> mHull;
+    float mMinimumWidth;
+    std::array<Line2<float>, 2> mMinimumWidthLines;
 };
