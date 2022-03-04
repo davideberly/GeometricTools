@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.03
+// Version: 6.0.2022.03.04
 
 #include "MinimumAreaBox2DWindow2.h"
 #include <Mathematics/MinimumWidthPoints2.h>
@@ -14,10 +14,9 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     :
     Window2(parameters),
     mVertices{},
-    mMinimalBox{},
-    mHull{},
-    mMinimumWidth(0.0f),
-    mMinimumWidthLines{}
+    mMinimalAreaBox{},
+    mMinimalWidthBox{},
+    mHull{}
 {
     if (!SetEnvironment())
     {
@@ -31,6 +30,7 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     using MABRational = double;
     MinimumAreaBox2<float, MABRational> mab2{};
     MinimumWidthPoints2<float> mwp2{};
+    bool useRotatingCalipers = true;
 
 #if 1
     // Randomly generated points.
@@ -57,18 +57,8 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
         v = center + radius * (u[0] * axis[0] + u[1] * axis[1]);
     }
 
-    mMinimalBox = mab2(numVertices, &mVertices[0]);
-
-    auto result = mwp2(mVertices, false);
-    mMinimumWidth = result.width;
-    auto const& V = mVertices[result.vertex];
-    auto const& E0 = mVertices[result.edge[0]];
-    auto const& E1 = mVertices[result.edge[1]];
-    mMinimumWidthLines[0].origin = E0;
-    mMinimumWidthLines[0].direction = E1 - E0;
-    Normalize(mMinimumWidthLines[0].direction);
-    mMinimumWidthLines[1].origin = V;
-    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
+    mMinimalAreaBox = mab2(numVertices, &mVertices[0]);
+    mMinimalWidthBox = mwp2(mVertices, useRotatingCalipers);
 #endif
 
 #if 0
@@ -87,31 +77,11 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     input.close();
 
 #if 1
-    mMinimalBox = mab2(numVertices, &mVertices[0], numVertices, &indices[0]);
-
-    auto result = mwp2(mVertices, false);
-    mMinimumWidth = result.width;
-    auto const& V = mVertices[result.vertex];
-    auto const& E0 = mVertices[result.edge[0]];
-    auto const& E1 = mVertices[result.edge[1]];
-    mMinimumWidthLines[0].origin = E0;
-    mMinimumWidthLines[0].direction = E1 - E0;
-    Normalize(mMinimumWidthLines[0].direction);
-    mMinimumWidthLines[1].origin = V;
-    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
+    mMinimalAreaBox = mab2(numVertices, &mVertices[0], numVertices, &indices[0]);
+    mMinimalWidthBox = mwp2(mVertices, useRotatingCalipers);
 #else
-    mMinimalBox = mab2(numVertices, &mVertices[0], 0, nullptr);
-
-    auto result = mwp2(mVertices, false);
-    mMinimumWidth = result.width;
-    auto const& V = mVertices[result.vertex];
-    auto const& E0 = mVertices[result.edge[0]];
-    auto const& E1 = mVertices[result.edge[1]];
-    mMinimumWidthLines[0].origin = E0;
-    mMinimumWidthLines[0].direction = E1 - E0;
-    Normalize(mMinimumWidthLines[0].direction);
-    mMinimumWidthLines[1].origin = V;
-    mMinimumWidthLines[1].direction = mMinimumWidthLines[0].direction;
+    mMinimalAreaBox = mab2(numVertices, &mVertices[0], 0, nullptr);
+    mMinimalWidthBox = mwp2(mVertices, useRotatingCalipers);
 #endif
 
 #endif
@@ -135,6 +105,7 @@ MinimumAreaBox2DWindow2::MinimumAreaBox2DWindow2(Parameters& parameters)
     }
 
     mMinimalBox = mab2(9, &mVertices[0], 0, nullptr);
+    mMinimalWidthBox = mwp2(mVertices, useRotatingCalipers);
 #endif
 
     mHull = mab2.GetHull();
@@ -159,7 +130,7 @@ void MinimumAreaBox2DWindow2::OnDisplay()
     // Draw the minimum area box (blue).
     int32_t const lookup[4][2] = { { 0, 1 }, { 1, 3 }, { 3, 2 }, { 2, 0 } };
     std::array<Vector2<float>, 4> vertex;
-    mMinimalBox.GetVertices(vertex);
+    mMinimalAreaBox.GetVertices(vertex);
     for (int32_t i = 0; i < 4; ++i)
     {
         x0 = static_cast<int32_t>(std::lrint(vertex[lookup[i][0]][0]));
@@ -169,19 +140,15 @@ void MinimumAreaBox2DWindow2::OnDisplay()
         DrawLine(x0, y0, x1, y1, 0xFFFF0000);
     }
 
-    // Draw the minimum width lines (green);
-    float const extent = 2.0f * static_cast<float>(mXSize);
-    for (size_t i = 0; i < 2; ++i)
+    // Draw the minimum width box (green).
+    mMinimalWidthBox.GetVertices(vertex);
+    for (int32_t i = 0; i < 4; ++i)
     {
-        Vector2<float> const& V = mMinimumWidthLines[i].origin;
-        Vector2<float> const& D = mMinimumWidthLines[i].direction;
-        Vector2<float> end0 = V - extent * D;
-        Vector2<float> end1 = V + extent * D;
-        x0 = static_cast<int32_t>(std::lrint(end0[0]));
-        y0 = static_cast<int32_t>(std::lrint(end0[1]));
-        x1 = static_cast<int32_t>(std::lrint(end1[0]));
-        y1 = static_cast<int32_t>(std::lrint(end1[1]));
-        DrawLine(x0, y0, x1, y1, 0xFF00FF00);
+        x0 = static_cast<int32_t>(std::lrint(vertex[lookup[i][0]][0]));
+        y0 = static_cast<int32_t>(std::lrint(vertex[lookup[i][0]][1]));
+        x1 = static_cast<int32_t>(std::lrint(vertex[lookup[i][1]][0]));
+        y1 = static_cast<int32_t>(std::lrint(vertex[lookup[i][1]][1]));
+        DrawLine(x0, y0, x1, y1, 0xFF00CD00);
     }
 
     // Draw the input points (gray).
@@ -198,19 +165,34 @@ void MinimumAreaBox2DWindow2::OnDisplay()
 
 void MinimumAreaBox2DWindow2::DrawScreenOverlay()
 {
-    float minimumArea = mMinimalBox.extent[0] * mMinimalBox.extent[1];
+    std::array<float, 4> minAreaColor = { 0.0f, 0.0f, 1.0f, 1.0f };
+    std::array<float, 4> minWidthColor = { 0.0f, 0.75f, 0.0f, 1.0f };
 
-    std::string message = "minimum area = " + std::to_string(minimumArea);
-    mEngine->Draw(8, 24, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+    Vector2<float> length = mMinimalAreaBox.extent;
+    if (length[0] > length[1])
+    {
+        std::swap(length[0], length[1]);
+    }
+    float area = length[0] * length[1];
+    std::string message = "min-area area = " + std::to_string(area);
+    mEngine->Draw(8, 24, minAreaColor, message);
 
-    message = "box side-length[0] = " + std::to_string(2.0f * mMinimalBox.extent[0]);
-    mEngine->Draw(8, 48, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+    message = "min-area width = " + std::to_string(2.0f * length[0]);
+    mEngine->Draw(8, 48, minAreaColor, message);
 
-    message = "box side-length[1] = " + std::to_string(2.0f * mMinimalBox.extent[1]);
-    mEngine->Draw(8, 72, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+    message = "min-area height = " + std::to_string(2.0f * length[1]);
+    mEngine->Draw(8, 72, minAreaColor, message);
 
-    message = "minimum width = " + std::to_string(mMinimumWidth);
-    mEngine->Draw(8, 96, { 0.0f, 0.0f, 0.0f, 1.0f }, message);
+    length = mMinimalWidthBox.extent;
+    area = length[0] * length[1];
+    message = "min-width area = " + std::to_string(area);
+    mEngine->Draw(8 + mXSize / 2, 24, minWidthColor, message);
+
+    message = "min-width width = " + std::to_string(2.0f * length[0]);
+    mEngine->Draw(8 + mXSize / 2, 48, minWidthColor, message);
+
+    message = "min-width height = " + std::to_string(2.0f * length[1]);
+    mEngine->Draw(8 + mXSize / 2, 72, minWidthColor, message);
 }
 
 bool MinimumAreaBox2DWindow2::SetEnvironment()
