@@ -335,6 +335,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLODMeshesGL45.v17", "Sampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FitConeByEllipseAndPointsGL45.v17", "Samples\Mathematics\FitConeByEllipseAndPoints\FitConeByEllipseAndPointsGL45.v17.vcxproj", "{997178B3-ADCD-4756-9994-2F6932806DB9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlanarReflectionsGL45.v17", "Samples\Graphics\PlanarReflections\PlanarReflectionsGL45.v17.vcxproj", "{E562AB9F-A45A-433D-81F2-1A4D997BF62C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1591,6 +1593,14 @@ Global
 		{997178B3-ADCD-4756-9994-2F6932806DB9}.Release|x64.Build.0 = Release|x64
 		{997178B3-ADCD-4756-9994-2F6932806DB9}.Release|x86.ActiveCfg = Release|Win32
 		{997178B3-ADCD-4756-9994-2F6932806DB9}.Release|x86.Build.0 = Release|Win32
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Debug|x64.ActiveCfg = Debug|x64
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Debug|x64.Build.0 = Debug|x64
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Debug|x86.ActiveCfg = Debug|Win32
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Debug|x86.Build.0 = Debug|Win32
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Release|x64.ActiveCfg = Release|x64
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Release|x64.Build.0 = Release|x64
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Release|x86.ActiveCfg = Release|Win32
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1760,6 +1770,7 @@ Global
 		{0FD1B4FA-A95E-4824-9711-BA9A0DFF8A2C} = {E54CDC7C-108C-4ED8-ADE3-19686D08F6C5}
 		{1F7A845D-9A70-46AD-B317-906C3161799F} = {E54CDC7C-108C-4ED8-ADE3-19686D08F6C5}
 		{997178B3-ADCD-4756-9994-2F6932806DB9} = {EBAAB217-F1FC-411B-82C2-CBF89C78F7A4}
+		{E562AB9F-A45A-433D-81F2-1A4D997BF62C} = {B40FD2B8-F29D-41AF-9424-4CD0DD80A472}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED7EAE6E-B55C-4B19-9F14-6DF816AB8730}

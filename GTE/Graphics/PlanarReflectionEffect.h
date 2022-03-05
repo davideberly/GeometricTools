@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.04
 
 #pragma once
 
@@ -46,6 +46,6 @@ namespace gte
         std::vector<Vector4<float>> mPlaneOrigins, mPlaneNormals;
         std::shared_ptr<BlendState> mNoColorWrites, mReflectanceBlend;
         std::shared_ptr<RasterizerState> mCullReverse;
-        std::shared_ptr<DepthStencilState> mDSPass0, mDSPass1, mDSPass2;
+        std::shared_ptr<DepthStencilState> mDSPass0, mDSPass1, mDSPass2, mDSPass3;
     };
 }

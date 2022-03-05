@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.04
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PlanarReflectionEffect.h>
@@ -85,8 +85,8 @@ PlanarReflectionEffect::PlanarReflectionEffect(
 
     // Turn off color writes.
     mNoColorWrites = std::make_shared<BlendState>();
-    mNoColorWrites->target[0].mask = 0;
     mNoColorWrites->target[0].enable = true;
+    mNoColorWrites->target[0].mask = 0;
 
     // Blend with a constant alpha.  The blend color is set for each
     // reflecting plane.
@@ -111,6 +111,10 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     mDSPass0->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
     mDSPass0->frontFace.pass = DepthStencilState::Operation::OP_REPLACE;
     mDSPass0->frontFace.comparison = DepthStencilState::Comparison::ALWAYS;
+    mDSPass0->backFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass0->backFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass0->backFace.pass = DepthStencilState::Operation::OP_REPLACE;
+    mDSPass0->backFace.comparison = DepthStencilState::Comparison::ALWAYS;
 
     mDSPass1 = std::make_shared<DepthStencilState>();
     mDSPass1->depthEnable = true;
@@ -121,6 +125,10 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     mDSPass1->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
     mDSPass1->frontFace.pass = DepthStencilState::Operation::OP_KEEP;
     mDSPass1->frontFace.comparison = DepthStencilState::Comparison::EQUAL;
+    mDSPass1->backFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->backFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->backFace.pass = DepthStencilState::Operation::OP_KEEP;
+    mDSPass1->backFace.comparison = DepthStencilState::Comparison::EQUAL;
 
     mDSPass2 = std::make_shared<DepthStencilState>();
     mDSPass2->depthEnable = true;
@@ -129,8 +137,26 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     mDSPass2->stencilEnable = true;
     mDSPass2->frontFace.fail = DepthStencilState::Operation::OP_KEEP;
     mDSPass2->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
-    mDSPass2->frontFace.pass = DepthStencilState::Operation::OP_ZERO;
+    mDSPass2->frontFace.pass = DepthStencilState::Operation::OP_KEEP;
     mDSPass2->frontFace.comparison = DepthStencilState::Comparison::EQUAL;
+    mDSPass2->backFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass2->backFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass2->backFace.pass = DepthStencilState::Operation::OP_KEEP;
+    mDSPass2->backFace.comparison = DepthStencilState::Comparison::EQUAL;
+
+    mDSPass3 = std::make_shared<DepthStencilState>();
+    mDSPass3->depthEnable = true;
+    mDSPass3->writeMask = DepthStencilState::WriteMask::ALL;
+    mDSPass3->comparison = DepthStencilState::Comparison::LESS_EQUAL;
+    mDSPass3->stencilEnable = true;
+    mDSPass3->frontFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass3->frontFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass3->frontFace.pass = DepthStencilState::Operation::OP_INVERT;
+    mDSPass3->frontFace.comparison = DepthStencilState::Comparison::EQUAL;
+    mDSPass3->backFace.fail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass3->backFace.depthFail = DepthStencilState::Operation::OP_KEEP;
+    mDSPass3->backFace.pass = DepthStencilState::Operation::OP_INVERT;
+    mDSPass3->backFace.comparison = DepthStencilState::Comparison::EQUAL;
 }
 
 void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
@@ -198,7 +224,6 @@ void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
         engine->SetDefaultBlendState();
         engine->SetDepthRange(maxDepth, maxDepth);
         engine->Draw(plane);
-        engine->SetDepthRange(minDepth, maxDepth);
 
         // Render the reflected object only at pixels corresponding to those
         // drawn for the current plane; that is, where the stencil buffer
@@ -220,7 +245,9 @@ void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
         Normalize(normal);
         camera->SetPreViewMatrix(MakeReflection(origin, normal));
         pvwMatrices.Update();
-        engine->SetDefaultDepthStencilState();
+        engine->SetDepthRange(minDepth, maxDepth);
+        mDSPass2->reference = reference;
+        engine->SetDepthStencilState(mDSPass2);
         engine->SetRasterizerState(mCullReverse);
         for (auto const& visual : visibleSet)
         {
@@ -237,10 +264,10 @@ void PlanarReflectionEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
         // zero) at pixels where the depth test passes.  The blending uses
         // the reflectance value for the plane,
         //   (1 - reflectance) * plane.rgba + reflectance * backbuffer.rgba
-        mDSPass2->reference = reference;
-        mReflectanceBlend->blendColor = { mReflectances[i], mReflectances[i],
-            mReflectances[i], mReflectances[i] };
-        engine->SetDepthStencilState(mDSPass2);
+        mDSPass3->reference = reference;
+        mReflectanceBlend->blendColor = { mReflectances[i],
+            mReflectances[i], mReflectances[i], mReflectances[i] };
+        engine->SetDepthStencilState(mDSPass3);
         engine->SetBlendState(mReflectanceBlend);
         engine->Draw(plane);
     }
