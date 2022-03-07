@@ -5,20 +5,24 @@
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 // Version: 6.2.2022.03.06
 
-#include "PlanarReflectionsWindow3.h"
+#include "PlanarShadowsWindow3.h"
 #include <Applications/WICFileIO.h>
 #include <Graphics/MeshFactory.h>
 #include <Graphics/Texture2Effect.h>
 
-PlanarReflectionsWindow3::PlanarReflectionsWindow3(Parameters& parameters)
+PlanarShadowsWindow3::PlanarShadowsWindow3(Parameters& parameters)
     :
     Window3(parameters),
+    mScene{},
     mFloor{},
     mWall{},
     mDodecahedron{},
     mTorus{},
-    mReflectionCaster{},
-    mPlanarReflectionEffect{}
+    mShadowCaster{},
+    mLightProjector{},
+    mPlanarShadowEffect{},
+    mLPPosition{ 0.0f, 0.0f, 0.0f, 0.0f },
+    mLPDirection{ 0.0f, 0.0f, 0.0f, 0.0f }
 {
     if (!SetEnvironment())
     {
@@ -26,15 +30,21 @@ PlanarReflectionsWindow3::PlanarReflectionsWindow3(Parameters& parameters)
         return;
     }
 
+    mLPPosition = { 64.0f, 32.0f, 16.0f, 1.0f };
+    mLPDirection = { -4.0f, -2.0f, -1.0f, 0.0f };
+    Normalize(mLPDirection);
+
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.001f, 0.01f,
         { 6.75f, 0.0f, 2.3f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
 
+    // The camera parameters must be set before calling CreateScene()
+    // because mLightProjector needs them.
     CreateScene();
 
     mPVWMatrices.Update();
 }
 
-void PlanarReflectionsWindow3::OnIdle()
+void PlanarShadowsWindow3::OnIdle()
 {
     mTimer.Measure();
 
@@ -43,15 +53,36 @@ void PlanarReflectionsWindow3::OnIdle()
         mPVWMatrices.Update();
     }
 
+    // Maintain the light projector position and direction to be relative
+    // to the scene. This ensures the shadow remains the same, which means
+    // the virtual trackball just gives you the same shadow-cast scene from
+    // different camera view points.
+    auto const& hMatrix = mTrackBall.GetRoot()->worldTransform.GetHMatrix();
+    mLightProjector->position = DoTransform(hMatrix, mLPPosition);
+    mLightProjector->direction = DoTransform(hMatrix, mLPDirection);
+
     mEngine->ClearBuffers();
-    mPlanarReflectionEffect->Draw(mEngine, mPVWMatrices);
+    mPlanarShadowEffect->Draw(mEngine, mPVWMatrices);
     mEngine->Draw(8, mYSize - 8, { 0.0f, 0.0f, 0.0f, 1.0f }, mTimer.GetFPS());
+    mEngine->Draw(8, 24, { 0.0f, 0.0f, 0.0f, 1.0f },
+        (mLightProjector->isPointLight ? "point light" : "directional light"));
     mEngine->DisplayColorBuffer(0);
 
     mTimer.UpdateFrameCount();
 }
 
-bool PlanarReflectionsWindow3::SetEnvironment()
+bool PlanarShadowsWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
+{
+    switch (key)
+    {
+    case ' ':
+        mLightProjector->isPointLight = !mLightProjector->isPointLight;
+        return true;
+    };
+    return Window3::OnCharPress(key, x, y);
+}
+
+bool PlanarShadowsWindow3::SetEnvironment()
 {
     std::string path = GetGTEPath();
     if (path == "")
@@ -80,7 +111,7 @@ bool PlanarReflectionsWindow3::SetEnvironment()
     return true;
 }
 
-void PlanarReflectionsWindow3::CreateScene()
+void PlanarShadowsWindow3::CreateScene()
 {
     mScene = std::make_shared<Node>();
     CreateFloor();
@@ -88,24 +119,33 @@ void PlanarReflectionsWindow3::CreateScene()
     CreateDodecahedron();
     CreateTorus();
 
-    mReflectionCaster = std::make_shared<Node>();
-    mReflectionCaster->AttachChild(mDodecahedron);
-    mReflectionCaster->AttachChild(mTorus);
+    mShadowCaster = std::make_shared<Node>();
+    mShadowCaster->AttachChild(mDodecahedron);
+    mShadowCaster->AttachChild(mTorus);
 
     mTrackBall.Attach(mScene);
     mScene->AttachChild(mFloor);
     mScene->AttachChild(mWall);
-    mScene->AttachChild(mReflectionCaster);
+    mScene->AttachChild(mShadowCaster);
 
+    mLightProjector = std::make_shared<PlanarShadowEffect::LightProjector>();
+    mLightProjector->isPointLight = false;
+
+    Vector4<float> black{ 0.0f, 0.0f, 0.0f, 1.0f };
+    std::vector<Vector4<float>> shadowColors =
+    {
+        Vector4<float>{ 1.0f, 0.0f, 0.0f, 0.25f },
+        Vector4<float>{ 0.0f, 1.0f, 0.0f, 0.25f }
+    };
     std::vector<std::shared_ptr<Visual>> planeVisuals = { mFloor, mWall };
-    std::vector<float> reflectances = { 0.2f, 0.5f };
-    mPlanarReflectionEffect = std::make_shared<PlanarReflectionEffect>(
-        mReflectionCaster, planeVisuals, reflectances);
+    mPlanarShadowEffect = std::make_shared<PlanarShadowEffect>(
+        mProgramFactory, mShadowCaster, mLightProjector, planeVisuals,
+        shadowColors);
 
     mTrackBall.Update();
 }
 
-void PlanarReflectionsWindow3::CreateFloor()
+void PlanarShadowsWindow3::CreateFloor()
 {
     VertexFormat vformat;
     vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
@@ -139,7 +179,7 @@ void PlanarReflectionsWindow3::CreateFloor()
     mPVWMatrices.Subscribe(mFloor);
 }
 
-void PlanarReflectionsWindow3::CreateWall()
+void PlanarShadowsWindow3::CreateWall()
 {
     VertexFormat vformat;
     vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
@@ -174,7 +214,7 @@ void PlanarReflectionsWindow3::CreateWall()
     mPVWMatrices.Subscribe(mWall);
 }
 
-void PlanarReflectionsWindow3::CreateDodecahedron()
+void PlanarShadowsWindow3::CreateDodecahedron()
 {
     VertexFormat vformat;
     vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
@@ -196,7 +236,7 @@ void PlanarReflectionsWindow3::CreateDodecahedron()
     mPVWMatrices.Subscribe(mDodecahedron);
 }
 
-void PlanarReflectionsWindow3::CreateTorus()
+void PlanarShadowsWindow3::CreateTorus()
 {
     VertexFormat vformat;
     vformat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);

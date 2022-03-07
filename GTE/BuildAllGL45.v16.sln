@@ -337,6 +337,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FitConeByEllipseAndPointsGL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlanarReflectionsGL45.v16", "Samples\Graphics\PlanarReflections\PlanarReflectionsGL45.v16.vcxproj", "{B00BAA53-1053-4BC1-9EFD-EE5B8B7ABD2A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlanarShadowsGL45.v16", "Samples\Graphics\PlanarShadows\PlanarShadowsGL45.v16.vcxproj", "{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1601,6 +1603,14 @@ Global
 		{B00BAA53-1053-4BC1-9EFD-EE5B8B7ABD2A}.Release|x64.Build.0 = Release|x64
 		{B00BAA53-1053-4BC1-9EFD-EE5B8B7ABD2A}.Release|x86.ActiveCfg = Release|Win32
 		{B00BAA53-1053-4BC1-9EFD-EE5B8B7ABD2A}.Release|x86.Build.0 = Release|Win32
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Debug|x64.ActiveCfg = Debug|x64
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Debug|x64.Build.0 = Debug|x64
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Debug|x86.ActiveCfg = Debug|Win32
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Debug|x86.Build.0 = Debug|Win32
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Release|x64.ActiveCfg = Release|x64
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Release|x64.Build.0 = Release|x64
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Release|x86.ActiveCfg = Release|Win32
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1771,6 +1781,7 @@ Global
 		{2BDF6995-BBE6-4709-AE05-7872B46670CE} = {DCC32A77-D9C3-4C77-A5D4-3B8D29D607C5}
 		{E50CADEC-5877-426D-8787-DA11F9992721} = {1BF7C828-38AC-40A7-A78A-A3CA68F8B31E}
 		{B00BAA53-1053-4BC1-9EFD-EE5B8B7ABD2A} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
+		{E6AF67EF-E93F-48DE-A587-ACD642F2A87D} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9749CC5-26A0-494D-8B40-181E82654FD5}

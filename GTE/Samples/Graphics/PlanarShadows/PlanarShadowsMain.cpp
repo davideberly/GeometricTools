@@ -5,15 +5,15 @@
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 // Version: 6.2.2022.03.06
 
-#include "PlanarReflectionsWindow3.h"
+#include "PlanarShadowsWindow3.h"
 #include <iostream>
 
 int main()
 {
     try
     {
-        Window::Parameters parameters(L"PlanarReflectionsWindow3", 0, 0, 768, 768);
-        auto window = TheWindowSystem.Create<PlanarReflectionsWindow3>(parameters);
+        Window::Parameters parameters(L"PlanarShadowsWindow3", 0, 0, 768, 768);
+        auto window = TheWindowSystem.Create<PlanarShadowsWindow3>(parameters);
         TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
         TheWindowSystem.Destroy(window);
     }

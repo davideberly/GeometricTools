@@ -337,6 +337,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FitConeByEllipseAndPointsDX
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlanarReflectionsDX11.v16", "Samples\Graphics\PlanarReflections\PlanarReflectionsDX11.v16.vcxproj", "{32D138C1-9CCA-468B-B2F3-08C66C55DE9A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlanarShadowsDX11.v16", "Samples\Graphics\PlanarShadows\PlanarShadowsDX11.v16.vcxproj", "{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1601,6 +1603,14 @@ Global
 		{32D138C1-9CCA-468B-B2F3-08C66C55DE9A}.Release|x64.Build.0 = Release|x64
 		{32D138C1-9CCA-468B-B2F3-08C66C55DE9A}.Release|x86.ActiveCfg = Release|Win32
 		{32D138C1-9CCA-468B-B2F3-08C66C55DE9A}.Release|x86.Build.0 = Release|Win32
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Debug|x64.ActiveCfg = Debug|x64
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Debug|x64.Build.0 = Debug|x64
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Debug|x86.ActiveCfg = Debug|Win32
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Debug|x86.Build.0 = Debug|Win32
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Release|x64.ActiveCfg = Release|x64
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Release|x64.Build.0 = Release|x64
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Release|x86.ActiveCfg = Release|Win32
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1771,6 +1781,7 @@ Global
 		{E68E6879-5A92-4D37-9406-5EA28A53DFFB} = {7572A45C-CD71-4915-80AB-46CB96142436}
 		{47B14059-477F-4F9F-BA80-D771F54A29FF} = {386F684F-7F28-49BD-B427-71E12899A64E}
 		{32D138C1-9CCA-468B-B2F3-08C66C55DE9A} = {431E2AFE-6A18-447C-9B33-664507ADE10A}
+		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543} = {431E2AFE-6A18-447C-9B33-664507ADE10A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}

@@ -8,15 +8,16 @@
 #pragma once
 
 #include <Applications/Window3.h>
-#include <Graphics/PlanarReflectionEffect.h>
+#include <Graphics/PlanarShadowEffect.h>
 using namespace gte;
 
-class PlanarReflectionsWindow3 : public Window3
+class PlanarShadowsWindow3 : public Window3
 {
 public:
-    PlanarReflectionsWindow3(Parameters& parameters);
+    PlanarShadowsWindow3(Parameters& parameters);
 
     virtual void OnIdle() override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     bool SetEnvironment();
@@ -35,6 +36,11 @@ private:
     // The scene graph.
     std::shared_ptr<Node> mScene;
     std::shared_ptr<Visual> mFloor, mWall, mDodecahedron, mTorus;
-    std::shared_ptr<Node> mReflectionCaster;
-    std::shared_ptr<PlanarReflectionEffect> mPlanarReflectionEffect;
+    std::shared_ptr<Node> mShadowCaster;
+    std::shared_ptr<PlanarShadowEffect::LightProjector> mLightProjector;
+    std::shared_ptr<PlanarShadowEffect> mPlanarShadowEffect;
+
+    // The coordinates of the light-projector relative to the trackball
+    // affine basis.
+    Vector4<float> mLPPosition, mLPDirection;
 };
