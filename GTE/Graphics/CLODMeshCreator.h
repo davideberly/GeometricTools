@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.02.24
+// Version: 6.2.2022.03.07
 
 #pragma once
 
@@ -108,7 +108,7 @@ namespace gte
                 EdgeKey<false> eKey{};
                 float metric{};
                 mHeap.GetMinimum(eKey, metric);
-                if (metric == maxFloat)
+                if (metric == std::numeric_limits<float>::max())
                 {
                     // All remaining heap elements have infinite metrics.
                     // Validate the results and throw an exception if not
@@ -129,7 +129,7 @@ namespace gte
                         emIter->second.record->index < mHeap.GetNumElements(),
                         "Unexpected condition.");
 
-                    mHeap.Update(emIter->second.record, maxFloat);
+                    mHeap.Update(emIter->second.record, std::numeric_limits<float>::max());
                 }
             }
 
@@ -282,7 +282,7 @@ namespace gte
                     // its adjacency list.
                     Edge& edge = mEdges[eKey[i]];
                     edge.adjTriangles.insert(tKey);
-                    edge.record = mHeap.Insert(eKey[i], maxFloat);
+                    edge.record = mHeap.Insert(eKey[i], std::numeric_limits<float>::max());
                 }
                 else
                 {
@@ -416,7 +416,7 @@ namespace gte
             // Boundary edges (one triangle containing edge) and junction
             // edges (3 or more triangles sharing edge) are not allowed to
             // collapse.
-            return maxFloat;
+            return std::numeric_limits<float>::max();
         }
 
         int32_t CanCollapse(EdgeKey<false> const& eKey)
@@ -567,8 +567,6 @@ namespace gte
             }
 
             // Update the heap for those edges affected by the collapse.
-            EdgeKeySet::iterator ekIter = needUpdate.begin();
-            EdgeKeySet::iterator ekEnd = needUpdate.end();
             for (auto const& updateKey : needUpdate)
             {
                 auto emIter = mEdges.find(updateKey);
@@ -647,7 +645,7 @@ namespace gte
                 newVertexAtoms[vNew] = mVertexAtoms[vertexNewToOld[vNew]];
             }
             //mVertexAtoms = newVertexAtoms;
-            for (size_t i = 0; i < numVertices; ++i)
+            for (int32_t i = 0; i < numVertices; ++i)
             {
                 mVertexAtoms[i] = newVertexAtoms[i];
             }
@@ -768,7 +766,6 @@ namespace gte
         int32_t mNumTriangles;
 
         // The edge heap to support collapse operations.
-        static float constexpr maxFloat = std::numeric_limits<float>::max();
         MinHeap<EdgeKey<false>, float> mHeap;
 
         // The sequence of edge collapses.
