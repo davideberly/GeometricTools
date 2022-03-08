@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.04
+// Version: 6.2.2022.03.07
 
 #pragma once
 
@@ -68,7 +68,6 @@ namespace gte
                 // both t-extremes at zero.
                 Line2<T> const& line = ch2.GetLine();
                 T tmin = zero, tmax = zero;
-                int32_t imin = 0, imax = 0;
                 for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector2<T> diff = points[i] - line.origin;
@@ -76,12 +75,10 @@ namespace gte
                     if (t > tmax)
                     {
                         tmax = t;
-                        imax = i;
                     }
                     else if (t < tmin)
                     {
                         tmin = t;
-                        imin = i;
                     }
                 }
 
@@ -136,7 +133,7 @@ namespace gte
             if (indices)
             {
                 std::vector<Vector2<T>> compactPoints(numIndices);
-                for (size_t i = 0; i < numIndices; ++i)
+                for (int32_t i = 0; i < numIndices; ++i)
                 {
                     compactPoints[i] = points[indices[i]];
                 }
@@ -170,7 +167,7 @@ namespace gte
         }
 
     private:
-        using RotatingCalipersType = typename RotatingCalipers<T>;
+        using RotatingCalipersType = RotatingCalipers<T>;
         using AntipodeType = typename RotatingCalipersType::Antipode;
         using Rational = BSRational<UIntegerAP32>;
 
