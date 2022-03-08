@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.06
+// Version: 6.2.2022.03.07
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PlanarReflectionEffect.h>
@@ -16,9 +16,10 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     :
     mReflectionCaster(reflectionCaster),
     mPlaneVisuals(planeVisuals),
+    mReflectances(reflectances),
+    mCasterVisuals{},
     mPlaneOrigins(planeVisuals.size()),
     mPlaneNormals(planeVisuals.size()),
-    mReflectances(reflectances),
     mNoColorWrites{},
     mReflectanceBlend{},
     mCullReverse{},
@@ -35,73 +36,6 @@ PlanarReflectionEffect::PlanarReflectionEffect(
     // semantic. Package the first triangle of vertices into the model-space
     // storage.
     GetModelSpacePlanes();
-
-#if 0
-    uint32_t const numPlanes = static_cast<uint32_t>(planeVisuals.size());
-    for (uint32_t i = 0; i < numPlanes; ++i)
-    {
-        auto const& visual = planeVisuals[i];
-
-        // The culling flag is set to "always" because this effect is
-        // responsible for drawing the triangle mesh. This prevents drawing
-        // attempts by another scene graph for which 'visual' is a leaf node.
-        visual->culling = CullingMode::ALWAYS;
-
-        // Compute the model-space origin and normal for the plane.
-
-        // Get the position data.
-        auto const& vbuffer = visual->GetVertexBuffer();
-        uint32_t vstride = vbuffer->GetElementSize();
-        std::set<uint32_t> required{};
-        required.insert(DF_R32G32B32_FLOAT);
-        required.insert(DF_R32G32B32A32_FLOAT);
-        char const* positions = vbuffer->GetChannel(VASemantic::POSITION, 0, required);
-        if (!positions)
-        {
-            LogError("Expecting 3D positions.");
-        }
-
-        // Verify the plane topology involves triangles.
-        auto const& ibuffer = visual->GetIndexBuffer();
-        auto primitiveType = ibuffer->GetPrimitiveType();
-        if (!(primitiveType & IP_HAS_TRIANGLES))
-        {
-            LogError("Expecting triangle topology.");
-        }
-
-        // Get the vertex indices for the first triangle defining the plane.
-        std::array<uint32_t, 3> v{};
-        if (ibuffer->IsIndexed())
-        {
-            ibuffer->GetTriangle(i, v[0], v[1], v[2]);
-        }
-        else if (primitiveType == IP_TRIMESH)
-        {
-            v[0] = 3 * i;
-            v[1] = v[0] + 1;
-            v[2] = v[0] + 2;
-        }
-        else  // primitiveType.value == IP_TRISTRIP
-        {
-            uint32_t offset = (i & 1);
-            v[0] = i + offset;
-            v[1] = i + 1 + offset;
-            v[2] = i + 2 - offset;
-        }
-
-        // Get the model-space positions of the triangle vertices.
-        std::array<Vector4<float>, 3> p{};
-        for (size_t j = 0; j < 3; ++j)
-        {
-            auto temp = *reinterpret_cast<Vector3<float> const*>(positions +
-                static_cast<size_t>(v[j]) * vstride);
-            p[j] = HLift<3, float>(temp, 1.0f);
-        }
-
-        mPlaneOrigins[i] = p[0];
-        mPlaneNormals[i] = UnitCross(p[2] - p[0], p[1] - p[0]);
-    }
-#endif
 
     // Turn off color writes.
     mNoColorWrites = std::make_shared<BlendState>();
