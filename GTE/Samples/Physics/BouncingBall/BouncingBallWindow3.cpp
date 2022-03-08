@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.07
 
 #include "BouncingBallWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -127,10 +127,8 @@ void BouncingBallWindow3::CreateScene()
 
     std::vector<std::shared_ptr<Visual>> planes = { mFloor };
     std::vector<float> reflectances = { 0.2f };
-    mPlanarReflectionEffect = std::make_unique<PlanarReflectionEffect>(planes, reflectances);
-
-    mSceneVisibleSet.push_back(mWall.get());
-    mBallNodeVisibleSet.push_back(mBall->GetMesh().get());
+    mPlanarReflectionEffect = std::make_unique<PlanarReflectionEffect>(
+        mBallNode, planes, reflectances);
 }
 
 void BouncingBallWindow3::CreateBall()
@@ -291,8 +289,8 @@ void BouncingBallWindow3::GraphicsTick()
     mTimer.Measure();
 
     mEngine->ClearBuffers();
-    mEngine->Draw(mSceneVisibleSet);
-    mPlanarReflectionEffect->Draw(mEngine, mBallNodeVisibleSet, mPVWMatrices);
+    mEngine->Draw(mWall);
+    mPlanarReflectionEffect->Draw(mEngine, mPVWMatrices);
 
     std::array<float, 4> textColor{ 0.0f, 0.0f, 0.0f, 1.0f };
     mEngine->Draw(8, mYSize - 8, textColor, mTimer.GetFPS());
