@@ -34,6 +34,7 @@ BspNode.cpp
 Buffer.cpp
 BumpMapEffect.cpp
 Camera.cpp
+CLODMesh.cpp
 ConstantBuffer.cpp
 ConstantColorEffect.cpp
 ControlledObject.cpp
@@ -44,6 +45,7 @@ DataFormat.cpp
 DepthStencilState.cpp
 DirectionalLightEffect.cpp
 DirectionalLightTextureEffect.cpp
+DLODNode.cpp
 DrawingState.cpp
 DrawTarget.cpp
 Font.cpp
@@ -79,6 +81,7 @@ Particles.cpp
 Picker.cpp
 PickRecord.cpp
 PlanarReflectionEffect.cpp
+PlanarShadowEffect.cpp
 PointController.cpp
 PointLightEffect.cpp
 PointLightTextureEffect.cpp
@@ -96,6 +99,7 @@ Spatial.cpp
 SphereMapEffect.cpp
 SpotLightEffect.cpp
 StructuredBuffer.cpp
+SwitchNode.cpp
 Terrain.cpp
 TextEffect.cpp
 Texture.cpp
