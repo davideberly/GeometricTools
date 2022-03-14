@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.13
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <algorithm>
 #include <map>
+#include <set>
 #include <vector>
 
 // UniqueVerticesTriangles is a helper class that provides support for several
