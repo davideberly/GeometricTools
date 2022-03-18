@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ManagedLibrary\ManagedLibrary.v15.vcxproj">
+    <ProjectReference Include="..\ManagedLibrary\ManagedLibrary.v17.vcxproj">
       <Project>{21613316-7028-42eb-9eb6-522b1451ba39}</Project>
-      <Name>ManagedLibrary.v15</Name>
+      <Name>ManagedLibrary.v17</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
