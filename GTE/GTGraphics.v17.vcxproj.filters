@@ -46,6 +46,9 @@
     <Filter Include="Base">
       <UniqueIdentifier>{2b86b5b2-caaa-4111-93ec-cc3e08787061}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SceneGraph\CollisionDetection">
+      <UniqueIdentifier>{330927f4-251d-493a-8efc-2e486372167e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics\GTGraphics.cpp" />
@@ -348,6 +351,12 @@
     </ClCompile>
     <ClCompile Include="Graphics\CLODMesh.cpp">
       <Filter>SceneGraph\Detail</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\PlanarShadowEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\CollisionMesh.cpp">
+      <Filter>SceneGraph\CollisionDetection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -682,6 +691,21 @@
     </ClInclude>
     <ClInclude Include="Graphics\CLODCollapseRecord.h">
       <Filter>SceneGraph\Detail</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\PlanarShadowEffect.h">
+      <Filter>Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CollisionRecord.h">
+      <Filter>SceneGraph\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CollisionMesh.h">
+      <Filter>SceneGraph\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\CollisionGroup.h">
+      <Filter>SceneGraph\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\BoundTree.h">
+      <Filter>SceneGraph\CollisionDetection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

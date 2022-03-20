@@ -35,6 +35,7 @@ Buffer.cpp
 BumpMapEffect.cpp
 Camera.cpp
 CLODMesh.cpp
+CollisionMesh.cpp
 ConstantBuffer.cpp
 ConstantColorEffect.cpp
 ControlledObject.cpp

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.06
+// Version: 6.0.2022.03.20
 
 #pragma once
 
@@ -87,6 +87,11 @@
 
 // SceneGraph
 #include <Graphics/MeshFactory.h>
+
+// SceneGraph/CollisionDetection
+#include <Graphics/CollisionGroup.h>
+#include <Graphics/CollisionRecord.h>
+#include <Graphics/CollisionMesh.h>
 
 // SceneGraph/Controllers
 #include <Graphics/BlendTransformController.h>

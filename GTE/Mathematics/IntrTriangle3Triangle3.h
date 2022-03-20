@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.18
+// Version: 6.0.2022.03.20
 
 #pragma once
 
@@ -49,13 +49,18 @@ namespace gte
         {
             Result()
                 :
-                intersect(false)
+                intersect(false),
+                contactTime(static_cast<T>(0))
             {
             }
 
+            // The contact time is 0 for stationary triangles. It is
+            // nonnegative for moving triangles.
             bool intersect;
+            T contactTime;
         };
 
+        // The query is for stationary triangles.
         Result operator()(Triangle3<T> const& inTriangle0, Triangle3<T> const& inTriangle1)
         {
             Result result{};
@@ -89,7 +94,6 @@ namespace gte
             std::array<T, 2> tExtreme1 = ScaleProjectOntoLine(triangle1, N0);
             if (tExtreme0[1] < tExtreme1[0] || tExtreme1[1] < tExtreme0[0])
             {
-                result.intersect = false;
                 return result;
             }
 
@@ -100,7 +104,7 @@ namespace gte
                 triangle1.v[2] - triangle1.v[1],
                 triangle1.v[0] - triangle1.v[2]
             };
-            Vector3<T> N1 = Cross(E1[0],E1[1]);
+            Vector3<T> N1 = Cross(E1[0], E1[1]);
 
             // Scale-project triangle0 onto the normal line of triangle1 and
             // test for separation.
@@ -109,7 +113,6 @@ namespace gte
             tExtreme1 = ScaleProjectOntoLine(triangle0, N1);
             if (tExtreme0[1] < tExtreme1[0] || tExtreme1[1] < tExtreme0[0])
             {
-                result.intersect = false;
                 return result;
             }
 
@@ -143,7 +146,6 @@ namespace gte
                         tExtreme1 = ScaleProjectOntoLine(triangle1, direction);
                         if (tExtreme0[1] < tExtreme1[0] || tExtreme1[1] < tExtreme0[0])
                         {
-                            result.intersect = false;
                             return result;
                         }
                     }
@@ -164,7 +166,6 @@ namespace gte
                     tExtreme1 = ScaleProjectOntoLine(triangle1, direction);
                     if (tExtreme0[1] < tExtreme1[0] || tExtreme1[1] < tExtreme0[0])
                     {
-                        result.intersect = false;
                         return result;
                     }
                 }
@@ -177,13 +178,129 @@ namespace gte
                     tExtreme1 = ScaleProjectOntoLine(triangle1, direction);
                     if (tExtreme0[1] < tExtreme1[0] || tExtreme1[1] < tExtreme0[0])
                     {
-                        result.intersect = false;
                         return result;
                     }
                 }
             }
 
             result.intersect = true;
+            return result;
+        }
+
+        // The query is for triangles moving with constant linear velocity
+        // during the time interval [0,tMax].
+        Result operator()(T const& tMax,
+            Triangle3<T> const& inTriangle0, Vector3<T> const& velocity0,
+            Triangle3<T> const& inTriangle1, Vector3<T> const& velocity1)
+        {
+            Result result{};
+
+            // The query determines the interval [tFirst,tLast] over which
+            // the triangle are intersecting. Start with time interval
+            // [0,+infinity).
+            T tFirst = static_cast<T>(0);
+            T tLast = std::numeric_limits<T>::max();
+
+            // Compute the velocity of inTriangle1 relative to inTriangle0.
+            Vector3<T> relVelocity = velocity1 - velocity0;
+
+            // Translate the triangles so that triangle0.v[0] becomes (0,0,0).
+            T const zero = static_cast<T>(0);
+            Vector3<T> const& origin = inTriangle0.v[0];
+            Triangle3<T> triangle0(
+                Vector3<T>{ zero, zero, zero },
+                inTriangle0.v[1] - origin,
+                inTriangle0.v[2] - origin);
+
+            Triangle3<T> triangle1(
+                inTriangle1.v[0] - origin,
+                inTriangle1.v[1] - origin,
+                inTriangle1.v[2] - origin);
+
+            // Get edge directions and a normal vector for triangle0.
+            std::array<Vector3<T>, 3> E0
+            {
+                triangle0.v[1] - triangle0.v[0],
+                triangle0.v[2] - triangle0.v[1],
+                triangle0.v[0] - triangle0.v[2]
+            };
+            Vector3<T> N0 = Cross(E0[0], E0[1]);
+
+            // Test for overlap using the separating axis test in the N0
+            // direction.
+            if (!TestOverlap(triangle0, triangle1, N0, tMax, relVelocity,
+                tFirst, tLast))
+            {
+                return result;
+            }
+
+            // Get edge directions and a normal vector for triangle1.
+            std::array<Vector3<T>, 3> E1
+            {
+                triangle1.v[1] - triangle1.v[0],
+                triangle1.v[2] - triangle1.v[1],
+                triangle1.v[0] - triangle1.v[2]
+            };
+            Vector3<T> N1 = Cross(E1[0], E1[1]);
+
+            if (std::fabs(Dot(N0, N1)) < static_cast<T>(1))
+            {
+                // The triangles are not parallel.
+
+                // Test for overlap using the separating axis test in the
+                // N1 direction.
+                if (!TestOverlap(triangle0, triangle1, N1, tMax,
+                    relVelocity, tFirst, tLast))
+                {
+                    return result;
+                }
+
+                // Test for overlap using the separating axis test in the
+                // directions E0[i0]xE1[i1].
+                for (size_t i1 = 0; i1 < 3; ++i1)
+                {
+                    for (size_t i0 = 0; i0 < 3; ++i0)
+                    {
+                        Vector3<T> direction = UnitCross(E0[i0], E1[i1]);
+                        if (!TestOverlap(triangle0, triangle1, direction,
+                            tMax, relVelocity, tFirst, tLast))
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // The triangles are coplanar.
+
+                // Test for overlap using the separating axis test in the
+                // directions N0xE0[i0].
+                for (size_t i0 = 0; i0 < 3; ++i0)
+                {
+                    Vector3<T> direction = UnitCross(N0, E0[i0]);
+                    if (!TestOverlap(triangle0, triangle1, direction,
+                        tMax, relVelocity, tFirst, tLast))
+                    {
+                        return result;
+                    }
+                }
+
+                // Test for overlap using the separating axis test in the
+                // directions N1xE1[i1].
+                for (size_t i1 = 0; i1 < 3; ++i1)
+                {
+                    Vector3<T> direction = UnitCross(N1, E1[i1]);
+                    if (!TestOverlap(triangle0, triangle1, direction,
+                        tMax, relVelocity, tFirst, tLast))
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            result.intersect = true;
+            result.contactTime = tFirst;
             return result;
         }
 
@@ -213,6 +330,143 @@ namespace gte
             }
             return tExtreme;
         }
+
+        // This is the constant velocity separating axis test.
+        static bool TestOverlap(T const& tMax, T const& speed,
+            std::array<T, 2> const& extreme0, std::array<T, 2> const& extreme1,
+            T& tFirst, T& tLast)
+        {
+            T const zero = static_cast<T>(0);
+
+            if (extreme1[1] < extreme0[0])
+            {
+                // The interval extreme1 is on the left of the interval
+                // extreme0.
+                if (speed <= zero)
+                {
+                    // The interval extreme1 is moving away from the interval
+                    // extreme0.
+                    return false;
+                }
+
+                // Compute the first time of contact on this axis.
+                T t = (extreme0[0] - extreme1[1]) / speed;
+                if (t > tFirst)
+                {
+                    tFirst = t;
+                }
+
+                if (tFirst > tMax)
+                {
+                    // The intersection occurs after the specified maximum
+                    // time.
+                    return false;
+                }
+
+                // Compute the last time of contact on this axis.
+                t = (extreme0[1] - extreme1[0]) / speed;
+                if (t < tLast)
+                {
+                    tLast = t;
+                }
+
+                if (tFirst > tLast)
+                {
+                    // The time interval is invalid, so the objects are not
+                    // intersecting.
+                    return false;
+                }
+            }
+            else if (extreme0[1] < extreme1[0])
+            {
+                // The interval extreme1 is on the right of the interval
+                // extreme0.
+                if (speed >= zero)
+                {
+                    // The interval extreme1 is moving away from the interval
+                    // extreme0.
+                    return false;
+                }
+
+                // Compute the first time of contact on this axis.
+                T t = (extreme0[1] - extreme1[0]) / speed;
+                if (t > tFirst)
+                {
+                    tFirst = t;
+                }
+
+                if (tFirst > tMax)
+                {
+                    // The intersection occurs after the specified maximum
+                    // time.
+                    return false;
+                }
+
+                // Compute the last time of contact on this axis.
+                t = (extreme0[0] - extreme1[1]) / speed;
+                if (t < tLast)
+                {
+                    tLast = t;
+                }
+
+                if (tFirst > tLast)
+                {
+                    // The time interval is invalid, so the objects are not
+                    // intersecting.
+                    return false;
+                }
+
+            }
+            else
+            {
+                // The intervals extreme0 and extreme1 are currently
+                // overlapping.
+                if (speed > zero)
+                {
+                    // Compute the last time of contact on this axis.
+                    T t = (extreme0[1] - extreme1[0]) / speed;
+                    if (t < tLast)
+                    {
+                        tLast = t;
+                    }
+
+                    if (tFirst > tLast)
+                    {
+                        // The time interval is invalid, so the objects are
+                        // not intersecting.
+                        return false;
+                    }
+                }
+                else if (speed < zero)
+                {
+                    // Compute the last time of contact on this axis.
+                    T t = (extreme0[0] - extreme1[1]) / speed;
+                    if (t < tLast)
+                    {
+                        tLast = t;
+                    }
+
+                    if (tFirst > tLast)
+                    {
+                        // The time interval is invalid, so the objects are
+                        // not intersecting.
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // A projection wrapper to set up for the separating axis test.
+        static bool TestOverlap(Triangle3<T> const& triangle0,
+            Triangle3<T> const& triangle1, Vector3<T> const& direction,
+            T const& tMax, Vector3<T> const& velocity, T& tFirst, T& tLast)
+        {
+            auto extreme0 = ScaleProjectOntoLine(triangle0, direction);
+            auto extreme1 = ScaleProjectOntoLine(triangle1, direction);
+            T speed = Dot(direction, velocity);
+            return TestOverlap(tMax, speed, extreme0, extreme1, tFirst, tLast);
+        }
     };
 
     template <typename T>
@@ -224,14 +478,19 @@ namespace gte
             Result()
                 :
                 intersect(false),
+                contactTime(static_cast<T>(0)),
                 intersection{}
             {
             }
 
+            // The contact time is 0 for stationary triangles. It is
+            // nonnegative for moving triangles.
             bool intersect;
+            T contactTime;
             std::vector<Vector3<T>> intersection;
         };
 
+        // The query is for stationary triangles.
         Result operator()(Triangle3<T> const& inTriangle0, Triangle3<T> const& inTriangle1)
         {
             Result result{};
@@ -373,6 +632,135 @@ namespace gte
                     point += origin;
                 }
             }
+            return result;
+        }
+
+        // The query is for triangles moving with constant linear velocity
+        // during the time interval [0,tMax].
+        Result operator()(T const& tMax,
+            Triangle3<T> const& inTriangle0, Vector3<T> const& velocity0,
+            Triangle3<T> const& inTriangle1, Vector3<T> const& velocity1)
+        {
+            Result result{};
+
+            // The query determines the interval [tFirst,tLast] over which
+            // the triangle are intersecting. Start with time interval
+            // [0,+infinity).
+            T tFirst = static_cast<T>(0);
+            T tLast = std::numeric_limits<T>::max();
+
+            // Compute the velocity of inTriangle1 relative to inTriangle0.
+            Vector3<T> relVelocity = velocity1 - velocity0;
+
+            // Translate the triangles so that triangle0.v[0] becomes (0,0,0).
+            T const zero = static_cast<T>(0);
+            Vector3<T> const& origin = inTriangle0.v[0];
+            Triangle3<T> triangle0(
+                Vector3<T>{ zero, zero, zero },
+                inTriangle0.v[1] - origin,
+                inTriangle0.v[2] - origin);
+
+            Triangle3<T> triangle1(
+                inTriangle1.v[0] - origin,
+                inTriangle1.v[1] - origin,
+                inTriangle1.v[2] - origin);
+
+            // Get edge directions and a normal vector for triangle0.
+            std::array<Vector3<T>, 3> E0
+            {
+                triangle0.v[1] - triangle0.v[0],
+                triangle0.v[2] - triangle0.v[1],
+                triangle0.v[0] - triangle0.v[2]
+            };
+            Vector3<T> N0 = Cross(E0[0], E0[1]);
+
+            // Find overlap using the separating axis test in the N0
+            // direction.
+            ContactSide side = ContactSide::CS_NONE;
+            Configuration tcfg0{}, tcfg1{};
+            if (!FindOverlap(triangle0, triangle1, N0, tMax, relVelocity,
+                side, tcfg0, tcfg1, tFirst, tLast))
+            {
+                return result;
+            }
+
+            // Get edge directions and a normal vector for triangle1.
+            std::array<Vector3<T>, 3> E1
+            {
+                triangle1.v[1] - triangle1.v[0],
+                triangle1.v[2] - triangle1.v[1],
+                triangle1.v[0] - triangle1.v[2]
+            };
+            Vector3<T> N1 = Cross(E1[0], E1[1]);
+
+            if (std::fabs(Dot(N0, N1)) < static_cast<T>(1))
+            {
+                // The triangles are not parallel.
+
+                // Test for overlap using the separating axis test in the
+                // N1 direction.
+                if (!FindOverlap(triangle0, triangle1, N1, tMax,
+                    relVelocity, side, tcfg0, tcfg1, tFirst, tLast))
+                {
+                    return result;
+                }
+
+                // Test for overlap using the separating axis test in the
+                // directions E0[i0]xE1[i1].
+                for (size_t i1 = 0; i1 < 3; ++i1)
+                {
+                    for (size_t i0 = 0; i0 < 3; ++i0)
+                    {
+                        Vector3<T> direction = UnitCross(E0[i0], E1[i1]);
+                        if (!FindOverlap(triangle0, triangle1, direction,
+                            tMax, relVelocity, side, tcfg0, tcfg1, tFirst, tLast))
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // The triangles are coplanar.
+
+                // Test for overlap using the separating axis test in the
+                // directions N0xE0[i0].
+                for (size_t i0 = 0; i0 < 3; ++i0)
+                {
+                    Vector3<T> direction = UnitCross(N0, E0[i0]);
+                    if (!FindOverlap(triangle0, triangle1, direction,
+                        tMax, relVelocity, side, tcfg0, tcfg1, tFirst, tLast))
+                    {
+                        return result;
+                    }
+                }
+
+                // Test for overlap using the separating axis test in the
+                // directions N1xE1[i1].
+                for (size_t i1 = 0; i1 < 3; ++i1)
+                {
+                    Vector3<T> direction = UnitCross(N1, E1[i1]);
+                    if (!FindOverlap(triangle0, triangle1, direction,
+                        tMax, relVelocity, side, tcfg0, tcfg1, tFirst, tLast))
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            // Move the triangles to the first contact before computing
+            // the contact set.
+            for (size_t i = 0; i < 3; ++i)
+            {
+                triangle0.v[i] = inTriangle0.v[i] + tFirst * velocity0;
+                triangle1.v[i] = inTriangle1.v[i] + tFirst * velocity1;
+            }
+
+            auto stationary = this->operator()(triangle0, triangle1);
+            result.intersect = true;
+            result.contactTime = tFirst;
+            result.intersection = std::move(stationary.intersection);
             return result;
         }
 
@@ -617,6 +1005,340 @@ namespace gte
             trg[lookup[1]] = src[1];
             trg[lookup[2]] = -(normal[lookup[0]] * trg[lookup[0]] +
                 normal[lookup[1]] * trg[lookup[1]]) / normal[lookup[2]];
+        }
+
+
+        // Support for the query for moving triangles.
+        enum class ProjectionMap
+        {
+            // Initial value for construction of Configuration.
+            PM_INVALID,
+
+            // 3 vertices project to the same point (min = max).
+            PM_3,
+
+            // 2 vertices project to a point (min) and 1 vertex projects to
+            // a point (max).
+            PM_21,
+
+            // 1 vertex projects to a point (min) and 2 vertices project to
+            // a point (max).
+            PM_12,
+
+            // 1 vertex projects to a point (min), 1 vertex projects to a
+            // point (max) and 1 vertex projects to a point strictly between
+            // the min and max points.
+            PM_111
+        };
+
+        struct Configuration
+        {
+            Configuration()
+                :
+                map(ProjectionMap::PM_INVALID),
+                index{ 0, 0, 0, 0, 0, 0, 0, 0 },
+                min(static_cast<T>(0)),
+                max(static_cast<T>(0))
+            {
+            }
+
+            // This is how the vertices map to the projection interval.
+            ProjectionMap map;
+
+            // The sorted indices of the vertices.
+            std::array<int32_t, 8> index;
+
+            // The projection interval [min,max].
+            T min, max;
+        };
+
+        enum class ContactSide
+        {
+            CS_LEFT,
+            CS_RIGHT,
+            CS_NONE
+        };
+
+        // The triangle is <V[0],V[1],V[2]>. The line is t*direction, where
+        // the origin is (0,0,0) and the 'direction' is not zero but not
+        // necessarily unit length. The projections of the triangle vertices
+        // onto the line are t[i] = Dot(direction, V[i]). Return the
+        // configuration of the triangle that lead to the extreme interval.
+        static void ScaleProjectOntoLine(Triangle3<T> const& triangle,
+            Vector3<T> const& direction, Configuration& cfg)
+        {
+            // Find the projections of the triangle vertices onto the
+            // potential separating axis.
+            T d0 = Dot(direction, triangle.v[0]);
+            T d1 = Dot(direction, triangle.v[1]);
+            T d2 = Dot(direction, triangle.v[2]);
+
+            // Explicit sort of vertices to construct a Configuration object.
+            if (d0 <= d1)
+            {
+                if (d1 <= d2) // d0 <= d1 <= d2
+                {
+                    if (d0 != d1)
+                    {
+                        if (d1 != d2)
+                        {
+                            cfg.map = ProjectionMap::PM_111;
+                        }
+                        else
+                        {
+                            cfg.map = ProjectionMap::PM_12;
+                        }
+                    }
+                    else // d0 = d1
+                    {
+                        if (d1 != d2)
+                        {
+                            cfg.map = ProjectionMap::PM_21;
+                        }
+                        else
+                        {
+                            cfg.map = ProjectionMap::PM_3;
+                        }
+                    }
+                    cfg.index[0] = 0;
+                    cfg.index[1] = 1;
+                    cfg.index[2] = 2;
+                    cfg.min = d0;
+                    cfg.max = d2;
+                }
+                else if (d0 <= d2) // d0 <= d2 < d1
+                {
+                    if (d0 != d2)
+                    {
+                        cfg.map = ProjectionMap::PM_111;
+                        cfg.index[0] = 0;
+                        cfg.index[1] = 2;
+                        cfg.index[2] = 1;
+                    }
+                    else
+                    {
+                        cfg.map = ProjectionMap::PM_21;
+                        cfg.index[0] = 2;
+                        cfg.index[1] = 0;
+                        cfg.index[2] = 1;
+                    }
+                    cfg.min = d0;
+                    cfg.max = d1;
+                }
+                else // d2 < d0 <= d1
+                {
+                    if (d0 != d1)
+                    {
+                        cfg.map = ProjectionMap::PM_111;
+                    }
+                    else
+                    {
+                        cfg.map = ProjectionMap::PM_12;
+                    }
+
+                    cfg.index[0] = 2;
+                    cfg.index[1] = 0;
+                    cfg.index[2] = 1;
+                    cfg.min = d2;
+                    cfg.max = d1;
+                }
+            }
+            else if (d2 <= d1) // d2 <= d1 < d0
+            {
+                if (d2 != d1)
+                {
+                    cfg.map = ProjectionMap::PM_111;
+                    cfg.index[0] = 2;
+                    cfg.index[1] = 1;
+                    cfg.index[2] = 0;
+                }
+                else
+                {
+                    cfg.map = ProjectionMap::PM_21;
+                    cfg.index[0] = 1;
+                    cfg.index[1] = 2;
+                    cfg.index[2] = 0;
+
+                }
+                cfg.min = d2;
+                cfg.max = d0;
+            }
+            else if (d2 <= d0) // d1 < d2 <= d0
+            {
+                if (d2 != d0)
+                {
+                    cfg.map = ProjectionMap::PM_111;
+                }
+                else
+                {
+                    cfg.map = ProjectionMap::PM_12;
+                }
+
+                cfg.index[0] = 1;
+                cfg.index[1] = 2;
+                cfg.index[2] = 0;
+                cfg.min = d1;
+                cfg.max = d0;
+            }
+            else // d1 < d0 < d2
+            {
+                cfg.map = ProjectionMap::PM_111;
+                cfg.index[0] = 1;
+                cfg.index[1] = 0;
+                cfg.index[2] = 2;
+                cfg.min = d1;
+                cfg.max = d2;
+            }
+        }
+
+        // This is the constant velocity separating axis test. The cfg0 and
+        // cfg1 inputs are the configurations for the triangles at time 0.
+        // The tcfg0 and tcfg1 are the configurations at contact time.
+        static bool FindOverlap(T const& tMax, T const& speed,
+            Configuration const& cfg0, Configuration const& cfg1,
+            ContactSide& side, Configuration& tcfg0, Configuration& tcfg1,
+            T& tFirst, T& tLast)
+        {
+            T const zero = static_cast<T>(0);
+
+            if (cfg1.max < cfg0.min)
+            {
+                // The cfg1 interval is on the left of the cfg0 interval.
+                if (speed <= zero)
+                {
+                    // The cfg1 interval is moving away from the cfg0
+                    // interval.
+                    return false;
+                }
+
+                // Compute the first time of contact on this axis.
+                T t = (cfg0.min - cfg1.max) / speed;
+
+                if (t > tFirst)
+                {
+                    // Time t is the new maximum first time of contact.
+                    tFirst = t;
+                    side = ContactSide::CS_LEFT;
+                    tcfg0 = cfg0;
+                    tcfg1 = cfg1;
+                }
+
+                if (tFirst > tMax)
+                {
+                    // The intersection occurs after the specified maximum
+                    // time.
+                    return false;
+                }
+
+                // Compute the last time of contact on this axis.
+                t = (cfg0.max - cfg1.min) / speed;
+                if (t < tLast)
+                {
+                    tLast = t;
+                }
+
+                if (tFirst > tLast)
+                {
+                    // The time interval is invalid, so the objects are
+                    // not intersecting.
+                    return false;
+                }
+            }
+            else if (cfg0.max < cfg1.min)
+            {
+                // The cfg1 interval is on the right of the cfg0 interval.
+                if (speed >= zero)
+                {
+                    // The cfg1 interval is moving away from the cfg0
+                    // interval.
+                    return false;
+                }
+
+                // Compute the first time of contact on this axis.
+                T t = (cfg0.max - cfg1.min) / speed;
+
+                if (t > tFirst)
+                {
+                    // Time t is the new maximum first time of contact.
+                    tFirst = t;
+                    side = ContactSide::CS_RIGHT;
+                    tcfg0 = cfg0;
+                    tcfg1 = cfg1;
+                }
+
+                if (tFirst > tMax)
+                {
+                    // The intersection occurs after the specified maximum
+                    // time.
+                    return false;
+                }
+
+                // Compute the last time of contact on this axis.
+                t = (cfg0.min - cfg1.max) / speed;
+                if (t < tLast)
+                {
+                    tLast = t;
+                }
+
+                if (tFirst > tLast)
+                {
+                    // The time interval is invalid, so the objects are
+                    // not intersecting.
+                    return false;
+                }
+            }
+            else
+            {
+                // The intervals for cfg0 and cfg1 are currently
+                // overlapping.
+                if (speed > zero)
+                {
+                    // Compute the last time of contact on this axis.
+                    T t = (cfg0.max - cfg1.min) / speed;
+                    if (t < tLast)
+                    {
+                        tLast = t;
+                    }
+
+                    if (tFirst > tLast)
+                    {
+                        // The time interval is invalid, so the objects are
+                        // not intersecting.
+                        return false;
+                    }
+                }
+                else if (speed < zero)
+                {
+                    // Compute the last time of contact on this axis.
+                    T t = (cfg0.min - cfg1.max) / speed;
+                    if (t < tLast)
+                    {
+                        tLast = t;
+                    }
+
+                    if (tFirst > tLast)
+                    {
+                        // The time interval is invalid, so the objects are
+                        // not intersecting.
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // A projection wrapper to set up for the separating axis test.
+        static bool FindOverlap(Triangle3<T> const& triangle0,
+            Triangle3<T> const& triangle1, Vector3<T> const& direction,
+            T const& tMax, Vector3<T> const& velocity, ContactSide& side,
+            Configuration& tcfg0, Configuration& tcfg1, T& tFirst, T& tLast)
+        {
+            Configuration cfg0{}, cfg1{};
+            ScaleProjectOntoLine(triangle0, direction, cfg0);
+            ScaleProjectOntoLine(triangle1, direction, cfg1);
+            T speed = Dot(direction, velocity);
+            return FindOverlap(tMax, speed, cfg0, cfg1, side, tcfg0, tcfg1,
+                tFirst, tLast);
         }
     };
 }
