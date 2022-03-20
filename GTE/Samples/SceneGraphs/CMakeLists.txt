@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 1)
+set(GTE_VERSION_MINOR 2)
 
 project(SceneGraph VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -15,6 +15,7 @@ add_subdirectory(BspNodes)
 add_subdirectory(CameraAndLightNodes)
 add_subdirectory(Castle)
 add_subdirectory(CLODMeshes)
+add_subdirectory(CollisionsBoundTree)
 add_subdirectory(DLODNodes)
 add_subdirectory(IKControllers)
 add_subdirectory(MorphControllers)

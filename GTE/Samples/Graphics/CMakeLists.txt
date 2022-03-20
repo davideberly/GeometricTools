@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 1)
+set(GTE_VERSION_MINOR 2)
 
 project(Graphics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -21,6 +21,8 @@ add_subdirectory(IEEEFloatingPoint)
 add_subdirectory(Lights)
 add_subdirectory(LightTexture)
 add_subdirectory(MultipleRenderTargets)
+add_subdirectory(PlanarReflections)
+add_subdirectory(PlanarShadows)
 add_subdirectory(PlaneMeshIntersection)
 add_subdirectory(ProjectedTextures)
 add_subdirectory(ShaderReflection)
