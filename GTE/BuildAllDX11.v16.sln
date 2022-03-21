@@ -343,6 +343,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsBoundTreeDX11.v16
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSpheresDX11.v16", "Samples\Physics\CollisionsMovingSpheres\CollisionsMovingSpheresDX11.v16.vcxproj", "{992EE846-DBD0-451B-9E43-2D3A5B40612A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTriangleDX11.v16", "Samples\Physics\CollisionsMovingSphereTriangle\CollisionsMovingSphereTriangleDX11.v16.vcxproj", "{FA915AC7-9580-4596-A1B5-83124EC6F398}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1631,6 +1633,14 @@ Global
 		{992EE846-DBD0-451B-9E43-2D3A5B40612A}.Release|x64.Build.0 = Release|x64
 		{992EE846-DBD0-451B-9E43-2D3A5B40612A}.Release|x86.ActiveCfg = Release|Win32
 		{992EE846-DBD0-451B-9E43-2D3A5B40612A}.Release|x86.Build.0 = Release|Win32
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Debug|x64.ActiveCfg = Debug|x64
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Debug|x64.Build.0 = Debug|x64
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Debug|x86.ActiveCfg = Debug|Win32
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Debug|x86.Build.0 = Debug|Win32
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Release|x64.ActiveCfg = Release|x64
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Release|x64.Build.0 = Release|x64
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Release|x86.ActiveCfg = Release|Win32
+		{FA915AC7-9580-4596-A1B5-83124EC6F398}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1804,6 +1814,7 @@ Global
 		{7E8BAB6A-22B3-4BD7-971C-13EBECE2B543} = {431E2AFE-6A18-447C-9B33-664507ADE10A}
 		{DB8CF558-1CF0-4A85-9DB9-260D3F4E6D66} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
 		{992EE846-DBD0-451B-9E43-2D3A5B40612A} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
+		{FA915AC7-9580-4596-A1B5-83124EC6F398} = {60EFFA8F-B4A6-4509-9398-27C51B10F123}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}
