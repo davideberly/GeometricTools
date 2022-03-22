@@ -127,6 +127,7 @@ ViewVolume.cpp
 ViewVolumeNode.cpp
 Visual.cpp
 VisualEffect.cpp
+VolumeFogEffect.cpp
 GL45/GL45.cpp
 GL45/GL45AtomicCounterBuffer.cpp
 GL45/GL45BlendState.cpp

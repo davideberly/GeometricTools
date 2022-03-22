@@ -358,6 +358,9 @@
     <ClCompile Include="Graphics\CollisionMesh.cpp">
       <Filter>SceneGraph\CollisionDetection</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\VolumeFogEffect.cpp">
+      <Filter>Effects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\GEDrawTarget.h">
@@ -706,6 +709,9 @@
     </ClInclude>
     <ClInclude Include="Graphics\BoundTree.h">
       <Filter>SceneGraph\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\VolumeFogEffect.h">
+      <Filter>Effects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

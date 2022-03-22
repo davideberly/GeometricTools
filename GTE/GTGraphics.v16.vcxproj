@@ -127,6 +127,7 @@
     <ClCompile Include="Graphics\ViewVolumeNode.cpp" />
     <ClCompile Include="Graphics\Visual.cpp" />
     <ClCompile Include="Graphics\VisualEffect.cpp" />
+    <ClCompile Include="Graphics\VolumeFogEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\AmbientLightEffect.h" />
@@ -246,6 +247,7 @@
     <ClInclude Include="Graphics\Visual.h" />
     <ClInclude Include="Graphics\VisualEffect.h" />
     <ClInclude Include="Graphics\VisualProgram.h" />
+    <ClInclude Include="Graphics\VolumeFogEffect.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
