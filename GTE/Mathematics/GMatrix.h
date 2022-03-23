@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.23
 
 #pragma once
 
@@ -136,6 +136,7 @@ namespace gte
                     {
                         operator()(r, c) = vec[c];
                     }
+                    return;
                 }
                 LogError("Mismatched sizes.");
             }
