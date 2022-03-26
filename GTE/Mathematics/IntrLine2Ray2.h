@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.25
 
 #pragma once
 
@@ -49,7 +49,7 @@ namespace gte
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= (T)0)
+                if (llResult.line1Parameter[0] >= static_cast<T>(0))
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -80,8 +80,8 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                lineParameter{ (T)0, (T)0 },
-                rayParameter{ (T)0, (T)0 },
+                lineParameter{ static_cast<T>(0), static_cast<T>(0) },
+                rayParameter{ static_cast<T>(0), static_cast<T>(0) },
                 point(Vector2<T>::Zero())
             {
             }
@@ -125,7 +125,7 @@ namespace gte
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= (T)0)
+                if (llResult.line1Parameter[0] >= static_cast<T>(0))
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -148,7 +148,7 @@ namespace gte
                 T maxT = std::numeric_limits<T>::max();
                 result.lineParameter[0] = -maxT;
                 result.lineParameter[1] = +maxT;
-                result.rayParameter[0] = (T)0;
+                result.rayParameter[0] = static_cast<T>(0);
                 result.rayParameter[1] = +maxT;
             }
             else

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.25
 
 #pragma once
 
@@ -37,6 +37,9 @@ namespace gte
         Result operator()(Ray2<T> const& ray0, Ray2<T> const& ray1)
         {
             Result result{};
+
+            T const zero = static_cast<T>(0);
+
             FIQuery<T, Line2<T>, Line2<T>> llQuery{};
             Line2<T> line0(ray0.origin, ray0.direction);
             Line2<T> line1(ray1.origin, ray1.direction);
@@ -44,8 +47,8 @@ namespace gte
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the rays.
-                if (llResult.line0Parameter[0] >= (T)0 &&
-                    llResult.line1Parameter[0] >= (T)0)
+                if (llResult.line0Parameter[0] >= zero &&
+                    llResult.line1Parameter[0] >= zero)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -58,7 +61,7 @@ namespace gte
             }
             else if (llResult.numIntersections == std::numeric_limits<int32_t>::max())
             {
-                if (Dot(ray0.direction, ray1.direction) > (T)0)
+                if (Dot(ray0.direction, ray1.direction) > zero)
                 {
                     // The rays are collinear and in the same direction, so
                     // they must overlap.
@@ -73,12 +76,12 @@ namespace gte
                     // relative to ray0.direction.
                     Vector2<T> diff = ray1.origin - ray0.origin;
                     T t = Dot(ray0.direction, diff);
-                    if (t > (T)0)
+                    if (t > zero)
                     {
                         result.intersect = true;
                         result.numIntersections = 2;
                     }
-                    else if (t < (T)0)
+                    else if (t < zero)
                     {
                         result.intersect = false;
                         result.numIntersections = 0;
@@ -110,8 +113,8 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                ray0Parameter{ (T)0, (T)0 },
-                ray1Parameter{ (T)0, (T)0 },
+                ray0Parameter{ static_cast<T>(0), static_cast<T>(0) },
+                ray1Parameter{ static_cast<T>(0), static_cast<T>(0) },
                 point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
             {
             }
@@ -148,6 +151,9 @@ namespace gte
         Result operator()(Ray2<T> const& ray0, Ray2<T> const& ray1)
         {
             Result result{};
+
+            T const zero = static_cast<T>(0);
+
             FIQuery<T, Line2<T>, Line2<T>> llQuery{};
             Line2<T> line0(ray0.origin, ray0.direction);
             Line2<T> line1(ray1.origin, ray1.direction);
@@ -155,8 +161,8 @@ namespace gte
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the rays.
-                if (llResult.line0Parameter[0] >= (T)0 &&
-                    llResult.line1Parameter[0] >= (T)0)
+                if (llResult.line0Parameter[0] >= zero &&
+                    llResult.line1Parameter[0] >= zero)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -177,23 +183,23 @@ namespace gte
                 T maxReal = std::numeric_limits<T>::max();
                 Vector2<T> diff = ray1.origin - ray0.origin;
                 T t = Dot(ray0.direction, diff);
-                if (Dot(ray0.direction, ray1.direction) > (T)0)
+                if (Dot(ray0.direction, ray1.direction) > zero)
                 {
                     // The rays are collinear and in the same direction, so
                     // they must overlap.
                     result.intersect = true;
                     result.numIntersections = std::numeric_limits<int32_t>::max();
-                    if (t >= (T)0)
+                    if (t >= zero)
                     {
                         result.ray0Parameter[0] = t;
                         result.ray0Parameter[1] = maxReal;
-                        result.ray1Parameter[0] = (T)0;
+                        result.ray1Parameter[0] = zero;
                         result.ray1Parameter[1] = maxReal;
                         result.point[0] = ray1.origin;
                     }
                     else
                     {
-                        result.ray0Parameter[0] = (T)0;
+                        result.ray0Parameter[0] = zero;
                         result.ray0Parameter[1] = maxReal;
                         result.ray1Parameter[0] = -t;
                         result.ray1Parameter[1] = maxReal;
@@ -203,16 +209,16 @@ namespace gte
                 else
                 {
                     // The rays are collinear but in opposite directions.
-                    // Test whether they overlap.  Ray0 has interval
+                    // Test whether they overlap. Ray0 has interval
                     // [0,+infinity) and ray1 has interval (-infinity,t1]
                     // relative to ray0.direction.
-                    if (t >= (T)0)
+                    if (t >= zero)
                     {
                         result.intersect = true;
                         result.numIntersections = 2;
-                        result.ray0Parameter[0] = (T)0;
+                        result.ray0Parameter[0] = zero;
                         result.ray0Parameter[1] = t;
-                        result.ray1Parameter[0] = (T)0;
+                        result.ray1Parameter[0] = zero;
                         result.ray1Parameter[1] = t;
                         result.point[0] = ray0.origin;
                         result.point[1] = ray1.origin;

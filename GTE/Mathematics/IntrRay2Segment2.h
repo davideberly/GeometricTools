@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.25
 
 #pragma once
 
@@ -37,6 +37,9 @@ namespace gte
         Result operator()(Ray2<T> const& ray, Segment2<T> const& segment)
         {
             Result result{};
+
+            T const zero = static_cast<T>(0);
+
             Vector2<T> segOrigin{}, segDirection{};
             T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
@@ -49,7 +52,7 @@ namespace gte
             {
                 // Test whether the line-line intersection is on the ray and
                 // segment.
-                if (llResult.line0Parameter[0] >= (T)0 &&
+                if (llResult.line0Parameter[0] >= zero &&
                     std::fabs(llResult.line1Parameter[0]) <= segExtent)
                 {
                     result.intersect = true;
@@ -67,12 +70,12 @@ namespace gte
                 // relative to the ray direction.
                 Vector2<T> diff = segOrigin - ray.origin;
                 T t = Dot(ray.direction, diff) + segExtent;
-                if (t > (T)0)
+                if (t > zero)
                 {
                     result.intersect = true;
                     result.numIntersections = 2;
                 }
-                else if (t < (T)0)
+                else if (t < zero)
                 {
                     result.intersect = false;
                     result.numIntersections = 0;
@@ -103,8 +106,8 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                rayParameter{ (T)0, (T)0 },
-                segmentParameter{ (T)0, (T)0 },
+                rayParameter{ static_cast<T>(0), static_cast<T>(0) },
+                segmentParameter{ static_cast<T>(0), static_cast<T>(0) },
                 point{ Vector2<T>::Zero(), Vector2<T>::Zero() }
             {
             }
@@ -131,6 +134,9 @@ namespace gte
         Result operator()(Ray2<T> const& ray, Segment2<T> const& segment)
         {
             Result result{};
+
+            T const zero = static_cast<T>(0);
+
             Vector2<T> segOrigin{}, segDirection{};
             T segExtent{};
             segment.GetCenteredForm(segOrigin, segDirection, segExtent);
@@ -143,7 +149,7 @@ namespace gte
             {
                 // Test whether the line-line intersection is on the ray and
                 // segment.
-                if (llResult.line0Parameter[0] >= (T)0 &&
+                if (llResult.line0Parameter[0] >= zero &&
                     std::fabs(llResult.line1Parameter[0]) <= segExtent)
                 {
                     result.intersect = true;
@@ -168,7 +174,7 @@ namespace gte
                 // Get the ray interval.
                 std::array<T, 2> interval0 =
                 {
-                    (T)0, std::numeric_limits<T>::max()
+                    zero, std::numeric_limits<T>::max()
                 };
 
                 // Compute the location of the segment endpoints relative to
