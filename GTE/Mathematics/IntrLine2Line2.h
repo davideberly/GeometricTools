@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.25
 
 #pragma once
 
@@ -12,6 +12,9 @@
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
 #include <limits>
+
+// Test-intersection and find-intersection queries for two lines. The line
+// directions are nonzero but not required to be unit length.
 
 namespace gte
 {
@@ -55,9 +58,10 @@ namespace gte
             // single point where
             //   s0 = DotPerp(Q, D1))/DotPerp(D0, D1))
             //   s1 = DotPerp(Q, D0))/DotPerp(D0, D1))
-            Vector2<T> diff = line1.origin - line0.origin;
-            T D0DotPerpD1 = DotPerp(line0.direction, line1.direction);
-            if (D0DotPerpD1 != (T)0)
+
+            T const zero = static_cast<T>(0);
+            T dotD0PerpD1 = DotPerp(line0.direction, line1.direction);
+            if (dotD0PerpD1 != zero)
             {
                 // The lines are not parallel.
                 result.intersect = true;
@@ -66,9 +70,9 @@ namespace gte
             else
             {
                 // The lines are parallel.
-                Normalize(diff);
-                T diffNDotPerpD1 = DotPerp(diff, line1.direction);
-                if (diffNDotPerpD1 != (T)0)
+                Vector2<T> Q = line1.origin - line0.origin;
+                T dotQDotPerpD1 = DotPerp(Q, line1.direction);
+                if (dotQDotPerpD1 != zero)
                 {
                     // The lines are parallel but distinct.
                     result.intersect = false;
@@ -96,8 +100,8 @@ namespace gte
                 :
                 intersect(false),
                 numIntersections(0),
-                line0Parameter{ (T)0, (T)0 },
-                line1Parameter{ (T)0, (T)0 },
+                line0Parameter{ static_cast<T>(0), static_cast<T>(0) },
+                line1Parameter{ static_cast<T>(0), static_cast<T>(0) },
                 point(Vector2<T>::Zero())
             {
             }
@@ -144,17 +148,18 @@ namespace gte
             //   s0 = DotPerp(Q, D1))/DotPerp(D0, D1))
             //   s1 = DotPerp(Q, D0))/DotPerp(D0, D1))
 
+            T const zero = static_cast<T>(0);
             Vector2<T> Q = line1.origin - line0.origin;
-            T D0DotPerpD1 = DotPerp(line0.direction, line1.direction);
-            if (D0DotPerpD1 != (T)0)
+            T dotD0PerpD1 = DotPerp(line0.direction, line1.direction);
+            if (dotD0PerpD1 != zero)
             {
                 // The lines are not parallel.
                 result.intersect = true;
                 result.numIntersections = 1;
-                T QDotPerpD0 = DotPerp(Q, line0.direction);
-                T QDotPerpD1 = DotPerp(Q, line1.direction);
-                T s0 = QDotPerpD1 / D0DotPerpD1;
-                T s1 = QDotPerpD0 / D0DotPerpD1;
+                T dotQPerpD0 = DotPerp(Q, line0.direction);
+                T dotQPerpD1 = DotPerp(Q, line1.direction);
+                T s0 = dotQPerpD1 / dotD0PerpD1;
+                T s1 = dotQPerpD0 / dotD0PerpD1;
                 result.line0Parameter = { s0, s0 };
                 result.line1Parameter = { s1, s1 };
                 result.point = line0.origin + s0 * line0.direction;
@@ -162,8 +167,8 @@ namespace gte
             else
             {
                 // The lines are parallel.
-                T QDotPerpD1 = DotPerp(Q, line1.direction);
-                if (std::fabs(QDotPerpD1) != (T)0)
+                T dotQPerpD1 = DotPerp(Q, line1.direction);
+                if (std::fabs(dotQPerpD1) != zero)
                 {
                     // The lines are parallel but distinct.
                     result.intersect = false;
