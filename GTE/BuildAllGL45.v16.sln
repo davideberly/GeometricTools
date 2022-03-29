@@ -347,6 +347,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTrian
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineTorusGL45.v16", "Samples\Intersection\IntersectLineTorus\IntersectLineTorusGL45.v16.vcxproj", "{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinningGL45.v16", "Samples\Graphics\Skinning\SkinningGL45.v16.vcxproj", "{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1651,6 +1653,14 @@ Global
 		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x64.Build.0 = Release|x64
 		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x86.ActiveCfg = Release|Win32
 		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x86.Build.0 = Release|Win32
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Debug|x64.ActiveCfg = Debug|x64
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Debug|x64.Build.0 = Debug|x64
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Debug|x86.ActiveCfg = Debug|Win32
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Debug|x86.Build.0 = Debug|Win32
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Release|x64.ActiveCfg = Release|x64
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Release|x64.Build.0 = Release|x64
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Release|x86.ActiveCfg = Release|Win32
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1826,6 +1836,7 @@ Global
 		{72594DB2-44FE-4911-BD3B-656D7E9E46E1} = {2F2B9522-2900-4F03-8377-721A07317BCB}
 		{D41C68EB-5F90-4AE2-8CA6-726B494ECABC} = {2F2B9522-2900-4F03-8377-721A07317BCB}
 		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
+		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9749CC5-26A0-494D-8B40-181E82654FD5}

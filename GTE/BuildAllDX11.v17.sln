@@ -347,6 +347,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTrian
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineTorusDX11.v17", "Samples\Intersection\IntersectLineTorus\IntersectLineTorusDX11.v17.vcxproj", "{34CE56B0-C755-4EDA-9500-D3002B19A9EC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinningDX11.v17", "Samples\Graphics\Skinning\SkinningDX11.v17.vcxproj", "{55015C17-1C79-4832-8F9D-244A99CFE99C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1651,6 +1653,14 @@ Global
 		{34CE56B0-C755-4EDA-9500-D3002B19A9EC}.Release|x64.Build.0 = Release|x64
 		{34CE56B0-C755-4EDA-9500-D3002B19A9EC}.Release|x86.ActiveCfg = Release|Win32
 		{34CE56B0-C755-4EDA-9500-D3002B19A9EC}.Release|x86.Build.0 = Release|Win32
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Debug|x64.ActiveCfg = Debug|x64
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Debug|x64.Build.0 = Debug|x64
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Debug|x86.ActiveCfg = Debug|Win32
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Debug|x86.Build.0 = Debug|Win32
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Release|x64.ActiveCfg = Release|x64
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Release|x64.Build.0 = Release|x64
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Release|x86.ActiveCfg = Release|Win32
+		{55015C17-1C79-4832-8F9D-244A99CFE99C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1826,6 +1836,7 @@ Global
 		{B4137258-ED88-4A92-A105-D465795C25A1} = {DBCA50B1-02C1-4E3F-9382-4D3635A74075}
 		{572F8952-E5FC-4249-A0E9-EA51F343D3AE} = {DBCA50B1-02C1-4E3F-9382-4D3635A74075}
 		{34CE56B0-C755-4EDA-9500-D3002B19A9EC} = {D427942E-9DCA-4EE0-BEF0-E99C4450039F}
+		{55015C17-1C79-4832-8F9D-244A99CFE99C} = {C8DE7961-5074-4F24-BAEF-B29356C98F81}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2A6F8A7B-450A-4DBC-8FC5-AA5B01896AA5}
