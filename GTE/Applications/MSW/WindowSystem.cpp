@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.03.28
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -189,6 +189,7 @@ void WindowSystem::CreateEngineAndProgramFactory(Window::Parameters& parameters)
         parameters.engine = engine;
         parameters.factory = std::make_shared<GLSLProgramFactory>();
         parameters.created = true;
+        engine->DisplayColorBuffer(0);
     }
     else
     {
