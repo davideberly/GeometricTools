@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.03.28
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/MeshFactory.h>
@@ -11,14 +11,60 @@ using namespace gte;
 
 MeshFactory::MeshFactory()
     :
+    mVFormat{},
     mIndexSize(sizeof(uint32_t)),
     mVBUsage(Resource::Usage::IMMUTABLE),
     mIBUsage(Resource::Usage::IMMUTABLE),
     mOutside(true),
+    mAssignTCoords{},
     mPositions(nullptr),
     mNormals(nullptr),
     mTangents(nullptr),
-    mBitangents(nullptr)
+    mBitangents(nullptr),
+    mTCoords{}
+{
+    mVFormat.Bind(VASemantic::POSITION, DF_R32G32B32_FLOAT, 0);
+    for (int32_t i = 0; i < VAConstant::MAX_TCOORD_UNITS; ++i)
+    {
+        mAssignTCoords[i] = false;
+        mTCoords[i] = nullptr;
+    }
+}
+
+MeshFactory::MeshFactory(VertexFormat const& vbFormat)
+    :
+    mVFormat(vbFormat),
+    mIndexSize(sizeof(uint32_t)),
+    mVBUsage(Resource::Usage::IMMUTABLE),
+    mIBUsage(Resource::Usage::IMMUTABLE),
+    mOutside(true),
+    mAssignTCoords{},
+    mPositions(nullptr),
+    mNormals(nullptr),
+    mTangents(nullptr),
+    mBitangents(nullptr),
+    mTCoords{}
+{
+    for (int32_t i = 0; i < VAConstant::MAX_TCOORD_UNITS; ++i)
+    {
+        mAssignTCoords[i] = false;
+        mTCoords[i] = nullptr;
+    }
+}
+
+MeshFactory::MeshFactory(VertexFormat const& vbFormat, Resource::Usage vbUsage)
+    :
+    mVFormat(vbFormat),
+    mIndexSize(sizeof(uint32_t)),
+    mVBUsage(vbUsage),
+    mIBUsage(Resource::Usage::IMMUTABLE),
+    mOutside(true),
+    mAssignTCoords{},
+    mPositions(nullptr),
+    mNormals(nullptr),
+    mTangents(nullptr),
+    mBitangents(nullptr),
+    mTCoords{}
 {
     for (int32_t i = 0; i < VAConstant::MAX_TCOORD_UNITS; ++i)
     {
