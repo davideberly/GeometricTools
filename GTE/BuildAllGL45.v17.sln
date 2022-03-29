@@ -345,6 +345,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSpheresGL45
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTriangleGL45.v17", "Samples\Physics\CollisionsMovingSphereTriangle\CollisionsMovingSphereTriangleGL45.v17.vcxproj", "{F4B3DD86-6B64-4E2E-BCE8-77CEFEC41796}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineTorusGL45.v17", "Samples\Intersection\IntersectLineTorus\IntersectLineTorusGL45.v17.vcxproj", "{E153DD14-DE51-49E8-B5FC-DF407FAB5201}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1641,6 +1643,14 @@ Global
 		{F4B3DD86-6B64-4E2E-BCE8-77CEFEC41796}.Release|x64.Build.0 = Release|x64
 		{F4B3DD86-6B64-4E2E-BCE8-77CEFEC41796}.Release|x86.ActiveCfg = Release|Win32
 		{F4B3DD86-6B64-4E2E-BCE8-77CEFEC41796}.Release|x86.Build.0 = Release|Win32
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Debug|x64.ActiveCfg = Debug|x64
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Debug|x64.Build.0 = Debug|x64
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Debug|x86.ActiveCfg = Debug|Win32
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Debug|x86.Build.0 = Debug|Win32
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Release|x64.ActiveCfg = Release|x64
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Release|x64.Build.0 = Release|x64
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Release|x86.ActiveCfg = Release|Win32
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1815,6 +1825,7 @@ Global
 		{E44111B8-2EDB-4C21-9A75-D7E44372DA46} = {C12349E3-9108-474A-A1D9-7759467431AE}
 		{DF7D9366-BF00-4F30-860F-28E1E69C0835} = {C12349E3-9108-474A-A1D9-7759467431AE}
 		{F4B3DD86-6B64-4E2E-BCE8-77CEFEC41796} = {C12349E3-9108-474A-A1D9-7759467431AE}
+		{E153DD14-DE51-49E8-B5FC-DF407FAB5201} = {883613DC-0E4D-4F51-9631-18D37D62743E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED7EAE6E-B55C-4B19-9F14-6DF816AB8730}

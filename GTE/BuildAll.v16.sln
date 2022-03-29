@@ -697,6 +697,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTrian
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionsMovingSphereTriangleGL45.v16", "Samples\Physics\CollisionsMovingSphereTriangle\CollisionsMovingSphereTriangleGL45.v16.vcxproj", "{D41C68EB-5F90-4AE2-8CA6-726B494ECABC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineTorusDX11.v16", "Samples\Intersection\IntersectLineTorus\IntersectLineTorusDX11.v16.vcxproj", "{606F8FF9-5E04-458C-8E6B-4034F3102E7A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineTorusGL45.v16", "Samples\Intersection\IntersectLineTorus\IntersectLineTorusGL45.v16.vcxproj", "{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -3257,6 +3261,22 @@ Global
 		{D41C68EB-5F90-4AE2-8CA6-726B494ECABC}.Release|x64.Build.0 = Release|x64
 		{D41C68EB-5F90-4AE2-8CA6-726B494ECABC}.Release|x86.ActiveCfg = Release|Win32
 		{D41C68EB-5F90-4AE2-8CA6-726B494ECABC}.Release|x86.Build.0 = Release|Win32
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Debug|x64.ActiveCfg = Debug|x64
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Debug|x64.Build.0 = Debug|x64
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Debug|x86.ActiveCfg = Debug|Win32
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Debug|x86.Build.0 = Debug|Win32
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Release|x64.ActiveCfg = Release|x64
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Release|x64.Build.0 = Release|x64
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Release|x86.ActiveCfg = Release|Win32
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A}.Release|x86.Build.0 = Release|Win32
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Debug|x64.ActiveCfg = Debug|x64
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Debug|x64.Build.0 = Debug|x64
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Debug|x86.ActiveCfg = Debug|Win32
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Debug|x86.Build.0 = Debug|Win32
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x64.ActiveCfg = Release|x64
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x64.Build.0 = Release|x64
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x86.ActiveCfg = Release|Win32
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3607,6 +3627,8 @@ Global
 		{72594DB2-44FE-4911-BD3B-656D7E9E46E1} = {5EFEDC77-3109-4782-8892-308EA21275A1}
 		{FA915AC7-9580-4596-A1B5-83124EC6F398} = {CCAF0CFB-F9A1-4448-A908-692E4B1BD892}
 		{D41C68EB-5F90-4AE2-8CA6-726B494ECABC} = {5EFEDC77-3109-4782-8892-308EA21275A1}
+		{606F8FF9-5E04-458C-8E6B-4034F3102E7A} = {8E3CCD18-49C2-46DF-95F5-20E175937BEA}
+		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3} = {1D2C011A-D685-4767-BBDD-6870A39D3133}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA181D3A-34ED-4371-B94B-6E560CCE35ED}

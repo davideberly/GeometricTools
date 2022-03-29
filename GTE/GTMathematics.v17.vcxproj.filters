@@ -1527,5 +1527,8 @@
     <ClInclude Include="Mathematics\ImplicitSurface3.h">
       <Filter>CurvesSurfacesVolumes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrLine3Torus3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
