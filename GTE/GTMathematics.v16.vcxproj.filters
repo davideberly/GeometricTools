@@ -1527,5 +1527,8 @@
     <ClInclude Include="Mathematics\IntrLine3Torus3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\MeshSmoother.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

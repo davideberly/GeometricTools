@@ -373,6 +373,7 @@
     <ClInclude Include="Mathematics\MassSpringVolume.h" />
     <ClInclude Include="Mathematics\Mesh.h" />
     <ClInclude Include="Mathematics\MeshCurvature.h" />
+    <ClInclude Include="Mathematics\MeshSmoother.h" />
     <ClInclude Include="Mathematics\Minimize1.h" />
     <ClInclude Include="Mathematics\MinimizeN.h" />
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
