@@ -489,6 +489,48 @@ int Delaunay2ToPlane(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
 }
 
+int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
+{
+    //Rational const zero = static_cast<Rational>(0);
+    //Rational dot0 = Dot(D0[0], D0[1]);
+    //Rational dot1 = Dot(D1[0], D1[1]);
+
+    //if (dot0 >= zero)
+    //{
+    //    // angle0 in (0,pi/2]
+    //    if (dot1 < zero)
+    //    {
+    //        // angle1 in (pi/2,pi), so angle0 < angle1
+    //        return true;
+    //    }
+
+    //    // angle1 in (0,pi/2], sin^2(angle) is increasing function
+    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
+    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
+    //    return dot0 * dot0 * sqrLen11 > dot1 * dot1 * sqrLen00;
+    //}
+    //else
+    //{
+    //    // angle0 in (pi/2,pi)
+    //    if (dot1 >= zero)
+    //    {
+    //        // angle1 in (0,pi/2], so angle1 < angle0
+    //        return false;
+    //    }
+
+    //    // angle1 in (pi/2,pi), sin^2(angle) is decreasing function
+    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
+    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
+    //    return dot0 * dot0 * sqrLen11 < dot1 * dot1* sqrLen00;
+    //}
+
+    BSPrecision x(type), y(type);
+    BSPrecision diff = x - y;
+    BSPrecision dot = diff * diff + diff * diff;
+    BSPrecision sqrSinAngle = dot * dot * dot;
+    return (forBSNumber ? sqrSinAngle.bsn.maxWords : sqrSinAngle.bsr.maxWords);
+}
+
 int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
@@ -553,6 +595,11 @@ int main()
     bsNumberDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 263
     bsRationalFloatWords = Delaunay2ToPlane(BSPrecision::Type::IS_FLOAT, false);  // 417
     bsRationalDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 3148
+
+    bsNumberFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, true);  // 53
+    bsNumberDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, true);  // 394
+    bsRationalFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, false);  // 209
+    bsRationalDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, false);  // 1574
 
     return 0;
 }
