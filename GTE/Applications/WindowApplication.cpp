@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.04.03
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/WindowApplication.h>
@@ -160,3 +160,12 @@ void WindowApplication::OnClose()
 {
     // Stub for derived classes.
 }
+
+#if defined(GTE_USE_MSWINDOWS)
+bool WindowApplication::OnWindowsMessage(HWND, UINT,
+    WPARAM, LPARAM, LRESULT& result)
+{
+    result = 0;
+    return false;
+}
+#endif

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.04.03
 
 #pragma once
 
@@ -110,6 +110,17 @@ namespace gte
 
         // Actions to take before the window closes.
         virtual void OnClose();
+
+#if defined(GTE_USE_MSWINDOWS)
+        // Allow an application to process the Windows message. The function
+        // is called in WindowSystem::WindowProcedure. If the return value is
+        // 'true', the message is not passed to 'window' via the message pump.
+        // If the return value is 'false', the message is passed to 'window'.
+        // This allows a third-party UI package to intercept messages and
+        // process them as needed.
+        virtual bool OnWindowsMessage(HWND handle, UINT message,
+            WPARAM wParam, LPARAM lParam, LRESULT& result);
+#endif
 
         // Key identifiers. These are platform-specific, so classes that
         // derived from WindowApplication must define these variables. They

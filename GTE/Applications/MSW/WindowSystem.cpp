@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.28
+// Version: 6.0.2022.04.03
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -28,7 +28,7 @@ WindowSystem::WindowSystem()
     mWindowClassName(L"GTEngineWindow"),
     mAtom(0)
 {
-    WNDCLASS wc;
+    WNDCLASS wc{};
     wc.style = CS_OWNDC;
     wc.lpfnWndProc = WindowProcedure;
     wc.cbClsExtra = 0;
@@ -220,6 +220,14 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     }
 
     Window& window = *iter->second;
+
+    LRESULT lResult = 0;
+    if (window.OnWindowsMessage(handle, message, wParam, lParam, lResult))
+    {
+        // The 'window' does not want the message interpreted by the switch
+        // statement below.
+        return lResult;
+    }
 
     switch (message)
     {
