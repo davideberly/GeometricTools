@@ -8,8 +8,17 @@ Portions of the code are described in various books as well as in PDF
 documents available at the
 [Geometric Tools Website](https://www.geometrictools.com).
 
-The Geometric Tools Engine is licensed under the
+The Geometric Tools Engine (GTE) is licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
+
+I am now in the process of finishing The Geometric Tools Library (GTL),
+which is a major revision of GTE. The library is also licensed under the
+[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt). The
+code comes with PDF documentation and hyperlinks in the source files to
+the specific locations in the PDF file that describe the code and use.
+The PDF itself has links to the source code files. Portions of the code
+will be posted once finalized. The first batch is the Utility library and
+documentation and is available at github and at my website.
 
 ## Supported Platforms ##
 
