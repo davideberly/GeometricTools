@@ -3,8 +3,7 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.04.06
-
+// File Version: 2022.04.07
 #pragma once
 
 // Documentation for this class is
@@ -126,35 +125,82 @@ namespace gtl
             return mContainer[this->index(coordinate)];
         }
 
-        // Support for sorting and comparing Multiarray objects.
+        // Support for sorting and comparing MultiarrayAdapter objects.
         inline bool operator==(MultiarrayAdapter const& other) const
         {
-            return mContainer == other.mContainer;
+            if (mContainer != nullptr)
+            {
+                if (other.mContainer != nullptr)
+                {
+                    for (size_t i = 0; i < this->size(); ++i)
+                    {
+                        if (mContainer[i] != other.mContainer[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return other.mContainer == nullptr;
+            }
         }
 
         inline bool operator!=(MultiarrayAdapter const& other) const
         {
-            return mContainer != other.mContainer;
+            return !operator==(other);
         }
 
         inline bool operator< (MultiarrayAdapter const& other) const
         {
-            return mContainer < other.mContainer;
+            if (other.mContainer != nullptr)
+            {
+                if (mContainer != nullptr)
+                {
+                    for (size_t i = 0; i < this->size(); ++i)
+                    {
+                        if (mContainer[i] < other.mContainer[i])
+                        {
+                            return true;
+                        }
+
+                        if (mContainer[i] > other.mContainer[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         inline bool operator<=(MultiarrayAdapter const& other) const
         {
-            return mContainer <= other.mContainer;
+            return !other.operator<(*this);
         }
 
         inline bool operator> (MultiarrayAdapter const& other) const
         {
-            return mContainer > other.mContainer;
+            return other.operator<(*this);
         }
 
         inline bool operator>=(MultiarrayAdapter const& other) const
         {
-            return mContainer >= other.mContainer;
+            return !operator<(other);
         }
 
     private:
@@ -290,8 +336,33 @@ namespace gtl
         // Support for sorting and comparing MultiarrayAdapter objects.
         bool operator==(MultiarrayAdapter const& other) const
         {
-            return Lattice<OrderLtoR>::operator==(other)
-                && mContainer == other.mContainer;
+            if (Lattice<OrderLtoR>::operator!=(other))
+            {
+                return false;
+            }
+
+            if (mContainer != nullptr)
+            {
+                if (other.mContainer != nullptr)
+                {
+                    for (size_t i = 0; i < this->size(); ++i)
+                    {
+                        if (mContainer[i] != other.mContainer[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return other.mContainer == nullptr;
+            }
         }
 
         bool operator!=(MultiarrayAdapter const& other) const
@@ -305,11 +376,39 @@ namespace gtl
             {
                 return true;
             }
+
             if (Lattice<OrderLtoR>::operator>(other))
             {
                 return false;
             }
-            return  mContainer < other.mContainer;
+
+            if (other.mContainer != nullptr)
+            {
+                if (mContainer != nullptr)
+                {
+                    for (size_t i = 0; i < this->size(); ++i)
+                    {
+                        if (mContainer[i] < other.mContainer[i])
+                        {
+                            return true;
+                        }
+
+                        if (mContainer[i] > other.mContainer[i])
+                        {
+                            return false;
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         bool operator<=(MultiarrayAdapter const& other) const
