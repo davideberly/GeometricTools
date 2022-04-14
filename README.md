@@ -56,3 +56,20 @@ notes to understand what is expected of your development environment.
 The current queue of technical support issues, whether reported on github
 or privately by email, is found at the Geometric Tools website. See the
 document https://www.geometrictools.com/Downloads/TechnicalSupportQueue.pdf
+
+## Links to GTE-Based Projects ##
+* Seb Wouter's improvement for my LCP-based test-intersection query between
+  a box and a finite cylinder. When using floating-point arithmetic, the LCP
+  solver had some significant rounding errors to produce incorrect results.
+  His approach clips the box by the cylinder enddisk planes to form a convex
+  polyhedron, projects that to a plane perpendicular to the cylinder axis to
+  obtain a polygon, and then tests for polygon-circle intersection. The code
+  uses a generic convex hull finder to create the convex polyhedron. My current
+  GTE code avoids the generic hull finder and takes advantage of the pairs of
+  parallel planes for the box to amortize the computational costs for a faster
+  algorithm. The repository link is
+  https://https://github.com/SebWouters/AabbCyl
+
+* CodeReclaimers example of incorporating Dear ImGui into a GTE sample
+  application (for Microsoft Windows). The repository link is
+  https://github.com/CodeReclaimers/GTEImGuiExample
