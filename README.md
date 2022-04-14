@@ -68,7 +68,7 @@ document https://www.geometrictools.com/Downloads/TechnicalSupportQueue.pdf
   GTE code avoids the generic hull finder and takes advantage of the pairs of
   parallel planes for the box to amortize the computational costs for a faster
   algorithm. The repository link is
-  https://https://github.com/SebWouters/AabbCyl
+  https://github.com/SebWouters/AabbCyl
 
 * CodeReclaimers example of incorporating Dear ImGui into a GTE sample
   application (for Microsoft Windows). The repository link is
