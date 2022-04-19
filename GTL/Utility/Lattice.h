@@ -49,7 +49,7 @@ namespace gtl
         // comments about lattices.
         inline size_t constexpr size(size_t d) const noexcept
         {
-            std::array<size_t, sizeof...(Sizes)> sizes;
+            std::array<size_t, sizeof...(Sizes)> sizes{};
             MetaAssignSize<0, Sizes...>(sizes.data());
             return sizes[d];
         }
@@ -264,7 +264,7 @@ namespace gtl
         typename std::enable_if<(numDimensions > 1), size_t>::type constexpr
         GetIndexRtoL(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
         {
-            std::array<size_t, sizeof...(Sizes)> sizes;
+            std::array<size_t, sizeof...(Sizes)> sizes{};
             MetaAssignSize<0, Sizes...>(sizes.data());
             size_t d = 0;
             size_t indexRtoL = coordinate[d];
