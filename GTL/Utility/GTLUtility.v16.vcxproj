@@ -21,9 +21,11 @@
     <ClInclude Include="MultiarrayAdapter.h" />
     <ClInclude Include="RangeIteration.h" />
     <ClInclude Include="RawIterators.h" />
+    <ClInclude Include="RawPtrCompare.h" />
     <ClInclude Include="SharedPtrCompare.h" />
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TypeTraits.h" />
     <ClInclude Include="WeakPtrCompare.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

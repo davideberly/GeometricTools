@@ -3,7 +3,8 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.04.07
+// File Version: 2022.05.02
+
 #pragma once
 
 // Documentation for this class is

@@ -15,5 +15,7 @@
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WeakPtrCompare.h" />
+    <ClInclude Include="RawPtrCompare.h" />
+    <ClInclude Include="TypeTraits.h" />
   </ItemGroup>
 </Project>

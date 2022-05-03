@@ -3,7 +3,7 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.04.06
+// File Version: 2022.05.02
 
 #pragma once
 
@@ -11,6 +11,7 @@
 // https://www.geometrictools.com/Documentation/GTLUtility.pdf#Lattice
 
 #include <GTL/Utility/Exceptions.h>
+#include <GTL/Utility/TypeTraits.h>
 #include <array>
 #include <cstdint>
 #include <initializer_list>
@@ -65,9 +66,8 @@ namespace gtl
 
         // Convert from an n-dimensional index to a 1-dimensional index for
         // left-to-right ordering.
-        template <typename... IndexTypes, bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, size_t>::type constexpr
-        index(IndexTypes... ntuple) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        size_t index(IndexTypes... ntuple) const noexcept
         {
             static_assert(
                 sizeof...(IndexTypes) == sizeof...(Sizes),
@@ -76,18 +76,16 @@ namespace gtl
             return MetaGetIndexLtoR(ntuple...);
         }
 
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, size_t>::type constexpr
-        index(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        size_t index(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
         {
             return GetIndexLtoR(coordinate);
         }
 
         // Convert from a 1-dimension index to an n-dimensional index for
         // left-to-right ordering.
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, std::array<size_t, sizeof...(Sizes)>>::type constexpr
-        coordinate(size_t i) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        std::array<size_t, sizeof...(Sizes)> coordinate(size_t i) const noexcept
         {
             // i = x[0] + b[0] * (x[1] + b[1] * (x[2] + ...)
             // tuple = (x[0], ..., x[n-1])
@@ -105,9 +103,8 @@ namespace gtl
 
         // Convert from an n-dimensional index to a 1-dimensional index for
         // right-to-left ordering.
-        template <typename... IndexTypes, bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, size_t>::type constexpr
-        index(IndexTypes... ntuple) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        size_t index(IndexTypes... ntuple) const noexcept
         {
             static_assert(
                 sizeof...(IndexTypes) == sizeof...(Sizes),
@@ -117,18 +114,16 @@ namespace gtl
             return MetaGetIndexRtoL(static_cast<Type>(0), ntuple...);
         }
 
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, size_t>::type constexpr
-        index(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        size_t index(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
         {
             return GetIndexRtoL(coordinate);
         }
 
         // Convert from a 1-dimension index to an n-dimensional index for
         // right-to-left ordering.
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, std::array<size_t, sizeof...(Sizes)>>::type constexpr
-        coordinate(size_t i) const noexcept
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        std::array<size_t, sizeof...(Sizes)> coordinate(size_t i) const noexcept
         {
             // i = x[n-1] + b[n-1] * (x[n-2] + b[n-2] * (x[n-3] + ...)
             // tuple = (x[0], ..., x[n-1])
@@ -212,9 +207,8 @@ namespace gtl
 
         // Metaprogramming support for index(std::array<*,*)> const&) using
         // left-to-right ordering.
-        template <size_t numDimensions = sizeof...(Sizes)>
-        typename std::enable_if<(numDimensions > 1), size_t>::type constexpr
-        GetIndexLtoR(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
+        template <size_t numDimensions = sizeof...(Sizes), TraitSelector<(numDimensions > 1)> = 0>
+        size_t GetIndexLtoR(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
         {
             std::array<size_t, sizeof...(Sizes)> sizes{};
             MetaAssignSize<0, Sizes...>(sizes.data());
@@ -228,9 +222,8 @@ namespace gtl
             return indexLtoR;
         }
 
-        template <size_t numDimensions = sizeof...(Sizes)>
-        typename std::enable_if<(numDimensions == 1), size_t>::type constexpr
-        GetIndexLtoR(std::array<size_t, 1> const& coordinate) const noexcept
+        template <size_t numDimensions = sizeof...(Sizes), TraitSelector<numDimensions == 1> = 0>
+        size_t GetIndexLtoR(std::array<size_t, 1> const& coordinate) const noexcept
         {
             return coordinate[0];
         }
@@ -260,9 +253,8 @@ namespace gtl
 
         // Metaprogramming support for index(std::array<*,*)> const&) using
         // left-to-right ordering.
-        template <size_t numDimensions = sizeof...(Sizes)>
-        typename std::enable_if<(numDimensions > 1), size_t>::type constexpr
-        GetIndexRtoL(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
+        template <size_t numDimensions = sizeof...(Sizes), TraitSelector<(numDimensions > 1)> = 0>
+        size_t GetIndexRtoL(std::array<size_t, sizeof...(Sizes)> const& coordinate) const noexcept
         {
             std::array<size_t, sizeof...(Sizes)> sizes{};
             MetaAssignSize<0, Sizes...>(sizes.data());
@@ -275,9 +267,8 @@ namespace gtl
             return indexRtoL;
         }
 
-        template <size_t numDimensions = sizeof...(Sizes)>
-        typename std::enable_if<(numDimensions == 1), size_t>::type constexpr
-        GetIndexRtoL(std::array<size_t, 1> const& coordinate) const noexcept
+        template <size_t numDimensions = sizeof...(Sizes), TraitSelector<numDimensions == 1> = 0>
+        size_t GetIndexRtoL(std::array<size_t, 1> const& coordinate) const noexcept
         {
             return coordinate[0];
         }
@@ -398,9 +389,8 @@ namespace gtl
 
         // Convert from an n-dimensional index to a 1-dimensional index for
         // left-to-right ordering.
-        template <typename... IndexTypes, bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, size_t>::type
-        index(IndexTypes... ntuple) const
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        size_t index(IndexTypes... ntuple) const
         {
             GTL_ARGUMENT_ASSERT(
                 mSizes.size() > 0 && mSizes.size() == sizeof...(IndexTypes),
@@ -409,9 +399,8 @@ namespace gtl
             return MetaGetIndexLtoR(ntuple...);
         }
 
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, size_t>::type
-        index(std::vector<size_t> const& coordinate) const
+        template <bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        size_t index(std::vector<size_t> const& coordinate) const
         {
             GTL_ARGUMENT_ASSERT(
                 mSizes.size() > 0 && coordinate.size() == mSizes.size(),
@@ -429,9 +418,8 @@ namespace gtl
 
         // Convert from an n-dimensional index to a 1-dimensional index for
         // right-to-left ordering.
-        template <typename... IndexTypes, bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, size_t>::type
-        index(IndexTypes... ntuple) const
+        template <typename... IndexTypes, bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        size_t index(IndexTypes... ntuple) const
         {
             GTL_ARGUMENT_ASSERT(
                 mSizes.size() > 0 && mSizes.size() == sizeof...(IndexTypes),
@@ -441,9 +429,8 @@ namespace gtl
             return MetaGetIndexRtoL(static_cast<Type>(0), ntuple...);
         }
 
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, size_t>::type
-        index(std::vector<size_t> const& coordinate) const
+        template <bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        size_t index(std::vector<size_t> const& coordinate) const
         {
             GTL_ARGUMENT_ASSERT(
                 mSizes.size() > 0 && coordinate.size() == mSizes.size(),
@@ -460,9 +447,8 @@ namespace gtl
 
         // Convert from a 1-dimension index to an n-dimensional index for
         // left-to-right ordering.
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<LeftToRight, std::vector<size_t>>::type
-        coordinate(size_t i) const
+        template <bool _OrderLtoR = OrderLtoR, TraitSelector<_OrderLtoR> = 0>
+        std::vector<size_t> coordinate(size_t i) const
         {
             // i = x[0] + b[0] * (x[1] + b[1] * (x[2] + ...)
             // tuple = (x[0], ..., x[n-1])
@@ -479,9 +465,8 @@ namespace gtl
 
         // Convert from a 1-dimension index to an n-dimensional index for
         // right-to-left ordering.
-        template <bool LeftToRight = OrderLtoR>
-        typename std::enable_if<!LeftToRight, std::vector<size_t>>::type
-        coordinate(size_t i) const
+        template <bool _OrderLtoR = OrderLtoR, TraitSelector<!_OrderLtoR> = 0>
+        std::vector<size_t> coordinate(size_t i) const
         {
             // i = x[n-1] + b[n-1] * (x[n-2] + b[n-2] * (x[n-3] + ...)
             // tuple = (x[0], ..., x[n-1])

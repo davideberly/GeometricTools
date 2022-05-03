@@ -11,26 +11,65 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AtomicMinMax.h" />
-    <ClInclude Include="ContainerAdapter.h" />
-    <ClInclude Include="Exceptions.h" />
-    <ClInclude Include="HashCombine.h" />
-    <ClInclude Include="Lattice.h" />
-    <ClInclude Include="MinHeap.h" />
-    <ClInclude Include="Multiarray.h" />
-    <ClInclude Include="MultiarrayAdapter.h" />
-    <ClInclude Include="RangeIteration.h" />
-    <ClInclude Include="RawIterators.h" />
-    <ClInclude Include="RawPtrCompare.h" />
-    <ClInclude Include="SharedPtrCompare.h" />
-    <ClInclude Include="StringUtility.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="TypeTraits.h" />
-    <ClInclude Include="WeakPtrCompare.h" />
+    <ClInclude Include="Algebra\AffineTransform.h" />
+    <ClInclude Include="Algebra\AxisAngle.h" />
+    <ClInclude Include="Algebra\ConvertCoordinates.h" />
+    <ClInclude Include="Algebra\DualQuaternion.h" />
+    <ClInclude Include="Algebra\EulerAngles.h" />
+    <ClInclude Include="Algebra\LieGroupsAlgebras.h" />
+    <ClInclude Include="Algebra\Matrix.h" />
+    <ClInclude Include="Algebra\MatrixAccessor.h" />
+    <ClInclude Include="Algebra\Polynomial.h" />
+    <ClInclude Include="Algebra\Quaternion.h" />
+    <ClInclude Include="Algebra\RigidMotion.h" />
+    <ClInclude Include="Algebra\Vector.h" />
+    <ClInclude Include="Arithmetic\APConversion.h" />
+    <ClInclude Include="Arithmetic\APInterval.h" />
+    <ClInclude Include="Arithmetic\ArbitraryPrecision.h" />
+    <ClInclude Include="Arithmetic\BitHacks.h" />
+    <ClInclude Include="Arithmetic\BSNumber.h" />
+    <ClInclude Include="Arithmetic\BSPrecision.h" />
+    <ClInclude Include="Arithmetic\BSRational.h" />
+    <ClInclude Include="Arithmetic\Constants.h" />
+    <ClInclude Include="Arithmetic\IEEEBinary.h" />
+    <ClInclude Include="Arithmetic\IEEEBinary16.h" />
+    <ClInclude Include="Arithmetic\IEEEFunctions.h" />
+    <ClInclude Include="Arithmetic\QFNumber.h" />
+    <ClInclude Include="Arithmetic\SWInterval.h" />
+    <ClInclude Include="Arithmetic\UIntegerALU32.h" />
+    <ClInclude Include="Arithmetic\UIntegerAP32.h" />
+    <ClInclude Include="Arithmetic\UIntegerFP32.h" />
+    <ClInclude Include="Functions\ACosEstimate.h" />
+    <ClInclude Include="Functions\ASinEstimate.h" />
+    <ClInclude Include="Functions\ATanEstimate.h" />
+    <ClInclude Include="Functions\ChebyshevRatio.h" />
+    <ClInclude Include="Functions\ChebyshevRatioEstimate.h" />
+    <ClInclude Include="Functions\CosEstimate.h" />
+    <ClInclude Include="Functions\Exp2Estimate.h" />
+    <ClInclude Include="Functions\ExpEstimate.h" />
+    <ClInclude Include="Functions\InvSqrtEstimate.h" />
+    <ClInclude Include="Functions\Log2Estimate.h" />
+    <ClInclude Include="Functions\LogEstimate.h" />
+    <ClInclude Include="Functions\RemezAlgorithm.h" />
+    <ClInclude Include="Functions\RotationEstimate.h" />
+    <ClInclude Include="Functions\SinEstimate.h" />
+    <ClInclude Include="Functions\Slerp.h" />
+    <ClInclude Include="Functions\SlerpEstimate.h" />
+    <ClInclude Include="Functions\SqrtEstimate.h" />
+    <ClInclude Include="Functions\TanEstimate.h" />
+    <ClInclude Include="MatrixAnalysis\BandedMatrix.h" />
+    <ClInclude Include="MatrixAnalysis\BlockCholeskyDecomposition.h" />
+    <ClInclude Include="MatrixAnalysis\BlockLDLTDecomposition.h" />
+    <ClInclude Include="MatrixAnalysis\CholeskyDecomposition.h" />
+    <ClInclude Include="MatrixAnalysis\GaussianElimination.h" />
+    <ClInclude Include="MatrixAnalysis\LDLTDecomposition.h" />
+    <ClInclude Include="MatrixAnalysis\LinearSystem.h" />
+    <ClInclude Include="MatrixAnalysis\SingularValueDecomposition.h" />
+    <ClInclude Include="MatrixAnalysis\SymmetricEigensolver.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{331349F5-C668-4D28-8A79-5441DAB2BD75}</ProjectGuid>
+    <ProjectGuid>{A51C6FA7-9082-4ECF-B024-A9DF098572A7}</ProjectGuid>
     <RootNamespace>GTLMathematics.v17</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -61,12 +100,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>_Output\Utility\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Utility\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\Mathematics\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Mathematics\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>_Output\Utility\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\Utility\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\Mathematics\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\Mathematics\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
