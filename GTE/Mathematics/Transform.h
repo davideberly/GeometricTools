@@ -478,7 +478,7 @@ namespace gte
                     }
                     else
                     {
-                        Invert3x3(mHMatrix, mInvHMatrix);
+                        mInvHMatrix = gte::Inverse(mHMatrix);
                     }
 
 #if defined(GTE_USE_MAT_VEC)
@@ -541,30 +541,28 @@ namespace gte
         // set accordingly.
         Transform Inverse() const
         {
-            Transform inverse;
+            Transform inverse{};  // = the identity
 
-            if (mIsIdentity)
-            {
-                inverse.MakeIdentity();
-            }
-            else
+            if (!mIsIdentity)
             {
                 if (mIsRSMatrix && mIsUniformScale)
                 {
-                    inverse.SetRotation(Transpose(GetRotation()));
-                    inverse.SetUniformScale(1.0f / GetUniformScale());
+                    Matrix4x4<Real> invRotate = Transpose(GetRotation());
+                    Real invScale = static_cast<Real>(1) / GetUniformScale();
+                    Vector4<Real> invTranslate = -invScale * (invRotate * GetTranslationW1());
+                    inverse.SetRotation(invRotate);
+                    inverse.SetUniformScale(invScale);
+                    inverse.SetTranslation(invTranslate);
                 }
                 else
                 {
-                    Matrix4x4<Real> invUpper;
-                    Invert3x3(GetMatrix(), invUpper);
-                    inverse.SetMatrix(invUpper);
+                    Matrix4x4<Real> invMatrix = gte::Inverse(GetHMatrix());
+                    Vector4<Real> invTranslate = invMatrix.GetCol(3);
+                    inverse.SetMatrix(invMatrix);
+                    inverse.SetTranslation(invTranslate);
                 }
-                Vector4<Real> trn = -GetTranslationW0();
-                inverse.SetTranslation(inverse.GetMatrix() * trn);
             }
 
-            mInverseNeedsUpdate = true;
             return inverse;
         }
 

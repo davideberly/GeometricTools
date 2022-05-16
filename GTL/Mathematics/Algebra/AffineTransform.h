@@ -3,7 +3,7 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.05.02
+// File Version: 2022.05.16
 
 #pragma once
 
@@ -495,10 +495,9 @@ namespace gtl
 
             if (!mIsIdentity)
             {
-                Matrix3x3<T> const& matrix = GetMatrix();
                 if (mIsRSMatrix && mIsUniformScale)
                 {
-                    Matrix3x3<T> invRotate = Transpose(matrix);
+                    Matrix3x3<T> invRotate = Transpose(GetRotation());
                     T invScale = C_<T>(1) / GetUniformScale();
                     Vector3<T> invTranslate = -invScale * (invRotate * GetTranslation());
                     inverse.SetRotation(invRotate);
@@ -507,7 +506,7 @@ namespace gtl
                 }
                 else
                 {
-                    Matrix3x3<T> invMatrix = GetInverse(matrix);
+                    Matrix3x3<T> invMatrix = GetInverse(HProject(GetH()));
                     Vector3<T> invTranslate = -invMatrix * GetTranslation();
                     inverse.SetMatrix(invMatrix);
                     inverse.SetTranslation(invTranslate);
