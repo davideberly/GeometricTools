@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.05.16
 
 #pragma once
 
@@ -69,7 +69,7 @@ namespace gte
                 ++j;
             }
 
-            // Sort the rectangle endpoints.
+            // Sort the box endpoints.
             std::sort(mXEndpoints.begin(), mXEndpoints.end());
             std::sort(mYEndpoints.begin(), mYEndpoints.end());
             std::sort(mZEndpoints.begin(), mZEndpoints.end());
@@ -85,10 +85,10 @@ namespace gte
                 mZLookup[2 * static_cast<size_t>(mZEndpoints[j].index) + static_cast<size_t>(mZEndpoints[j].type)] = j;
             }
 
-            // Active set of rectangles (stored by index in array).
+            // Active set of boxes (stored by index in array).
             std::set<int32_t> active;
 
-            // Set of overlapping rectangles (stored by pairs of indices in
+            // Set of overlapping boxes (stored by pairs of indices in
             // array).
             mOverlap.clear();
 
@@ -96,7 +96,7 @@ namespace gte
             // x-intervals.
             for (int32_t i = 0; i < endpSize; ++i)
             {
-                Endpoint& endpoint = mXEndpoints[i];
+                Endpoint const& endpoint = mXEndpoints[i];
                 int32_t index = endpoint.index;
                 if (endpoint.type == 0)  // an interval 'begin' value
                 {
@@ -135,7 +135,7 @@ namespace gte
         // After the system is initialized, you can move the boxes using this
         // function.  It is not enough to modify the input array of boxes
         // because the endpoint values stored internally by this class must
-        // also change.  You can also retrieve the current rectangles
+        // also change.  You can also retrieve the current boxes
         // information.
         void SetBox(int32_t i, AlignedBox3<Real> const& box)
         {
@@ -198,7 +198,7 @@ namespace gte
         void InsertionSort(std::vector<Endpoint>& endpoint, std::vector<int32_t>& lookup)
         {
             // Apply an insertion sort.  Under the assumption that the
-            // rectangles have not changed much since the last call, the
+            // boxes have not changed much since the last call, the
             // endpoints are nearly sorted.  The insertion sort should be very
             // fast in this case.
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.05.16
 
 #pragma once
 
@@ -86,7 +86,7 @@ namespace gte
             // x-intervals.
             for (int32_t i = 0; i < endpSize; ++i)
             {
-                Endpoint& endpoint = mXEndpoints[i];
+                Endpoint const& endpoint = mXEndpoints[i];
                 int32_t index = endpoint.index;
                 if (endpoint.type == 0)  // an interval 'begin' value
                 {
