@@ -13,6 +13,9 @@
     <Filter Include="MatrixAnalysis">
       <UniqueIdentifier>{335fb68f-9e27-43e9-81ff-41122ab4e9f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DifferentialEquations">
+      <UniqueIdentifier>{d771e482-92f7-4e8b-89da-154c282bbe10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algebra\AxisAngle.h">
@@ -179,6 +182,21 @@
     </ClInclude>
     <ClInclude Include="MatrixAnalysis\BlockLDLTDecomposition.h">
       <Filter>MatrixAnalysis</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentialEquations\OdeMidpoint.h">
+      <Filter>DifferentialEquations</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentialEquations\OdeRungeKutta4.h">
+      <Filter>DifferentialEquations</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentialEquations\OdeSolver.h">
+      <Filter>DifferentialEquations</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentialEquations\OdeEuler.h">
+      <Filter>DifferentialEquations</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentialEquations\OdeImplicitEuler.h">
+      <Filter>DifferentialEquations</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

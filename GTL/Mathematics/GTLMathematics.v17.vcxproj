@@ -39,6 +39,11 @@
     <ClInclude Include="Arithmetic\UIntegerALU32.h" />
     <ClInclude Include="Arithmetic\UIntegerAP32.h" />
     <ClInclude Include="Arithmetic\UIntegerFP32.h" />
+    <ClInclude Include="DifferentialEquations\OdeEuler.h" />
+    <ClInclude Include="DifferentialEquations\OdeImplicitEuler.h" />
+    <ClInclude Include="DifferentialEquations\OdeMidpoint.h" />
+    <ClInclude Include="DifferentialEquations\OdeRungeKutta4.h" />
+    <ClInclude Include="DifferentialEquations\OdeSolver.h" />
     <ClInclude Include="Functions\ACosEstimate.h" />
     <ClInclude Include="Functions\ASinEstimate.h" />
     <ClInclude Include="Functions\ATanEstimate.h" />
