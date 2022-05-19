@@ -16,6 +16,18 @@
     <Filter Include="DifferentialEquations">
       <UniqueIdentifier>{2c6b5789-8f38-4b86-9e64-f8c51431a122}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Primitives">
+      <UniqueIdentifier>{84053a3a-109d-436e-8536-5a3d961104fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitives\2D">
+      <UniqueIdentifier>{60934da2-49a0-4bcc-b886-97d81dbddf6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitives\3D">
+      <UniqueIdentifier>{ac996411-79ec-4b09-be79-0c1613465181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Primitives\ND">
+      <UniqueIdentifier>{bec6b9e2-e31c-4cde-9b5d-d474c5341cfa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algebra\AxisAngle.h">
@@ -197,6 +209,99 @@
     </ClInclude>
     <ClInclude Include="DifferentialEquations\OdeSolver.h">
       <Filter>DifferentialEquations</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\2D\Arc2.h">
+      <Filter>Primitives\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\2D\Circle2.h">
+      <Filter>Primitives\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\2D\Ellipse2.h">
+      <Filter>Primitives\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\2D\Polygon2.h">
+      <Filter>Primitives\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Circle3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\ConvexMesh3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\ConvexPolyhedron3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Ellipse3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Ellipsoid3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Frustum3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Plane3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Polyhedron3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Sphere3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Tetrahedron3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\3D\Torus3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\AlignedBox.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\CanonicalBox.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Capsule.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Cone.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Cylinder.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Halfspace.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Hyperellipsoid.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Hyperplane.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Hypersphere.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Line.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Lozenge.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\OrientedBox.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Ray.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Rectangle.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Segment.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitives\ND\Triangle.h">
+      <Filter>Primitives\ND</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

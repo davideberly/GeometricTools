@@ -71,6 +71,37 @@
     <ClInclude Include="MatrixAnalysis\LinearSystem.h" />
     <ClInclude Include="MatrixAnalysis\SingularValueDecomposition.h" />
     <ClInclude Include="MatrixAnalysis\SymmetricEigensolver.h" />
+    <ClInclude Include="Primitives\2D\Arc2.h" />
+    <ClInclude Include="Primitives\2D\Circle2.h" />
+    <ClInclude Include="Primitives\2D\Ellipse2.h" />
+    <ClInclude Include="Primitives\2D\Polygon2.h" />
+    <ClInclude Include="Primitives\3D\Circle3.h" />
+    <ClInclude Include="Primitives\3D\ConvexMesh3.h" />
+    <ClInclude Include="Primitives\3D\ConvexPolyhedron3.h" />
+    <ClInclude Include="Primitives\3D\Ellipse3.h" />
+    <ClInclude Include="Primitives\3D\Ellipsoid3.h" />
+    <ClInclude Include="Primitives\3D\Frustum3.h" />
+    <ClInclude Include="Primitives\3D\Plane3.h" />
+    <ClInclude Include="Primitives\3D\Polyhedron3.h" />
+    <ClInclude Include="Primitives\3D\Sphere3.h" />
+    <ClInclude Include="Primitives\3D\Tetrahedron3.h" />
+    <ClInclude Include="Primitives\3D\Torus3.h" />
+    <ClInclude Include="Primitives\ND\AlignedBox.h" />
+    <ClInclude Include="Primitives\ND\CanonicalBox.h" />
+    <ClInclude Include="Primitives\ND\Capsule.h" />
+    <ClInclude Include="Primitives\ND\Cone.h" />
+    <ClInclude Include="Primitives\ND\Cylinder.h" />
+    <ClInclude Include="Primitives\ND\Halfspace.h" />
+    <ClInclude Include="Primitives\ND\Hyperellipsoid.h" />
+    <ClInclude Include="Primitives\ND\Hyperplane.h" />
+    <ClInclude Include="Primitives\ND\Hypersphere.h" />
+    <ClInclude Include="Primitives\ND\Line.h" />
+    <ClInclude Include="Primitives\ND\Lozenge.h" />
+    <ClInclude Include="Primitives\ND\OrientedBox.h" />
+    <ClInclude Include="Primitives\ND\Ray.h" />
+    <ClInclude Include="Primitives\ND\Rectangle.h" />
+    <ClInclude Include="Primitives\ND\Segment.h" />
+    <ClInclude Include="Primitives\ND\Triangle.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
