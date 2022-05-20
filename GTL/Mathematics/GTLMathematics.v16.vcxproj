@@ -102,6 +102,13 @@
     <ClInclude Include="Primitives\ND\Rectangle.h" />
     <ClInclude Include="Primitives\ND\Segment.h" />
     <ClInclude Include="Primitives\ND\Triangle.h" />
+    <ClInclude Include="RootFinders\RootsBisection1.h" />
+    <ClInclude Include="RootFinders\RootsBisection2.h" />
+    <ClInclude Include="RootFinders\RootsBrentsMethod.h" />
+    <ClInclude Include="RootFinders\RootsCubic.h" />
+    <ClInclude Include="RootFinders\RootsPolynomial.h" />
+    <ClInclude Include="RootFinders\RootsQuadratic.h" />
+    <ClInclude Include="RootFinders\RootsQuartic.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -28,6 +28,9 @@
     <Filter Include="Primitives\ND">
       <UniqueIdentifier>{efa4202e-9f67-453f-88d3-9c8775243c13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RootFinders">
+      <UniqueIdentifier>{842c4997-4d28-4992-9a4d-655b415a9d45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algebra\AxisAngle.h">
@@ -302,6 +305,27 @@
     </ClInclude>
     <ClInclude Include="Primitives\ND\Triangle.h">
       <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsBisection1.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsBisection2.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsBrentsMethod.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsCubic.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsPolynomial.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsQuadratic.h">
+      <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="RootFinders\RootsQuartic.h">
+      <Filter>RootFinders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
