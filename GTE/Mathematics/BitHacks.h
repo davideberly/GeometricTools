@@ -38,7 +38,7 @@ namespace gte
 #if defined(GTE_THROW_ON_BITHACKS_ERROR)
             LogAssert(value >= 0, "Invalid input.");
 #endif
-            return IsPowerOfTwo(static_cast<int32_t>(value));
+            return IsPowerOfTwo(static_cast<uint32_t>(value));
         }
 
         static uint32_t Log2OfPowerOfTwo(uint32_t powerOfTwo)
