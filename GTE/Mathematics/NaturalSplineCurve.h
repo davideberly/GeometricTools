@@ -3,11 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.04
 
 #pragma once
 
-#include <Mathematics/GMatrix.h>
+#include <Mathematics/LinearSystem.h>
 #include <Mathematics/ParametricCurve.h>
 
 namespace gte
@@ -16,35 +16,36 @@ namespace gte
     class NaturalSplineCurve : public ParametricCurve<N, Real>
     {
     public:
-        // Construction and destruction.  The object copies the input arrays.
-        // The number of points M must be at least 2.  The first constructor
+        // Construction and destruction. The object copies the input arrays.
+        // The number of points M must be at least 2. The first constructor
         // is for a spline with second derivatives zero at the endpoints
-        // (isFree = true) or a spline that is closed (isFree = false).  The
+        // (isFree = true) or a spline that is closed (isFree = false). The
         // second constructor is for clamped splines, where you specify the
         // first derivatives at the endpoints.  Usually, derivative0 =
         // points[1] - points[0] at the first point and derivative1 =
-        // points[M-1] - points[M-2].  To validate construction, create an
+        // points[M-1] - points[M-2]. To validate construction, create an
         // object as shown:
         //     NaturalSplineCurve<N, Real> curve(parameters);
         //     if (!curve) { <constructor failed, handle accordingly>; }
         NaturalSplineCurve(bool isFree, int32_t numPoints,
             Vector<N, Real> const* points, Real const* times)
             :
-            ParametricCurve<N, Real>(numPoints - 1, times)
+            ParametricCurve<N, Real>(numPoints - 1, times),
+            mNumPoints(0),
+            mNumSegments(0)
         {
-            if (numPoints < 2 || !points)
-            {
-                LogError("Invalid input.");
-                return;
-            }
+            LogAssert(
+                numPoints >= 2 && points != nullptr && times != nullptr,
+                "Invalid input.");
 
-            auto const numSegments = numPoints - 1;
-            mCoefficients.resize(4 * static_cast<size_t>(numPoints) + 1);
-            mA = &mCoefficients[0];
-            mB = mA + numPoints;
-            mC = mB + numSegments;
-            mD = mC + numSegments + 1;
-            for (int32_t i = 0; i < numPoints; ++i)
+            mNumPoints = static_cast<size_t>(numPoints);
+            mNumSegments = mNumPoints - 1;
+            mCoefficients.resize(4 * mNumPoints - 2);
+            mA = mCoefficients.data();
+            mB = mA + mNumPoints;
+            mC = mB + mNumSegments;
+            mD = mC + mNumSegments + 1;
+            for (size_t i = 0; i < mNumPoints; ++i)
             {
                 mA[i] = points[i];
             }
@@ -65,21 +66,22 @@ namespace gte
             Real const* times, Vector<N, Real> const& derivative0,
             Vector<N, Real> const& derivative1)
             :
-            ParametricCurve<N, Real>(numPoints - 1, times)
+            ParametricCurve<N, Real>(numPoints - 1, times),
+            mNumPoints(0),
+            mNumSegments(0)
         {
-            if (numPoints < 2 || !points)
-            {
-                LogError("Invalid input.");
-                return;
-            }
+            LogAssert(
+                numPoints >= 2 && points != nullptr && times != nullptr,
+                "Invalid input.");
 
-            auto const numSegments = numPoints - 1;
-            mCoefficients.resize(static_cast<size_t>(numPoints) + 3 * static_cast<size_t>(numSegments) + 1);
-            mA = &mCoefficients[0];
-            mB = mA + numPoints;
-            mC = mB + numSegments;
-            mD = mC + numSegments + 1;
-            for (int32_t i = 0; i < numPoints; ++i)
+            mNumPoints = static_cast<size_t>(numPoints);
+            mNumSegments = mNumPoints - 1;
+            mCoefficients.resize(4 * static_cast<size_t>(mNumPoints) - 2);
+            mA = mCoefficients.data();
+            mB = mA + mNumPoints;
+            mC = mB + mNumSegments;
+            mD = mC + mNumSegments + 1;
+            for (size_t i = 0; i < mNumPoints; ++i)
             {
                 mA[i] = points[i];
             }
@@ -91,37 +93,34 @@ namespace gte
         virtual ~NaturalSplineCurve() = default;
 
         // Member access.
-        inline int32_t GetNumPoints() const
+        inline size_t GetNumPoints() const
         {
-            return static_cast<int32_t>((mCoefficients.size() - 1) / 4);
+            return mNumPoints;
         }
 
         inline Vector<N, Real> const* GetPoints() const
         {
-            return &mA[0];
+            return mA;
         }
 
-        // Evaluation of the curve.  The function supports derivative
-        // calculation through order 3; that is, order <= 3 is required.  If
-        // you want/ only the position, pass in order of 0.  If you want the
-        // position and first derivative, pass in order of 1, and so on.  The
-        // output array 'jet' must have enough storage to support the maximum
-        // order.  The values are ordered as: position, first derivative,
-        // second derivative, third derivative.
+        // Evaluation of the function and its derivatives through order 3. If
+        // you want only the position, pass in order 0. If you want the 
+        // position and first derivative, pass in order of 1 and so on. The
+        // output array 'jet' must have 'order + 1' elements. The values are
+        // ordered as position, first derivative, second derivative and so on.
         virtual void Evaluate(Real t, uint32_t order, Vector<N, Real>* jet) const override
         {
-            uint32_t const supOrder = ParametricCurve<N, Real>::SUP_ORDER;
-            if (!this->mConstructed || order >= supOrder)
+            if (!this->mConstructed)
             {
                 // Return a zero-valued jet for invalid state.
-                for (uint32_t i = 0; i < supOrder; ++i)
+                for (uint32_t i = 0; i <= order; ++i)
                 {
                     jet[i].MakeZero();
                 }
                 return;
             }
 
-            int32_t key = 0;
+            size_t key = 0;
             Real dt = (Real)0;
             GetKeyInfo(t, key, dt);
 
@@ -135,212 +134,260 @@ namespace gte
                 {
                     // Compute second derivative.
                     jet[2] = (Real)2 * mC[key] + (Real)6 * dt * mD[key];
-                    if (order == 3)
+                    if (order >= 3)
                     {
                         jet[3] = (Real)6 * mD[key];
+
+                        for (uint32_t i = 4; i <= order; ++i)
+                        {
+                            jet[i].MakeZero();
+                        }
                     }
                 }
             }
         }
 
     protected:
-        // Support for construction.
         void CreateFree()
         {
-            int32_t numSegments = GetNumPoints() - 1;
-            WorkingData wd(numSegments);
-            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            size_t const numP = mNumPoints;
+            size_t const numS = mNumSegments;
+            size_t const numSm1 = mNumSegments - 1;
+
+            // Minimize allocation and deallocations when splines are created
+            // and destroyed frequently in an application.
+            //   Real* dt               : numSegments
+            //   Real* dt2              : numSegments
+            //   Vector<N,Real>* alpha  : numSegments
+            //   Real* ell              : numSegments + 1
+            //   Real* mu               : numSegments
+            //   Vector<N,Real>*z       : numSegments + 1
+            size_t storageSize =
+                numS +
+                numS +
+                numS +
+                static_cast<size_t>(N) * numP +
+                numS +
+                static_cast<size_t>(N) * numP;
+
+            std::vector<Real> storage(storageSize);
+            auto dt = storage.data();
+            auto d2t = dt + numS;
+            auto alpha = reinterpret_cast<Vector<N, Real>*>(d2t + numS);
+            auto ell = reinterpret_cast<Real*>(alpha + numS);
+            auto mu = ell + numP;
+            auto z = reinterpret_cast<Vector<N, Real>*>(mu + numS);
+
+            Real const r0 = static_cast<Real>(0);
+            Real const r1 = static_cast<Real>(1);
+            Real const r2 = static_cast<Real>(2);
+            Real const r3 = static_cast<Real>(3);
+
+            for (size_t i = 0, ip1 = 1; i < numS; ++i, ++ip1)
             {
-                wd.dt[i] = this->mTime[ip1] - this->mTime[i];
+                dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
-            std::vector<Real> d2t(numSegments);
-            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            d2t[0] = r0;  // unused
+            for (size_t im1 = 0, i = 1, ip1 = 2; i < numS; im1 = i, i = ip1++)
             {
-                wd.d2t[i] = this->mTime[ip1] - this->mTime[im1];
+                d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
 
-            std::vector<Vector<N, Real>> alpha(numSegments);
-            for (int32_t i = 1; i < numSegments; ++i)
+            alpha[0].MakeZero();  // unused
+            for (size_t im1 = 0, i = 1, ip1 = 2; i < numS; im1 = i, i = ip1++)
             {
-                Vector<N, Real> numer = (Real)3 * (wd.dt[i - 1] * mA[i + 1] - wd.d2t[i] * mA[i] + wd.dt[i] * mA[i - 1]);
-                Real invDenom = (Real)1 / (wd.dt[i - 1] * wd.dt[i]);
-                wd.alpha[i] = invDenom * numer;
+                auto numer = r3 * (dt[im1] * mA[ip1] - d2t[i] * mA[i] + dt[i] * mA[im1]);
+                Real denom = dt[im1] * dt[i];
+                alpha[i] = numer / denom;
             }
 
-            std::vector<Real> ell(static_cast<size_t>(numSegments) + 1);
-            std::vector<Real> mu(numSegments);
-            std::vector<Vector<N, Real>> z(static_cast<size_t>(numSegments) + 1);
-            Real inv;
-
-            wd.ell[0] = (Real)1;
-            wd.mu[0] = (Real)0;
-            wd.z[0].MakeZero();
-            for (int32_t i = 1; i < numSegments; ++i)
+            ell[0] = r1;
+            mu[0] = r0;
+            z[0].MakeZero();
+            for (size_t im1 = 0, i = 1; i < numS; im1 = i++)
             {
-                wd.ell[i] = (Real)2 * wd.d2t[i] - wd.dt[i - 1] * wd.mu[i - 1];
-                inv = (Real)1 / wd.ell[i];
-                wd.mu[i] = inv * wd.dt[i];
-                wd.z[i] = inv * (wd.alpha[i] - wd.dt[i - 1] * wd.z[i - 1]);
+                ell[i] = r2 * d2t[i] - dt[im1] * mu[im1];
+                mu[i] = dt[i] / ell[i];
+                z[i] = (alpha[i] - dt[im1] * z[im1]) / ell[i];
             }
-            wd.ell[numSegments] = (Real)1;
-            wd.z[numSegments].MakeZero();
+            ell[numS] = r1;
+            z[numS].MakeZero();
 
-            Real const oneThird = (Real)1 / (Real)3;
-            mC[numSegments].MakeZero();
-            for (int32_t i = numSegments - 1; i >= 0; --i)
+            mC[numS].MakeZero();
+            for (size_t j = 0, i = numSm1; j < numS; ++j, --i)
             {
-                mC[i] = wd.z[i] - wd.mu[i] * mC[i + 1];
-                inv = (Real)1 / wd.dt[i];
-                mB[i] = inv * (mA[i + 1] - mA[i]) - oneThird * wd.dt[i] * (mC[i + 1] + (Real)2 * mC[i]);
-                mD[i] = oneThird * inv * (mC[i + 1] - mC[i]);
+                mC[i] = z[i] - mu[i] * mC[i + 1];
+                mB[i] =  (mA[i + 1] - mA[i]) / dt[i] - dt[i] * (mC[i + 1] + r2 * mC[i]) / r3;
+                mD[i] = (mC[i + 1] - mC[i]) / (r3 * dt[i]);
             }
         }
 
         void CreateClosed()
         {
-            // TODO:  A general linear system solver is used here.  The matrix
-            // corresponding to this case is actually "cyclic banded", so a
-            // faster linear solver can be used.  The current linear system
-            // code does not have such a solver.
+            size_t const numP = mNumPoints;
+            size_t const numS = mNumSegments;
+            size_t const numSm1 = mNumSegments - 1;
 
-            int32_t numSegments = GetNumPoints() - 1;
-            std::vector<Real> dt(numSegments);
-            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            // Minimize allocation and deallocations when splines are created
+            // and destroyed frequently in an application. The matrices mat
+            // and invMat are stored in row-major order.
+            //   Real* dt       : numSegments
+            //   Real* mat      : (numSegments + 1) * (numSegments + 1)
+            //   Real* solution : (numSegments + 1) * N
+            size_t storageSize =
+                numS +
+                numP * numP +
+                static_cast<size_t>(N) * numP;
+
+            std::vector<Real> storage(storageSize);
+            auto dt = storage.data();
+            auto mat = dt + numS;
+            auto solution = mat + numP * numP;
+
+            Real const r1 = static_cast<Real>(1);
+            Real const r2 = static_cast<Real>(2);
+            Real const r3 = static_cast<Real>(3);
+
+            for (size_t i = 0, ip1 = 1; i < numS; ++i, ++ip1)
             {
                 dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
             // Construct matrix of system.
-            GMatrix<Real> mat(numSegments + 1, numSegments + 1);
-            mat(0, 0) = (Real)1;
-            mat(0, numSegments) = (Real)-1;
-            for (int32_t i = 1, im1 = 0, ip1 = 2; i <= numSegments - 1; ++i, ++im1, ++ip1)
+            mat[0 + numP * 0] = r1;  // mat(0,0)
+            mat[numS + numP * 0] = -r1;  // mat(0,numS)
+            for (size_t im1 = 0, i = 1, ip1 = 2; i <= numSm1; im1 = i, i = ip1++)
             {
-                mat(i, im1) = dt[im1];
-                mat(i, i) = (Real)2 * (dt[im1] + dt[i]);
-                mat(i, ip1) = dt[i];
+                mat[im1 + numP * i] = dt[im1];  // mat(i,im1)
+                mat[i   + numP * i] = r2 * (dt[im1] + dt[i]);  // mat(i, i)
+                mat[ip1 + numP * i] = dt[i];  // mat(i,ip1)
             }
-            mat(numSegments, numSegments - 1) = dt[static_cast<size_t>(numSegments) - 1];
-            mat(numSegments, 0) = (Real)2 * (dt[static_cast<size_t>(numSegments) - 1] + dt[0]);
-            mat(numSegments, 1) = dt[0];
+            mat[numSm1 + numP * numS] = dt[numSm1];  // mat(numS,numSm1)
+            mat[0 + numP * numS] = r2 * (dt[numSm1] + dt[0]);  // mat(numS,0)
+            mat[1 + numP * numS] = dt[0];  // mat(numS,1)
 
             // Construct right-hand side of system.
             mC[0].MakeZero();
-            Real inv0, inv1;
-            for (int32_t i = 1, im1 = 0, ip1 = 2; ip1 <= numSegments; ++i, ++im1, ++ip1)
+            for (size_t im1 = 0, i = 1, ip1 = 2; ip1 <= numS; im1 = i, i = ip1++)
             {
-                inv0 = (Real)1 / dt[i];
-                inv1 = (Real)1 / dt[im1];
-                mC[i] = (Real)3 * (inv0 * (mA[ip1] - mA[i]) - inv1 * (mA[i] - mA[im1]));
+                mC[i] = r3 * ((mA[ip1] - mA[i]) / dt[i] - (mA[i] - mA[im1]) / dt[im1]);
             }
-            inv0 = (Real)1 / dt[0];
-            inv1 = (Real)1 / dt[static_cast<size_t>(numSegments) - 1];
-            mC[numSegments] = (Real)3 * (inv0 * (mA[1] - mA[0]) - inv1 * (mA[0] - mA[numSegments - 1]));
+            mC[numS] = r3 * ((mA[1] - mA[0]) / dt[0] - (mA[0] - mA[numSm1]) / dt[numSm1]);
 
             // Solve the linear systems.
-            GMatrix<Real> invMat = Inverse(mat);
-            GVector<Real> input(numSegments + 1);
-            GVector<Real> output(numSegments + 1);
-            for (int32_t j = 0; j < N; ++j)
+            bool solved = LinearSystem<Real>::Solve(static_cast<int32_t>(numP),
+                N, mat, reinterpret_cast<Real const*>(mC), solution);
+            LogAssert(
+                solved,
+                "Failed to solve linear system.");
+
+            for (size_t i = 0, k = 0; i <= numS; ++i)
             {
-                for (int32_t i = 0; i <= numSegments; ++i)
+                for (int32_t j = 0; j < N; ++j, ++k)
                 {
-                    input[i] = mC[i][j];
-                }
-                output = invMat * input;
-                for (int32_t i = 0; i <= numSegments; ++i)
-                {
-                    mC[i][j] = output[i];
+                    mC[i][j] = solution[k];
                 }
             }
 
-            Real const oneThird = (Real)1 / (Real)3;
-            for (int32_t i = 0; i < numSegments; ++i)
+            for (size_t i = 0; i < numS; ++i)
             {
-                inv0 = (Real)1 / dt[i];
-                mB[i] = inv0 * (mA[i + 1] - mA[i]) - oneThird * (mC[i + 1] + (Real)2 * mC[i]) * dt[i];
-                mD[i] = oneThird * inv0 * (mC[i + 1] - mC[i]);
+                mB[i] = (mA[i + 1] - mA[i]) / dt[i] - (mC[i + 1] + r2 * mC[i]) * dt[i] / r3;
+                mD[i] = (mC[i + 1] - mC[i]) / (r3 * dt[i]);
             }
         }
 
         void CreateClamped(Vector<N, Real> const& derivative0, Vector<N, Real> const& derivative1)
         {
-            int32_t numSegments = GetNumPoints() - 1;
-            std::vector<Real> dt(numSegments);
-            for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+            size_t const numP = mNumPoints;
+            size_t const numS = mNumSegments;
+            size_t const numSm1 = mNumSegments - 1;
+
+            // Minimize allocation and deallocations when splines are created
+            // and destroyed frequently in an application.
+            //   Real* dt               : numSegments
+            //   Real* dt2              : numSegments
+            //   Vector<N,Real>* alpha  : numSegments + 1
+            //   Real* ell              : numSegments + 1
+            //   Real* mu               : numSegments
+            //   Vector<N,Real>*z       : numSegments + 1
+            size_t storageSize =
+                numS +
+                numS +
+                static_cast<size_t>(N) * numP +
+                numP +
+                numS +
+                static_cast<size_t>(N) * numP;
+
+            std::vector<Real> storage(storageSize);
+            auto dt = storage.data();
+            auto d2t = dt + numS;
+            auto alpha = reinterpret_cast<Vector<N, Real>*>(d2t + numS);
+            auto ell = reinterpret_cast<Real*>(alpha + numS + 1);
+            auto mu = ell + numS + 1;
+            auto z = reinterpret_cast<Vector<N, Real>*>(mu + numS);
+
+            Real const r2 = static_cast<Real>(2);
+            Real const r3 = static_cast<Real>(3);
+            Real const rHalf = static_cast<Real>(0.5);
+
+            for (size_t i = 0, ip1 = 1; i < numS; i = ip1++)
             {
                 dt[i] = this->mTime[ip1] - this->mTime[i];
             }
 
-            std::vector<Real> d2t(numSegments);
-            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            for (size_t im1 = 0, i = 1, ip1 = 2; i < numS; im1 = i, i = ip1++)
             {
                 d2t[i] = this->mTime[ip1] - this->mTime[im1];
             }
 
-            std::vector<Vector<N, Real>> alpha(static_cast<size_t>(numSegments) + 1);
-            Real inv = (Real)1 / dt[0];
-            alpha[0] = (Real)3 * (inv * (mA[1] - mA[0]) - derivative0);
-            inv = (Real)1 / dt[static_cast<size_t>(numSegments) - 1];
-            alpha[numSegments] = (Real)3 * (derivative1 -
-                inv * (mA[numSegments] - mA[numSegments - 1]));
-            for (int32_t i = 1, im1 = 0, ip1 = 2; i < numSegments; ++i, ++im1, ++ip1)
+            alpha[0] = r3 * ((mA[1] - mA[0]) / dt[0] - derivative0);
+            alpha[numS] = r3 * (derivative1 -
+                (mA[numS] - mA[numS - 1]) / dt[numS - 1]);
+            for (size_t im1 = 0, i = 1, ip1 = 2; i < numS; im1 = i, i = ip1++)
             {
-                Vector<N, Real> numer = (Real)3 * (dt[im1] * mA[ip1] - d2t[i] * mA[i] + dt[i] * mA[im1]);
-                Real invDenom = (Real)1 / (dt[im1] * dt[i]);
-                alpha[i] = invDenom * numer;
+                auto numer = r3 * (dt[im1] * mA[ip1] - d2t[i] * mA[i] + dt[i] * mA[im1]);
+                Real denom = dt[im1] * dt[i];
+                alpha[i] = numer / denom;
             }
 
-            std::vector<Real> ell(static_cast<size_t>(numSegments) + 1);
-            std::vector<Real> mu(numSegments);
-            std::vector<Vector<N, Real>> z(static_cast<size_t>(numSegments) + 1);
-
-            ell[0] = (Real)2 * dt[0];
-            mu[0] = (Real)0.5;
-            inv = (Real)1 / ell[0];
-            z[0] = inv * alpha[0];
-
-            for (int32_t i = 1, im1 = 0; i < numSegments; ++i, ++im1)
+            ell[0] = r2 * dt[0];
+            mu[0] = rHalf;
+            z[0] = alpha[0] / ell[0];
+            for (size_t im1 = 0, i = 1; i < numS; im1 = i++)
             {
-                ell[i] = (Real)2 * d2t[i] - dt[im1] * mu[im1];
-                inv = (Real)1 / ell[i];
-                mu[i] = inv * dt[i];
-                z[i] = inv * (alpha[i] - dt[im1] * z[im1]);
+                ell[i] = r2 * d2t[i] - dt[im1] * mu[im1];
+                mu[i] = dt[i] / ell[i];
+                z[i] = (alpha[i] - dt[im1] * z[im1]) / ell[i];
             }
-            ell[numSegments] = dt[static_cast<size_t>(numSegments) - 1] * ((Real)2 - mu[static_cast<size_t>(numSegments) - 1]);
-            inv = (Real)1 / ell[numSegments];
-            z[numSegments] = inv * (alpha[numSegments] - dt[static_cast<size_t>(numSegments) - 1] * z[static_cast<size_t>(numSegments) - 1]);
+            ell[numS] = dt[numSm1] * (r2 - mu[numSm1]);
+            z[numS] = (alpha[numS] - dt[numSm1] * z[numSm1]) / ell[numS];
 
-            Real const oneThird = (Real)1 / (Real)3;
-            mC[numSegments] = z[numSegments];
-            for (int32_t i = numSegments - 1; i >= 0; --i)
+            mC[numS] = z[numS];
+            for (size_t j = 0, i = numSm1; j < numS; ++j, --i)
             {
                 mC[i] = z[i] - mu[i] * mC[i + 1];
-                inv = (Real)1 / dt[i];
-                mB[i] = inv * (mA[i + 1] - mA[i]) - oneThird * dt[i] * (mC[i + 1] +
-                    (Real)2 * mC[i]);
-                mD[i] = oneThird * inv * (mC[i + 1] - mC[i]);
+                mB[i] = (mA[i + 1] - mA[i]) / dt[i] - dt[i] * (mC[i + 1] + r2 * mC[i]) / r3;
+                mD[i] = (mC[i + 1] - mC[i]) / (r3 * dt[i]);
             }
         }
 
         // Determine the index i for which times[i] <= t < times[i+1].
-        void GetKeyInfo(Real t, int32_t& key, Real& dt) const
+        void GetKeyInfo(Real t, size_t& key, Real& dt) const
         {
-            int32_t numSegments = GetNumPoints() - 1;
             if (t <= this->mTime[0])
             {
                 key = 0;
-                dt = (Real)0;
+                dt = static_cast<Real>(0);
             }
-            else if (t >= this->mTime[numSegments])
+            else if (t >= this->mTime[mNumSegments])
             {
-                key = numSegments - 1;
-                dt = this->mTime[numSegments] - this->mTime[static_cast<size_t>(numSegments) - 1];
+                key = mNumSegments - 1;
+                dt = this->mTime[mNumSegments] - this->mTime[mNumSegments - 1];
             }
             else
             {
-                for (int32_t i = 0, ip1 = 1; i < numSegments; ++i, ++ip1)
+                for (int32_t i = 0, ip1 = 1; i < mNumSegments; i = ip1++)
                 {
                     if (t < this->mTime[ip1])
                     {
@@ -352,9 +399,10 @@ namespace gte
             }
         }
 
-        // Polynomial coefficients.  mA are the points (constant coefficients of
-        // polynomials.  mB are the degree 1 coefficients, mC are the degree 2
-        // coefficients, and mD are the degree 3 coefficients.
+        // Polynomial coefficients. mA are the points (constant coefficients of
+        // polynomials. mB are the degree 1 coefficients, mC are the degree 2
+        // coefficients and mD are the degree 3 coefficients.
+        size_t mNumPoints, mNumSegments;
         Vector<N, Real>* mA;
         Vector<N, Real>* mB;
         Vector<N, Real>* mC;
@@ -362,28 +410,5 @@ namespace gte
 
     private:
         std::vector<Vector<N, Real>> mCoefficients;
-
-        struct WorkingData
-        {
-            WorkingData(int32_t numSegments)
-            {
-                data.resize(4 * static_cast<size_t>(numSegments) + 1 + N * (2 * static_cast<size_t>(numSegments) + 1));
-                dt = &data[0];
-                d2t = dt + numSegments;
-                alpha = reinterpret_cast<Vector<N, Real>*>(d2t + numSegments);
-                ell = reinterpret_cast<Real*>(alpha + numSegments);
-                mu = ell + static_cast<size_t>(numSegments) + 1;
-                z = reinterpret_cast<Vector<N, Real>*>(mu + numSegments);
-            }
-
-            Real* dt;
-            Real* d2t;
-            Vector<N, Real>* alpha;
-            Real* ell;
-            Real* mu;
-            Vector<N, Real>* z;
-
-            std::vector<Real> data;
-        };
     };
 }
