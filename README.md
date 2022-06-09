@@ -34,15 +34,15 @@ and X-Windows on Linux.
 
 On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
 Studio 2019/2022 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compiler 2022.
+Compiler 19.2 or 2022.
 
 On Ubuntu 20.04.1 LTS, the code is maintained using Visual Studio Code
 1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
 gcc 9.3.0, 
 
-On Fedora 35, the code is maintained using Visual Studio Code 1.49.2
-and CMake 3.18.3, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 11.2.1.
+On Fedora 36, the code is maintained using Visual Studio Code 1.49.2
+and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
+gcc 12.1.1.
 
 ## Getting Started ##
 
