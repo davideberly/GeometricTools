@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.08
 
 #include "BSplineCurveReductionWindow3.h"
 #include <Graphics/ConstantColorEffect.h>
@@ -122,11 +122,11 @@ void BSplineCurveReductionWindow3::CreateScene()
     for (uint32_t i = 0; i < numVertices; ++i)
     {
         double t = i / static_cast<double>(numVertices);
-        Vector3<double> pos;
-        original.Evaluate(t, 0, &pos);
+        std::array<Vector3<double>, 4> jet{};
+        original.Evaluate(t, 0, jet.data());
         for (int32_t j = 0; j < 3; ++j)
         {
-            vertices[i][j] = static_cast<float>(pos[j]);
+            vertices[i][j] = static_cast<float>(jet[0][j]);
         }
     }
 
@@ -147,11 +147,11 @@ void BSplineCurveReductionWindow3::CreateScene()
     for (uint32_t i = 0; i < numVertices; ++i)
     {
         double t = i / static_cast<double>(numVertices);
-        Vector3<double> pos;
-        reduced.Evaluate(t, 0, &pos);
+        std::array<Vector3<double>, 4> jet{};
+        reduced.Evaluate(t, 0, jet.data());
         for (int32_t j = 0; j < 3; ++j)
         {
-            vertices[i][j] = static_cast<float>(pos[j]);
+            vertices[i][j] = static_cast<float>(jet[0][j]);
         }
     }
 

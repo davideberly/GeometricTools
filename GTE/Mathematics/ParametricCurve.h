@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.08
 
 #pragma once
 
@@ -124,14 +124,14 @@ namespace gte
         // Differential geometric quantities.
         Vector<N, Real> GetPosition(Real t) const
         {
-            Vector<N, Real> position;
-            Evaluate(t, 0, &position);
-            return position;
+            std::array<Vector<N, Real>, SUP_ORDER> jet{};
+            Evaluate(t, 0, jet.data());
+            return jet[0];
         }
 
         Vector<N, Real> GetTangent(Real t) const
         {
-            std::array<Vector<N, Real>, 2> jet;  // (position, tangent)
+            std::array<Vector<N, Real>, SUP_ORDER> jet{};
             Evaluate(t, 1, jet.data());
             Normalize(jet[1]);
             return jet[1];
@@ -139,7 +139,7 @@ namespace gte
 
         Real GetSpeed(Real t) const
         {
-            std::array<Vector<N, Real>, 2> jet;  // (position, tangent)
+            std::array<Vector<N, Real>, SUP_ORDER> jet{};
             Evaluate(t, 1, jet.data());
             return Length(jet[1]);
         }
