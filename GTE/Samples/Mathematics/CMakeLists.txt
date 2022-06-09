@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 3)
+set(GTE_VERSION_MINOR 4)
 
 project(Mathematics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 

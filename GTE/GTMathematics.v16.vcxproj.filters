@@ -1530,5 +1530,11 @@
     <ClInclude Include="Mathematics\MeshSmoother.h">
       <Filter>Meshes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\NaturalCubicSpline.h">
+      <Filter>CurvesSurfacesVolumes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\NaturalQuinticSpline.h">
+      <Filter>CurvesSurfacesVolumes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
