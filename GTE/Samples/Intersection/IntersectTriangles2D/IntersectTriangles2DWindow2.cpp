@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.08
 
 #include "IntersectTriangles2DWindow2.h"
 #include <Mathematics/ContPointInPolygon2.h>
@@ -174,7 +174,7 @@ bool IntersectTriangles2DWindow2::OnMouseMotion(int32_t button, int32_t x, int32
 void IntersectTriangles2DWindow2::DrawTriangle(std::array<Vector2<float>, 3> const& vertex,
     uint32_t colorL, uint32_t colorD)
 {
-    Vector2<float> vmin, vmax;
+    Vector2<float> vmin{}, vmax{};
     ComputeExtremes(3, vertex.data(), vmin, vmax);
     int32_t xmin = static_cast<int32_t>(std::floor(vmin[0]));
     int32_t ymin = static_cast<int32_t>(std::floor(vmin[1]));
@@ -212,7 +212,7 @@ void IntersectTriangles2DWindow2::DrawIntersection()
     uint32_t const black = 0xFF000000;
     uint32_t const gray = 0xFF7F7F7F;
 
-    Vector2<float> vmin, vmax;
+    Vector2<float> vmin{}, vmax{};
     ComputeExtremes(static_cast<int32_t>(mIntersection.size()), mIntersection.data(),
         vmin, vmax);
     int32_t xmin = static_cast<int32_t>(std::floor(vmin[0]));

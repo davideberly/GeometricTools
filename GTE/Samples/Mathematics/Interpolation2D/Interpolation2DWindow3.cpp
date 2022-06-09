@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2022.06.08
 
 #include "Interpolation2DWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -559,7 +559,7 @@ bool Interpolation2DWindow3::SimpleMesh::GetAdjacencies(int32_t t,
 bool Interpolation2DWindow3::SimpleMesh::GetBarycentrics(int32_t t,
     Vector2<float> const& P, std::array<float, 3>& bary) const
 {
-    std::array<Vector2<float>, 3> V;
+    std::array<Vector2<float>, 3> V{};
     if (GetVertices(t, V))
     {
         return ComputeBarycentrics(P, V[0], V[1], V[2], bary, 0.0f);

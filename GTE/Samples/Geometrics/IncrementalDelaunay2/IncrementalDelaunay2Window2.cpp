@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.08
 
 #include "IncrementalDelaunay2Window2.h"
 #include <random>
@@ -67,7 +67,7 @@ void IncrementalDelaunay2Window2::OnDisplay()
     if (mContainingTriangle != mDelaunay.invalid)
     {
         // Draw the selected triangle.
-        std::array<size_t, 3> tri;
+        std::array<size_t, 3> tri{};
         mDelaunay.GetTriangle(mContainingTriangle, tri);
         v0 = mVertices[tri[0]];
         x0 = static_cast<int32_t>(v0[0] + 0.5f);
