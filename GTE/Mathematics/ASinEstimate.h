@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.08
 
 #pragma once
 
@@ -26,7 +26,7 @@ namespace gte
         template <int32_t D>
         inline static Real Degree(Real x)
         {
-            return (Real)GTE_C_HALF_PI - ACosEstimate<Real>::Degree<D>(x);
+            return (Real)GTE_C_HALF_PI - ACosEstimate<Real>::template Degree<D>(x);
         }
     };
 }
