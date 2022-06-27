@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.26
 
 #pragma once
 
@@ -18,6 +18,13 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+// The ETManifoldMesh class represents an edge-triangle manifold mesh. It is
+// general purpose, allowing insertion and removal of triangles at any time.
+// Howver, the performance is limited because of the use of C++ container
+// classes (unordered sets and maps). If your application requires an
+// edge-triangle manifold mesh for which no triangles will be removed, a
+// much better choice is VETManifoldMeshVR.
 
 namespace gte
 {
@@ -376,13 +383,14 @@ namespace gte
                         auto tri = edge->T[j];
                         for (int32_t i = 0; i < 3; ++i)
                         {
+                            size_t szI = static_cast<size_t>(i);
                             if (tri->V[i] == element.first.V[0])
                             {
-                                int32_t vNext = tri->V[(i + 1) % 3];
+                                int32_t vNext = tri->V[(szI + 1) % 3];
                                 if (vNext == element.first.V[1])
                                 {
                                     edgePositive[j] = true;
-                                    vOpposite[j] = tri->V[(i + 2) % 3];
+                                    vOpposite[j] = tri->V[(szI + 2) % 3];
                                 }
                                 else
                                 {
@@ -764,9 +772,9 @@ namespace gte
                     std::unordered_set<int32_t> adjacents;
                     auto lbIter = vertexGraph.lower_bound(v);
                     auto ubIter = vertexGraph.upper_bound(v);
-                    for (auto vgIter = lbIter; vgIter != ubIter; ++vgIter)
+                    for (; lbIter != ubIter; ++lbIter)
                     {
-                        adjacents.insert(vgIter->second);
+                        adjacents.insert(lbIter->second);
                     }
 
                     size_t const numEdgePairs = adjacents.size() / 2;
@@ -878,11 +886,11 @@ namespace gte
                 auto lbIter = edgePairs.lower_bound(vStart);
                 auto ubIter = edgePairs.upper_bound(vStart);
                 bool foundStart = false;
-                for (epIter = lbIter; epIter != ubIter; ++epIter)
+                for (; lbIter != ubIter; ++lbIter)
                 {
-                    if (epIter->second[0] == vNext || epIter->second[1] == vNext)
+                    if (lbIter->second[0] == vNext || lbIter->second[1] == vNext)
                     {
-                        edgePairs.erase(epIter);
+                        edgePairs.erase(lbIter);
                         foundStart = true;
                         break;
                     }

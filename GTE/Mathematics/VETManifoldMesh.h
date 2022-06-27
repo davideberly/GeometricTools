@@ -3,15 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.06.26
 
 #pragma once
 
 #include <Mathematics/ETManifoldMesh.h>
 #include <map>
 
-// The VETManifoldMesh class represents an edge-triangle manifold mesh
-// but additionally stores vertex adjacency information.
+// The VETManifoldMesh class represents an edge-triangle manifold mesh but
+// additionally stores vertex adjacency information. It is general purpose,
+// allowing insertion and removal of triangles at any time. Howver, the
+// performance is limited because of the use of C++ container classes
+// (unordered sets and maps). If your application requires a
+// vertex-edge-triangle manifold mesh for which no triangles will be
+// removed, a much better choice is VETManifoldMeshVR.
 
 namespace gte
 {
