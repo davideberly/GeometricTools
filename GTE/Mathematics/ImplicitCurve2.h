@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.22
+// Version: 6.3.2022.06.27
 
 #pragma once
 
@@ -37,7 +37,7 @@ namespace gte
 
         // Verify the point is on the curve within the tolerance specified
         // by epsilon.
-        bool IsOnSurface(Vector2<T> const& position, T const& epsilon) const
+        bool IsOnCurve(Vector2<T> const& position, T const& epsilon) const
         {
             return std::fabs(F(position)) <= epsilon;
         }
@@ -92,6 +92,7 @@ namespace gte
             T denom = std::pow(fxSqr + fySqr, threeHalfs);
             if (denom == zero)
             {
+                curvature = zero;
                 return false;
             }
 
