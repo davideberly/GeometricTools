@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.22
+// Version: 6.3.2022.06.29
 
 #pragma once
 
@@ -11,8 +11,14 @@
 // the application's responsibility to ensure that (x,y,z) is a solution
 // to F = 0. The class is abstract, so you must derive from it and
 // implement the function and derivative evaluations.
+//
+// The computation of principal curvature and principal directions is based
+// on the document
+// https://www.geometrictools.com/Documentation/PrincipalCurvature.pdf
 
+#include <Mathematics/Matrix2x2.h>
 #include <Mathematics/Matrix3x3.h>
+#include <Mathematics/SymmetricEigensolver2x2.h>
 
 namespace gte
 {
@@ -87,161 +93,44 @@ namespace gte
             T& curvature0, T& curvature1, Vector3<T>& direction0,
             Vector3<T>& direction1) const
         {
-            // Principal curvatures and directions for implicitly defined
-            // surfaces F(x,y,z) = 0.
-            //
-            // DF = (Fx,Fy,Fz), L = Length(DF)
-            //
-            // D^2 F = +-           -+
-            //         | Fxx Fxy Fxz |
-            //         | Fxy Fyy Fyz |
-            //         | Fxz Fyz Fzz |
-            //         +-           -+
-            //
-            // adj(D^2 F) =
-            //   +-                                                 -+
-            //   | Fyy*Fzz-Fyz*Fyz  Fyz*Fxz-Fxy*Fzz  Fxy*Fyz-Fxz*Fyy |
-            //   | Fyz*Fxz-Fxy*Fzz  Fxx*Fzz-Fxz*Fxz  Fxy*Fxz-Fxx*Fyz |
-            //   | Fxy*Fyz-Fxz*Fyy  Fxy*Fxz-Fxx*Fyz  Fxx*Fyy-Fxy*Fxy |
-            //   +-                                                 -+
-            //
-            // Gaussian curvature = [DF^t adj(D^2 F) DF]/L^4
-            // 
-            // Mean curvature = 0.5*[trace(D^2 F)/L - (DF^t D^2 F DF)/L^3]
-
+            // Compute the normal N.
             T const zero = static_cast<T>(0);
-            T const one = static_cast<T>(1);
-            T const two = static_cast<T>(2);
-            T const half = static_cast<T>(0.5);
-
-            // Evaluate the first derivatives.
-            T fx = FX(position);
-            T fy = FY(position);
-            T fz = FZ(position);
-            T fLength = std::sqrt(fx * fx + fy * fy + fz * fz);
-            if (fLength == zero)
+            Vector3<T> normal = GetGradient(position);
+            T gradientLength = Normalize(normal);
+            if (gradientLength == zero)
             {
+                curvature0 = zero;
+                curvature1 = zero;
+                direction0.MakeZero();
+                direction1.MakeZero();
                 return false;
             }
 
-            T fxfx = fx * fx;
-            T fxfy = fx * fy;
-            T fxfz = fx * fz;
-            T fyfy = fy * fy;
-            T fyfz = fy * fz;
-            T fzfz = fz * fz;
+            // Compute the matrix A.
+            Matrix3x3<T> A = GetHessian(position) / gradientLength;
 
-            T invLength = one / fLength;
-            if (invLength == zero)
-            {
-                return false;
-            }
+            // Solve for the eigensystem of equation (8) of the PDF referenced
+            // at the top of this file.
+            std::array<Vector3<T>, 3> basis{};
+            basis[0] = normal;
+            ComputeOrthogonalComplement(1, basis.data());
+            // basis[1] = tangent0
+            // basis[2] = tangent1
+            Matrix<3, 2, T> J{};
+            J.SetCol(0, basis[1]);
+            J.SetCol(1, basis[2]);
+            Matrix2x2<T> barA = MultiplyATB(J, A * J);
 
-            T invLength2 = invLength * invLength;
-            if (invLength2 == zero)
-            {
-                return false;
-            }
-
-            T invLength3 = invLength * invLength2;
-            if (invLength3 == zero)
-            {
-                return false;
-            }
-
-            T invLength4 = invLength2 * invLength2;
-            if (invLength4 == zero)
-            {
-                return false;
-            }
-
-            // Evaluate the second derivatives.
-            T fxx = FXX(position);
-            T fxy = FXY(position);
-            T fxz = FXZ(position);
-            T fyy = FYY(position);
-            T fyz = FYZ(position);
-            T fzz = FZZ(position);
-
-            // mean curvature
-            T meanCurv = half * invLength3 * (fxx * (fyfy + fzfz) +
-                fyy * (fxfx + fzfz) + fzz * (fxfx + fyfy) - two *
-                (fxy * fxfy + fxz * fxfz + fyz * fyfz));
-
-            // Gaussian curvature
-            T gaussCurv = invLength4 * (fxfx * (fyy * fzz - fyz * fyz)
-                + fyfy * (fxx * fzz - fxz * fxz) + fzfz * (fxx * fyy - fxy * fxy)
-                + two * (fxfy * (fxz * fyz - fxy * fzz) +
-                    fxfz * (fxy * fyz - fxz * fyy) +
-                    fyfz * (fxy * fxz - fxx * fyz)));
-
-            // Solve for the principal curvatures.
-            T discr = std::sqrt(std::max(meanCurv * meanCurv - gaussCurv, zero));
-            curvature0 = meanCurv - discr;
-            curvature1 = meanCurv + discr;
-
-            T m00 = ((-one + fxfx * invLength2) * fxx) * invLength +
-                (fxfy * fxy) * invLength3 + (fxfz * fxz) * invLength3;
-            T m01 = ((-one + fxfx * invLength2) * fxy) * invLength +
-                (fxfy * fyy) * invLength3 + (fxfz * fyz) * invLength3;
-            T m02 = ((-one + fxfx * invLength2) * fxz) * invLength +
-                (fxfy * fyz) * invLength3 + (fxfz * fzz) * invLength3;
-            T m10 = (fxfy * fxx) * invLength3 +
-                ((-one + fyfy * invLength2) * fxy) * invLength +
-                (fyfz * fxz) * invLength3;
-            T m11 = (fxfy * fxy) * invLength3 +
-                ((-one + fyfy * invLength2) * fyy) * invLength +
-                (fyfz * fyz) * invLength3;
-            T m12 = (fxfy * fxz) * invLength3 +
-                ((-one + fyfy * invLength2) * fyz) * invLength +
-                (fyfz * fzz) * invLength3;
-            T m20 = (fxfz * fxx) * invLength3 + (fyfz * fxy) * invLength3 +
-                ((-one + fzfz * invLength2) * fxz) * invLength;
-            T m21 = (fxfz * fxy) * invLength3 + (fyfz * fyy) * invLength3 +
-                ((-one + fzfz * invLength2) * fyz) * invLength;
-            T m22 = (fxfz * fxz) * invLength3 + (fyfz * fyz) * invLength3 +
-                ((-one + fzfz * invLength2) * fzz) * invLength;
-
-            // Solve for the principal directions.
-            T tmp1 = m00 + curvature0;
-            T tmp2 = m11 + curvature0;
-            T tmp3 = m22 + curvature0;
-
-            std::array<Vector3<T>, 3> U{};
-            std::array<T, 3> lengths{};
-
-            U[0][0] = m01 * m12 - m02 * tmp2;
-            U[0][1] = m02 * m10 - m12 * tmp1;
-            U[0][2] = tmp1 * tmp2 - m01 * m10;
-            lengths[0] = Length(U[0]);
-
-            U[1][0] = m01 * tmp3 - m02 * m21;
-            U[1][1] = m02 * m20 - tmp1 * tmp3;
-            U[1][2] = tmp1 * m21 - m01 * m20;
-            lengths[1] = Length(U[1]);
-
-            U[2][0] = tmp2 * tmp3 - m12 * m21;
-            U[2][1] = m12 * m20 - m10 * tmp3;
-            U[2][2] = m10 * m21 - m20 * tmp2;
-            lengths[2] = Length(U[2]);
-
-            size_t maxIndex = 0;
-            T maxValue = lengths[0];
-            if (lengths[1] > maxValue)
-            {
-                maxIndex = 1;
-                maxValue = lengths[1];
-            }
-            if (lengths[2] > maxValue)
-            {
-                maxIndex = 2;
-            }
-
-            invLength = one / lengths[maxIndex];
-            U[maxIndex] *= invLength;
-
-            direction1 = U[maxIndex];
-            direction0 = UnitCross(direction1, Vector3<T>{ fx, fy, fz });
+            SymmetricEigensolver2x2<T> eigensolver{};
+            std::array<T, 2> eval{};
+            std::array<std::array<T, 2>, 2> evec{};
+            eigensolver(barA(0, 0), barA(0, 1), barA(1, 1), +1, eval, evec);
+            curvature0 = eval[0];
+            curvature1 = eval[1];
+            Vector2<T> v0 = { evec[0][0], evec[0][1] };
+            Vector2<T> v1 = { evec[1][0], evec[1][1] };
+            direction0 = J * v0;
+            direction1 = J * v1;
             return true;
         }
 
