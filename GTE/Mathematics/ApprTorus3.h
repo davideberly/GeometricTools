@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -235,7 +235,7 @@ namespace gte
         // 'true'.  If you want the function to compute initial guesses, set
         // useTorusInputAsInitialGuess to 'false'.  A Gauss-Newton minimizer
         // is used to fit a torus using nonlinear least-squares.  The fitted
-        // torus is returned in C, N, r0 and r1. See GteGaussNewtonMinimizer.h
+        // torus is returned in C, N, r0 and r1. See GaussNewtonMinimizer.h
         // for a description of the least-squares algorithm and the parameters
         // that it requires.
         typename GaussNewtonMinimizer<Real>::Result
@@ -312,7 +312,7 @@ namespace gte
         // 'true'.  If you want the function to compute initial guesses, set
         // useTorusInputAsInitialGuess to 'false'.  A Gauss-Newton minimizer
         // is used to fit a torus using nonlinear least-squares.  The fitted
-        // torus is returned in C, N, r0 and r1. See GteGaussNewtonMinimizer.h
+        // torus is returned in C, N, r0 and r1. See GaussNewtonMinimizer.h
         // for a description of the least-squares algorithm and the parameters
         // that it requires.
         typename LevenbergMarquardtMinimizer<Real>::Result

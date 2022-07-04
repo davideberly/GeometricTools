@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -28,7 +28,7 @@
 // Instead, if you choose ComputeType to be float or double, floating-point
 // rounding errors can cause the UpdateSupport{2,3} functions to fail.
 // The failure is trapped in those functions and a simple bounding circle is
-// computed using GetContainer in file GteContCircle2.h.  This circle is
+// computed using GetContainer in file ContCircle2.h.  This circle is
 // generally not the minimum-area circle containing the points.  The
 // minimum-area algorithm is terminated immediately.  The circle is returned
 // as well as a bool value of 'true' when the circle is minimum area or

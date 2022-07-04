@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -27,7 +27,7 @@
 // Instead, if you choose ComputeType to be float or double, floating-point
 // rounding errors can cause the UpdateSupport{2,3,4} functions to fail.
 // The failure is trapped in those functions and a simple bounding sphere is
-// computed using GetContainer in file GteContSphere3.h.  This sphere is
+// computed using GetContainer in file ContSphere3.h.  This sphere is
 // generally not the minimum-volume sphere containing the points.  The
 // minimum-volume algorithm is terminated immediately.  The sphere is
 // returned as well as a bool value of 'true' when the sphere is minimum

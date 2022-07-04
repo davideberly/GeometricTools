@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.13
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -627,7 +627,7 @@ namespace gte
     // The trait is_arbitrary_precision<T> for type T of float, double or
     // long double generates is_arbitrary_precision<T>::value of false.  The
     // implementations for arbitrary-precision arithmetic are found in
-    // GteArbitraryPrecision.h.
+    // ArbitraryPrecision.h.
     template <typename T>
     struct is_arbitrary_precision_internal : std::false_type {};
 

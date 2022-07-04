@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -18,7 +18,7 @@
 // one of normalized arclength--a particle traveling along the arc through
 // time t does so with constant speed.
 //
-// Read the comments in GteChebyshevRatio.h regarding estimates for the
+// Read the comments in ChebyshevRatio.h regarding estimates for the
 // ratio sin(t*theta)/sin(theta).
 //
 // When using slerp in animations involving sequences of quaternions, it is

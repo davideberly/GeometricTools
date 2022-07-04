@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -100,7 +100,7 @@
 // The modification is not that complicated here, but consider a more
 // sophisticated query such as determining the interval of intersection
 // of two height intervals [h0,h1] and [cone.hmin,cone.hmax]. The file
-// GteIntrIntervals.h provides implementations for computing the
+// IntrIntervals.h provides implementations for computing the
 // intersection of two intervals, where either or both intervals are
 // semi-infinite.
 

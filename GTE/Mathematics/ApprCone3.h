@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.04.04
 
 #pragma once
 
@@ -145,7 +145,7 @@ namespace gte
         // The parameters coneVertex, coneAxis and coneAngle are in/out
         // variables.  The caller must provide initial guesses for these.
         // The function estimates the cone parameters and returns them.  See
-        // GteGaussNewtonMinimizer.h for a description of the least-squares
+        // GaussNewtonMinimizer.h for a description of the least-squares
         // algorithm and the parameters that it requires.
         typename LevenbergMarquardtMinimizer<Real>::Result
         operator()(int32_t numPoints, Vector<3, Real> const* points,

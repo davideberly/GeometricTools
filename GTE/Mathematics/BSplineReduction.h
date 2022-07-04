@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -17,7 +17,7 @@
 // https://www.geometrictools.com/Documentation/BSplineReduction.pdf
 // for least-squares fitting of points in the continuous sense by
 // an L2 integral norm.  The least-squares fitting implemented in the
-// file GteBSplineCurveFit.h is in the discrete sense by an L2 summation.
+// file BSplineCurveFit.h is in the discrete sense by an L2 summation.
 // The intended use for this class is to take an open B-spline curve,
 // defined by its control points and degree, and reducing the number of
 // control points dramatically to obtain another curve that is close to

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -25,7 +25,7 @@ namespace gte
         void Disable(ID3D11DeviceContext* context);
 
         // Support for the DX11 debug layer; see comments in the file
-        // GteDX11GraphicsObject.h about usage.
+        // DX11GraphicsObject.h about usage.
         HRESULT SetName(std::string const& name);
 
         inline std::string const& GetName() const
