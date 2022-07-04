@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -20,6 +20,7 @@ public:
 
     virtual void OnIdle() override;
     virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
+    virtual bool OnResize(int32_t xSize, int32_t ySize) override;
 
 private:
     bool SetEnvironment();

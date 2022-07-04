@@ -20,14 +20,12 @@ Window2::Window2(Parameters& parameters)
     mDoFlip(false),
     mScreenTextureNeedsUpdate(false)
 {
-    if (parameters.allowResize)
-    {
-        parameters.created = false;
-        return;
-    }
-
-    mOverlay = std::make_shared<OverlayEffect>(mProgramFactory, mXSize, mYSize, mXSize, mYSize,
-        SamplerState::Filter::MIN_P_MAG_P_MIP_P, SamplerState::Mode::CLAMP, SamplerState::Mode::CLAMP, true);
+    mOverlay = std::make_shared<OverlayEffect>(mProgramFactory,
+        mXSize, mYSize, mXSize, mYSize,
+        SamplerState::Filter::MIN_P_MAG_P_MIP_P,
+        SamplerState::Mode::CLAMP,
+        SamplerState::Mode::CLAMP,
+        true);
 
     mScreenTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, mXSize, mYSize);
     mScreenTexture->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
@@ -55,9 +53,28 @@ Window2::Window2(Parameters& parameters)
     };
 }
 
-bool Window2::OnResize(int32_t, int32_t)
+bool Window2::OnResize(int32_t xSize, int32_t ySize)
 {
-    return false;
+    if (xSize != mXSize || ySize != mYSize)
+    {
+        mXSize = xSize;
+        mYSize = ySize;
+
+        mOverlay = std::make_shared<OverlayEffect>(mProgramFactory,
+            mXSize, mYSize, mXSize, mYSize,
+            SamplerState::Filter::MIN_P_MAG_P_MIP_P,
+            SamplerState::Mode::CLAMP,
+            SamplerState::Mode::CLAMP,
+            true);
+
+        mScreenTexture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, mXSize, mYSize);
+        mScreenTexture->SetUsage(Resource::Usage::DYNAMIC_UPDATE);
+
+        mOverlay->SetTexture(mScreenTexture);
+
+        mEngine->Resize(static_cast<uint32_t>(mXSize), static_cast<uint32_t>(mYSize));
+    }
+    return true;
 }
 
 void Window2::OnDisplay()

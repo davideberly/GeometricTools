@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #pragma once
 
@@ -34,13 +34,30 @@ namespace gte
         Window2(Parameters& parameters);
 
     public:
-        // Display functions.  The OnResize function always returns 'false';
-        // that is, you cannot resize the window.  The DrawScreenOverlay
-        // function is called after the screen texture is drawn but before the
-        // swap-buffers call is made.  This allows you to draw text or GUI
-        // elements on top of the screen texture.
+        // Display functions.  
+
+        // OnResize is called during window resize events. The screen texture
+        // and the overlay objects are recreated. The engine then resizes its
+        // renderer. If a class derived from Window2 wants resizing, it must
+        // set the parameters.allowResize to true. Moreover, the class must
+        // override OnResize, calling the Window2::OnResize first and then
+        // calling either its own OnDisplay or OnIdle, whichever it is using
+        // for drawing. This is required because during the window resizing,
+        // the message pump is receiving the events and OnIdle() is not
+        // called directly in the message pump because there are messages
+        // that must be processed first. If you do not call your own OnIdle,
+        // the rendered client window will not display properly.
         virtual bool OnResize(int32_t xSize, int32_t ySize) override;
+
+        // The OnDisplay function updates the screen texture if it is 'dirty'
+        // and then draws the 2D overlay followed by a call to
+        // DrawScreenOverlay.
         virtual void OnDisplay() override;
+
+        // The DrawScreenOverlay function is called after the screen texture
+        // is drawn but before the swap-buffers call is made. This allows you
+        // to draw text or user-created GUI elements on top of the screen
+        // texture.
         virtual void DrawScreenOverlay();
 
         // Drawing functions.  Each color is packed as R8G8B8A8 with the alpha

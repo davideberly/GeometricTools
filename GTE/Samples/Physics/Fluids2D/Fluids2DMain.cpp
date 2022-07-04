@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.07.04
 
 #include "Fluids2DWindow2.h"
 #include <iostream>
@@ -18,6 +18,7 @@ int32_t main()
             Fluids2DWindow2::GRID_SIZE, Fluids2DWindow2::GRID_SIZE);
 #else
         Window::Parameters parameters(L"Fluids2DWindow2", 0, 0, 768, 768);
+        parameters.allowResize = true;
 #endif
 
         auto window = TheWindowSystem.Create<Fluids2DWindow2>(parameters);
