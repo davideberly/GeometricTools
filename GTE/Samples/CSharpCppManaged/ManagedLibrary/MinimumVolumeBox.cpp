@@ -1,11 +1,30 @@
 #include "MinimumVolumeBox.h"
+using namespace System::Runtime::InteropServices;
 
 namespace CLI
 {
     MVB3::MVB3()
         :
-        ManagedObject(new gte::MVB3())
+        mInstance(nullptr)
     {
+        mInstance = new gte::MVB3();
+    }
+
+    MVB3::~MVB3()
+    {
+        if (mInstance != nullptr)
+        {
+            delete mInstance;
+        }
+    }
+
+    MVB3::!MVB3()
+    {
+        if (mInstance != nullptr)
+        {
+            delete mInstance;
+            mInstance = nullptr;
+        }
     }
 
     void MVB3::ComputeMinimumVolumeBoxFromPoints(unsigned int numThreads,

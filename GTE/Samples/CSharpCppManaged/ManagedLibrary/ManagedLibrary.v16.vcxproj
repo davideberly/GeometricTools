@@ -137,7 +137,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ManagedObject.h" />
     <ClInclude Include="MinimumVolumeBox.h" />
   </ItemGroup>
   <ItemGroup>
