@@ -224,10 +224,10 @@ namespace gte
             InputType const one = static_cast<InputType>(1);
             InputType const half = static_cast<InputType>(0.5);
 
-            ConvexHull3<InputType> ch3;
-            ch3(static_cast<size_t>(numPoints), points, 0);
-            size_t dimension = ch3.GetDimension();
-            auto const& hull = ch3.GetHull();
+           
+            mConvexHull3(static_cast<size_t>(numPoints), points, 0);
+            size_t dimension = mConvexHull3.GetDimension();
+            auto const& hull = mConvexHull3.GetHull();
 
             if (dimension == 0)
             {
@@ -305,7 +305,7 @@ namespace gte
             // polyhedron.
             std::vector<Vector3<InputType>> inVertices(numPoints);
             std::memcpy(inVertices.data(), points, inVertices.size() * sizeof(Vector3<InputType>));
-            auto const& triangles = ch3.GetHull();
+            auto const& triangles = mConvexHull3.GetHull();
             std::vector<int32_t> inIndices(triangles.size());
             size_t current = 0;
             for (auto index : triangles)
@@ -357,6 +357,15 @@ namespace gte
                         "Invalid index.");
                 }
 
+                // Reset old data
+                mAdjacentPool.clear();
+                mVertexAdjacent.clear();
+                mEdges.clear();
+                mTriangles.clear();
+                mEdgeIndices.clear();
+                mVertices.clear();
+                mNormals.clear();
+
                 std::vector<Vector3<InputType>> vertices(numVertices);
                 std::memcpy(vertices.data(), inVertices,
                     vertices.size() * sizeof(Vector3<InputType>));
@@ -385,6 +394,14 @@ namespace gte
         inline void GetRationalBox(RBox& rbox) const
         {
             rbox = mRBox;
+        }
+
+        // Returns the convex hull that was computed for computing the minimum-volume box.
+        // Note that convex hull is not computed when using operator()(...int32_t const* inIndices...)
+        // since that overload uses the provided convex hull.
+        inline ConvexHull3<InputType> const& GetConvexHull3() const
+        { 
+            return mConvexHull3; 
         }
 
     protected:
@@ -841,6 +858,9 @@ namespace gte
         // vertices.
         Candidate mMinimumVolumeObject;
         RBox mRBox;
+
+        // Convex Hull
+        ConvexHull3<InputType> mConvexHull3;
 
         // Each member function A00B10C01D11(*) corresponds to a bilinear
         // function on the domain [0,1]^2. Each corner of the domain has a
