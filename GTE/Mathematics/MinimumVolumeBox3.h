@@ -396,6 +396,14 @@ namespace gte
             rbox = mRBox;
         }
 
+        // Returns the convex hull that was computed for computing the minimum-volume box.
+        // Note that convex hull is not computed when using operator()(...int32_t const* inIndices...)
+        // since that overload uses the provided convex hull.
+        inline ConvexHull3<InputType> const& GetConvexHull3() const
+        { 
+            return mConvexHull3; 
+        }
+
     protected:
         void CreateDomainIndex(size_t& current, size_t end0, size_t end1)
         {
