@@ -1539,5 +1539,11 @@
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h">
       <Filter>CurvesSurfacesVolumes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\VETManifoldMeshNR.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h">
+      <Filter>Containment</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

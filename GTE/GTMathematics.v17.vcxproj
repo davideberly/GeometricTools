@@ -81,6 +81,7 @@
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />
     <ClInclude Include="Mathematics\ConstrainedDelaunay2.h" />
     <ClInclude Include="Mathematics\ContAlignedBox.h" />
+    <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h" />
     <ClInclude Include="Mathematics\ContCapsule3.h" />
     <ClInclude Include="Mathematics\ContCircle2.h" />
     <ClInclude Include="Mathematics\ContCone.h" />
@@ -446,6 +447,7 @@
     <ClInclude Include="Mathematics\VEManifoldMesh.h" />
     <ClInclude Include="Mathematics\VertexAttribute.h" />
     <ClInclude Include="Mathematics\VETManifoldMesh.h" />
+    <ClInclude Include="Mathematics\VETManifoldMeshNR.h" />
     <ClInclude Include="Mathematics\VETNonmanifoldMesh.h" />
     <ClInclude Include="Mathematics\GVector.h" />
     <ClInclude Include="Mathematics\IEEEBinary.h" />
