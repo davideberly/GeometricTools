@@ -244,7 +244,7 @@ namespace gte
                 else
                 {
                     s /= Dot(direction, direction);
-                    Vector2<T> closest = Q0 + s * direction;
+                    Vector2<T> closest = Q0 - s * direction;
                     return Dot(closest, closest);
                 }
             }
