@@ -39,6 +39,22 @@
     <ClInclude Include="Arithmetic\UIntegerALU32.h" />
     <ClInclude Include="Arithmetic\UIntegerAP32.h" />
     <ClInclude Include="Arithmetic\UIntegerFP32.h" />
+    <ClInclude Include="Curves\BasisFunction.h" />
+    <ClInclude Include="Curves\BezierCurve.h" />
+    <ClInclude Include="Curves\BSplineCurve.h" />
+    <ClInclude Include="Curves\BSplineCurveFit.h" />
+    <ClInclude Include="Curves\BSplineGeodesic.h" />
+    <ClInclude Include="Curves\EllipsoidGeodesic.h" />
+    <ClInclude Include="Curves\FrenetFrame.h" />
+    <ClInclude Include="Curves\ImplicitCurve2.h" />
+    <ClInclude Include="Curves\NaturalCubicSpline.h" />
+    <ClInclude Include="Curves\NaturalQuinticSpline.h" />
+    <ClInclude Include="Curves\NURBSCircle.h" />
+    <ClInclude Include="Curves\NURBSCurve.h" />
+    <ClInclude Include="Curves\ParametricCurve.h" />
+    <ClInclude Include="Curves\PolynomialCurve.h" />
+    <ClInclude Include="Curves\RiemannianGeodesic.h" />
+    <ClInclude Include="Curves\TCBSplineCurve.h" />
     <ClInclude Include="DifferentialEquations\OdeEuler.h" />
     <ClInclude Include="DifferentialEquations\OdeImplicitEuler.h" />
     <ClInclude Include="DifferentialEquations\OdeMidpoint.h" />
@@ -109,6 +125,14 @@
     <ClInclude Include="RootFinders\RootsPolynomial.h" />
     <ClInclude Include="RootFinders\RootsQuadratic.h" />
     <ClInclude Include="RootFinders\RootsQuartic.h" />
+    <ClInclude Include="Surfaces\BSplineSurface.h" />
+    <ClInclude Include="Surfaces\BSplineSurfaceFit.h" />
+    <ClInclude Include="Surfaces\DarbouxFrame.h" />
+    <ClInclude Include="Surfaces\ImplicitSurface3.h" />
+    <ClInclude Include="Surfaces\NURBSSphere.h" />
+    <ClInclude Include="Surfaces\NURBSSurface.h" />
+    <ClInclude Include="Surfaces\ParametricSurface.h" />
+    <ClInclude Include="Surfaces\QuadricSurface.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -80,14 +80,14 @@ namespace gtl
         }
 
         // Evaluation of the surface. The function supports derivative
-        // calculation through order 2; that is, maxOrder <= 2 is required.
-        // If you want only the position, pass in maxOrder of 0. If you want
-        // the position and first-order derivatives, pass in maxOrder of 1,
+        // calculation through order 2; that is, order <= 2 is required.
+        // If you want only the position, pass in order of 0. If you want
+        // the position and first-order derivatives, pass in order of 1,
         // and so on. The output 'values' are ordered as: position X;
         // first-order derivatives dX/du, dX/dv; second-order derivatives
         // d2X/du2, d2X/dudv, d2X/dv2. The input array 'jet' has enough
         // storage for the maximum order 2.
-        bool Evaluate(T const& u, T const& v, size_t maxOrder,
+        bool Evaluate(T const& u, T const& v, size_t order,
             std::array<Vector3<T>, 6>& jet) const
         {
             // Compute position.
@@ -103,14 +103,14 @@ namespace gtl
             Vector3<T> r1snvnormal = r1snv * normal;
             jet[0] = center + r0pr1csvcombo0 + r1snvnormal;
 
-            if (maxOrder >= 1)
+            if (order >= 1)
             {
                 // Compute first-order derivatives.
                 Vector3<T> combo1 = -snu * direction0 + csu * direction1;
                 jet[1] = r0pr1csv * combo1;
                 jet[2] = -r1snv * combo0 + r1csv * normal;
 
-                if (maxOrder == 2)
+                if (order == 2)
                 {
                     // Compute second-order derivatives.
                     jet[3] = -r0pr1csvcombo0;

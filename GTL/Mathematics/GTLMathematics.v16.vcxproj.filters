@@ -31,6 +31,12 @@
     <Filter Include="RootFinders">
       <UniqueIdentifier>{b85e1df7-113e-4807-a4e4-1de6369cd01e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Curves">
+      <UniqueIdentifier>{cb817d9f-e074-4c5c-a064-f8298013607f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Surfaces">
+      <UniqueIdentifier>{009f942a-0252-40bf-947f-c3025dff6cce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algebra\AxisAngle.h">
@@ -326,6 +332,78 @@
     </ClInclude>
     <ClInclude Include="RootFinders\RootsQuartic.h">
       <Filter>RootFinders</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\BasisFunction.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\BezierCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\BSplineCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\BSplineCurveFit.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\BSplineGeodesic.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\EllipsoidGeodesic.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\FrenetFrame.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\ImplicitCurve2.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\NaturalCubicSpline.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\NaturalQuinticSpline.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\NURBSCircle.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\NURBSCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\ParametricCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\PolynomialCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\RiemannianGeodesic.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TCBSplineCurve.h">
+      <Filter>Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\BSplineSurface.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\BSplineSurfaceFit.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\DarbouxFrame.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\ImplicitSurface3.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\NURBSSphere.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\NURBSSurface.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\ParametricSurface.h">
+      <Filter>Surfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Surfaces\QuadricSurface.h">
+      <Filter>Surfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
