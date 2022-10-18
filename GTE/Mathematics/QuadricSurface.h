@@ -3,154 +3,172 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.10.17
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/Matrix2x2.h>
 #include <Mathematics/Matrix3x3.h>
 
 // A quadric surface is defined implicitly by
 //
-//   0 = a0 + a1*x[0] + a2*x[1] + a3*x[2] + a4*x[0]^2 + a5*x[0]*x[1] +
-//       a6*x[0]*x[2] + a7*x[1]^2 + a8*x[1]*x[2] + a9*x[2]^2
+//   0 = q0 + q1 * x[0] + q2 * x[1] + q3 * x[2] +
+//       q4 * x[0]^2 + q5 * x[0] * x[1] + q6 * x[0] * x[2] +
+//       q7 * x[1]^2 + q8 * x[1] * x[2] + q9 * x[2]^2
 //
-//     = a0 + [a1 a2 a3]*X + X^T*[a4   a5/2 a6/2]*X
-//                               [a5/2 a7   a8/2]
-//                               [a6/2 a8/2 a9  ]
+//                                   +-              -+
+//                                   | q4   q5/2 q6/2 |
+//     = q0 + [q1 q2 q3] * X + X^T * | q5/2 q7   q8/2 | * X
+//                                   | q6/2 q8/2 q9   |
+//                                   +-              -+
+//
 //     = C + B^T*X + X^T*A*X
-//
-// The matrix A is symmetric.
+// 
+// A document describing the classification of the solution set is
+// https://www.geometrictools.com/Documentation/ClassifyingQuadrics.pdf
 
 namespace gte
 {
-    template <typename Real>
+    template <typename T>
     class QuadricSurface
     {
     public:
-        // Construction and destruction.  The default constructor sets all
-        // coefficients to zero.
         QuadricSurface()
+            :
+            mClassification(Classification::UNKNOWN),
+            mA{},
+            mB{},
+            mC(static_cast<T>(0))
         {
-            mCoefficient.fill((Real)0);
-            mC = (Real)0;
-            mB.MakeZero();
-            mA.MakeZero();
         }
 
-        QuadricSurface(std::array<Real, 10> const& coefficient)
+        QuadricSurface(Matrix3x3<T> const& A, Vector3<T> const& b, T const& c)
             :
-            mCoefficient(coefficient)
+            mClassification(Classification::UNKNOWN),
+            mA(A),
+            mB(b),
+            mC(c)
         {
-            mC = mCoefficient[0];
-            mB[0] = mCoefficient[1];
-            mB[1] = mCoefficient[2];
-            mB[2] = mCoefficient[3];
-            mA(0, 0) = mCoefficient[4];
-            mA(0, 1) = (Real)0.5 * mCoefficient[5];
-            mA(0, 2) = (Real)0.5 * mCoefficient[6];
-            mA(1, 0) = mA(0, 1);
-            mA(1, 1) = mCoefficient[7];
-            mA(1, 2) = (Real)0.5 * mCoefficient[8];
-            mA(2, 0) = mA(0, 2);
-            mA(2, 1) = mA(1, 2);
-            mA(2, 2) = mCoefficient[9];
+        }
+
+        QuadricSurface(std::array<T, 10> const& q)
+            :
+            mClassification(Classification::UNKNOWN),
+            mA{
+                q[4], static_cast<T>(0.5) * q[5], static_cast<T>(0.5) * q[6],
+                static_cast<T>(0.5) * q[5], q[7], static_cast<T>(0.5) * q[8],
+                static_cast<T>(0.5) * q[6], static_cast<T>(0.5) * q[8], q[9] },
+                mB{ q[1], q[2], q[3] },
+                mC(q[0])
+        {
         }
 
         // Member access.
-        inline std::array<Real, 10> const& GetCoefficients() const
-        {
-            return mCoefficient;
-        }
-
-        inline Real const& GetC() const
-        {
-            return mC;
-        }
-
-        inline Vector3<Real> const& GetB() const
-        {
-            return mB;
-        }
-
-        inline Matrix3x3<Real> const& GetA() const
+        inline Matrix3x3<T> const& GetA() const
         {
             return mA;
         }
 
-        // Evaluate the function.
-        Real F(Vector3<Real> const& position) const
+        inline Vector3<T> const& GetB() const
         {
-            Real f = Dot(position, mA * position + mB) + mC;
+            return mB;
+        }
+
+        inline T const& GetC() const
+        {
+            return mC;
+        }
+
+        inline std::array<T, 10> GetQ() const
+        {
+            std::array<T, 10> q{};
+            q[0] = mC;
+            q[1] = mB[0];
+            q[2] = mB[1];
+            q[3] = mB[2];
+            q[4] = mA(0, 0);
+            q[5] = static_cast<T>(2) * mA(0, 1);
+            q[6] = static_cast<T>(2) * mA(0, 2);
+            q[7] = mA(1, 1);
+            q[8] = static_cast<T>(2) * mA(1, 2);
+            q[9] = mA(2, 2);
+            return q;
+        }
+
+        // Evaluate the function.
+        T F(Vector3<T> const& position) const
+        {
+            T f = Dot(position, mA * position + mB) + mC;
             return f;
         }
 
         // Evaluate the first-order partial derivatives (gradient).
-        Real FX(Vector3<Real> const& position) const
+        T FX(Vector3<T> const& position) const
         {
-            Real sum = mA(0, 0) * position[0] + mA(0, 1) * position[1] + mA(0, 2) * position[2];
-            Real fx = (Real)2 * sum + mB[0];
+            T sum = mA(0, 0) * position[0] + mA(0, 1) * position[1] + mA(0, 2) * position[2];
+            T fx = static_cast<T>(2) * sum + mB[0];
             return fx;
         }
 
-        Real FY(Vector3<Real> const& position) const
+        T FY(Vector3<T> const& position) const
         {
-            Real sum = mA(1, 0) * position[0] + mA(1, 1) * position[1] + mA(1, 2) * position[2];
-            Real fy = (Real)2 * sum + mB[1];
+            T sum = mA(1, 0) * position[0] + mA(1, 1) * position[1] + mA(1, 2) * position[2];
+            T fy = static_cast<T>(2) * sum + mB[1];
             return fy;
         }
 
-        Real FZ(Vector3<Real> const& position) const
+        T FZ(Vector3<T> const& position) const
         {
-            Real sum = mA(2, 0) * position[0] + mA(2, 1) * position[1] + mA(2, 2) * position[2];
-            Real fz = (Real)2 * sum + mB[2];
+            T sum = mA(2, 0) * position[0] + mA(2, 1) * position[1] + mA(2, 2) * position[2];
+            T fz = static_cast<T>(2) * sum + mB[2];
             return fz;
         }
 
         // Evaluate the second-order partial derivatives (Hessian).
-        Real FXX(Vector3<Real> const&) const
+        T FXX(Vector3<T> const&) const
         {
-            Real fxx = (Real)2 * mA(0, 0);
+            T fxx = static_cast<T>(2) * mA(0, 0);
             return fxx;
         }
 
-        Real FXY(Vector3<Real> const&) const
+        T FXY(Vector3<T> const&) const
         {
-            Real fxy = (Real)2 * mA(0, 1);
+            T fxy = static_cast<T>(2) * mA(0, 1);
             return fxy;
         }
 
-        Real FXZ(Vector3<Real> const&) const
+        T FXZ(Vector3<T> const&) const
         {
-            Real fxz = (Real)2 * mA(0, 2);
+            T fxz = static_cast<T>(2) * mA(0, 2);
             return fxz;
         }
 
-        Real FYY(Vector3<Real> const&) const
+        T FYY(Vector3<T> const&) const
         {
-            Real fyy = (Real)2 * mA(1, 1);
+            T fyy = static_cast<T>(2) * mA(1, 1);
             return fyy;
         }
 
-        Real FYZ(Vector3<Real> const&) const
+        T FYZ(Vector3<T> const&) const
         {
-            Real fyz = (Real)2 * mA(1, 2);
+            T fyz = static_cast<T>(2) * mA(1, 2);
             return fyz;
         }
 
-        Real FZZ(Vector3<Real> const&) const
+        T FZZ(Vector3<T> const&) const
         {
-            Real fzz = (Real)2 * mA(2, 2);
+            T fzz = static_cast<T>(2) * mA(2, 2);
             return fzz;
         }
 
-        // Classification of the quadric.  The implementation uses exact
+        // Classification of the quadric. The implementation uses exact
         // rational arithmetic to avoid misclassification due to
         // floating-point rounding errors.
         enum class Classification
         {
-            NONE,
+            NO_SOLUTION,
             POINT,
             LINE,
             PLANE,
@@ -163,310 +181,161 @@ namespace gte
             ELLIPTIC_CONE,
             HYPERBOLOID_ONE_SHEET,
             HYPERBOLOID_TWO_SHEETS,
-            ELLIPSOID
+            ELLIPSOID,
+            ENTIRE_SPACE,
+            UNKNOWN
         };
 
         Classification GetClassification() const
         {
+            if (mClassification != Classification::UNKNOWN)
+            {
+                return mClassification;
+            }
+
             // Convert the coefficients to their rational representations and
             // compute various derived quantities.
-            RReps reps(mCoefficient);
+            Matrix3x3<Rational> rA{};
+            Vector3<Rational> rB{};
+            Rational rC{};
+            rA(0, 0) = mA(0, 0);
+            rA(0, 1) = mA(0, 1);
+            rA(0, 2) = mA(0, 2);
+            rA(1, 0) = rA(0, 1);
+            rA(1, 1) = mA(1, 1);
+            rA(1, 2) = mA(1, 2);
+            rA(2, 0) = rA(0, 2);
+            rA(2, 1) = rA(1, 2);
+            rA(2, 2) = mA(2, 2);
+            rB[0] = mB[0];
+            rB[1] = mB[1];
+            rB[2] = mB[2];
+            rC = mC;
+
+            // Compute the polynomial det(lambda * I - A) with rational
+            // coefficients.
+            Rational rS00 = rA(1, 1) * rA(2, 2) - rA(1, 2) * rA(1, 2);
+            Rational rS01 = rA(0, 1) * rA(2, 2) - rA(1, 2) * rA(0, 2);
+            Rational rS02 = rA(0, 1) * rA(1, 2) - rA(0, 2) * rA(1, 1);
+            Rational rS11 = rA(0, 0) * rA(2, 2) - rA(0, 2) * rA(0, 2);
+            Rational rS12 = rA(0, 0) * rA(1, 2) - rA(0, 2) * rA(0, 1);
+            Rational rS22 = rA(0, 0) * rA(1, 1) - rA(0, 1) * rA(0, 1);
+            std::array<Rational, 4> rP
+            {
+                -(rA(0, 0) * rS00 - rA(0, 1) * rS01 + rA(0, 2) * rS02),
+                rS00 + rS11 + rS22,
+                -(rA(0, 0) + rA(1, 1) + rA(2, 2)),
+                Rational(1)
+            };
 
             // Use Sturm sequences to determine the signs of the roots.
-            int32_t positiveRoots, negativeRoots, zeroRoots;
-            GetRootSigns(reps, positiveRoots, negativeRoots, zeroRoots);
+            size_t numPositive = 0, numNegative = 0, numZero = 0;
+            ComputeRootSigns(rP, numPositive, numNegative, numZero);
 
             // Classify the solution set to the equation.
-            Classification type = Classification::NONE;
-            switch (zeroRoots)
+            if (numZero == 0)
             {
-            case 0:
-                type = ClassifyZeroRoots0(reps, positiveRoots);
-                break;
-            case 1:
-                type = ClassifyZeroRoots1(reps, positiveRoots);
-                break;
-            case 2:
-                type = ClassifyZeroRoots2(reps, positiveRoots);
-                break;
-            case 3:
-                type = ClassifyZeroRoots3(reps);
-                break;
+                mClassification = AllNonzero(rA, rB, rC, numPositive);
             }
-            return type;
+            else if (numZero == 1)
+            {
+                mClassification = TwoNonzero(rA, rB, rC, numPositive, numNegative);
+            }
+            else if (numZero == 2)
+            {
+                mClassification = OneNonzero(rA, rB, rC, numPositive);
+            }
+            else  // numZero = 3
+            {
+                mClassification = AllZero(rB, rC);
+            }
+            return mClassification;
         }
 
     private:
-        typedef BSRational<UIntegerAP32> Rational;
-        typedef Vector<3, Rational> RVector3;
+        using Rational = BSRational<UIntegerAP32>;
 
-        class RReps
+        // Use Descartes' rule of signs to determine the root signs.
+        static void ComputeRootSigns(std::array<Rational, 4> const& rP,
+            size_t& numPositive, size_t& numNegative, size_t& numZero)
         {
-        public:
-            RReps(std::array<Real, 10> const& coefficient)
+            // Collect the nonzero signs of the rP[0], rP[1] and rP[2].
+            int32_t constexpr degree = 3;
+            std::array<int32_t, degree + 1> signs{};
+            for (size_t i = 0; i <= degree; ++i)
             {
-                Rational half = (Real)0.5;
-
-                c = Rational(coefficient[0]);
-                b0 = Rational(coefficient[1]);
-                b1 = Rational(coefficient[2]);
-                b2 = Rational(coefficient[3]);
-                a00 = Rational(coefficient[4]);
-                a01 = half * Rational(coefficient[5]);
-                a02 = half * Rational(coefficient[6]);
-                a11 = Rational(coefficient[7]);
-                a12 = half * Rational(coefficient[8]);
-                a22 = Rational(coefficient[9]);
-
-                sub00 = a11 * a22 - a12 * a12;
-                sub01 = a01 * a22 - a12 * a02;
-                sub02 = a01 * a12 - a02 * a11;
-                sub11 = a00 * a22 - a02 * a02;
-                sub12 = a00 * a12 - a02 * a01;
-                sub22 = a00 * a11 - a01 * a01;
-
-                k0 = a00 * sub00 - a01 * sub01 + a02 * sub02;
-                k1 = sub00 + sub11 + sub22;
-                k2 = a00 + a11 + a22;
-                k3 = Rational(0);
-                k4 = Rational(0);
-                k5 = Rational(0);
+                signs[i] = rP[i].GetSign();
             }
 
-            // Quadratic coefficients.
-            Rational a00, a01, a02, a11, a12, a22, b0, b1, b2, c;
-
-            // 2-by-2 determinants
-            Rational sub00, sub01, sub02, sub11, sub12, sub22;
-
-            // Characteristic polynomial L^3 - k2 * L^2 + k1 * L - k0.
-            Rational k0, k1, k2;
-
-            // For Sturm sequences.
-            Rational k3, k4, k5;
-        };
-
-        static void GetRootSigns(RReps& reps, int32_t& positiveRoots, int32_t& negativeRoots, int32_t& zeroRoots)
-        {
-            // Use Sturm sequences to determine the signs of the roots.
-            int32_t signChangeMI, signChange0, signChangePI, distinctNonzeroRoots;
-            std::array<Rational, 4> value;
-            Rational const zero(0);
-            if (reps.k0 != zero)
+            // Compute the number of positive roots of p(lambda).
+            int32_t currentSign = signs[degree];
+            numPositive = 0;
+            for (int32_t i = degree - 1; i >= 0; --i)
             {
-                reps.k3 = Rational(2, 9) * reps.k2 * reps.k2 - Rational(2, 3) * reps.k1;
-                reps.k4 = reps.k0 - Rational(1, 9) * reps.k1 * reps.k2;
-
-                if (reps.k3 != zero)
+                if (signs[i] == -currentSign)
                 {
-                    reps.k5 = -(reps.k1 + ((Rational(2) * reps.k2 * reps.k3 +
-                        Rational(3) * reps.k4) * reps.k4) / (reps.k3 * reps.k3));
-
-                    value[0] = 1;
-                    value[1] = -reps.k3;
-                    value[2] = reps.k5;
-                    signChangeMI = 1 + GetSignChanges(3, value);
-
-                    value[0] = -reps.k0;
-                    value[1] = reps.k1;
-                    value[2] = reps.k4;
-                    value[3] = reps.k5;
-                    signChange0 = GetSignChanges(4, value);
-
-                    value[0] = 1;
-                    value[1] = reps.k3;
-                    value[2] = reps.k5;
-                    signChangePI = GetSignChanges(3, value);
+                    currentSign = signs[i];
+                    ++numPositive;
                 }
-                else
-                {
-                    value[0] = -reps.k0;
-                    value[1] = reps.k1;
-                    value[2] = reps.k4;
-                    signChange0 = GetSignChanges(3, value);
-
-                    value[0] = 1;
-                    value[1] = reps.k4;
-                    signChangePI = GetSignChanges(2, value);
-                    signChangeMI = 1 + signChangePI;
-                }
-
-                positiveRoots = signChange0 - signChangePI;
-                LogAssert(positiveRoots >= 0, "Unexpected condition.");
-                negativeRoots = signChangeMI - signChange0;
-                LogAssert(negativeRoots >= 0, "Unexpected condition.");
-                zeroRoots = 0;
-
-                distinctNonzeroRoots = positiveRoots + negativeRoots;
-                if (distinctNonzeroRoots == 2)
-                {
-                    if (positiveRoots == 2)
-                    {
-                        positiveRoots = 3;
-                    }
-                    else if (negativeRoots == 2)
-                    {
-                        negativeRoots = 3;
-                    }
-                    else
-                    {
-                        // One root is positive and one is negative.  One root
-                        // has multiplicity 2, the other of multiplicity 1.
-                        // Distinguish between the two cases by computing the
-                        // sign of the polynomial at the inflection point
-                        // L = k2/3.
-                        Rational X = Rational(1, 3) * reps.k2;
-                        Rational poly = X * (X * (X - reps.k2) + reps.k1) - reps.k0;
-                        if (poly > zero)
-                        {
-                            positiveRoots = 2;
-                        }
-                        else
-                        {
-                            negativeRoots = 2;
-                        }
-                    }
-                }
-                else if (distinctNonzeroRoots == 1)
-                {
-                    // Root of multiplicity 3.
-                    if (positiveRoots == 1)
-                    {
-                        positiveRoots = 3;
-                    }
-                    else
-                    {
-                        negativeRoots = 3;
-                    }
-                }
-
-                return;
             }
 
-            if (reps.k1 != zero)
+            // Compute the signs of the coefficients of p(-lambda).
+            for (int32_t i = 1; i <= degree; i += 2)
             {
-                reps.k3 = Rational(1, 4) * reps.k2 * reps.k2 - reps.k1;
-
-                value[0] = -1;
-                value[1] = reps.k3;
-                signChangeMI = 1 + GetSignChanges(2, value);
-
-                value[0] = reps.k1;
-                value[1] = -reps.k2;
-                value[2] = reps.k3;
-                signChange0 = GetSignChanges(3, value);
-
-                value[0] = 1;
-                value[1] = reps.k3;
-                signChangePI = GetSignChanges(2, value);
-
-                positiveRoots = signChange0 - signChangePI;
-                LogAssert(positiveRoots >= 0, "Unexpected condition.");
-                negativeRoots = signChangeMI - signChange0;
-                LogAssert(negativeRoots >= 0, "Unexpected condition.");
-                zeroRoots = 1;
-
-                distinctNonzeroRoots = positiveRoots + negativeRoots;
-                if (distinctNonzeroRoots == 1)
-                {
-                    positiveRoots = 2;
-                }
-
-                return;
+                signs[i] = -signs[i];
             }
 
-            if (reps.k2 != zero)
+            // Compute the number of positive roots of p(-lambda).
+            currentSign = signs[degree];
+            numNegative = 0;
+            for (int32_t i = degree - 1; i >= 0; --i)
             {
-                zeroRoots = 2;
-                if (reps.k2 > zero)
+                if (signs[i] == -currentSign)
                 {
-                    positiveRoots = 1;
-                    negativeRoots = 0;
+                    currentSign = signs[i];
+                    ++numNegative;
                 }
-                else
-                {
-                    positiveRoots = 0;
-                    negativeRoots = 1;
-                }
-                return;
             }
 
-            positiveRoots = 0;
-            negativeRoots = 0;
-            zeroRoots = 3;
+            // Compute the number of zero roots of p(lambda).
+            numZero = 3 - numPositive - numNegative;
         }
 
-        static int32_t GetSignChanges(int32_t quantity, std::array<Rational, 4> const& value)
+        static Classification AllNonzero(Matrix3x3<Rational> const& A,
+            Vector3<Rational> const& b, Rational const& c, size_t numPositiveRoots)
         {
-            int32_t signChanges = 0;
-            Rational const zero(0);
+            Rational r = Dot(b, Inverse(A) * b) / Rational(4) - c;
 
-            Rational prev = value[0];
-            for (int32_t i = 1; i < quantity; ++i)
+            if (r > Rational(0))
             {
-                Rational next = value[i];
-                if (next != zero)
-                {
-                    if (prev * next < zero)
-                    {
-                        ++signChanges;
-                    }
-
-                    prev = next;
-                }
-            }
-
-            return signChanges;
-        }
-
-        static Classification ClassifyZeroRoots0(RReps const& reps, int32_t positiveRoots)
-        {
-            // The inverse matrix is
-            // +-                      -+
-            // |  sub00  -sub01   sub02 |
-            // | -sub01   sub11  -sub12 | * (1/det)
-            // |  sub02  -sub12   sub22 |
-            // +-                      -+
-            Rational fourDet = Rational(4) * reps.k0;
-
-            Rational qForm = reps.b0 * (reps.sub00 * reps.b0 -
-                reps.sub01 * reps.b1 + reps.sub02 * reps.b2) -
-                reps.b1 * (reps.sub01 * reps.b0 - reps.sub11 * reps.b1 +
-                reps.sub12 * reps.b2) + reps.b2 * (reps.sub02 * reps.b0 -
-                reps.sub12 * reps.b1 + reps.sub22 * reps.b2);
-
-            Rational r = Rational(1, 4) * qForm / fourDet - reps.c;
-            Rational const zero(0);
-            if (r > zero)
-            {
-                if (positiveRoots == 3)
+                if (numPositiveRoots == 3)
                 {
                     return Classification::ELLIPSOID;
                 }
-                else if (positiveRoots == 2)
+                else if (numPositiveRoots == 2)
                 {
                     return Classification::HYPERBOLOID_ONE_SHEET;
                 }
-                else if (positiveRoots == 1)
+                else if (numPositiveRoots == 1)
                 {
                     return Classification::HYPERBOLOID_TWO_SHEETS;
                 }
                 else
                 {
-                    return Classification::NONE;
+                    return Classification::NO_SOLUTION;
                 }
             }
-            else if (r < zero)
+            else if (r < Rational(0))
             {
-                if (positiveRoots == 3)
+                if (numPositiveRoots == 3)
                 {
-                    return Classification::NONE;
+                    return Classification::NO_SOLUTION;
                 }
-                else if (positiveRoots == 2)
+                else if (numPositiveRoots == 2)
                 {
                     return Classification::HYPERBOLOID_TWO_SHEETS;
                 }
-                else if (positiveRoots == 1)
+                else if (numPositiveRoots == 1)
                 {
                     return Classification::HYPERBOLOID_ONE_SHEET;
                 }
@@ -475,57 +344,52 @@ namespace gte
                     return Classification::ELLIPSOID;
                 }
             }
-
-            // else r == 0
-            if (positiveRoots == 3 || positiveRoots == 0)
+            else // sign == 0
             {
-                return Classification::POINT;
+                if (numPositiveRoots == 3 || numPositiveRoots == 0)
+                {
+                    return Classification::POINT;
+                }
+                else
+                {
+                    return Classification::ELLIPTIC_CONE;
+                }
             }
-
-            return Classification::ELLIPTIC_CONE;
         }
 
-        static Classification ClassifyZeroRoots1(RReps const& reps, int32_t positiveRoots)
+        static void ComputeOrthogonalSetTwoNonzero(Matrix3x3<Rational> const& A,
+            Vector3<Rational>& w0, Vector3<Rational>& w1, Vector3<Rational>& w2)
         {
-            // Generate an orthonormal set {p0,p1,p2}, where p0 is an
-            // eigenvector of A corresponding to eigenvalue zero.
-            RVector3 P0, P1, P2;
-            Rational const zero(0);
-
-            if (reps.sub00 != zero || reps.sub01 != zero || reps.sub02 != zero)
+            Vector3<Rational> vzero{}; // zero vector
+            w1 = { A(0, 0), A(0, 1), A(0, 2) };
+            if (w1 != vzero)
             {
-                // Rows 1 and 2 are linearly independent.
-                P0 = { reps.sub00, -reps.sub01, reps.sub02 };
-                P1 = { reps.a01, reps.a11, reps.a12 };
-                P2 = Cross(P0, P1);
-                return ClassifyZeroRoots1(reps, positiveRoots, P0, P1, P2);
+                w2 = { A(1, 0), A(1, 1), A(1, 2) };
+                w0 = Cross(w1, w2);
+                if (w0 == vzero)
+                {
+                    w2 = { A(2, 0), A(2, 1), A(2, 2) };
+                    w0 = Cross(w1, w2);
+                }
             }
-
-            if (reps.sub01 != zero || reps.sub11 != zero || reps.sub12 != zero)
+            else
             {
-                // Rows 2 and 0 are linearly independent.
-                P0 = { -reps.sub01, reps.sub11, -reps.sub12 };
-                P1 = { reps.a02, reps.a12, reps.a22 };
-                P2 = Cross(P0, P1);
-                return ClassifyZeroRoots1(reps, positiveRoots, P0, P1, P2);
+                w1 = { A(1, 0), A(1, 1), A(1, 2) };
+                w2 = { A(2, 0), A(2, 1), A(2, 2) };
+                w0 = Cross(w1, w2);
             }
-
-            // Rows 0 and 1 are linearly independent.
-            P0 = { reps.sub02, -reps.sub12, reps.sub22 };
-            P1 = { reps.a00, reps.a01, reps.a02 };
-            P2 = Cross(P0, P1);
-            return ClassifyZeroRoots1(reps, positiveRoots, P0, P1, P2);
+            w2 = Cross(w0, w1);
         }
 
-        static Classification ClassifyZeroRoots1(RReps const& reps, int32_t positiveRoots,
-            RVector3 const& P0, RVector3 const& P1, RVector3 const& P2)
+        static Classification TwoNonzero(Matrix3x3<Rational> const& A,
+            Vector3<Rational> const& b, Rational const& c, size_t numPositive, size_t numNegative)
         {
-            Rational const zero(0);
-            Rational e0 = P0[0] * reps.b0 + P0[1] * reps.b1 + P0[2] * reps.b2;
-
-            if (e0 != zero)
+            Vector3<Rational> w0{}, w1{}, w2{};
+            ComputeOrthogonalSetTwoNonzero(A, w0, w1, w2);
+            Rational d0 = Dot(w0, b);
+            if (d0 != Rational(0))
             {
-                if (positiveRoots == 1)
+                if (numPositive == numNegative)
                 {
                     return Classification::HYPERBOLIC_PARABOLOID;
                 }
@@ -535,166 +399,156 @@ namespace gte
                 }
             }
 
-            // Matrix F.
-            Rational f11 = P1[0] * (reps.a00 * P1[0] + reps.a01 * P1[1] +
-                reps.a02 * P1[2]) + P1[1] * (reps.a01 * P1[0] +
-                reps.a11 * P1[1] + reps.a12 * P1[2]) + P1[2] * (
-                reps.a02 * P1[0] + reps.a12 * P1[1] + reps.a22 * P1[2]);
+            Vector3<Rational> Aw1 = A * w1;
+            Vector3<Rational> Aw2 = A * w2;
+            Matrix2x2<Rational> E{};
+            E(0, 0) = Dot(w1, Aw1);
+            E(0, 1) = Dot(w1, Aw2);
+            E(1, 0) = E(0, 1);
+            E(1, 1) = Dot(w2, Aw2);
+            Vector2<Rational> f{ Dot(w1, b) , Dot(w2, b) };
+            Rational r = Dot(f, Inverse(E) * f) / Rational(4) - c;
 
-            Rational f12 = P2[0] * (reps.a00 * P1[0] + reps.a01 * P1[1] +
-                reps.a02 * P1[2]) + P2[1] * (reps.a01 * P1[0] +
-                reps.a11 * P1[1] + reps.a12 * P1[2]) + P2[2] * (
-                reps.a02 * P1[0] + reps.a12 * P1[1] + reps.a22 * P1[2]);
-
-            Rational f22 = P2[0] * (reps.a00 * P2[0] + reps.a01 * P2[1] +
-                reps.a02 * P2[2]) + P2[1] * (reps.a01 * P2[0] +
-                reps.a11 * P2[1] + reps.a12 * P2[2]) + P2[2] * (
-                reps.a02 * P2[0] + reps.a12 * P2[1] + reps.a22 * P2[2]);
-
-            // Vector g.
-            Rational g1 = P1[0] * reps.b0 + P1[1] * reps.b1 + P1[2] * reps.b2;
-            Rational g2 = P2[0] * reps.b0 + P2[1] * reps.b1 + P2[2] * reps.b2;
-
-            // Compute g^T*F^{-1}*g/4 - c.
-            Rational fourDet = Rational(4) * (f11 * f22 - f12 * f12);
-            Rational r = (g1 * (f22 * g1 - f12 * g2) + g2 * (f11 * g2 - f12 * g1)) / fourDet - reps.c;
-
-            if (r > zero)
+            if (numPositive == 2)
             {
-                if (positiveRoots == 2)
+                if (r > Rational(0))
                 {
                     return Classification::ELLIPTIC_CYLINDER;
                 }
-                else if (positiveRoots == 1)
+                else if (r < Rational(0))
                 {
-                    return Classification::HYPERBOLIC_CYLINDER;
+                    return Classification::NO_SOLUTION;
                 }
                 else
                 {
-                    return Classification::NONE;
+                    return Classification::LINE;
                 }
             }
-            else if (r < zero)
+            else if (numNegative == 2)
             {
-                if (positiveRoots == 2)
-                {
-                    return Classification::NONE;
-                }
-                else if (positiveRoots == 1)
-                {
-                    return Classification::HYPERBOLIC_CYLINDER;
-                }
-                else
+                if (r < Rational(0))
                 {
                     return Classification::ELLIPTIC_CYLINDER;
                 }
-            }
-
-            // else r == 0
-            return (positiveRoots == 1 ? Classification::TWO_PLANES : Classification::LINE);
-        }
-
-        static Classification ClassifyZeroRoots2(const RReps& reps, int32_t positiveRoots)
-        {
-            // Generate an orthonormal set {p0,p1,p2}, where p0 and p1 are
-            // eigenvectors of A corresponding to eigenvalue zero.  The vector
-            // p2 is an eigenvector of A corresponding to eigenvalue c2.
-            Rational const zero(0);
-            RVector3 P0, P1, P2;
-
-            if (reps.a00 != zero || reps.a01 != zero || reps.a02 != zero)
-            {
-                // row 0 is not zero
-                P2 = { reps.a00, reps.a01, reps.a02 };
-            }
-            else if (reps.a01 != zero || reps.a11 != zero || reps.a12 != zero)
-            {
-                // row 1 is not zero
-                P2 = { reps.a01, reps.a11, reps.a12 };
-            }
-            else
-            {
-                // row 2 is not zero
-                P2 = { reps.a02, reps.a12, reps.a22 };
-            }
-
-            if (P2[0] != zero)
-            {
-                P1[0] = P2[1];
-                P1[1] = -P2[0];
-                P1[2] = zero;
-            }
-            else
-            {
-                P1[0] = zero;
-                P1[1] = P2[2];
-                P1[2] = -P2[1];
-            }
-            P0 = Cross(P1, P2);
-
-            return ClassifyZeroRoots2(reps, positiveRoots, P0, P1, P2);
-        }
-
-        static Classification ClassifyZeroRoots2(RReps const& reps, int32_t positiveRoots,
-            RVector3 const& P0, RVector3 const& P1, RVector3 const& P2)
-        {
-            Rational const zero(0);
-            Rational e0 = P0[0] * reps.b0 + P0[1] * reps.b1 + P0[2] * reps.b1;
-            if (e0 != zero)
-            {
-                return Classification::PARABOLIC_CYLINDER;
-            }
-
-            Rational e1 = P1[0] * reps.b0 + P1[1] * reps.b1 + P1[2] * reps.b1;
-            if (e1 != zero)
-            {
-                return Classification::PARABOLIC_CYLINDER;
-            }
-
-            Rational f1 = reps.k2 * Dot(P2, P2);
-            Rational e2 = P2[0] * reps.b0 + P2[1] * reps.b1 + P2[2] * reps.b1;
-            Rational r = e2 * e2 / (Rational(4) * f1) - reps.c;
-            if (r > zero)
-            {
-                if (positiveRoots == 1)
+                else if (r > Rational(0))
                 {
-                    return Classification::TWO_PLANES;
+                    return Classification::NO_SOLUTION;
                 }
                 else
                 {
-                    return Classification::NONE;
+                    return Classification::LINE;
                 }
             }
-            else if (r < zero)
+            else  // numPositive = numNegative = 1
             {
-                if (positiveRoots == 1)
+                if (r != Rational(0))
                 {
-                    return Classification::NONE;
+                    return Classification::HYPERBOLIC_CYLINDER;
                 }
                 else
                 {
                     return Classification::TWO_PLANES;
                 }
             }
-
-            // else r == 0
-            return Classification::PLANE;
         }
 
-        static Classification ClassifyZeroRoots3(RReps const& reps)
+        static void ComputeOrthogonalSetOneNonzero(Matrix3x3<Rational> const& A,
+            Vector3<Rational>& w0, Vector3<Rational>& w1, Vector3<Rational>& w2)
         {
-            Rational const zero(0);
-            if (reps.b0 != zero || reps.b1 != zero || reps.b2 != zero)
+            Vector3<Rational> vzero{}; // zero vector
+            w2 = { A(0, 0), A(0, 1), A(0, 2) };
+            if (w2 == vzero)
+            {
+                w2 = { A(1, 0), A(1, 1), A(1, 2) };
+                if (w2 == vzero)
+                {
+                    w2 = { A(2, 0), A(2, 1), A(2, 2) };
+                }
+            }
+
+            if (std::fabs(w2[0]) > std::fabs(w2[1]))
+            {
+                w0 = { -w2[2], Rational(0), w2[0] };
+            }
+            else
+            {
+                w0 = { Rational(0), w2[2], -w2[1] };
+            }
+            w1 = Cross(w2, w0);
+        }
+
+        static Classification OneNonzero(Matrix3x3<Rational> const& A,
+            Vector3<Rational> const& b, Rational const& c, size_t numPositive)
+        {
+            Vector3<Rational> w0{}, w1{}, w2{};
+            ComputeOrthogonalSetOneNonzero(A, w0, w1, w2);
+            Rational d0 = Dot(w0, b);
+            Rational d1 = Dot(w1, b);
+            if (d0 != Rational(0) || d1 != Rational(0))
+            {
+                return Classification::PARABOLIC_CYLINDER;
+            }
+
+            Rational E = Dot(w2, A * w2);
+            Rational f = Dot(w2, b);
+            Rational r = f * f / (Rational(4) * E) - c;
+
+            if (numPositive == 1)  // numNegative = 0
+            {
+                if (r > Rational(0))
+                {
+                    return Classification::TWO_PLANES;
+                }
+                else if (r < Rational(0))
+                {
+                    return Classification::NO_SOLUTION;
+                }
+                else
+                {
+                    return Classification::PLANE;
+                }
+            }
+            else  // numPositive = 0, numNegative = 1
+            {
+                if (r < Rational(0))
+                {
+                    return Classification::TWO_PLANES;
+                }
+                else if (r > Rational(0))
+                {
+                    return Classification::NO_SOLUTION;
+                }
+                else
+                {
+                    return Classification::PLANE;
+                }
+            }
+        }
+
+        static Classification AllZero(Vector3<Rational> const& b, Rational const& c)
+        {
+            Vector3<Rational> vzero{}; // zero vector
+            if (b != vzero)
             {
                 return Classification::PLANE;
             }
-
-            return Classification::NONE;
+            else
+            {
+                if (c == Rational(0))
+                {
+                    return Classification::ENTIRE_SPACE;
+                }
+                else
+                {
+                    return Classification::NO_SOLUTION;
+                }
+            }
         }
 
-        std::array<Real, 10> mCoefficient;
-        Real mC;
-        Vector3<Real> mB;
-        Matrix3x3<Real> mA;
+        // Floating-point quadratic coefficients.
+        mutable Classification mClassification;
+        Matrix3x3<T> mA;
+        Vector3<T> mB;
+        T mC;
     };
 }
