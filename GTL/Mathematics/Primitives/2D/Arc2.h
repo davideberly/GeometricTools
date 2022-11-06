@@ -3,15 +3,15 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.05.19
+// File Version: 2022.11.06
 
 #pragma once
 
-// The circle containing the arc is represented as |X-C| = R where C is the
-// center and R is the radius. The arc is defined by two points end0 and
-// end1 on the circle so that end1 is obtained from end0 by traversing
-// counterclockwise. The application is responsible for ensuring that end0
-// and end1 are on the circle and that they are properly ordered.
+// The circle containing the arc is represented as |X-C| = r where C is the
+// center and r is the radius. The arc is defined by two points E0 and E1 on
+// the circle so that E1 is obtained from E0 by traversing counterclockwise.
+// The application is responsible for ensuring that E0 and E1 are on the
+// circle and that they are properly ordered.
 
 #include <GTL/Mathematics/Algebra/Vector.h>
 #include <array>
@@ -43,23 +43,39 @@ namespace gtl
         {
         }
 
-        // Test whether P is on the arc. The application must ensure that P
-        // is on the circle; that is, |P-C| = R. A point-on-circle test is
-        // not used here because floating-point rounding errors will usually
-        // prevent exact equality of |P-C| and R. This test works for any
-        // angle between end1-C and end0-C, not just those between 0 and pi
-        // radians.
-        bool Contains(Vector2<T> const& p) const
+        // Test whether P is on the arc.
+        // 
+        // Formulated for real arithmetic, |P-C| - r = 0 is necessary for P to
+        // be on the circle of the arc. If P is on the circle, then P is on
+        // the arc from E0 to E1 when it is on the side of the line containing
+        // E0 with normal Perp(E1-E0) where Perp(u,v) = (v,-u). This test
+        // works for any angle between E0-C and E1-C, even if the angle is
+        // larger or equal to pi radians.
+        //
+        // Formulated for floating-point or rational types, rounding errors
+        // cause |P-C| - r rarely to be 0 when P is on (or numerically near)
+        // the circle. To allow for this, choose a small and nonnegative
+        // tolerance epsilon. The test concludes that P is on the circle when
+        // ||P-C| - r| <= epsilon;otherwise, P is not on the circle. If P is
+        // on the circle (in the epsilon-tolerance sense), the side-of-line
+        // test of the previous/ paragraph is applied.
+        bool Contains(Vector2<T> const& P, T const& epsilon) const
         {
-            // Assert: |P-C| = R where P is the input point, C is the circle
-            // center and R is the circle radius. For P to be on the arc from
-            // A to B, it must be on the side of the plane containing A with
-            // normal N = Perp(B-A) where Perp(u,v) = (v,-u).
-            Vector2<T> PmC = p - center;
-            Vector2<T> diffPE0 = p - end[0];
-            Vector2<T> diffE1E0 = end[1] - end[0];
-            T dotPerp = DotPerp(diffPE0, diffE1E0);
-            return dotPerp >= C_<T>(0);
+            // If epsilon is negative, function returns false. Please ensure
+            // epsilon is nonnegative.
+
+            T length = Length(P - center);
+            if (std::fabs(length - radius) <= epsilon)
+            {
+                Vector2<T> diffPE0 = P - end[0];
+                Vector2<T> diffE1E0 = end[1] - end[0];
+                T dotPerp = DotPerp(diffPE0, diffE1E0);
+                return dotPerp >= C_<T>(0);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         Vector2<T> center;
