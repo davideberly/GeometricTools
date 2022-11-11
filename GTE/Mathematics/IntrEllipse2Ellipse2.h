@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.11.04
+// Version: 6.0.2022.11.11
 
 #pragma once
 
@@ -689,19 +689,9 @@ namespace gte
                 mC[2] * d4d4 + e2e2  // > 0
             };
 
-            // For T = BSRational<UIntegerAP32>, the number of words used in
-            // SolveQuartic is large, which leads to poor performance. The root
-            // finder has numerical rounding errors, even with rational type T,
-            // so convert f[] to 'double' and re-convert to 'T' to reduce the
-            // number of words. This will introduce some more rounding errors,
-            // but hopefully not so much to significantly alter the results.
-            for (size_t i = 0; i < 5; ++i)
-            {
-                f[i] = static_cast<double>(f[i]);
-            }
-
             std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3], f[4], rmMap);
+            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2],
+                f[3], f[4], rmMap);
 
             // xbar cannot be a root of f(x), so d(x) != 0 and we can solve
             // directly for w = -e(x)/d(x).
@@ -754,17 +744,6 @@ namespace gte
                 mC[2] + h[1] * h[1]  // > 0
             };
 
-            // For T = BSRational<UIntegerAP32>, the number of words used in
-            // SolveQuadratic is large, which leads to poor performance. The root
-            // finder has numerical rounding errors, even with rational type T,
-            // so convert f[] to 'double' and re-convert to 'T' to reduce the
-            // number of words. This will introduce some more rounding errors,
-            // but hopefully not so much to significantly alter the results.
-            for (size_t i = 0; i < 3; ++i)
-            {
-                f[i] = static_cast<double>(f[i]);
-            }
-
             std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
             for (auto const& rm : rmMap)
@@ -790,19 +769,9 @@ namespace gte
                 mE[2] * mE[2]  // > 0
             };
 
-            // For T = BSRational<UIntegerAP32>, the number of words used in
-            // SolveQuartic is large, which leads to poor performance. The root
-            // finder has numerical rounding errors, even with rational type T,
-            // so convert f[] to 'double' and re-convert to 'T' to reduce the
-            // number of words. This will introduce some more rounding errors,
-            // but hopefully not so much to significantly alter the results.
-            for (size_t i = 0; i < 5; ++i)
-            {
-                f[i] = static_cast<double>(f[i]);
-            }
-
             std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3], f[4], rmMap);
+            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3],
+                f[4], rmMap);
             for (auto const& rm : rmMap)
             {
                 T const& x = rm.first;
@@ -823,17 +792,6 @@ namespace gte
                 mC[1] * d2d2 + mTwo * mE[0] * mE[1],
                 mC[2] * d2d2 + mE[1] * mE[1]
             };
-
-            // For T = BSRational<UIntegerAP32>, the number of words used in
-            // SolveQuadratic is large, which leads to poor performance. The root
-            // finder has numerical rounding errors, even with rational type T,
-            // so convert f[] to 'double' and re-convert to 'T' to reduce the
-            // number of words. This will introduce some more rounding errors,
-            // but hopefully not so much to significantly alter the results.
-            for (size_t i = 0; i < 3; ++i)
-            {
-                f[i] = static_cast<double>(f[i]);
-            }
 
             std::map<T, int32_t> rmMap;
             RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
