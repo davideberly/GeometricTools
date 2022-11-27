@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.11.27
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -1832,6 +1832,7 @@ void DX11Engine::CopyBackBuffer(std::shared_ptr<Texture2>& texture)
         source += subresource.RowPitch;
         target += pitch;
     }
+    mImmediate->Unmap(mBackBufferStaging, 0);
 }
 
 uint64_t DX11Engine::DrawPrimitive(std::shared_ptr<VertexBuffer> const& vbuffer,
