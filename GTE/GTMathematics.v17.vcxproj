@@ -124,6 +124,8 @@
     <ClInclude Include="Mathematics\DistPlane3AlignedBox3.h" />
     <ClInclude Include="Mathematics\DistPlane3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistPoint2Arc2.h" />
+    <ClInclude Include="Mathematics\DistPoint2Circle2.h" />
     <ClInclude Include="Mathematics\DistPointCanonicalBox.h" />
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />

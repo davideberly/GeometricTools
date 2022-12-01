@@ -1536,5 +1536,20 @@
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h">
       <Filter>CurvesSurfacesVolumes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\VETManifoldMeshNR.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint2Arc2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint2Circle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h">
+      <Filter>Containment</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1545,5 +1545,11 @@
     <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h">
       <Filter>Containment</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint2Circle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint2Arc2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

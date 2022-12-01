@@ -81,6 +81,7 @@
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />
     <ClInclude Include="Mathematics\ConstrainedDelaunay2.h" />
     <ClInclude Include="Mathematics\ContAlignedBox.h" />
+    <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h" />
     <ClInclude Include="Mathematics\ContCapsule3.h" />
     <ClInclude Include="Mathematics\ContCircle2.h" />
     <ClInclude Include="Mathematics\ContCone.h" />
@@ -123,6 +124,8 @@
     <ClInclude Include="Mathematics\DistPlane3AlignedBox3.h" />
     <ClInclude Include="Mathematics\DistPlane3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistPoint2Arc2.h" />
+    <ClInclude Include="Mathematics\DistPoint2Circle2.h" />
     <ClInclude Include="Mathematics\DistPointCanonicalBox.h" />
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />
@@ -350,6 +353,7 @@
     <ClInclude Include="Mathematics\IntrSphere3Frustum3.h" />
     <ClInclude Include="Mathematics\IntrSphere3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrSphere3Triangle3.h" />
+    <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\IntrTriangle2Triangle2.h" />
     <ClInclude Include="Mathematics\IntrTriangle3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrTriangle3OrientedBox3.h" />
@@ -445,6 +449,7 @@
     <ClInclude Include="Mathematics\VEManifoldMesh.h" />
     <ClInclude Include="Mathematics\VertexAttribute.h" />
     <ClInclude Include="Mathematics\VETManifoldMesh.h" />
+    <ClInclude Include="Mathematics\VETManifoldMeshNR.h" />
     <ClInclude Include="Mathematics\VETNonmanifoldMesh.h" />
     <ClInclude Include="Mathematics\GVector.h" />
     <ClInclude Include="Mathematics\IEEEBinary.h" />
