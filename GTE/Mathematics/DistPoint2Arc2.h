@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.5.2022.12.01
+// Version: 6.5.2022.12.02
 
 #pragma once
 
@@ -64,11 +64,9 @@ namespace gte
                     Vector2<T> diff1 = arc.end[1] - point;
                     T sqrLength0 = Dot(diff0, diff0);
                     T sqrLength1 = Dot(diff1, diff1);
-                    T length0 = std::sqrt(sqrLength0);
-                    T length1 = std::sqrt(sqrLength1);
-                    if (length0 <= length1)
+                    if (sqrLength0 <= sqrLength1)
                     {
-                        result.distance = length0;
+                        result.distance = std::sqrt(sqrLength0);
                         result.sqrDistance = sqrLength0;
                         result.closest[0] = point;
                         result.closest[1] = arc.end[0];
@@ -76,7 +74,7 @@ namespace gte
                     }
                     else
                     {
-                        result.distance = length1;
+                        result.distance = std::sqrt(sqrLength1);
                         result.sqrDistance = sqrLength1;
                         result.closest[0] = point;
                         result.closest[1] = arc.end[1];
