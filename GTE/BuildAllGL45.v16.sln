@@ -351,6 +351,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinningGL45.v16", "Samples
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMapsGL45.v16", "Samples\Graphics\ShadowMaps\ShadowMapsGL45.v16.vcxproj", "{9BA5B41A-A872-4238-AF1F-CB033D8CD01E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectRayPolygonGL45.v16", "Samples\Intersection\IntersectRayPolygon\IntersectRayPolygonGL45.v16.vcxproj", "{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1671,6 +1673,14 @@ Global
 		{9BA5B41A-A872-4238-AF1F-CB033D8CD01E}.Release|x64.Build.0 = Release|x64
 		{9BA5B41A-A872-4238-AF1F-CB033D8CD01E}.Release|x86.ActiveCfg = Release|Win32
 		{9BA5B41A-A872-4238-AF1F-CB033D8CD01E}.Release|x86.Build.0 = Release|Win32
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Debug|x64.ActiveCfg = Debug|x64
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Debug|x64.Build.0 = Debug|x64
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Debug|x86.ActiveCfg = Debug|Win32
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Debug|x86.Build.0 = Debug|Win32
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x64.ActiveCfg = Release|x64
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x64.Build.0 = Release|x64
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x86.ActiveCfg = Release|Win32
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1848,6 +1858,7 @@ Global
 		{F3EFBD27-AE70-47F1-9982-A18FCD6D73F3} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
 		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
 		{9BA5B41A-A872-4238-AF1F-CB033D8CD01E} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
+		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9749CC5-26A0-494D-8B40-181E82654FD5}

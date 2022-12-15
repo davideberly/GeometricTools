@@ -1551,5 +1551,17 @@
     <ClInclude Include="Mathematics\DistPoint2Arc2.h">
       <Filter>Distance\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\SegmentMesh.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrSegment2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrRay2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrLine2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

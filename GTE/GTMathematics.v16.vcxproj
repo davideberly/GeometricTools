@@ -290,6 +290,7 @@
     <ClInclude Include="Mathematics\IntrLine2OrientedBox2.h" />
     <ClInclude Include="Mathematics\IntrLine2Ray2.h" />
     <ClInclude Include="Mathematics\IntrLine2Segment2.h" />
+    <ClInclude Include="Mathematics\IntrLine2SegmentMesh2.h" />
     <ClInclude Include="Mathematics\IntrLine2Triangle2.h" />
     <ClInclude Include="Mathematics\IntrLine3AlignedBox3.h" />
     <ClInclude Include="Mathematics\IntrLine3Capsule3.h" />
@@ -324,6 +325,7 @@
     <ClInclude Include="Mathematics\IntrRay2OrientedBox2.h" />
     <ClInclude Include="Mathematics\IntrRay2Ray2.h" />
     <ClInclude Include="Mathematics\IntrRay2Segment2.h" />
+    <ClInclude Include="Mathematics\IntrRay2SegmentMesh2.h" />
     <ClInclude Include="Mathematics\IntrRay2Triangle2.h" />
     <ClInclude Include="Mathematics\IntrRay3AlignedBox3.h" />
     <ClInclude Include="Mathematics\IntrRay3Capsule3.h" />
@@ -339,6 +341,7 @@
     <ClInclude Include="Mathematics\IntrSegment2Circle2.h" />
     <ClInclude Include="Mathematics\IntrSegment2OrientedBox2.h" />
     <ClInclude Include="Mathematics\IntrSegment2Segment2.h" />
+    <ClInclude Include="Mathematics\IntrSegment2SegmentMesh2.h" />
     <ClInclude Include="Mathematics\IntrSegment2Triangle2.h" />
     <ClInclude Include="Mathematics\IntrSegment3AlignedBox3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Capsule3.h" />
@@ -418,6 +421,7 @@
     <ClInclude Include="Mathematics\RotationEstimate.h" />
     <ClInclude Include="Mathematics\Sector2.h" />
     <ClInclude Include="Mathematics\Segment.h" />
+    <ClInclude Include="Mathematics\SegmentMesh.h" />
     <ClInclude Include="Mathematics\SinEstimate.h" />
     <ClInclude Include="Mathematics\SingularValueDecomposition.h" />
     <ClInclude Include="Mathematics\SlerpEstimate.h" />

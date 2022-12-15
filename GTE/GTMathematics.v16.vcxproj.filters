@@ -1551,5 +1551,17 @@
     <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\SegmentMesh.h">
+      <Filter>Primitives\ND</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrLine2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrSegment2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrRay2SegmentMesh2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
