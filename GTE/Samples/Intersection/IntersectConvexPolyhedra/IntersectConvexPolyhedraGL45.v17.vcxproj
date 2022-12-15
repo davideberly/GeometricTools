@@ -179,6 +179,7 @@
     <ClCompile Include="IntersectConvexPolyhedraMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConvexPolyhedron.h" />
     <ClInclude Include="IntersectConvexPolyhedraWindow3.h" />
     <ClInclude Include="MTEdge.h" />
     <ClInclude Include="MTMesh.h" />
