@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.10
+// Version: 6.1.2022.12.14
 
 #pragma once
 
@@ -41,6 +41,4 @@ private:
     Vector2<double> GetVFPosition(double dTime);
     double mR, mA0, mA1, mB0, mB1, mB2;
     std::vector<Vector2<double>> mVFPositions;  // path with viscous friction
-
-    int32_t mSize;
 };

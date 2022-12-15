@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.12.14
 
 #pragma once
 
@@ -874,7 +874,7 @@ private:
         {
             // Compute signed distances from vertices to plane.
             gte::DCPQuery<Real, gte::Vector3<Real>, gte::Plane3<Real>> query;
-            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            int32_t numPositive = 0, numNegative = 0;
             for (auto& vertex : mVertices)
             {
                 if (vertex.visible)
@@ -893,7 +893,6 @@ private:
                     {
                         // The point is on the plane (within floating point
                         // tolerance).
-                        ++numZero;
                         vertex.distance = (Real)0;
                     }
                 }

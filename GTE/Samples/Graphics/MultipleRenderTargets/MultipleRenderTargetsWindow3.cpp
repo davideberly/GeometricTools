@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.12.14
 
 #include "MultipleRenderTargetsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -103,8 +103,8 @@ void MultipleRenderTargetsWindow3::OnIdle()
     ID3D11Resource* dstStaging = dstTexture->GetStagingResource();
     context->CopySubresourceRegion(srcStaging, 0, 0, 0, 0, srcResource, 0, nullptr);
     D3D11_MAPPED_SUBRESOURCE srcSub, dstSub;
-    HRESULT hr = context->Map(srcStaging, 0, D3D11_MAP_READ, 0, &srcSub);
-    hr = context->Map(dstStaging, 0, D3D11_MAP_WRITE, 0, &dstSub);
+    context->Map(srcStaging, 0, D3D11_MAP_READ, 0, &srcSub);
+    context->Map(dstStaging, 0, D3D11_MAP_WRITE, 0, &dstSub);
     std::memcpy(dstSub.pData, srcSub.pData, dsTexture->GetNumBytes());
     context->Unmap(srcStaging, 0);
     context->Unmap(dstStaging, 0);

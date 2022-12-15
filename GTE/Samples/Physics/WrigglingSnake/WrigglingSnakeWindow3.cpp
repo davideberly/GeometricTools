@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.11
+// Version: 6.1.2022.12.14
 
 #include "WrigglingSnakeWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -219,12 +219,11 @@ void WrigglingSnakeWindow3::CreateSnakeHead()
     uint32_t numTriangles = numRays * (2 * numShellsM1 - 1);
     auto ibuffer = std::make_shared<IndexBuffer>(IPType::IP_TRIMESH, numTriangles, sizeof(uint32_t));
     auto* indices = ibuffer->Get<uint32_t>();
-    for (uint32_t r0 = numRays - 1, r1 = 0, t = 0; r1 < numRays; r0 = r1++)
+    for (uint32_t r0 = numRays - 1, r1 = 0; r1 < numRays; r0 = r1++)
     {
         *indices++ = 0;
         *indices++ = 1 + numShellsM1 * r0;
         *indices++ = 1 + numShellsM1 * r1;
-        ++t;
         for (uint32_t s = 1; s < numShellsM1; ++s)
         {
             uint32_t i00 = s + numShellsM1 * r0;
@@ -237,7 +236,6 @@ void WrigglingSnakeWindow3::CreateSnakeHead()
             *indices++ = i00;
             *indices++ = i11;
             *indices++ = i01;
-            t += 2;
         }
     }
 

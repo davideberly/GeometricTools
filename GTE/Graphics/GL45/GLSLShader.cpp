@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.12.14
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLSLShader.h>
@@ -262,7 +262,6 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
         // Store information needed by GL4Engine for enabling/disabling the
         // structured buffers.
-        int32_t blockIndex = 0;
         int32_t layoutIndex = 0;
         for (auto const& block : bufferBlocks)
         {
@@ -346,8 +345,6 @@ GLSLShader::GLSLShader(GLSLReflection const& reflector, GraphicsObjectType type,
 
                 ++layoutIndex;
             }
-
-            ++blockIndex;
         }
     }
 }

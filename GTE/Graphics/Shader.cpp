@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2022.12.14
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Shader.h>
@@ -46,14 +46,12 @@ uint32_t Shader::GetConstantBufferSize(int32_t handle) const
 
 uint32_t Shader::GetConstantBufferSize(std::string const& name) const
 {
-    int32_t handle = 0;
     for (auto& data : mData[ConstantBuffer::shaderDataLookup])
     {
         if (name == data.name)
         {
             return data.numBytes;
         }
-        ++handle;
     }
     LogError("Cannot find object " + name + ".");
 }
@@ -68,14 +66,12 @@ uint32_t Shader::GetTextureBufferSize(int32_t handle) const
 
 uint32_t Shader::GetTextureBufferSize(std::string const& name) const
 {
-    int32_t handle = 0;
     for (auto& data : mData[TextureBuffer::shaderDataLookup])
     {
         if (name == data.name)
         {
             return data.numBytes;
         }
-        ++handle;
     }
     LogError("Cannot find object " + name + ".");
 }
@@ -90,14 +86,12 @@ uint32_t Shader::GetStructuredBufferSize(int32_t handle) const
 
 uint32_t Shader::GetStructuredBufferSize(std::string const& name) const
 {
-    int32_t handle = 0;
     for (auto& data : mData[StructuredBuffer::shaderDataLookup])
     {
         if (name == data.name)
         {
             return data.numBytes;
         }
-        ++handle;
     }
     LogError("Cannot find object " + name + ".");
 }
