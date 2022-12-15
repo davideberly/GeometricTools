@@ -108,10 +108,10 @@ void FindSource(std::string const& toolset)
 
             std::string name(fileInfo.name);
             std::string suffix(ext);
-            auto projectV16Ext = name.find(".v16.vcxproj");
+            auto projectV16Ext = name.find(".v17.vcxproj");
             if (projectV16Ext != std::string::npos && suffix == ".vcxproj")
             {
-                if (name != "ChangePlatformToolset.v16.vcxproj")
+                if (name != "ChangePlatformToolset.v17.vcxproj")
                 {
                     Modify(name, toolset);
                 }
