@@ -10,6 +10,74 @@ using namespace gte;
 
 // sizeof(BSNumber<UIntegerFP32<N>>) = 4 * (N + 4)
 
+// SumOfTwoSquares
+// RotatingCalipersAngle
+//
+// PrimalQuery2Determinant2
+// PrimalQuery2Determinant3
+// PrimalQuery2Determinant4
+// PrimalQuery2ToLine
+// PrimalQuery2ToCircumcircle
+// PrimalQuery2ConstrainedDelaunayComputePSD
+// PrimalQuery2Delaunay2Plane
+// PrimalQuery2BarycentricCoordinates (rational only)
+//
+// PrimalQuery3ToPlane
+// PrimalQuery3ToCircumsphere
+// PrimalQuery3Colinear
+// PrimalQuery3Coplanar
+
+int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
+{
+    // z = x * x + y * y
+    BSPrecision u(type);
+    BSPrecision product = u * u;
+    BSPrecision sum = product + product;
+    return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
+}
+
+int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
+{
+    //Rational const zero = static_cast<Rational>(0);
+    //Rational dot0 = Dot(D0[0], D0[1]);
+    //Rational dot1 = Dot(D1[0], D1[1]);
+
+    //if (dot0 >= zero)
+    //{
+    //    // angle0 in (0,pi/2]
+    //    if (dot1 < zero)
+    //    {
+    //        // angle1 in (pi/2,pi), so angle0 < angle1
+    //        return true;
+    //    }
+
+    //    // angle1 in (0,pi/2], sin^2(angle) is increasing function
+    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
+    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
+    //    return dot0 * dot0 * sqrLen11 > dot1 * dot1 * sqrLen00;
+    //}
+    //else
+    //{
+    //    // angle0 in (pi/2,pi)
+    //    if (dot1 >= zero)
+    //    {
+    //        // angle1 in (0,pi/2], so angle1 < angle0
+    //        return false;
+    //    }
+
+    //    // angle1 in (pi/2,pi), sin^2(angle) is decreasing function
+    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
+    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
+    //    return dot0 * dot0 * sqrLen11 < dot1 * dot1* sqrLen00;
+    //}
+
+    BSPrecision x(type), y(type);
+    BSPrecision diff = x - y;
+    BSPrecision dot = diff * diff + diff * diff;
+    BSPrecision sqrSinAngle = dot * dot * dot;
+    return (forBSNumber ? sqrSinAngle.bsn.maxWords : sqrSinAngle.bsr.maxWords);
+}
+
 int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
 {
     // Real det2 = a00 * a11 - a01 * a10
@@ -166,6 +234,141 @@ int PrimalQuery2ToCircumcircle(BSPrecision::Type type, bool forBSNumber)
     // det
     BSPrecision add4 = add3 + mul2;
     return (forBSNumber ? add4.bsn.maxWords : add4.bsr.maxWords);
+}
+
+int PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type type, bool forBSNumber)
+{
+    // Precompute some common values that are used in all calls
+    // to ComputePSD.
+    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
+    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
+    //Vector2<ComputeType> V1mV0 = ctv1 - ctv0;
+    //ComputeType sqrlen10 = Dot(V1mV0, V1mV0);
+    // :
+    //ComputeType const zero = static_cast<ComputeType>(0);
+    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
+    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
+    //Vector2<ComputeType> const& ctv2 = this->mComputeVertices[v2];
+    //Vector2<ComputeType> V2mV0 = ctv2 - ctv0;
+    //ComputeType dot1020 = Dot(V1mV0, V2mV0);
+    //ComputeType psd;
+    //if (dot1020 <= zero)
+    //{
+    //    ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
+    //    psd = sqrlen10 * sqrlen20;
+    //}
+    //else
+    //{
+    //    Vector2<ComputeType> V2mV1 = ctv2 - ctv1;
+    //    ComputeType dot1021 = Dot(V1mV0, V2mV1);
+    //    if (dot1021 >= zero)
+    //    {
+    //        ComputeType sqrlen21 = Dot(V2mV1, V2mV1);
+    //        psd = sqrlen10 * sqrlen21;
+    //    }
+    //    else
+    //    {
+    //        ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
+    //        psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
+    //    }
+    //}
+    //return psd;
+
+    // The longest computational path is
+    // psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
+    BSPrecision u(type);
+    BSPrecision vdiff = u * u - u * u;
+    BSPrecision dotvdiff = vdiff * vdiff + vdiff * vdiff;
+    BSPrecision psd = dotvdiff * dotvdiff - dotvdiff * dotvdiff;
+    return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
+}
+
+int PrimalQuery2DelaunayToPlane(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real x0 = P[0] - V0[0];
+    // Real y0 = P[1] - V0[1];
+    // Real z0 = P[2] - V0[2];
+    // Real x1 = V1[0] - V0[0];
+    // Real y1 = V1[1] - V0[1];
+    // Real z1 = V1[2] - V0[2];
+    // Real x2 = V2[0] - V0[0];
+    // Real y2 = V2[1] - V0[1];
+    // Real z2 = V2[2] - V0[2];
+    // [det = z0*(x1*y2-x2*y1) + z1*(x2*y0-x0*y2) + z2*(x0*y1-x1*y0)]
+    // Real x1y2 = x1*y2;
+    // Real x2y1 = x2*y1;
+    // Real x2y0 = x2*y0;
+    // Real x0y2 = x0*y2;
+    // Real x0y1 = x0*y1;
+    // Real x1y0 = x1*y0;
+    // Real c0 = x1y2 - x2y1;
+    // Real c1 = x2y0 - x0y2;
+    // Real c2 = x0y1 - x1y0;
+    // Real z0c0 = z0*c0;
+    // Real z1c1 = z1*c1;
+    // Real z2c2 = z2*c2;
+    // Real term = z0c0 + z1c1;
+    // Real det = term + z2c2;
+
+    // P[0], P[1], V0[0], V0[1], V1[0], V1[1], V2[0], V2[1]
+    BSPrecision x(type), y(type);
+
+    // P[2], V0[2], V1[2], V2[2]
+    BSPrecision xx = x * x, yy = y * y;
+    BSPrecision z = xx + yy;
+
+    // x0, y0, x1, y1, x2, y2
+    BSPrecision xSub = x - x, ySub = y - y;
+
+    // z0, z1, z2
+    BSPrecision zSub = z - z;
+
+    // x1y2, x2y1, x2y0, x0y2, x0y1, x1y0
+    BSPrecision mul0 = xSub * ySub;
+
+    // c0, c1, c2
+    BSPrecision subXYXY = mul0 - mul0;
+
+    // z0c0, z1c1, z2c2
+    BSPrecision mul1 = zSub * subXYXY;
+
+    // term
+    BSPrecision add0 = mul1 + mul1;
+
+    // det
+    BSPrecision add1 = add0 + mul1;
+    return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
+}
+
+int PrimalQuery2BarycentricCoordinates(BSPrecision::Type type)
+{
+    // bool ComputeBarycentric(Vector2<T> const& p, Vector2<T> const& v0,
+    //     Vector2<T> const& v1, Vector2<T> const& v2, std::array<T, 3>& bary);
+    // 
+    // std::array<Vector2<T>, 3> diff = { v0 - v2, v1 - v2, p - v2 }
+    // T det = DotPerp(diff[0], diff[1]);
+    // if (det != 0)
+    // {
+    //     bary[0] = DotPerp(diff[2], diff[1]) / det;
+    //     bary[1] = DotPerp(diff[0], diff[2]) / det;
+    //     bary[2] = 1 - bary[0] - bary[1];
+    //     return true;
+    // }
+    // bary.fill(0);
+    // return false;
+
+    // compute diff[] components
+    BSPrecision u(type);
+    BSPrecision sub0 = u - u;
+    // DotPerp(diff[i], diff[j]), [det when i = 0, j = 1]
+    BSPrecision dotperp0 = sub0 * sub0 - sub0 * sub0;
+    // det - DotPerp(diff[0], diff[2])
+    BSPrecision sub1 = dotperp0 - dotperp0;
+    // (det - DotPerp(diff[2], diff[1])) - DotPerp(diff[0], diff[2])
+    BSPrecision sub2 = sub1 - dotperp0;
+    // bary = (sub/det, sub/det, sub/det)
+    BSPrecision bary = sub2 / dotperp0;
+    return bary.bsr.maxWords;
 }
 
 int PrimalQuery3ToPlane(BSPrecision::Type type, bool forBSNumber)
@@ -346,53 +549,6 @@ int PrimalQuery3ToCircumsphere(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add9.bsn.maxWords : add9.bsr.maxWords);
 }
 
-int ConstrainedDelaunay2ComputePSD(BSPrecision::Type type, bool forBSNumber)
-{
-    // Precompute some common values that are used in all calls
-    // to ComputePSD.
-    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
-    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
-    //Vector2<ComputeType> V1mV0 = ctv1 - ctv0;
-    //ComputeType sqrlen10 = Dot(V1mV0, V1mV0);
-    // :
-    //ComputeType const zero = static_cast<ComputeType>(0);
-    //Vector2<ComputeType> const& ctv0 = this->mComputeVertices[v0];
-    //Vector2<ComputeType> const& ctv1 = this->mComputeVertices[v1];
-    //Vector2<ComputeType> const& ctv2 = this->mComputeVertices[v2];
-    //Vector2<ComputeType> V2mV0 = ctv2 - ctv0;
-    //ComputeType dot1020 = Dot(V1mV0, V2mV0);
-    //ComputeType psd;
-    //if (dot1020 <= zero)
-    //{
-    //    ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
-    //    psd = sqrlen10 * sqrlen20;
-    //}
-    //else
-    //{
-    //    Vector2<ComputeType> V2mV1 = ctv2 - ctv1;
-    //    ComputeType dot1021 = Dot(V1mV0, V2mV1);
-    //    if (dot1021 >= zero)
-    //    {
-    //        ComputeType sqrlen21 = Dot(V2mV1, V2mV1);
-    //        psd = sqrlen10 * sqrlen21;
-    //    }
-    //    else
-    //    {
-    //        ComputeType sqrlen20 = Dot(V2mV0, V2mV0);
-    //        psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
-    //    }
-    //}
-    //return psd;
-
-    // The longest computational path is
-    // psd = sqrlen10 * sqrlen20 - dot1020 * dot1020;
-    BSPrecision u(type);
-    BSPrecision vdiff = u * u - u * u;
-    BSPrecision dotvdiff = vdiff * vdiff + vdiff * vdiff;
-    BSPrecision psd = dotvdiff * dotvdiff - dotvdiff * dotvdiff;
-    return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
-}
-
 int PrimalQuery3Colinear(BSPrecision::Type type, bool forBSNumber)
 {
     // delta1 = v1 - v0
@@ -423,118 +579,20 @@ int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
 }
 
-int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
-{
-    // z = x * x + y * y
-    BSPrecision u(type);
-    BSPrecision product = u * u;
-    BSPrecision sum = product + product;
-    return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
-}
-
-int Delaunay2ToPlane(BSPrecision::Type type, bool forBSNumber)
-{
-    // Real x0 = P[0] - V0[0];
-    // Real y0 = P[1] - V0[1];
-    // Real z0 = P[2] - V0[2];
-    // Real x1 = V1[0] - V0[0];
-    // Real y1 = V1[1] - V0[1];
-    // Real z1 = V1[2] - V0[2];
-    // Real x2 = V2[0] - V0[0];
-    // Real y2 = V2[1] - V0[1];
-    // Real z2 = V2[2] - V0[2];
-    // [det = z0*(x1*y2-x2*y1) + z1*(x2*y0-x0*y2) + z2*(x0*y1-x1*y0)]
-    // Real x1y2 = x1*y2;
-    // Real x2y1 = x2*y1;
-    // Real x2y0 = x2*y0;
-    // Real x0y2 = x0*y2;
-    // Real x0y1 = x0*y1;
-    // Real x1y0 = x1*y0;
-    // Real c0 = x1y2 - x2y1;
-    // Real c1 = x2y0 - x0y2;
-    // Real c2 = x0y1 - x1y0;
-    // Real z0c0 = z0*c0;
-    // Real z1c1 = z1*c1;
-    // Real z2c2 = z2*c2;
-    // Real term = z0c0 + z1c1;
-    // Real det = term + z2c2;
-
-    // P[0], P[1], V0[0], V0[1], V1[0], V1[1], V2[0], V2[1]
-    BSPrecision x(type), y(type);
-
-    // P[2], V0[2], V1[2], V2[2]
-    BSPrecision xx = x * x, yy = y * y;
-    BSPrecision z = xx + yy;
-
-    // x0, y0, x1, y1, x2, y2
-    BSPrecision xSub = x - x, ySub = y - y;
-
-    // z0, z1, z2
-    BSPrecision zSub = z - z;
-
-    // x1y2, x2y1, x2y0, x0y2, x0y1, x1y0
-    BSPrecision mul0 = xSub * ySub;
-
-    // c0, c1, c2
-    BSPrecision subXYXY = mul0 - mul0;
-
-    // z0c0, z1c1, z2c2
-    BSPrecision mul1 = zSub * subXYXY;
-
-    // term
-    BSPrecision add0 = mul1 + mul1;
-
-    // det
-    BSPrecision add1 = add0 + mul1;
-    return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
-}
-
-int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
-{
-    //Rational const zero = static_cast<Rational>(0);
-    //Rational dot0 = Dot(D0[0], D0[1]);
-    //Rational dot1 = Dot(D1[0], D1[1]);
-
-    //if (dot0 >= zero)
-    //{
-    //    // angle0 in (0,pi/2]
-    //    if (dot1 < zero)
-    //    {
-    //        // angle1 in (pi/2,pi), so angle0 < angle1
-    //        return true;
-    //    }
-
-    //    // angle1 in (0,pi/2], sin^2(angle) is increasing function
-    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
-    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
-    //    return dot0 * dot0 * sqrLen11 > dot1 * dot1 * sqrLen00;
-    //}
-    //else
-    //{
-    //    // angle0 in (pi/2,pi)
-    //    if (dot1 >= zero)
-    //    {
-    //        // angle1 in (0,pi/2], so angle1 < angle0
-    //        return false;
-    //    }
-
-    //    // angle1 in (pi/2,pi), sin^2(angle) is decreasing function
-    //    Rational sqrLen00 = Dot(D0[0], D0[0]);
-    //    Rational sqrLen11 = Dot(D1[1], D1[1]);
-    //    return dot0 * dot0 * sqrLen11 < dot1 * dot1* sqrLen00;
-    //}
-
-    BSPrecision x(type), y(type);
-    BSPrecision diff = x - y;
-    BSPrecision dot = diff * diff + diff * diff;
-    BSPrecision sqrSinAngle = dot * dot * dot;
-    return (forBSNumber ? sqrSinAngle.bsn.maxWords : sqrSinAngle.bsr.maxWords);
-}
-
 int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
     int32_t bsRationalFloatWords, bsRationalDoubleWords;
+
+    bsNumberFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, false);  // 35
+    bsRationalDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, false);  // 263
+
+    bsNumberFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, true);  // 53
+    bsNumberDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, true);  // 394
+    bsRationalFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, false);  // 209
+    bsRationalDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, false);  // 1574
 
     bsNumberFloatWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_DOUBLE, true);  // 132
@@ -561,6 +619,19 @@ int main()
     bsRationalFloatWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_FLOAT, false);  // 573
     bsRationalDoubleWords = PrimalQuery2ToCircumcircle(BSPrecision::Type::IS_DOUBLE, false);  // 4329
 
+    bsNumberFloatWords = PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type::IS_FLOAT, true);  // 70
+    bsNumberDoubleWords = PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type::IS_DOUBLE, true);  // 525
+    bsRationalFloatWords = PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type::IS_FLOAT, false);  // 555
+    bsRationalDoubleWords = PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type::IS_DOUBLE, false);  // 4197
+
+    bsNumberFloatWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_FLOAT, true);  // 35
+    bsNumberDoubleWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 263
+    bsRationalFloatWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_FLOAT, false);  // 417
+    bsRationalDoubleWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 3148
+
+    bsRationalFloatWords = PrimalQuery2BarycentricCoordinates(BSPrecision::Type::IS_FLOAT);  // 278
+    bsRationalDoubleWords = PrimalQuery2BarycentricCoordinates(BSPrecision::Type::IS_DOUBLE);  // 2099
+
     bsNumberFloatWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_FLOAT, true);  // 27
     bsNumberDoubleWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 197
     bsRationalFloatWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_FLOAT, false);  // 261
@@ -571,11 +642,6 @@ int main()
     bsRationalFloatWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_FLOAT, false);  // 1875
     bsRationalDoubleWords = PrimalQuery3ToCircumsphere(BSPrecision::Type::IS_DOUBLE, false);  // 14167
 
-    bsNumberFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_FLOAT, true);  // 70
-    bsNumberDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_DOUBLE, true);  // 525
-    bsRationalFloatWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_FLOAT, false);  // 555
-    bsRationalDoubleWords = ConstrainedDelaunay2ComputePSD(BSPrecision::Type::IS_DOUBLE, false);  // 4197
-
     bsNumberFloatWords = PrimalQuery3Colinear(BSPrecision::Type::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = PrimalQuery3Colinear(BSPrecision::Type::IS_DOUBLE, true);  // 132
     bsRationalFloatWords = PrimalQuery3Colinear(BSPrecision::Type::IS_FLOAT, false);  // 70
@@ -585,21 +651,6 @@ int main()
     bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, true);  // 197
     bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_FLOAT, false);  // 361
     bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, false);  // 1968
-
-    bsNumberFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, true);  // 18
-    bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, true);  // 132
-    bsRationalFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, false);  // 35
-    bsRationalDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, false);  // 263
-
-    bsNumberFloatWords = Delaunay2ToPlane(BSPrecision::Type::IS_FLOAT, true);  // 35
-    bsNumberDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 263
-    bsRationalFloatWords = Delaunay2ToPlane(BSPrecision::Type::IS_FLOAT, false);  // 417
-    bsRationalDoubleWords = Delaunay2ToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 3148
-
-    bsNumberFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, true);  // 53
-    bsNumberDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, true);  // 394
-    bsRationalFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, false);  // 209
-    bsRationalDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, false);  // 1574
 
     return 0;
 }
