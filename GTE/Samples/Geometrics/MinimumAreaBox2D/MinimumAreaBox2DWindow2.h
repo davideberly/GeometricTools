@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.04
+// Version: 6.0.2022.12.14
 
 #pragma once
 
@@ -18,7 +18,7 @@ public:
     MinimumAreaBox2DWindow2(Parameters& parameters);
 
     virtual void OnDisplay() override;
-    virtual void DrawScreenOverlay();
+    virtual void DrawScreenOverlay() override;
 
 private:
     bool SetEnvironment();
