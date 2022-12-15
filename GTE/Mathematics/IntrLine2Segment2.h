@@ -131,7 +131,7 @@ namespace gte
             auto llResult = llQuery(line, segLine);
             if (llResult.numIntersections == 1)
             {
-                // Test whether the line-line intersection is on the ray.
+                // Test whether the line-line intersection is on the segment.
                 if (llResult.line1Parameter[0] >= zero &&
                     llResult.line1Parameter[1] <= one)
                 {
