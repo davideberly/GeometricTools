@@ -353,6 +353,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMapsGL45.v16", "Sampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectRayPolygonGL45.v16", "Samples\Intersection\IntersectRayPolygon\IntersectRayPolygonGL45.v16.vcxproj", "{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetGL45.v16", "Samples\Geometrics\PolylineOffset\PolylineOffsetGL45.v16.vcxproj", "{273E0ED4-036C-42E0-B346-C90489C63EB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1681,6 +1683,14 @@ Global
 		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x64.Build.0 = Release|x64
 		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x86.ActiveCfg = Release|Win32
 		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA}.Release|x86.Build.0 = Release|Win32
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Debug|x64.ActiveCfg = Debug|x64
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Debug|x64.Build.0 = Debug|x64
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Debug|x86.ActiveCfg = Debug|Win32
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Debug|x86.Build.0 = Debug|Win32
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x64.ActiveCfg = Release|x64
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x64.Build.0 = Release|x64
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x86.ActiveCfg = Release|Win32
+		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1859,6 +1869,7 @@ Global
 		{634AF140-5D5D-4876-8BE7-A9D48ACE68CD} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
 		{9BA5B41A-A872-4238-AF1F-CB033D8CD01E} = {89E14EBE-F307-4CDF-9729-98B7DA0A36E9}
 		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA} = {0A111467-5F92-4F28-9368-BE5DAE1ADE4D}
+		{273E0ED4-036C-42E0-B346-C90489C63EB3} = {5FF2D1D5-8FB8-4238-9F1E-7B898766ECA0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A9749CC5-26A0-494D-8B40-181E82654FD5}

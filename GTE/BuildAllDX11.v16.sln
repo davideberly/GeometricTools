@@ -353,6 +353,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMapsDX11.v16", "Sampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectRayPolygonDX11.v16", "Samples\Intersection\IntersectRayPolygon\IntersectRayPolygonDX11.v16.vcxproj", "{788EEF09-4606-4F5B-96CA-2A7555EC5C71}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetDX11.v16", "Samples\Geometrics\PolylineOffset\PolylineOffsetDX11.v16.vcxproj", "{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1681,6 +1683,14 @@ Global
 		{788EEF09-4606-4F5B-96CA-2A7555EC5C71}.Release|x64.Build.0 = Release|x64
 		{788EEF09-4606-4F5B-96CA-2A7555EC5C71}.Release|x86.ActiveCfg = Release|Win32
 		{788EEF09-4606-4F5B-96CA-2A7555EC5C71}.Release|x86.Build.0 = Release|Win32
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Debug|x64.ActiveCfg = Debug|x64
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Debug|x64.Build.0 = Debug|x64
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Debug|x86.ActiveCfg = Debug|Win32
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Debug|x86.Build.0 = Debug|Win32
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Release|x64.ActiveCfg = Release|x64
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Release|x64.Build.0 = Release|x64
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Release|x86.ActiveCfg = Release|Win32
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1859,6 +1869,7 @@ Global
 		{C0F2287A-3F45-4E23-A2BD-DEA85FA7647C} = {431E2AFE-6A18-447C-9B33-664507ADE10A}
 		{B3127C42-BB80-41E0-8469-3F45FBFC350B} = {431E2AFE-6A18-447C-9B33-664507ADE10A}
 		{788EEF09-4606-4F5B-96CA-2A7555EC5C71} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
+		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED} = {F3718E7E-726C-4CB8-A68B-8C73E9F950C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}

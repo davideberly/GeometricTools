@@ -1563,5 +1563,8 @@
     <ClInclude Include="Mathematics\IntrRay2SegmentMesh2.h">
       <Filter>Intersection\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\PolylineOffset.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
