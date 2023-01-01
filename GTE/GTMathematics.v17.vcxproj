@@ -427,6 +427,7 @@
     <ClInclude Include="Mathematics\SingularValueDecomposition.h" />
     <ClInclude Include="Mathematics\SlerpEstimate.h" />
     <ClInclude Include="Mathematics\SqrtEstimate.h" />
+    <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h" />
     <ClInclude Include="Mathematics\StringUtility.h" />
     <ClInclude Include="Mathematics\SurfaceExtractor.h" />
     <ClInclude Include="Mathematics\SurfaceExtractorCubes.h" />

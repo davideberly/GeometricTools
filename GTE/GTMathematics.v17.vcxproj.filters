@@ -1566,5 +1566,8 @@
     <ClInclude Include="Mathematics\PolylineOffset.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
