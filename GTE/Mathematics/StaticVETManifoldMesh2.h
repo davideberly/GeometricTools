@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.01.01
+// Version: 6.6.2023.01.04
 
 #pragma once
 
@@ -154,7 +154,7 @@ namespace gte
             mVertices(numVertices),
             mStorage(15 * triangles.size(), invalid),
             mTriangles(triangles),
-            mAdjacents(triangles.size()),
+            mAdjacents(triangles.size(), { invalid, invalid, invalid }),
             mMinTrianglesAtVertex(0),
             mMaxTrianglesAtVertex(0)
         {
@@ -198,7 +198,7 @@ namespace gte
         {
             if (v0 < mVertices.size() && v1 < mVertices.size() && v0 != v1)
             {
-                auto& vertex0 = mVertices[v0];
+                auto const& vertex0 = mVertices[v0];
                 for (size_t j = 0; j < vertex0.mNumEAdjacents; ++j)
                 {
                     if (v1 == vertex0.mEAdjacents[j][0])
@@ -207,7 +207,7 @@ namespace gte
                     }
                 }
 
-                auto& vertex1 = mVertices[v1];
+                auto const& vertex1 = mVertices[v1];
                 for (size_t j = 0; j < vertex1.mNumEAdjacents; ++j)
                 {
                     if (v0 == vertex1.mEAdjacents[j][0])
@@ -249,7 +249,7 @@ namespace gte
         {
             if (v0 < mVertices.size() && v1 < mVertices.size() && v0 != v1)
             {
-                auto& vertex0 = mVertices[v0];
+                auto const& vertex0 = mVertices[v0];
                 for (size_t j = 0; j < vertex0.mNumEAdjacents; ++j)
                 {
                     if (v1 == vertex0.mEAdjacents[j][0])
@@ -260,7 +260,7 @@ namespace gte
                     }
                 }
 
-                auto& vertex1 = mVertices[v1];
+                auto const& vertex1 = mVertices[v1];
                 for (size_t j = 0; j < vertex1.mNumEAdjacents; ++j)
                 {
                     if (v0 == vertex1.mEAdjacents[j][0])
@@ -572,7 +572,7 @@ namespace gte
                 vertex1.InsertVAdjacent(v0);
                 vertex1.InsertEAdjacent(v2, t);
 
-                // Update the adjacency information at v1.
+                // Update the adjacency information at v2.
                 auto& vertex2 = mVertices[v2];
                 vertex2.InsertVAdjacent(v0);
                 vertex2.InsertVAdjacent(v1);
@@ -645,15 +645,14 @@ namespace gte
                 // triple <v1,LT0,invalid>. If <v1,v0> is an outgoing edge
                 // from v1 with adjacency triple <v0,LT1,invalid>, update
                 // the v0 adjacent triple to <v1,LT0,LT1>; that is,
-                // RT0 = LT1. Although it is also possible at this time to
-                // update the v1 adjacent triple to <v0,LT1,LT0>, where
-                // RT1 = LT0, but this triple will be processed when the
-                // outgoing edge is visited at another time. By not
-                // updating <v0,LT1,invalid> now, two writes are avoided
-                // to each of RT0 and RT1. This also supports the
-                // multithreaded approach because one thread never has the
-                // potential to write to the same memory location that
-                // another thread writes to.
+                // RT0 = LT1. Although it is possible at this time to update
+                // the v1 adjacent triple to <v0,LT1,LT0>, where RT1 = LT0,
+                // the triple will be processed when the outgoing edge is
+                // visited at another time. By not updating <v0,LT1,invalid>
+                // now, two writes are avoided to each of RT0 and RT1. This
+                // also supports the multithreaded approach because one thread
+                // never has the potential to write to the same memory
+                // location that another thread writes to.
                 auto* edge0 = GetOutgoingEdge(v0, v1);
                 auto* edge1 = GetOutgoingEdge(v1, v0);
                 if (edge0 != nullptr && edge1 != nullptr)
