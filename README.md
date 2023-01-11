@@ -10,9 +10,9 @@ at the
 licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 The update history for the current version of GTE is
-[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/Gte6UpdateHistory.pdf).
+[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf).
 The update history for all versions of GTE is
-[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GteFullUpdateHistory.pdf).
+[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
 
 I am in the process of writing The Geometric Tools Library (GTL),
 which is a major revision of GTE. A large portion of GTL development
