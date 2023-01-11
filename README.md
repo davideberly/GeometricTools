@@ -1,24 +1,28 @@
 ## About ##
 
-The Geometric Tools Engine is a collection of source code for computing in
-the fields of mathematics, geometry, graphics, image analysis and physics.
-The engine is written in C++ 14 and supports high-performance computing
-using CPU multithreading and general purpose GPU programming (GPGPU).
-Portions of the code are described in various books as well as in PDF
-documents available at the
-[Geometric Tools Website](https://www.geometrictools.com).
-
-The Geometric Tools Engine (GTE) is licensed under the
+The Geometric Tools Engine (GTE) is a collection of source code for computing
+in the fields of mathematics, geometry, graphics, image analysis and physics.
+The engine is written in C++ 14 and supports high-performance computing using
+CPU multithreading and general purpose GPU programming (GPGPU). Portions of
+the code are described in various books as well as in PDF documents available
+at the
+[Geometric Tools Website](https://www.geometrictools.com). GTE is
+licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
+The update history for the current version of GTE is
+[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/Gte6UpdateHistory.pdf).
+The update history for all versions of GTE is
+[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GteFullUpdateHistory.pdf).
 
-I am now in the process of finishing The Geometric Tools Library (GTL),
-which is a major revision of GTE. The library is also licensed under the
-[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt). The
-code comes with PDF documentation and hyperlinks in the source files to
-the specific locations in the PDF file that describe the code and use.
-The PDF itself has links to the source code files. Portions of the code
-will be posted once finalized. The first batch is the Utility library and
-documentation and is available at github and at my website.
+I am in the process of writing The Geometric Tools Library (GTL),
+which is a major revision of GTE. A large portion of GTL development
+has been porting code from GTE, dealing with size_t versus signed
+integer compiler complaints, and adding new features. An equally
+large portion has been writing unit tests and end-to-end tests for
+the mathematics code. The project has taking a significant amount
+of time and effort, but the completion is drawing near. GTL is also
+licensed under the
+[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 
 ## Supported Platforms ##
 
