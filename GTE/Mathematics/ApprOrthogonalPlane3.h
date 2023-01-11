@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.17
+// Version: 6.0.2023.01.11
 
 #pragma once
 
@@ -14,8 +14,8 @@
 // Least-squares fit of a plane to (x,y,z) data by using distance measurements
 // orthogonal to the proposed plane. The return value is 'true' if and only if
 // the fit is unique (always successful, 'true' when a minimum eigenvalue is
-// unique). The mParameters value is (P,N) = (origin,normal).  The error for
-// S = (x0,y0,z0) is (S-P)^T*(I - N*N^T)*(S-P).
+// unique). The mParameters value is (P,N) = (origin,normal). The error for
+// S = (x0,y0,z0) is |Dot(N,S-P)|.
 
 namespace gte
 {
@@ -109,11 +109,7 @@ namespace gte
 
         virtual Real Error(Vector3<Real> const& point) const override
         {
-            Vector3<Real> diff = point - mParameters.first;
-            Real sqrlen = Dot(diff, diff);
-            Real dot = Dot(diff, mParameters.second);
-            Real error = std::fabs(sqrlen - dot * dot);
-            return error;
+            return std::fabs(Dot(mParameters.second, point - mParameters.first));
         }
 
         virtual void CopyParameters(ApprQuery<Real, Vector3<Real>> const* input) override
