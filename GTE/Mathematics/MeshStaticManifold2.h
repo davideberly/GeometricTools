@@ -17,108 +17,87 @@
 #include <utility>
 #include <vector>
 
+// MeshStaticManifold2 represents a vertex-edge-triangle manifold mesh for
+// which triangles are provided as a single batch and no mesh modification
+// operations are going to be performed on the mesh. MeshStaticManifold2
+// significantly outperforms VETManifoldMesh. VETManifoldMesh is dynamic,
+// allowing triangle insertions and removals at any time. The underlying C++
+// container classes lead to significant memory allocation and deallocation
+// costs and are also expensive for find operations. MeshStaticManifold2
+// minimizes the memory management costs. Moreover, it allows for
+// multithreading which is useful when the numbers of vertices and triangles
+// are large. It is a requirement that the input triangles form a manifold
+// mesh with consistently ordered triangles. In most applications, this
+// requirement is already satisfied.
+
 namespace gte
 {
-    class StaticVETManifoldMesh2
+    class MeshStaticManifold2
     {
     public:
         // Use the maximum size_t to denote an invalid index, effectively
         // representing -1.
         static size_t constexpr invalid = std::numeric_limits<size_t>::max();
 
-        // The class objects are stored as
-        //   std::vector<Vertex> vertices(numVertices);
-        // If V is a vertex index with 0 <= V < numVertices, then vertices[V]
-        // stores information about edges and triangles that are adjacent
-        // to V. The member pointers are addresses into a contiguous block of
-        // memory in order to minimize the costs of memory management. The
-        // block of memory has worst-case allocation of 15 * numTriangles
-        // elements of type size_t.
+        // The vertices are stored as std::vector<Vertex> vertex(numVertices).
+        // If triangle[t0] = <v0,v1,v2>, then vertex[v0] contains a 4-tuple
+        // {v1,v2,t0,a0}. The undirected edge (v1,v2) is opposite v0. If there
+        // is no adjacent triangle sharing (v1,v2), then a0 is invalid. If
+        // there is an adjacent triangle, then a0 is the index for that
+        // triangle. Let triangle[a0] = <v2,v1,v3>; then vertex[v3] contains
+        // a 4-tuple {v2,v1,a0,t0}.
+        // 
+        // The member pointers of Vertex are addresses into a contiguous block
+        // of memory in order to minimize the costs of memory management. The
+        // block of memory has 12 * numTriangles elements of type size_t.
         class Vertex
         {
         public:
             Vertex()
                 :
-                mNumTAdjacents(0),
-                mNumVAdjacents(0),
-                mVAdjacents(nullptr),
-                mNumEAdjacents(0),
-                mEAdjacents(nullptr)
+                mNumAdjacents(0),
+                mAdjacents(nullptr)
             {
             }
 
             // The members are read-only.
-            inline size_t GetNumTAdjacents() const
+            inline size_t GetNumAdjacents() const
             {
-                return mNumTAdjacents;
+                return mNumAdjacents;
             }
 
-            inline size_t GetNumVAdjacents() const
+            inline std::array<size_t, 4> const* GetAdjacents() const
             {
-                // The number of adjacent vertices is bounded by twice the
-                // number of triangles sharing the vertex.
-                return mNumVAdjacents;
-            }
-
-            inline size_t const* GetVAdjacents() const
-            {
-                return mVAdjacents;
-            }
-
-            inline size_t GetNumEAdjacents() const
-            {
-                // The number of adjacent (outgoing) edges is the same as the
-                // number of triangles sharing the vertex.
-                return mNumEAdjacents;
-            }
-
-            inline std::array<size_t, 3> const* GetEAdjacents() const
-            {
-                return mEAdjacents;
+                return mAdjacents;
             }
 
         private:
-            // Only StaticVETManifoldMesh2 may write the members of this class.
-            friend class StaticVETManifoldMesh2;
+            // Only MeshStaticManifold2 may write the members of this class.
+            friend class MeshStaticManifold2;
 
-            void Initialize(size_t numTAdjacent, size_t*& storage)
+            void Initialize(size_t numAdjacents, size_t*& storage)
             {
-                mNumTAdjacents = numTAdjacent;
-                mNumVAdjacents = 0;
-                mVAdjacents = storage;
-                storage += 2 * mNumTAdjacents;
-                mNumEAdjacents = 0;
-                mEAdjacents = reinterpret_cast<std::array<size_t, 3>*>(storage);
-                storage += 3 * mNumTAdjacents;
+                mNumAdjacents = 0;
+                mAdjacents = reinterpret_cast<std::array<size_t, 4>*>(storage);
+                storage += 4 * numAdjacents;
             }
 
-            void InsertVAdjacent(size_t v)
+            void Insert(size_t v1, size_t v2, size_t t, size_t location)
             {
-                auto* vAdjacents = mVAdjacents;
-                for (size_t i = 0; i < mNumVAdjacents; ++i, ++vAdjacents)
-                {
-                    if (v == *vAdjacents)
-                    {
-                        // The vertex v is already in the adjacents list.
-                        return;
-                    }
-                }
-
-                // The vertex v is not in the adjacents list, so append it.
-                *vAdjacents = v;
-                ++mNumVAdjacents;
+                mAdjacents[mNumAdjacents++] = { v1, v2, t, location };
             }
 
-            void InsertEAdjacent(size_t v, size_t t)
-            {
-                mEAdjacents[mNumEAdjacents++] = { v, t, invalid };
-            }
+            // The number of triangles sharing v0. The value starts at zero
+            // and is incremented during the MeshStaticManifold2::Populate
+            // execution.
+            size_t mNumAdjacents;
 
-            size_t mNumTAdjacents;
-            size_t mNumVAdjacents;   // <= 2 * mNumTAdjacents
-            size_t* mVAdjacents;    // [2 * mNumTAdjacents]
-            size_t mNumEAdjacents;   // = mNumTAdjacents after mesh construction
-            std::array<size_t, 3>* mEAdjacents; // [mNumTAdjacents], <AV,LT,RT>
+            // If triangle t0 is <v0,v1,v2> in counterclockwise order, then
+            // the corresponding adjacents element is {v1,v2,t0,a0}, where
+            // a0 is invalid when (v1,v2) is contained by a single triangle
+            // or a0 is the index for the adjacent triangle when (v1,v2) is
+            // contained by two triangles.
+            std::array<size_t, 4>* mAdjacents;
         };
 
         // Preconditions.
@@ -126,29 +105,28 @@ namespace gte
         //   2. The number of vertices must be 3 or larger.
         //   3. The triangles must form a manifold mesh.
         //   4. Each triangle must be nondegenerate; no repeated vertices.
-        //   5. The triangles must all be ordered counterclockwise or all
-        //      ordered clockwise; no mixed chirality.
+        //   5. The triangles must all be ordered counterclockwise.
         // Set numThreads to 2 or larger to activate multithreading in the
         // mesh construction. If numThreads is 0 or 1, the construction
         // occurs in the main thread.
-        StaticVETManifoldMesh2(
+        MeshStaticManifold2(
             size_t numVertices,
             std::vector<std::array<size_t, 3>> const& triangles,
             size_t numThreads)
             :
             mVertices(numVertices),
-            mStorage(15 * triangles.size(), invalid),
+            mStorage(12 * triangles.size(), invalid),
             mTriangles(triangles),
             mAdjacents(triangles.size(), { invalid, invalid, invalid }),
             mMinTrianglesAtVertex(0),
             mMaxTrianglesAtVertex(0)
         {
-            LogAssert(numVertices >= 3 && triangles.size() > 0, "invalid input");
+            LogAssert(numVertices >= 3 && triangles.size() > 0, "Invalid input.");
 
             std::vector<size_t> numTrianglesAtVertex(numVertices, 0);
             GetNumTrianglesAtVertex(numTrianglesAtVertex);
-            InitializeVertexStorage(numTrianglesAtVertex);
-            PopulateVertices();
+            InitializeStorage(numTrianglesAtVertex);
+            Populate();
             UpdateAdjacencyForSharedEdges(numThreads);
         }
 
@@ -158,11 +136,13 @@ namespace gte
             return mVertices;
         }
 
+        // Each 3-tuple contains indices into the vertices.
         inline std::vector<std::array<size_t, 3>> const& GetTriangles() const
         {
             return mTriangles;
         }
 
+        // Each 3-tuple contains indices into the triangles.
         inline std::vector<std::array<size_t, 3>> const& GetAdjacents() const
         {
             return mAdjacents;
@@ -183,23 +163,8 @@ namespace gte
         {
             if (v0 < mVertices.size() && v1 < mVertices.size() && v0 != v1)
             {
-                auto const& vertex0 = mVertices[v0];
-                for (size_t j = 0; j < vertex0.mNumEAdjacents; ++j)
-                {
-                    if (v1 == vertex0.mEAdjacents[j][0])
-                    {
-                        return true;
-                    }
-                }
-
-                auto const& vertex1 = mVertices[v1];
-                for (size_t j = 0; j < vertex1.mNumEAdjacents; ++j)
-                {
-                    if (v0 == vertex1.mEAdjacents[j][0])
-                    {
-                        return true;
-                    }
-                }
+                return GetDirectedEdge(v0, v1) != nullptr
+                    || GetDirectedEdge(v1, v0) != nullptr;
             }
             return false;
         }
@@ -207,24 +172,25 @@ namespace gte
         // Get the adjacent triangles for the undirected edge (v0,v1). The
         // returned adjacent triangle indices adj0 and adj1 are the following:
         //
-        //   1. <v0,v1> and <v1,v0> are both outgoing edges, so the edge is
+        //   1. <v0,v1> and <v1,v0> are both directed edges, so the edge is
         //      shared by two triangles and both adj0 and adj1 are valid (not
-        //      equal to 'invalid'). The index adj0 is the L-triangle for
+        //      equal to invalid). The index adj0 is the L-triangle for
         //      <v0,v1> and the index adj1 is the R-triangle for <v0,v1>.
         //      Equivalently, adj0 is the R-triangle for <v1,v0> and adj1 is
         //      the L-triangle for <v1,v0>.
         // 
-        //   2. <v0,v1> is outgoing but <v1,v0> is not outgoing. The index
+        //   2. <v0,v1> is directed but <v1,v0> does not exist. The index
         //      adj0 is the L-triangle for <v0,v1> and the index adj1 is
-        //      'invalid' (no R-triangle).
+        //      invalid (no R-triangle).
         // 
-        //   3. <v1,v0> is outgoing but <v0,v1> is not outgoing. The index
-        //      adj0 is 'invalid' (no L-triangle) for <v1,v0> and the index
+        //   3. <v1,v0> is directed but <v0,v1> does not exist. The index
+        //      adj0 is invalid (no L-triangle) for <v1,v0> and the index
         //      adj1 is the R-triangle for <v1,v0>.
         // 
-        //   4. The outgoing edge <v0,v1> does not exist.
+        //   4. Neither <v0,v1> nor <v1,v0> exist; that is, the edge does
+        //      not occur for any triangle.
         //
-        // It is possible to distinguish between the 3 cases by examining the
+        // It is possible to distinguish among the 4 cases by examining the
         // returned indices:
         //   (1) returns (valid, valid) and Boolean 'true'
         //   (2) returns (valid, invalid) and Boolean 'true'
@@ -234,26 +200,20 @@ namespace gte
         {
             if (v0 < mVertices.size() && v1 < mVertices.size() && v0 != v1)
             {
-                auto const& vertex0 = mVertices[v0];
-                for (size_t j = 0; j < vertex0.mNumEAdjacents; ++j)
+                auto const* adjacents0 = GetDirectedEdge(v0, v1);
+                if (adjacents0 != nullptr)
                 {
-                    if (v1 == vertex0.mEAdjacents[j][0])
-                    {
-                        adj0 = vertex0.mEAdjacents[j][1];
-                        adj1 = vertex0.mEAdjacents[j][2];
-                        return true;
-                    }
+                    adj0 = (*adjacents0)[2];
+                    adj1 = (*adjacents0)[3];
+                    return true;
                 }
 
-                auto const& vertex1 = mVertices[v1];
-                for (size_t j = 0; j < vertex1.mNumEAdjacents; ++j)
+                auto const* adjacents1 = GetDirectedEdge(v1, v0);
+                if (adjacents1 != nullptr)
                 {
-                    if (v0 == vertex1.mEAdjacents[j][0])
-                    {
-                        adj0 = vertex1.mEAdjacents[j][1];
-                        adj1 = vertex1.mEAdjacents[j][2];
-                        return true;
-                    }
+                    adj0 = (*adjacents1)[2];
+                    adj1 = (*adjacents1)[3];
+                    return true;
                 }
             }
 
@@ -332,7 +292,7 @@ namespace gte
                 {
                     if (mAdjacents[t][a] == invalid)
                     {
-                        std::array<size_t, 2> directed{ tri[a], tri[(a + 1) % 3] };
+                        std::array<size_t, 2> directed{ tri[(a + 1) % 3], tri[(a + 2) % 3] };
                         BoundaryEdge edge(t, a, false);
                         boundaryEdges.insert(std::make_pair(directed, edge));
                     }
@@ -361,7 +321,7 @@ namespace gte
             }
         }
 
-    protected:
+    private:
         struct BoundaryEdge
         {
             BoundaryEdge()
@@ -390,7 +350,9 @@ namespace gte
         // Count the number of triangles sharing each vertex. The total number
         // of indices for triangles adjacent to vertices is 3 * numTriangles.
         // This is easy to see from the code where an increment occurs 3 times
-        // per triangle.
+        // per triangle. Each adjacent element has 4 components of type
+        // size_t, so the adjacent storage requires 12 * numTriangles values
+        // of type size_t.
         void GetNumTrianglesAtVertex(std::vector<size_t>& counts)
         {
             for (auto const& tri : mTriangles)
@@ -401,15 +363,15 @@ namespace gte
                 }
             }
 
+            // The minimum and maximum triangle counts are for statistical
+            // information.
             auto extremes = std::minmax_element(counts.begin(), counts.end());
             mMinTrianglesAtVertex = *extremes.first;
             mMaxTrianglesAtVertex = *extremes.second;
         }
 
-        // Assign the storage subblocks to the vertices. The mNumVAdjacents
-        // member is incremented later during a triangle traversal and is
-        // used as an index into mVAdjacents during the traversal.
-        void InitializeVertexStorage(std::vector<size_t> const& numTrianglesAtVertex)
+        // Assign the storage subblocks to the vertices.
+        void InitializeStorage(std::vector<size_t> const& numTrianglesAtVertex)
         {
             auto* storage = mStorage.data();
             for (size_t v = 0; v < mVertices.size(); ++v)
@@ -418,9 +380,11 @@ namespace gte
             }
         }
 
-        // Populate each vertex with its adjacent L-triangle, adjacent
-        // vertices and outgoing edges.
-        void PopulateVertices()
+        // Populate the adjacency information for the vertices. The number of
+        // vertex[v] adjacents is 3 * numTrianglesAtVertex[v]. This requires
+        // 12 * numTrianglesAtVertex[v] elements of type size_t. For the
+        // entire mesh, we need 12 * numTriangles elements of type size_t.
+        void Populate()
         {
             for (size_t t = 0; t < mTriangles.size(); ++t)
             {
@@ -429,23 +393,13 @@ namespace gte
                 size_t v1 = tri[1];
                 size_t v2 = tri[2];
 
-                // Update the adjacency information at v0.
-                auto& vertex0 = mVertices[v0];
-                vertex0.InsertVAdjacent(v1);
-                vertex0.InsertVAdjacent(v2);
-                vertex0.InsertEAdjacent(v1, t);
-
-                // Update the adjacency information at v1.
-                auto& vertex1 = mVertices[v1];
-                vertex1.InsertVAdjacent(v2);
-                vertex1.InsertVAdjacent(v0);
-                vertex1.InsertEAdjacent(v2, t);
-
-                // Update the adjacency information at v2.
-                auto& vertex2 = mVertices[v2];
-                vertex2.InsertVAdjacent(v0);
-                vertex2.InsertVAdjacent(v1);
-                vertex2.InsertEAdjacent(v0, t);
+                // The last arguments (i = 0, 1 or 2) are used to set the
+                // correct mAdjacents[][i] indices. These arguments are
+                // replaced later by the actual indices for adjacent triangles
+                // sharing the edge.
+                mVertices[v0].Insert(v1, v2, t, 0);
+                mVertices[v1].Insert(v2, v0, t, 1);
+                mVertices[v2].Insert(v0, v1, t, 2);
             }
         }
 
@@ -465,32 +419,32 @@ namespace gte
 
         void UpdateAdjacencyForSharedEdgesSingleThreaded()
         {
-            for (size_t t = 0; t < mTriangles.size(); ++t)
+            for (size_t v = 0; v < mVertices.size(); ++v)
             {
-                UpdateAdjacencyForTriangle(t);
+                UpdateAdjacencyForEdge(v);
             }
         }
 
         void UpdateAdjacencyForSharedEdgesMultithreaded(size_t numThreads)
         {
-            size_t const numTriangles = mTriangles.size();
-            size_t const numTrianglesPerThread = numTriangles / numThreads;
-            std::vector<size_t> tmin(numThreads), tsup(numThreads);
+            size_t const numVertices = mVertices.size();
+            size_t const numVerticesPerThread = numVertices / numThreads;
+            std::vector<size_t> vmin(numThreads), vsup(numThreads);
             for (size_t i = 0; i < numThreads; ++i)
             {
-                tmin[i] = i * numTrianglesPerThread;
-                tsup[i] = (i + 1) * numTrianglesPerThread;
+                vmin[i] = i * numVerticesPerThread;
+                vsup[i] = (i + 1) * numVerticesPerThread;
             }
-            tsup.back() = numTriangles;
+            vsup.back() = numVertices;
 
             std::vector<std::thread> process(numThreads);
             for (size_t i = 0; i < numThreads; ++i)
             {
-                process[i] = std::thread([this, i, &tmin, &tsup]()
+                process[i] = std::thread([this, i, &vmin, &vsup]()
                 {
-                    for (size_t t = tmin[i]; t < tsup[i]; ++t)
+                    for (size_t v = vmin[i]; v < vsup[i]; ++v)
                     {
-                        UpdateAdjacencyForTriangle(t);
+                        UpdateAdjacencyForEdge(v);
                     }
                 });
             }
@@ -501,47 +455,56 @@ namespace gte
             }
         }
 
-        void UpdateAdjacencyForTriangle(size_t t)
+        void UpdateAdjacencyForEdge(size_t v0)
         {
-            auto const& tri = mTriangles[t];
-            for (size_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
+            auto& vertex0 = mVertices[v0];
+            auto* adjacents0 = vertex0.mAdjacents;
+            for (size_t j = 0; j < vertex0.mNumAdjacents; ++j, ++adjacents0)
             {
-                // Get an outgoing edge <v0,v1>.
-                size_t v0 = tri[i0];
-                size_t v1 = tri[i1];
+                size_t v1 = (*adjacents0)[0];
+                size_t v2 = (*adjacents0)[1];
 
-                // The outgoing edge from v0 is <v0,v1> and has adjacency
-                // triple <v1,LT0,invalid>. If <v1,v0> is an outgoing edge
-                // from v1 with adjacency triple <v0,LT1,invalid>, update
-                // the v0 adjacent triple to <v1,LT0,LT1>; that is,
-                // RT0 = LT1. Although it is possible at this time to update
-                // the v1 adjacent triple to <v0,LT1,LT0>, where RT1 = LT0,
-                // the triple will be processed when the outgoing edge is
-                // visited at another time. By not updating <v0,LT1,invalid>
-                // now, two writes are avoided to each of RT0 and RT1. This
-                // also supports the multithreaded approach because one thread
-                // never has the potential to write to the same memory
-                // location that another thread writes to.
-                auto* edge0 = GetOutgoingEdge(v0, v1);
-                auto* edge1 = GetOutgoingEdge(v1, v0);
-                if (edge0 != nullptr && edge1 != nullptr)
+                // The edge opposite vertex v0 is (v1,v2). We know that
+                // vertex[v0] contains a 4-tuple {v1,v2,tri0,loc0}. Determine
+                // whether vertex[v2] contains a 4-tuple {v1,v3,adj1,loc1}.
+                auto* adjacents1 = GetDirectedEdge(v2, v1);
+                if (adjacents1)
                 {
-                    (*edge0)[2] = (*edge1)[1];  // RT0 = LT1
-                    mAdjacents[t][i0] = (*edge1)[1];
+                    // The edge <v1,v2> has a triangle adjacent to triangle
+                    // tri0. Update the vertex adjacency information for
+                    // triangle tri0 at that edge. Triangle a1 adjacency is
+                    // not updated. It will be updated when <v2,v1> is visited
+                    // at another time. This avoids two writes of the adjacent
+                    // triangle indices. It also supports the multithreaded
+                    // approach because one thread never has the potential to
+                    // write to the same memory location that another thread
+                    // writes to.
+                    size_t tri0 = (*adjacents0)[2];
+                    size_t loc0 = (*adjacents0)[3];
+                    size_t adj1 = (*adjacents1)[2];
+                    (*adjacents0)[3] = adj1;
+                    mAdjacents[tri0][loc0] = adj1;
+                }
+                else
+                {
+                    // Replace the mAdjacents[] location value (0, 1 or 2) by
+                    // an invalid index because edge <v1,v0> does not exist,
+                    // in which case there is no adjacent triangle to edge
+                    // <v0,v1>.
+                    (*adjacents0)[3] = invalid;
                 }
             }
         }
 
-        std::array<size_t, 3>* GetOutgoingEdge(size_t v0, size_t v1)
+        std::array<size_t, 4>* GetDirectedEdge(size_t v0, size_t v1) const
         {
-            auto& vertex = mVertices[v0];
-            size_t const numEAdjacents = vertex.mNumEAdjacents;
-            auto* eAdjacents = vertex.mEAdjacents;
-            for (size_t j = 0; j < numEAdjacents; ++j, ++eAdjacents)
+            auto& vertex0 = mVertices[v0];
+            auto* adjacents0 = vertex0.mAdjacents;
+            for (size_t j = 0; j < vertex0.mNumAdjacents; ++j, ++adjacents0)
             {
-                if ((*eAdjacents)[0] == v1)
+                if ((*adjacents0)[0] == v1)
                 {
-                    return eAdjacents;
+                    return adjacents0;
                 }
             }
             return nullptr;
@@ -554,12 +517,11 @@ namespace gte
             // initial value is incremented, C++ guarantees the result is 0.
             // Similarly, when 'top' is 0 and decremented, C++ guarantees the
             // result is the maximum value of size_t.
-            size_t constexpr smax = std::numeric_limits<size_t>::max();
-            size_t top = smax;
+            size_t top = invalid;
             size_t numInserted = 0;
 
             tStack[++top] = tInitial;
-            while (top != smax)
+            while (top != invalid)
             {
                 size_t t = tStack[top];
                 visited[t] = 1;
@@ -567,7 +529,7 @@ namespace gte
                 for (i = 0; i < 3; ++i)
                 {
                     size_t tAdjacent = mAdjacents[t][i];
-                    if (tAdjacent != smax && visited[tAdjacent] == 0)
+                    if (tAdjacent != invalid && visited[tAdjacent] == 0)
                     {
                         tStack[++top] = tAdjacent;
                         break;
@@ -589,7 +551,7 @@ namespace gte
             BoundaryEdgeMap& boundaryEdges, std::vector<size_t>& polygon) const
         {
             std::array<size_t, 3> tri = mTriangles[t];
-            size_t i0 = a;
+            size_t i0 = (a + 1) % 3;
             size_t i1 = (i0 + 1) % 3;
             std::array<size_t, 2> vEdge = { tri[i0], tri[i1] };
             polygon.push_back(vEdge[0]);
@@ -602,7 +564,7 @@ namespace gte
                 // the last triangle is encountered. The final edge of the
                 // last triangle is the next boundary edge and starts at
                 // vEdge[1].
-                a = mAdjacents[t][i1];
+                a = mAdjacents[t][i0];
                 while (a != invalid)
                 {
                     // Get the next triangle in the strip.
@@ -614,8 +576,8 @@ namespace gte
                         {
                             // Get the next interior edge in the triangle
                             // strip, namely, <tri[i0], tri[i1]>.
-                            i0 = (i1 + 1) % 3;
-                            a = mAdjacents[t][i1];
+                            i0 = (i1 + 2) % 3;
+                            a = mAdjacents[t][i0];
                             break;
                         }
                     }
@@ -624,20 +586,20 @@ namespace gte
 
                 size_t i2 = (i1 + 1) % 3;
                 vEdge[0] = vEdge[1];
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+#endif
                 // NOTE: Microsoft Visual Studio 2022 (17.4.4) generates
                 // warning C28020 for the next line of code. The code analyzer
                 // believes that i2 does not satisfy 0 <= i2 <= 2. This is
                 // incorrect because i2 is an unsigned integer computed
                 // modulo 3.
-#if defined(GTE_USE_MSWINDOWS)
-#pragma warning(disable : 28020)
-#endif
                 vEdge[1] = tri[i2];
 #if defined(GTE_USE_MSWINDOWS)
 #pragma warning(default : 28020)
 #endif
                 i0 = i1;
-                i1 = i2;
+                i1 = (i0 + 1) % 3;
             }
         }
 
