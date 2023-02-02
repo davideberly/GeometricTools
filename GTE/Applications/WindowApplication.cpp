@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.04.03
+// Version: 6.0.2023.02.02
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/WindowApplication.h>
@@ -156,10 +156,12 @@ void WindowApplication::GetMousePosition(int32_t&, int32_t&) const
     // Stub for derived classes.
 }
 
+#if defined(GTE_USE_MSWINDOWS)
 void WindowApplication::OnCopyData(HWND, PCOPYDATASTRUCT)
 {
     // Stub for derived classes.
 }
+#endif
 
 void WindowApplication::OnClose()
 {

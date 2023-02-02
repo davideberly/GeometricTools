@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.04.03
+// Version: 6.0.2023.02.02
 
 #pragma once
 
@@ -108,8 +108,10 @@ namespace gte
         virtual void SetMousePosition(int32_t x, int32_t y);
         virtual void GetMousePosition(int32_t& x, int32_t& y) const;
 
-        // WM_COPYDATA handling.
+#if defined(GTE_USE_MSWINDOWS)
+        // Allow an application to pass data to another application.
         virtual void OnCopyData(HWND sender, PCOPYDATASTRUCT copyData);
+#endif
 
         // Actions to take before the window closes.
         virtual void OnClose();
