@@ -23,6 +23,7 @@ Window::Parameters::Parameters(std::wstring const& inTitle,
     :
     WindowApplication::Parameters(inTitle, inXOrigin, inYOrigin, inXSize, inYSize),
     handle(nullptr),
+	parent(nullptr),
     hscrollBar(false),
     vscrollBar(false),
     deviceCreationFlags(0)

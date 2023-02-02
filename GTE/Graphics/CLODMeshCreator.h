@@ -320,7 +320,7 @@ namespace gte
                     "Unexpected condition.");
 
                 emIter->second.adjTriangles.erase(tKey);
-                if (emIter->second.adjTriangles.size() == 0)
+                if (emIter->second.adjTriangles.empty())
                 {
                     // The edge is not shared by any triangles, so delete it
                     // from the heap.
