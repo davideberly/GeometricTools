@@ -108,6 +108,9 @@ namespace gte
         virtual void SetMousePosition(int32_t x, int32_t y);
         virtual void GetMousePosition(int32_t& x, int32_t& y) const;
 
+        // WM_COPYDATA handling.
+        virtual void OnCopyData(HWND sender, PCOPYDATASTRUCT copyData);
+
         // Actions to take before the window closes.
         virtual void OnClose();
 

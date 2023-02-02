@@ -17,7 +17,7 @@ namespace gte
 
 WindowSystem::~WindowSystem()
 {
-    if (mHandleMap.size() == 0 && mAtom)
+    if (mHandleMap.empty() && mAtom)
     {
         UnregisterClass(mWindowClassName, nullptr);
     }
@@ -85,7 +85,7 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
         int32_t adjustedYSize = (int32_t)rectangle.bottom - (int32_t)rectangle.top + 1;
         parameters.handle = CreateWindow(mWindowClassName,
             parameters.title.c_str(), style, parameters.xOrigin,
-            parameters.yOrigin, adjustedXSize, adjustedYSize, nullptr,
+            parameters.yOrigin, adjustedXSize, adjustedYSize, parameters.parent,
             nullptr, nullptr, nullptr);
 
         // AdjustWindowRect decides that scroll bars cover client space,
@@ -105,7 +105,7 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
                 parameters.handle = CreateWindow(mWindowClassName,
                     parameters.title.c_str(), style, parameters.xOrigin,
                     parameters.yOrigin, adjustedXSize, adjustedYSize,
-                    0, 0, 0, 0);
+                    parameters.parent, 0, 0, 0);
                 GetClientRect(parameters.handle, &rectangle);
             }
         }
@@ -480,6 +480,11 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
     {
         window.OnClose();
         return 0;
+    }
+    case WM_COPYDATA:
+    {
+        window.OnCopyData((HWND)wParam, reinterpret_cast<PCOPYDATASTRUCT>(lParam));
+        return 1;
     }
     }
 

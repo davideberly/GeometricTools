@@ -156,6 +156,11 @@ void WindowApplication::GetMousePosition(int32_t&, int32_t&) const
     // Stub for derived classes.
 }
 
+void WindowApplication::OnCopyData(HWND, PCOPYDATASTRUCT)
+{
+    // Stub for derived classes.
+}
+
 void WindowApplication::OnClose()
 {
     // Stub for derived classes.

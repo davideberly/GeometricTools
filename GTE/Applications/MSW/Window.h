@@ -34,6 +34,7 @@ namespace gte
                 int32_t inXOrigin, int32_t inYOrigin, int32_t inXSize, int32_t inYSize);
 
             HWND handle;
+            HWND parent;
             bool hscrollBar, vscrollBar;
 
             // For DX11, the device creation flags are passed to the function
