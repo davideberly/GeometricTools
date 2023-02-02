@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2022
+// Copyright (c) 1998-2023
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.01.17
 
 #pragma once
 
@@ -790,9 +790,9 @@ namespace gte
                     if (mQuery.ToPlane(i, v0, v1, v2) > 0)
                     {
                         auto iter = tmap.find(TriangleKey<false>(v0, v1, v2));
-                        if (iter != tmap.end() && iter->second->T[1] == nullptr)
+                        if (iter != tmap.end() && iter->second->S[1] == nullptr)
                         {
-                            auto adj = iter->second->T[0];
+                            auto adj = iter->second->S[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
                                 int32_t a0 = adj->V[0];
@@ -2119,9 +2119,9 @@ namespace gte
                     if (ToPlane(pIndex, v0Index, v1Index, v2Index) > 0)
                     {
                         auto iter = tmap.find(TriangleKey<false>(key.V[0], key.V[1], key.V[2]));
-                        if (iter != tmap.end() && iter->second->T[1] == nullptr)
+                        if (iter != tmap.end() && iter->second->S[1] == nullptr)
                         {
-                            auto adj = iter->second->T[0];
+                            auto adj = iter->second->S[0];
                             if (adj && candidates.find(adj) == candidates.end())
                             {
                                 size_t a0Index = static_cast<size_t>(adj->V[0]);

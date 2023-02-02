@@ -1539,9 +1539,6 @@
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h">
       <Filter>CurvesSurfacesVolumes</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\VETManifoldMeshNR.h">
-      <Filter>Meshes</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h">
       <Filter>Containment</Filter>
     </ClInclude>
@@ -1562,6 +1559,24 @@
     </ClInclude>
     <ClInclude Include="Mathematics\IntrLine2SegmentMesh2.h">
       <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\PolylineOffset.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\VTSManifoldMesh.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\MeshStaticManifold3.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\MeshStaticManifold2.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\StaticVTSManifoldMesh3.h">
+      <Filter>Meshes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

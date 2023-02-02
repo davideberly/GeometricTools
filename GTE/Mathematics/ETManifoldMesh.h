@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2022
+// Copyright (c) 1998-2023
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.26
+// Version: 6.0.2023.01.17
 
 #pragma once
 
@@ -15,16 +15,18 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-// The ETManifoldMesh class represents an edge-triangle manifold mesh. It is
-// general purpose, allowing insertion and removal of triangles at any time.
-// Howver, the performance is limited because of the use of C++ container
-// classes (unordered sets and maps). If your application requires an
-// edge-triangle manifold mesh for which no triangles will be removed, a
-// much better choice is VETManifoldMeshVR.
+// The ETManifoldMesh class represents an edge-triangle manifold mesh. The 'E'
+// stands for edge and the 'T' stands for triangle. It is general purpose,
+// allowing insertion and removal of triangles at any time. However, the
+// performance is limited because of the use of C++ container classes
+// (unordered sets and maps). If your application requires an edge-triangle
+// manifold mesh for which no triangles will be removed, a better choice is
+// StaticVETManifoldMesh.
 
 namespace gte
 {
@@ -33,13 +35,13 @@ namespace gte
     public:
         // Edge data types.
         class Edge;
-        typedef std::unique_ptr<Edge>(*ECreator)(int32_t, int32_t);
+        using ECreator = std::unique_ptr<Edge>(*)(int32_t, int32_t);
         using EMap = std::unordered_map<EdgeKey<false>, std::unique_ptr<Edge>,
             EdgeKey<false>, EdgeKey<false>>;
 
         // Triangle data types.
         class Triangle;
-        typedef std::unique_ptr<Triangle>(*TCreator)(int32_t, int32_t, int32_t);
+        using TCreator = std::unique_ptr<Triangle>(*)(int32_t, int32_t, int32_t);
         using TMap = std::unordered_map<TriangleKey<true>, std::unique_ptr<Triangle>,
             TriangleKey<true>, TriangleKey<true>>;
 
@@ -51,9 +53,9 @@ namespace gte
 
             Edge(int32_t v0, int32_t v1)
                 :
-                V{ v0, v1 }
+                V{ v0, v1 },
+                T{ nullptr, nullptr }
             {
-                T.fill(nullptr);
             }
 
             // Vertices of the edge.
@@ -71,10 +73,10 @@ namespace gte
 
             Triangle(int32_t v0, int32_t v1, int32_t v2)
                 :
-                V{ v0, v1, v2 }
+                V{ v0, v1, v2 },
+                E{ nullptr, nullptr, nullptr },
+                T{ nullptr, nullptr, nullptr }
             {
-                E.fill(nullptr);
-                T.fill(nullptr);
             }
 
             // The edge <u0,u1> is directed. Determine whether the triangle
@@ -125,10 +127,10 @@ namespace gte
             // Vertices, listed in counterclockwise order (V[0],V[1],V[2]).
             std::array<int32_t, 3> V;
 
-            // Adjacent edges.  E[i] points to edge (V[i],V[(i+1)%3]).
+            // Adjacent edges. E[i] points to edge (V[i],V[(i+1)%3]).
             std::array<Edge*, 3> E;
 
-            // Adjacent triangles.  T[i] points to the adjacent triangle
+            // Adjacent triangles. T[i] points to the adjacent triangle
             // sharing edge E[i].
             std::array<Triangle*, 3> T;
         };
@@ -140,15 +142,19 @@ namespace gte
         ETManifoldMesh(ECreator eCreator = nullptr, TCreator tCreator = nullptr)
             :
             mECreator(eCreator ? eCreator : CreateEdge),
+            mEMap{},
             mTCreator(tCreator ? tCreator : CreateTriangle),
+            mTMap{},
             mThrowOnNonmanifoldInsertion(true)
         {
         }
 
-        // Support for a deep copy of the mesh.  The mEMap and mTMap objects
-        // have dynamically allocated memory for edges and triangles.  A
+        // Support for a deep copy of the mesh. The mEMap and mTMap objects
+        // have dynamically allocated memory for edges and triangles. A
         // shallow copy of the pointers isn't possible with unique_ptr.
         ETManifoldMesh(ETManifoldMesh const& mesh)
+            :
+            ETManifoldMesh()
         {
             *this = mesh;
         }
@@ -182,9 +188,9 @@ namespace gte
         }
 
         // If the insertion of a triangle fails because the mesh would become
-        // nonmanifold, the default behavior is to throw an exception.  You
+        // nonmanifold, the default behavior is to throw an exception. You
         // can disable this behavior and continue gracefully without an
-        // exception.  The return value is the previous value of the internal
+        // exception. The return value is the previous value of the internal
         // state mAssertOnNonmanifoldInsertion.
         bool ThrowOnNonmanifoldInsertion(bool doException)
         {
@@ -194,19 +200,19 @@ namespace gte
 
         // If <v0,v1,v2> is not in the mesh, a Triangle object is created and
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
-        // returned.  If the insertion leads to a nonmanifold mesh, the call
+        // returned. If the insertion leads to a nonmanifold mesh, the call
         // fails with a nullptr returned.
         virtual Triangle* Insert(int32_t v0, int32_t v1, int32_t v2)
         {
             TriangleKey<true> tkey(v0, v1, v2);
             if (mTMap.find(tkey) != mTMap.end())
             {
-                // The triangle already exists.  Return a null pointer as a
+                // The triangle already exists. Return a null pointer as a
                 // signal to the caller that the insertion failed.
                 return nullptr;
             }
 
-            // Create the new triangle.  It will be added to mTMap at the end
+            // Create the new triangle. It will be added to mTMap at the end
             // of the function so that if an assertion is triggered and the
             // function returns early, the (bad) triangle will not be part of
             // the mesh.
@@ -217,7 +223,7 @@ namespace gte
             for (int32_t i0 = 2, i1 = 0; i1 < 3; i0 = i1++)
             {
                 EdgeKey<false> ekey(tri->V[i0], tri->V[i1]);
-                Edge* edge;
+                Edge* edge = nullptr;
                 auto eiter = mEMap.find(ekey);
                 if (eiter == mEMap.end())
                 {
@@ -343,9 +349,9 @@ namespace gte
             mTMap.clear();
         }
 
-        // A manifold mesh is closed if each edge is shared twice.  A closed
-        // mesh is not necessarily oriented.  For example, you could have a
-        // mesh with spherical topology.  The upper hemisphere has outer
+        // A manifold mesh is closed if each edge is shared twice. A closed
+        // mesh is not necessarily oriented. For example, you could have a
+        // mesh with spherical topology. The upper hemisphere has outer
         // facing normals and the lower hemisphere has inner-facing normals.
         // The discontinuity in orientation occurs on the circle shared by the
         // hemispheres.
@@ -363,7 +369,7 @@ namespace gte
         }
 
         // Test whether all triangles in the mesh are oriented consistently
-        // and that no two triangles are coincident.  The latter means that
+        // and that no two triangles are coincident. The latter means that
         // you cannot have both triangles <v0,v1,v2> and <v0,v2,v1> in the
         // mesh to be considered oriented.
         bool IsOriented() const
@@ -374,7 +380,7 @@ namespace gte
                 if (edge->T[0] && edge->T[1])
                 {
                     // In each triangle, find the ordered edge that
-                    // corresponds to the unordered edge element.first.  Also
+                    // corresponds to the unordered edge element.first. Also
                     // find the vertex opposite that edge.
                     bool edgePositive[2] = { false, false };
                     int32_t vOpposite[2] = { -1, -1 };
@@ -415,16 +421,18 @@ namespace gte
         }
 
         // Compute the connected components of the edge-triangle graph that
-        // the mesh represents.  The first function returns pointers into
+        // the mesh represents. The first function returns pointers into
         // 'this' object's containers, so you must consume the components
-        // before clearing or destroying 'this'.  The second function returns
+        // before clearing or destroying 'this'. The second function returns
         // triangle keys, which requires three times as much storage as the
         // pointers but allows you to clear or destroy 'this' before consuming
         // the components.
         void GetComponents(std::vector<std::vector<Triangle*>>& components) const
         {
+            components.clear();
+
             // visited: 0 (unvisited), 1 (discovered), 2 (finished)
-            TrianglePtrIntMap visited;
+            TrianglePtrIntMap visited{};
             for (auto const& element : mTMap)
             {
                 visited.insert(std::make_pair(element.second.get(), 0));
@@ -435,7 +443,7 @@ namespace gte
                 Triangle* tri = element.second.get();
                 if (visited[tri] == 0)
                 {
-                    std::vector<Triangle*> component;
+                    std::vector<Triangle*> component{};
                     DepthFirstSearch(tri, visited, component);
                     components.push_back(std::move(component));
                 }
@@ -444,8 +452,10 @@ namespace gte
 
         void GetComponents(std::vector<std::vector<TriangleKey<true>>>& components) const
         {
+            components.clear();
+
             // visited: 0 (unvisited), 1 (discovered), 2 (finished)
-            TrianglePtrIntMap visited;
+            TrianglePtrIntMap visited{};
             for (auto const& element : mTMap)
             {
                 visited.insert(std::make_pair(element.second.get(), 0));
@@ -456,10 +466,10 @@ namespace gte
                 Triangle* tri = element.second.get();
                 if (visited[tri] == 0)
                 {
-                    std::vector<Triangle*> component;
+                    std::vector<Triangle*> component{};
                     DepthFirstSearch(tri, visited, component);
 
-                    std::vector<TriangleKey<true>> keyComponent;
+                    std::vector<TriangleKey<true>> keyComponent{};
                     keyComponent.reserve(component.size());
                     for (auto const& t : component)
                     {
@@ -546,7 +556,9 @@ namespace gte
             std::vector<size_t>& components,
             std::vector<size_t>& numComponentTriangles)
         {
-            LogAssert(triangles.size() > 0 && triangles.size() == adjacents.size(), "Invalid inputs.");
+            LogAssert(
+                triangles.size() > 0 && triangles.size() == adjacents.size(),
+                "Invalid inputs.");
 
             // Use a breadth-first search to process the chirality of the
             // triangles. Keep track of the connected components.
@@ -615,7 +627,7 @@ namespace gte
                             // that the adjacent triangle have the directed
                             // edge <curTriangle[i1],curTriangle[i0]>
                             bool sameChirality = true;
-                            size_t j0, j1;
+                            size_t j0{}, j1{};
                             for (j0 = 0; j0 < 3; ++j0)
                             {
                                 j1 = (j0 + 1) % 3;
@@ -632,7 +644,7 @@ namespace gte
                                     break;
                                 }
                             }
-                            LogAssert(j0 < 3, "Unexpected condition");
+                            LogAssert(j0 < 3, "Unexpected condition.");
 
                             if (!sameChirality)
                             {
@@ -663,7 +675,7 @@ namespace gte
 
             // Read the comments at the beginning of this function.
             size_t const numSizes = numComponentTriangles.size();
-            LogAssert(numSizes > 1, "Unexpected condition (this should not happen).");
+            LogAssert(numSizes > 1, "Unexpected condition.");
             for (size_t i0 = 0, i1 = 1; i1 < numComponentTriangles.size(); i0 = i1++)
             {
                 numComponentTriangles[i0] = numComponentTriangles[i1] - numComponentTriangles[i0];
@@ -681,11 +693,11 @@ namespace gte
         // the potential for different chiralities between components.
         virtual void MakeConsistentChirality()
         {
-            std::vector<std::array<size_t, 3>> triangles;
-            std::vector<std::array<size_t, 3>> adjacents;
+            std::vector<std::array<size_t, 3>> triangles{};
+            std::vector<std::array<size_t, 3>> adjacents{};
             CreateCompactGraph(triangles, adjacents);
 
-            std::vector<size_t> components, numComponentTriangles;
+            std::vector<size_t> components{}, numComponentTriangles{};
             GetComponentsConsistentChirality(triangles, adjacents,
                 components, numComponentTriangles);
 
@@ -706,239 +718,56 @@ namespace gte
         }
 
         // Compute the boundary-edge components of the mesh. These are
-        // simple closed polygons. A vertex adjacency graph is computed
-        // internally. A vertex with exactly 2 neighbors is the common
-        // case that is easy to process. A vertex with 2n neighbors, where
-        // n > 1, is a branch point of the graph. The algorithm computes
-        // n pairs of edges at a branch point, each pair bounding a triangle
-        // strip whose triangles all share the branch point. If you select
-        // duplicateEndpoints to be false, a component has consecutive
-        // vertices (v[0], v[1], ..., v[n-1]) and the polygon has edges
+        // polygons that are simple for the strict definition of manifold
+        // mesh that disallows bow-tie configurations. The GTE mesh
+        // implementations do allow bow-tie configurations, in which case
+        // some polygons might not be simple. If you select duplicateEndpoints
+        // to be false, a component has consecutive vertices
+        // (v[0], v[1], ..., v[n-1]) and the polygon has edges
         // (v[0],v[1]), (v[1],v[2]), ..., (v[n-2],v[n-1]), (v[n-1],v[0]).
         // If duplicateEndpoints is set to true, a component has consecutive
         // vertices (v[0], v[1], ..., v[n-1], v[0]), emphasizing that the
         // component is closed.
-        void GetBoundaryPolygons(std::vector<std::vector<int32_t>>& components,
+        void GetBoundaryPolygons(std::vector<std::vector<int32_t>>& polygons,
             bool duplicateEndpoints) const
         {
-            components.clear();
+            polygons.clear();
 
-            // Build the vertex adjacency graph.
-            std::unordered_set<int32_t> boundaryVertices;
-            std::multimap<int32_t, int32_t> vertexGraph;
-            for (auto const& element : mEMap)
+            // Get the boundary edges. The index into the Triangle::T[]
+            // adjacency array is also stored to help with the traversal of
+            // polygons.
+            BoundaryEdgeMap boundaryEdges{};
+            for (auto const& triangleElement : mTMap)
             {
-                auto adj = element.second->T[1];
-                if (!adj)
+                auto const* tri = triangleElement.second.get();
+                for (size_t i = 0; i < 3; ++i)
                 {
-                    int32_t v0 = element.first.V[0], v1 = element.first.V[1];
-                    boundaryVertices.insert(v0);
-                    boundaryVertices.insert(v1);
-                    vertexGraph.insert(std::make_pair(v0, v1));
-                    vertexGraph.insert(std::make_pair(v1, v0));
-                }
-            }
-
-            // Create a set of edge pairs. For a 2-adjacency vertex v with
-            // adjacent vertices v0 and v1, an edge pair is (v, v0, v1) which
-            // represents undirected edges (v, v0) and (v, v1). A vertex with
-            // 2n-adjacency has n edge pairs of the form (v, v0, v1). Each
-            // edge pair forms the boundary of a triangle strip where each
-            // triangle shares v. When traversing a boundary curve for a
-            // connected component of triangles, if a 2n-adjacency vertex v is
-            // encountered, let v0 be the incoming vertex. The edge pair
-            // containing v and v0 is selected to generate the outgoing
-            // vertex v1.
-            int32_t const invalidVertex = *boundaryVertices.begin() - 1;
-            std::multimap<int32_t, std::array<int32_t, 2>> edgePairs;
-            for (auto v : boundaryVertices)
-            {
-                // The number of adjacent vertices is positive and even.
-                size_t numAdjacents = vertexGraph.count(v);
-                if (numAdjacents == 2)
-                {
-                    auto lbIter = vertexGraph.lower_bound(v);
-                    std::array<int32_t, 2> endpoints = { 0, 0 };
-                    endpoints[0] = lbIter->second;
-                    ++lbIter;
-                    endpoints[1] = lbIter->second;
-                    edgePairs.insert(std::make_pair(v, endpoints));
-                }
-                else
-                {
-                    // Create pairs of vertices that form a wedge of triangles
-                    // at the vertex v, as a triangle strip of triangles all
-                    // sharing v.
-                    std::unordered_set<int32_t> adjacents;
-                    auto lbIter = vertexGraph.lower_bound(v);
-                    auto ubIter = vertexGraph.upper_bound(v);
-                    for (; lbIter != ubIter; ++lbIter)
+                    if (tri->T[i] == nullptr)
                     {
-                        adjacents.insert(lbIter->second);
-                    }
-
-                    size_t const numEdgePairs = adjacents.size() / 2;
-                    for (size_t j = 0; j < numEdgePairs; ++j)
-                    {
-                        // Get the first vertex of a pair of edges.
-                        auto adjIter = adjacents.begin();
-                        int32_t vAdjacent = *adjIter;
-                        adjacents.erase(adjIter);
-
-                        // The wedge of triangles at v starts with a triangle
-                        // that has the boundary edge.
-                        EdgeKey<false> ekey(v, vAdjacent);
-                        auto edge = mEMap.find(ekey);
-                        LogAssert(edge != mEMap.end(), "unexpected condition");
-                        auto tCurrent = edge->second->T[0];
-                        LogAssert(tCurrent != nullptr, "unexpected condtion");
-
-                        // Traverse the triangle strip to the other boundary
-                        // edge that bounds the wedge.
-                        int32_t vOpposite = invalidVertex;
-                        int32_t vStart = vAdjacent;
-                        for (;;)
-                        {
-                            size_t i;
-                            for (i = 0; i < 3; ++i)
-                            {
-                                vOpposite = tCurrent->V[i];
-                                if (vOpposite != v && vOpposite != vAdjacent)
-                                {
-                                    break;
-                                }
-                            }
-                            LogAssert(i < 3, "unexpected condition");
-
-                            ekey = EdgeKey<false>(v, vOpposite);
-                            edge = mEMap.find(ekey);
-                            auto tNext = edge->second->T[1];
-                            if (tNext == nullptr)
-                            {
-                                // Found the last triangle in the strip.
-                                break;
-                            }
-
-                            // The edge is interior to the component. Traverse
-                            // to the triangle adjacent to the current one.
-                            if (tNext == tCurrent)
-                            {
-                                tCurrent = edge->second->T[0];
-                            }
-                            else
-                            {
-                                tCurrent = tNext;
-                            }
-                            vAdjacent = vOpposite;
-                        }
-
-                        // The boundary edge of the first triangle in the
-                        // wedge is (v, vAdjacent). The boundary edge of the
-                        // last triangle in the wedge is (v, vOpposite).
-                        std::array<int32_t, 2> endpoints{ vStart, vOpposite };
-                        edgePairs.insert(std::make_pair(v, endpoints));
-                        adjacents.erase(vOpposite);
+                        std::array<int32_t, 2> directed{ tri->V[i], tri->V[(i + 1) % 3] };
+                        BoundaryEdge edge(tri, i, false);
+                        boundaryEdges.insert(std::make_pair(directed, edge));
                     }
                 }
             }
 
-            while (edgePairs.size() > 0)
+            for (auto const& initialEdge : boundaryEdges)
             {
-                // The EdgeKey<false> represents an unordered edge (v0,v1).
-                // Choose the starting vertex so that when you traverse from
-                // it to the other vertex, the direction is consistent with
-                // the chirality of the triangle containing that edge. For a
-                // component whose triangles have the same chirality, this
-                // approach ensures that the boundary polygon has the same
-                // chirality as the triangles it bounds. If the component
-                // triangles do not have the same chirality, it does not
-                // matter what the starting vertex is.
-                auto epIter = edgePairs.begin();
-                EdgeKey<false> boundaryEdge(epIter->first, epIter->second[0]);
-                auto edge = mEMap.find(boundaryEdge);
-                LogAssert(edge != mEMap.end(), "unexpected condtion");
-                auto currentTriangle = edge->second->T[0];
-                LogAssert(currentTriangle != nullptr, "unexpected condtion");
-                int32_t vStart = invalidVertex, vNext = invalidVertex;
-                size_t i0, i1;
-                for (i0 = 0; i0 < 3; ++i0)
+                if (!initialEdge.second.visited)
                 {
-                    if (currentTriangle->V[i0] == boundaryEdge.V[0])
-                    {
-                        i1 = (i0 + 1) % 3;
-                        if (currentTriangle->V[i1] == boundaryEdge.V[1])
-                        {
-                            vStart = boundaryEdge.V[0];
-                            vNext = boundaryEdge.V[1];
-                        }
-                        else
-                        {
-                            vStart = boundaryEdge.V[1];
-                            vNext = boundaryEdge.V[0];
-                        }
-                        break;
-                    }
+                    std::vector<int32_t> polygon{};
+                    GetBoundaryPolygon(initialEdge.second.triangle, initialEdge.second.index,
+                        boundaryEdges, polygon);
+                    polygons.push_back(std::move(polygon));
                 }
-                LogAssert(i0 < 3, "unexpected condition");
+            }
 
-                // Find the the edge-pair for vStart that contains vNext and
-                // remove it.
-                auto lbIter = edgePairs.lower_bound(vStart);
-                auto ubIter = edgePairs.upper_bound(vStart);
-                bool foundStart = false;
-                for (; lbIter != ubIter; ++lbIter)
+            if (!duplicateEndpoints)
+            {
+                for (auto& polygon : polygons)
                 {
-                    if (lbIter->second[0] == vNext || lbIter->second[1] == vNext)
-                    {
-                        edgePairs.erase(lbIter);
-                        foundStart = true;
-                        break;
-                    }
+                    polygon.resize(polygon.size() - 1);
                 }
-                LogAssert(foundStart, "unexpected condition");
-
-                // Compute the connected component of the boundary edges that
-                // contains the edge <vStart, vNext>.
-                std::vector<int32_t> component;
-                component.push_back(vStart);
-                int32_t vPrevious = vStart;
-                while (vNext != vStart)
-                {
-                    component.push_back(vNext);
-
-                    bool foundNext = false;
-                    lbIter = edgePairs.lower_bound(vNext);
-                    ubIter = edgePairs.upper_bound(vNext);
-                    for (epIter = lbIter; epIter != ubIter; ++epIter)
-                    {
-                        if (vPrevious == epIter->second[0])
-                        {
-                            vPrevious = vNext;
-                            vNext = epIter->second[1];
-                            edgePairs.erase(epIter);
-                            foundNext = true;
-                            break;
-                        }
-                        if (vPrevious == epIter->second[1])
-                        {
-                            vPrevious = vNext;
-                            vNext = epIter->second[0];
-                            edgePairs.erase(epIter);
-                            foundNext = true;
-                            break;
-                        }
-                    }
-                    LogAssert(foundNext, "unexpected condition");
-                }
-
-                if (duplicateEndpoints)
-                {
-                    // Explicitly duplicate the starting vertex to
-                    // emphasize that the component is a closed polyline.
-                    component.push_back(vStart);
-                }
-
-                components.push_back(component);
             }
         }
 
@@ -946,14 +775,36 @@ namespace gte
         using TrianglePtrIntMap = std::unordered_map<Triangle*, int32_t>;
         using TrianglePtrSizeTMap = std::unordered_map<Triangle*, size_t>;
 
+        struct BoundaryEdge
+        {
+            BoundaryEdge()
+                :
+                triangle(nullptr),
+                index(std::numeric_limits<size_t>::max()),
+                visited(false)
+            {
+            }
+
+            BoundaryEdge(Triangle const* inTriangle, size_t inIndex, bool inVisited)
+                :
+                triangle(inTriangle),
+                index(inIndex),
+                visited(inVisited)
+            {
+            }
+
+            Triangle const* triangle;
+            size_t index;
+            bool visited;
+        };
+
+        using BoundaryEdgeMap = std::map<std::array<int32_t, 2>, BoundaryEdge>;
+
         // The edge data and default edge creation.
         static std::unique_ptr<Edge> CreateEdge(int32_t v0, int32_t v1)
         {
             return std::make_unique<Edge>(v0, v1);
         }
-
-        ECreator mECreator;
-        EMap mEMap;
 
         // The triangle data and default triangle creation.
         static std::unique_ptr<Triangle> CreateTriangle(int32_t v0, int32_t v1, int32_t v2)
@@ -961,11 +812,7 @@ namespace gte
             return std::make_unique<Triangle>(v0, v1, v2);
         }
 
-        TCreator mTCreator;
-        TMap mTMap;
-        bool mThrowOnNonmanifoldInsertion;  // default: true
-
-        // Support for computing connected components.  This is a
+        // Support for computing connected components. This is a
         // straightforward depth-first search of the graph but uses a
         // preallocated stack rather than a recursive function that could
         // possibly overflow the call stack.
@@ -975,7 +822,7 @@ namespace gte
             std::vector<Triangle*>& component) const
         {
             // Allocate the maximum-size stack that can occur in the
-            // depth-first search.  The stack is empty when the index top
+            // depth-first search. The stack is empty when the index top
             // is -1.
             std::vector<Triangle*> tStack(mTMap.size());
             int32_t top = -1;
@@ -1002,5 +849,65 @@ namespace gte
                 }
             }
         }
+
+        void GetBoundaryPolygon(
+            Triangle const* initialTriangle,
+            size_t initialIndex,
+            BoundaryEdgeMap& boundaryEdges,
+            std::vector<int32_t>& polygon) const
+        {
+            auto const* tri = initialTriangle;
+            size_t i0 = initialIndex;
+            size_t i1 = (i0 + 1) % 3;
+            std::array<int32_t, 2> vEdge = { tri->V[i0], tri->V[i1] };
+            polygon.push_back(vEdge[0]);
+            while (!boundaryEdges[vEdge].visited)
+            {
+                polygon.push_back(vEdge[1]);
+                boundaryEdges[vEdge].visited = true;
+
+                // Traverse the triangle strip with vertex at vEdge[1] until
+                // the last triangle is encountered. The final edge of the
+                // last triangle is the next boundary edge and starts at
+                // vEdge[1].
+                while (tri->T[i1] != nullptr)
+                {
+                    tri = tri->T[i1];
+                    size_t j{};
+                    for (j = 0; j < 3; ++j)
+                    {
+                        if (vEdge[1] == tri->V[j])
+                        {
+                            i1 = j;
+                            break;
+                        }
+                    }
+                    LogAssert(j < 3, "Unexpected condition.");
+                }
+
+                size_t i2 = (i1 + 1) % 3;
+                vEdge[0] = vEdge[1];
+                // NOTE: Microsoft Visual Studio 2022 (17.4.4) generates
+                // warning C28020 for the next line of code. The code analyzer
+                // believes that i2 does not satisfy 0 <= i2 <= 2. This is
+                // incorrect because i2 is an unsigned integer computed
+                // modulo 3.
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+#endif
+                vEdge[1] = tri->V[i2];
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
+                i0 = i1;
+                i1 = i2;
+            }
+        }
+
+        ECreator mECreator;
+        EMap mEMap;
+        TCreator mTCreator;
+        TMap mTMap;
+        bool mThrowOnNonmanifoldInsertion;
     };
 }

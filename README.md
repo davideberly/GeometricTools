@@ -1,24 +1,28 @@
 ## About ##
 
-The Geometric Tools Engine is a collection of source code for computing in
-the fields of mathematics, geometry, graphics, image analysis and physics.
-The engine is written in C++ 14 and supports high-performance computing
-using CPU multithreading and general purpose GPU programming (GPGPU).
-Portions of the code are described in various books as well as in PDF
-documents available at the
-[Geometric Tools Website](https://www.geometrictools.com).
-
-The Geometric Tools Engine (GTE) is licensed under the
+The Geometric Tools Engine (GTE) is a collection of source code for computing
+in the fields of mathematics, geometry, graphics, image analysis and physics.
+The engine is written in C++ 14 and supports high-performance computing using
+CPU multithreading and general purpose GPU programming (GPGPU). Portions of
+the code are described in various books as well as in PDF documents available
+at the
+[Geometric Tools Website](https://www.geometrictools.com). GTE is
+licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
+The update history for the current version of GTE is
+[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf).
+The update history for all versions of GTE is
+[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
 
-I am now in the process of finishing The Geometric Tools Library (GTL),
-which is a major revision of GTE. The library is also licensed under the
-[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt). The
-code comes with PDF documentation and hyperlinks in the source files to
-the specific locations in the PDF file that describe the code and use.
-The PDF itself has links to the source code files. Portions of the code
-will be posted once finalized. The first batch is the Utility library and
-documentation and is available at github and at my website.
+I am in the process of writing The Geometric Tools Library (GTL),
+which is a major revision of GTE. A large portion of GTL development
+has been porting code from GTE, dealing with size_t versus signed
+integer compiler complaints, and adding new features. An equally
+large portion has been writing unit tests and end-to-end tests for
+the mathematics code. The project has taking a significant amount
+of time and effort, but the completion is drawing near. GTL is also
+licensed under the
+[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 
 ## Supported Platforms ##
 
@@ -34,15 +38,15 @@ and X-Windows on Linux.
 
 On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
 Studio 2019/2022 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compiler 19.2 or 2022.
+Compiler 2023.
 
-On Ubuntu 20.04.1 LTS, the code is maintained using Visual Studio Code
+On Ubuntu 22.04.1 LTS, the code is maintained using Visual Studio Code
 1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 9.3.0, 
+gcc 11.2.0, 
 
-On Fedora 36, the code is maintained using Visual Studio Code 1.49.2
+On Fedora 37, the code is maintained using Visual Studio Code 1.49.2
 and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 12.1.1.
+gcc 12.2.1.
 
 ## Getting Started ##
 
@@ -51,12 +55,6 @@ features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the installation and release
 notes to understand what is expected of your development environment.
  
-## Technical Support Queue ##
-
-The current queue of technical support issues, whether reported on github
-or privately by email, is found at the Geometric Tools website. See the
-document https://www.geometrictools.com/Downloads/TechnicalSupportQueue.pdf
-
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
   a box and a finite cylinder. When using floating-point arithmetic, the LCP

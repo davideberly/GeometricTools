@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2022
+// Copyright (c) 1998-2023
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.26
+// Version: 6.0.2023.01.17
 
 #pragma once
 
@@ -16,7 +16,7 @@
 // performance is limited because of the use of C++ container classes
 // (unordered sets and maps). If your application requires a
 // vertex-edge-triangle manifold mesh for which no triangles will be
-// removed, a much better choice is VETManifoldMeshVR.
+// removed, a better choice is StaticVETManifoldMesh.
 
 namespace gte
 {
@@ -36,7 +36,10 @@ namespace gte
 
             Vertex(int32_t vIndex)
                 :
-                V(vIndex)
+                V(vIndex),
+                VAdjacent{},
+                EAdjacent{},
+                TAdjacent{}
             {
             }
 
@@ -56,16 +59,19 @@ namespace gte
         VETManifoldMesh(VCreator vCreator = nullptr, ECreator eCreator = nullptr, TCreator tCreator = nullptr)
             :
             ETManifoldMesh(eCreator, tCreator),
-            mVCreator(vCreator ? vCreator : CreateVertex)
+            mVCreator(vCreator ? vCreator : CreateVertex),
+            mVMap{}
         {
         }
 
-        // Support for a deep copy of the mesh.  The mVMap, mEMap, and mTMap
-        // objects have dynamically allocated memory for vertices, edges, and
-        // triangles.  A shallow copy of the pointers to this memory is
-        // problematic.  Allowing sharing, say, via std::shared_ptr, is an
+        // Support for a deep copy of the mesh. The mVMap, mEMap and mTMap
+        // objects have dynamically allocated memory for vertices, edges and
+        // triangles. A shallow copy of the pointers to this memory is
+        // problematic. Allowing sharing, say, via std::shared_ptr, is an
         // option but not really the intent of copying the mesh graph.
         VETManifoldMesh(VETManifoldMesh const& mesh)
+            :
+            VETManifoldMesh()
         {
             *this = mesh;
         }
@@ -86,7 +92,7 @@ namespace gte
 
         // If <v0,v1,v2> is not in the mesh, a Triangle object is created and
         // returned; otherwise, <v0,v1,v2> is in the mesh and nullptr is
-        // returned.  If the insertion leads to a nonmanifold mesh, the call
+        // returned. If the insertion leads to a nonmanifold mesh, the call
         // fails with a nullptr returned.
         virtual Triangle* Insert(int32_t v0, int32_t v1, int32_t v2) override
         {
@@ -100,7 +106,7 @@ namespace gte
             {
                 int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
-                Vertex* vertex;
+                Vertex* vertex = nullptr;
                 if (vItem == mVMap.end())
                 {
                     std::unique_ptr<Vertex> newVertex = mVCreator(vIndex);
@@ -117,7 +123,7 @@ namespace gte
                 for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j];
-                    LogAssert(edge != nullptr, "Malformed mesh.");
+                    LogAssert(edge != nullptr, "Unexpected condition.");
                     if (edge->V[0] == vIndex)
                     {
                         vertex->VAdjacent.insert(edge->V[1]);
@@ -149,12 +155,12 @@ namespace gte
             {
                 int32_t vIndex = tri->V[i];
                 auto vItem = mVMap.find(vIndex);
-                LogAssert(vItem != mVMap.end(), "Malformed mesh.");
+                LogAssert(vItem != mVMap.end(), "Unexpected condition.");
                 Vertex* vertex = vItem->second.get();
                 for (int32_t j = 0; j < 3; ++j)
                 {
                     auto edge = tri->E[j];
-                    LogAssert(edge != nullptr, "Malformed mesh.");
+                    LogAssert(edge != nullptr, "Unexpected condition.");
                     if (edge->T[0] && !edge->T[1])
                     {
                         if (edge->V[0] == vIndex)
@@ -174,8 +180,9 @@ namespace gte
 
                 if (vertex->TAdjacent.size() == 0)
                 {
-                    LogAssert(vertex->VAdjacent.size() == 0 && vertex->EAdjacent.size() == 0,
-                        "Malformed mesh: Inconsistent vertex adjacency information.");
+                    LogAssert(
+                        vertex->VAdjacent.size() == 0 && vertex->EAdjacent.size() == 0,
+                        "Unexpected condition.");
 
                     mVMap.erase(vItem);
                 }
@@ -184,7 +191,7 @@ namespace gte
             return ETManifoldMesh::Remove(v0, v1, v2);
         }
 
-        // Destroy the vertices, edges, and triangles to obtain an empty mesh.
+        // Destroy the vertices, edges and triangles to obtain an empty mesh.
         virtual void Clear() override
         {
             mVMap.clear();

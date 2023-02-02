@@ -380,6 +380,8 @@
     <ClInclude Include="Mathematics\Mesh.h" />
     <ClInclude Include="Mathematics\MeshCurvature.h" />
     <ClInclude Include="Mathematics\MeshSmoother.h" />
+    <ClInclude Include="Mathematics\MeshStaticManifold2.h" />
+    <ClInclude Include="Mathematics\MeshStaticManifold3.h" />
     <ClInclude Include="Mathematics\Minimize1.h" />
     <ClInclude Include="Mathematics\MinimizeN.h" />
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
@@ -401,6 +403,7 @@
     <ClInclude Include="Mathematics\PolygonTree.h" />
     <ClInclude Include="Mathematics\PolyhedralMassProperties.h" />
     <ClInclude Include="Mathematics\Polyhedron3.h" />
+    <ClInclude Include="Mathematics\PolylineOffset.h" />
     <ClInclude Include="Mathematics\Projection.h" />
     <ClInclude Include="Mathematics\QFNumber.h" />
     <ClInclude Include="Mathematics\QuarticRootsQR.h" />
@@ -426,6 +429,8 @@
     <ClInclude Include="Mathematics\SingularValueDecomposition.h" />
     <ClInclude Include="Mathematics\SlerpEstimate.h" />
     <ClInclude Include="Mathematics\SqrtEstimate.h" />
+    <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h" />
+    <ClInclude Include="Mathematics\StaticVTSManifoldMesh3.h" />
     <ClInclude Include="Mathematics\StringUtility.h" />
     <ClInclude Include="Mathematics\SurfaceExtractor.h" />
     <ClInclude Include="Mathematics\SurfaceExtractorCubes.h" />
@@ -453,7 +458,6 @@
     <ClInclude Include="Mathematics\VEManifoldMesh.h" />
     <ClInclude Include="Mathematics\VertexAttribute.h" />
     <ClInclude Include="Mathematics\VETManifoldMesh.h" />
-    <ClInclude Include="Mathematics\VETManifoldMeshNR.h" />
     <ClInclude Include="Mathematics\VETNonmanifoldMesh.h" />
     <ClInclude Include="Mathematics\GVector.h" />
     <ClInclude Include="Mathematics\IEEEBinary.h" />
@@ -506,6 +510,7 @@
     <ClInclude Include="Mathematics\Vector3.h" />
     <ClInclude Include="Mathematics\Vector4.h" />
     <ClInclude Include="Mathematics\VertexCollapseMesh.h" />
+    <ClInclude Include="Mathematics\VTSManifoldMesh.h" />
     <ClInclude Include="Mathematics\WeakPtrCompare.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -353,6 +353,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMapsGL45.v17", "Sampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectRayPolygonGL45.v17", "Samples\Intersection\IntersectRayPolygon\IntersectRayPolygonGL45.v17.vcxproj", "{42673DE3-56CB-43B0-9703-389DA6AB13DC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetGL45.v17", "Samples\Geometrics\PolylineOffset\PolylineOffsetGL45.v17.vcxproj", "{3C4F6D47-AB73-4291-977A-8317CDA45B9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1681,6 +1683,14 @@ Global
 		{42673DE3-56CB-43B0-9703-389DA6AB13DC}.Release|x64.Build.0 = Release|x64
 		{42673DE3-56CB-43B0-9703-389DA6AB13DC}.Release|x86.ActiveCfg = Release|Win32
 		{42673DE3-56CB-43B0-9703-389DA6AB13DC}.Release|x86.Build.0 = Release|Win32
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Debug|x64.ActiveCfg = Debug|x64
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Debug|x64.Build.0 = Debug|x64
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Debug|x86.ActiveCfg = Debug|Win32
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Debug|x86.Build.0 = Debug|Win32
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Release|x64.ActiveCfg = Release|x64
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Release|x64.Build.0 = Release|x64
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Release|x86.ActiveCfg = Release|Win32
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1859,6 +1869,7 @@ Global
 		{5D7E110B-0EBE-48C6-8644-B1A6D7200AB5} = {B40FD2B8-F29D-41AF-9424-4CD0DD80A472}
 		{27E7E580-432D-42FC-AC48-AD0C6CD0B655} = {B40FD2B8-F29D-41AF-9424-4CD0DD80A472}
 		{42673DE3-56CB-43B0-9703-389DA6AB13DC} = {883613DC-0E4D-4F51-9631-18D37D62743E}
+		{3C4F6D47-AB73-4291-977A-8317CDA45B9E} = {749D8E36-5391-4845-9B67-0DB892B7DB3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED7EAE6E-B55C-4B19-9F14-6DF816AB8730}
