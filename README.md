@@ -54,6 +54,55 @@ The repository contains many sample applications to illustrate some
 features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the installation and release
 notes to understand what is expected of your development environment.
+
+## Known Compiler Problems ##
+I have had several known problems with compilers I use for testing.
+* The compilations on Fedora 37 with gcc 12.1.1 and gcc 12.2.2 generate warnings
+  about potentially uninitialized _M_manager in std_function.h. I believe this
+  is a bug in that header. To work around it, I modified std_function.h by
+  adding to the beginning of the file
+
+        #pragma GCC diagnostic error "-Wmaybe-uninitialized"
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
+  and by adding to the end of the file
+
+        #pragma GCC diagnostic pop
+        #pragma GCC diagnostic pop
+    
+  Alternatively, you can ignore the warnings. If you have an environment with
+  treat-warnings-as-errors (-Werror) defined globally, you can disable this.
+  The error showed up with Release builds but not Debug builds, so perhaps
+  this is an issue with compiler optimization. If my assessment of a bug is
+  incorrect, please let me know. I have read carefully the std_function.h file
+  and cannot determine why the warning is generated.
+
+* The "Intel C++ Compiler Classic" is version 19.2 of the compiler. This is
+  now marked as deprecated, so if you select this for the platform toolset to
+  use in Microsoft Visual Studio, you will see deprecation warnings. I had
+  problems with the integration of Intel C++ Compiler 2022 into Microsoft
+  Visual Studio 2022. You enable this compiler by selecting "Intel DPC++/C++
+  Compiler 2022" as the platform toolset. Warnings occur about macro
+  redefinition, and because I have "treat warnings as errors", the code does
+  not compile. The problem occurred using Intel oneAPI version 2022.3. This
+  has been fixed in Intel oneAPI version 2023.0 where the platform toolset
+  is now "Intel C++ Compiler 2023". It is possible to enable the DPC++
+  compiler, but not through the MSVS dialogs. I have a tool
+  GeometricTools/Tools/ChangePlatformToolset that will do a batch replacement
+  of the platform toolset in the vcxproj files. The command-line parameter
+  for the DPC++ platform toolset is "Intel(R) oneAPI DPC++ Compiler 2023".
+  However, this compiler does not support __stdcall, so on a Windows machine
+  you can compile only non-Windows-API code (no OpenGL/WGL and no Windows SDK).
+  You can compile the mathematics code you need in your application by
+  generating a library using DPC++ and then linking/loading this into an
+  application that has been compiled with the Intel C++ Compiler 2023.
+
+* The Microsoft Visual Studio 2022 Debugger was broken in versions 17.4.x
+  where x < 5. See the [Developer Community explanation](https://developercommunity.visualstudio.com/t/VC-174-has-a-problem-with-debugger-wa/10195269)
+  for details. The work-around is mentioned there, adding /Zc:nrvo- to the option
+  Configuration | C++ | Command Line. The problem has been fixed as of
+  version 17.4.5.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
