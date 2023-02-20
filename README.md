@@ -42,7 +42,7 @@ Compiler 2023.
 
 On Ubuntu 22.04.1 LTS, the code is maintained using Visual Studio Code
 1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 11.2.0, 
+gcc 11.3.0, 
 
 On Fedora 37, the code is maintained using Visual Studio Code 1.49.2
 and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
@@ -57,27 +57,6 @@ notes to understand what is expected of your development environment.
 
 ## Known Compiler Problems ##
 I have had several known problems with compilers I use for testing.
-* The compilations on Fedora 37 with gcc 12.1.1 and gcc 12.2.2 generate warnings
-  about potentially uninitialized _M_manager in std_function.h. I believe this
-  is a bug in that header. To work around it, I modified std_function.h by
-  adding to the beginning of the file
-
-        #pragma GCC diagnostic error "-Wmaybe-uninitialized"
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-
-  and by adding to the end of the file
-
-        #pragma GCC diagnostic pop
-        #pragma GCC diagnostic pop
-    
-  Alternatively, you can ignore the warnings. If you have an environment with
-  treat-warnings-as-errors (-Werror) defined globally, you can disable this.
-  The error showed up with Release builds but not Debug builds, so perhaps
-  this is an issue with compiler optimization. If my assessment of a bug is
-  incorrect, please let me know. I have read carefully the std_function.h file
-  and cannot determine why the warning is generated.
-
 * The "Intel C++ Compiler Classic" is version 19.2 of the compiler. This is
   now marked as deprecated, so if you select this for the platform toolset to
   use in Microsoft Visual Studio, you will see deprecation warnings. I had
