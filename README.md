@@ -53,7 +53,7 @@ gcc 12.2.1.
 The repository contains many sample applications to illustrate some
 features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the
-[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6p5InstallationRelease.pdf).
+[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6p5InstallationRelease.pdf)
 to understand what is expected of your development environment.
 
 ## Known Compiler Problems ##
