@@ -26,6 +26,7 @@
     <ClInclude Include="Mathematics\ApprCircle2.h" />
     <ClInclude Include="Mathematics\ApprCone3.h" />
     <ClInclude Include="Mathematics\ApprCone3EllipseAndPoints.h" />
+    <ClInclude Include="Mathematics\ApprConvexQuadByRect.h" />
     <ClInclude Include="Mathematics\ApprCylinder3.h" />
     <ClInclude Include="Mathematics\ApprEllipse2.h" />
     <ClInclude Include="Mathematics\ApprEllipseByArcs.h" />
@@ -428,6 +429,7 @@
     <ClInclude Include="Mathematics\SinEstimate.h" />
     <ClInclude Include="Mathematics\SingularValueDecomposition.h" />
     <ClInclude Include="Mathematics\SlerpEstimate.h" />
+    <ClInclude Include="Mathematics\SortPointsOnCircle.h" />
     <ClInclude Include="Mathematics\SqrtEstimate.h" />
     <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h" />
     <ClInclude Include="Mathematics\StaticVTSManifoldMesh3.h" />
