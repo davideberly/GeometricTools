@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.02.25
 
 #pragma once
 
@@ -107,8 +107,8 @@ namespace gte
         virtual void Iterate() override
         {
             // Remove the minimum trial value from the heap.
-            size_t i;
-            Real value;
+            size_t i = 0;
+            Real value{};
             this->mHeap.Remove(i, value);
 
             // Promote the trial value to a known value.  The value was
