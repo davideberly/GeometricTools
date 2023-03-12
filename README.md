@@ -56,7 +56,7 @@ everything in the repository. Please read the
 [Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6p5InstallationRelease.pdf)
 to understand what is expected of your development environment.
 
-## Known Compiler Problems ##
+## Known 3rd Party Problems ##
 I have had several known problems with compilers I use for testing.
 * The "Intel C++ Compiler Classic" is version 19.2 of the compiler. This is
   now marked as deprecated, so if you select this for the platform toolset to
@@ -83,6 +83,14 @@ I have had several known problems with compilers I use for testing.
   for details. The work-around is mentioned there, adding /Zc:nrvo- to the option
   Configuration | C++ | Command Line. The problem has been fixed as of
   version 17.4.5.
+
+* After installing NVIDIA driver version 531.18 on a Windows 11 machine with
+  Microsoft Visual Studio 17.5.1, all DirectX 11 samples throw 2 exceptions
+  in D3D11CreateDevice, both tagged as Poco::NotFoundException. If you continue
+  execution after these exceptions, the applications perform correctly. If
+  you then click the application Close icon, another Poco::NotFoundException
+  is generated. You can continue execution after this exception. I have filed
+  a report with NVIDIA, providing a minimal-code reproduction.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
