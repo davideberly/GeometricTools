@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.03.20
 
 #include "Delaunay2DWindow2.h"
 #include <random>
@@ -38,6 +38,18 @@ Delaunay2DWindow2::Delaunay2DWindow2(Parameters& parameters)
     mVertices[6] = Vector2<float>{ 448.0f,  64.0f };
     mVertices[7] = Vector2<float>{ 448.0f, 256.0f };
     mVertices[8] = Vector2<float>{ 448.0f, 448.0f };
+#endif
+
+#if 0
+    // Right-triangle grid with duplicated point.
+    mVertices.resize(7);
+    mVertices[0] = { 64.0f, 64.0f };
+    mVertices[1] = { 64.0f, 448.0f };
+    mVertices[2] = { 448.0f, 64.0f };
+    mVertices[3] = { 256.0f,  256.0f };
+    mVertices[4] = { 256.0f, 64.0f };
+    mVertices[5] = { 64.0f,  256.0f };
+    mVertices[6] = { 256.0f,  256.0f };
 #endif
 
     mDelaunay(static_cast<int32_t>(mVertices.size()), &mVertices[0], 0.001f);

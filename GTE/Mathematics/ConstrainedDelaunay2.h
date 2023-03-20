@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.03.20
 
 #pragma once
 
@@ -587,6 +587,13 @@ namespace gte
         // partitionedEdge.back() = edge[1].
         void Insert(std::array<int32_t, 2> edge, std::vector<int32_t>& partitionedEdge)
         {
+            // Replaced duplicates by their vertex indices that represent the
+            // equivalence classes. The representatives are guaranteed to be in
+            // the mGraph vertex map.
+            auto const& duplicates = this->GetDuplicates();
+            edge[0] = static_cast<int32_t>(duplicates[edge[0]]);
+            edge[1] = static_cast<int32_t>(duplicates[edge[1]]);
+
             LogAssert(
                 edge[0] != edge[1] &&
                 0 <= edge[0] && edge[0] < static_cast<int32_t>(this->GetNumVertices()) &&

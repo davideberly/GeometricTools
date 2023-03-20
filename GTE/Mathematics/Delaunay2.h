@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.03.20
 
 #pragma once
 
@@ -1321,12 +1321,12 @@ namespace gte
             // the equality comparison used for elements in the same bucket.
             std::size_t operator()(ProcessedVertex const& v) const
             {
-                return HashValue(v.vertex[0], v.vertex[1], v.location);
+                return HashValue(v.vertex[0], v.vertex[1]);
             }
 
             bool operator()(ProcessedVertex const& v0, ProcessedVertex const& v1) const
             {
-                return v0.vertex == v1.vertex && v0.location == v1.location;
+                return v0.vertex == v1.vertex;
             }
 
             Vector2<T> vertex;
