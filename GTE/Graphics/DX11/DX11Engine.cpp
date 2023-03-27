@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.11.27
+// Version: 6.0.2023.03.27
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -1087,6 +1087,54 @@ void DX11Engine::DisableRBuffers(Shader const* shader, DX11Shader* dxShader)
 
 void DX11Engine::EnableTextures(Shader const* shader, DX11Shader* dxShader)
 {
+    // According to the Remarks section in the documentation for
+    // OMSetRenderTargetsAndUnorderedAccessViews
+    // https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11devicecontext-omsetrendertargetsandunorderedaccessviews
+    // the render target views (RTVs), depth-stencil view (DSV) and the
+    // unordered access views (UAVs) for pixel shaders must all be set at the
+    // same time. Moreover, the starting bind point for the UAVs must occur
+    // after the last bind point for the bound RTVs.
+    // 
+    // The documentation needs clarification. Later in the Remarks section,
+    // three cases are discussed for OMSetRenderTargetsAndUnorderedAccessViews
+    // to succeed. Case 2 is about when the input for number of RTVs is set to
+    // D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL. The case 2 documentation
+    // states that OMSetRenderTargetsAndUnorderedAccessViews binds only UAVs.
+    // The Parameters section of the documentation page states that when the
+    // 'keep' parameter is used, the setting of render targets does not modify
+    // the currently bound RTVs and DSV. My interpretation is that you do not
+    // have to set RTVs/DSV/UAVs for a pixel shader all at the same time; you
+    // can set the RTVs/DSV at one time and the UAVs at another time.
+    //
+    // When a pixel shader uses 2 or more UAVs, the previous code for
+    // DX11Engine::EnableTextures would enable each UAV one at a time by
+    // passing the bind point and the UAV pointer to dxShader->EnableUAView.
+    // I found that this was not working properly in some experimental code
+    // where the pixel shader used 2 UAVs. The HLSL compiler assigned the first
+    // UAV to register u1 and the second UAV to register u2. I presume that the
+    // pixel shader color output (SV_TARGET0) is assigned to register u0. The
+    // EnableTextures call binds register u1 first and register u2 second, so
+    // internally OMSetRenderTargetsAndUnorderedAccessViews does not unbind
+    // the first UAV when the second UAV is bound; see the unbinding semantics
+    // described in the Case 2 documentation. During the draw call, the DX11
+    // debug layer complained that register u1 did not have a resource bound
+    // to it, which appears contradictory to the unbinding semantics.
+    //
+    // I modified EnableTextures so that when it is time to bind resources to
+    // a pixel shader, I create a batch of the pixel shader UAVs and set them
+    // all at once using OMSetRenderTargetsAndUnorderedAccessViews. My
+    // experimental code then worked correctly. If this is what is intended by
+    // DX11 for pixel shader UAVs, an implication is that the multiple UAVs
+    // must be assigned to consecutive u-registers. For example, you cannot
+    // specify in the pixel shader HLSL code that the first UAV should be
+    // assigned to register u1 and the second UAV should be assigned to
+    // register u3.
+
+    auto type = shader->GetType();
+    std::vector<uint32_t> bindPoints{};
+    std::vector<ID3D11UnorderedAccessView*> uavs{};
+    std::vector<uint32_t> initialCounts{};
+
     int32_t const index = TextureSingle::shaderDataLookup;
     for (auto const& tx : shader->GetData(index))
     {
@@ -1097,7 +1145,18 @@ void DX11Engine::EnableTextures(Shader const* shader, DX11Shader* dxShader)
             {
                 if (tx.isGpuWritable)
                 {
-                    dxShader->EnableUAView(mImmediate, tx.bindPoint, dxTX->GetUAView(), 0xFFFFFFFFu);
+                    if (type == GT_PIXEL_SHADER)
+                    {
+                        // Defer binding the UAV until we have accumulated all
+                        // the UAVs for the pixel shader.
+                        bindPoints.push_back(tx.bindPoint);
+                        uavs.push_back(dxTX->GetUAView());
+                        initialCounts.push_back(0xFFFFFFFFu);
+                    }
+                    else
+                    {
+                        dxShader->EnableUAView(mImmediate, tx.bindPoint, dxTX->GetUAView(), 0xFFFFFFFFu);
+                    }
                 }
                 else
                 {
@@ -1112,6 +1171,24 @@ void DX11Engine::EnableTextures(Shader const* shader, DX11Shader* dxShader)
         else
         {
             LogError(tx.name + " is null texture.");
+        }
+    }
+
+    // If there are 2 or more UAVs, bind them all at once.
+    if (type == GT_PIXEL_SHADER)
+    {
+        uint32_t numBindPoints = static_cast<uint32_t>(bindPoints.size());
+        if (numBindPoints > 0)
+        {
+            // Ensure that the bind points are consecutive integers.
+            for (uint32_t i = 1; i < numBindPoints; ++i)
+            {
+                LogAssert(bindPoints[i] == bindPoints[i - 1] + 1, "Bind points must be consecutive.");
+            }
+
+            mImmediate->OMSetRenderTargetsAndUnorderedAccessViews(
+                D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr,
+                bindPoints[0], numBindPoints, uavs.data(), initialCounts.data());
         }
     }
 }
