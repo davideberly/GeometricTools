@@ -90,8 +90,8 @@ I have had several known problems with compilers I use for testing.
   execution after these exceptions, the applications perform correctly. If
   you then click the application Close icon, another Poco::NotFoundException
   is generated. You can continue execution after this exception. I have filed
-  a report with NVIDIA, providing a minimal-code reproduction. NOTE: Version
-  531.29 of the driver was released and has the same problem.
+  a report with NVIDIA, providing a minimal-code reproduction. NOTE: Versions
+  531.29 and 531.41 of the driver were released and have the same problem.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
