@@ -388,6 +388,9 @@
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
     <ClInclude Include="Mathematics\NaturalCubicSpline.h" />
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h" />
+    <ClInclude Include="Mathematics\OBBTree.h" />
+    <ClInclude Include="Mathematics\OBBTreeOfSegments.h" />
+    <ClInclude Include="Mathematics\OBBTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\OdeEuler.h" />
     <ClInclude Include="Mathematics\OdeImplicitEuler.h" />
     <ClInclude Include="Mathematics\OdeMidpoint.h" />

@@ -1584,5 +1584,14 @@
     <ClInclude Include="Mathematics\SortPointsOnCircle.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\OBBTreeOfSegments.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OBBTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OBBTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
