@@ -91,7 +91,7 @@ I have had several known problems with compilers I use for testing.
   you then click the application Close icon, another Poco::NotFoundException
   is generated. You can continue execution after this exception. I have filed
   a report with NVIDIA, providing a minimal-code reproduction. NOTE: Versions
-  531.29, 531.41 and 531.61 of the driver were released and have the same
+  531.29, 531.41, 531.61, and 531.68 of the driver were released and have the same
   problem.
  
 ## Links to GTE-Based Projects ##
