@@ -3,12 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.05.07
 
 #pragma once
 
 #include <stdexcept>
 #include <string>
+
+// If exceptions are enabled, throw the exception passed in parameter, otherwise call std::terminate.
+#if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || (defined(_MSC_VER) && defined(_CPPUNWIND))) && !defined(GTE_NO_EXCEPTIONS)
+    #define GTE_THROW_OR_TERMINATE(exception, message) throw exception(message)
+#else
+    #define GTE_THROW_OR_TERMINATE(exception, message) std::terminate()
+#endif
 
 // Generate exceptions about unexpected conditions. The messages can be
 // intercepted in a 'catch' block and processed as desired. The 'exception'
@@ -19,18 +26,18 @@
 // The report uses the current source file, function and line on which the
 // macro is expanded.
 #define GTE_ASSERT(condition, exception, message) \
-if (!(condition)) { throw exception(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
+if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
 
 #define GTE_ERROR(exception, message) \
-{ throw exception(std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
+{ GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
 
 // The report uses the specified source file, function and line. The file
 // and function are type 'char const*' and the line is type 'int32_t'.
 #define GTE_ASSERT_INDIRECT(condition, exception, file, function, line, message) \
-if (!(condition)) { throw exception(std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
+if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
 
 #define GTE_ERROR_INDIRECT(exception, file, function, line, message) \
-{ throw exception(std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
+{ GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
 
 #define LogAssert(condition, message) \
 GTE_ASSERT(condition, std::runtime_error, message)
