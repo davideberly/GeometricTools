@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <string>
 
-// If exceptions are enabled, throw the exception passed in parameter, otherwise call std::terminate.
+// If exceptions are enabled, throw the exception passed in, otherwise call std::terminate.
 #if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || (defined(_MSC_VER) && defined(_CPPUNWIND))) && !defined(GTE_NO_EXCEPTIONS)
     #define GTE_THROW_OR_TERMINATE(exception, message) throw exception(message)
 #else
