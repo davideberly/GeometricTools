@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.05.05
 
 #pragma once
 
@@ -895,6 +895,9 @@ namespace std
         }
         numer.SetSign(saveSign);
         *exponent = e;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+        result.mValue = (double)result;
+#endif
         return result;
     }
 
@@ -905,6 +908,9 @@ namespace std
         int32_t biasedExponent = result.GetNumerator().GetBiasedExponent();
         biasedExponent += exponent;
         result.GetNumerator().SetBiasedExponent(biasedExponent);
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+        result.mValue = (double)result;
+#endif
         return result;
     }
 
