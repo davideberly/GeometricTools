@@ -1593,5 +1593,8 @@
     <ClInclude Include="Mathematics\OBBTree.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\ApprCurveByArcs.h">
+      <Filter>Approximation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

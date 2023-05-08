@@ -27,6 +27,7 @@
     <ClInclude Include="Mathematics\ApprCone3.h" />
     <ClInclude Include="Mathematics\ApprCone3EllipseAndPoints.h" />
     <ClInclude Include="Mathematics\ApprConvexQuadByRect.h" />
+    <ClInclude Include="Mathematics\ApprCurveByArcs.h" />
     <ClInclude Include="Mathematics\ApprCylinder3.h" />
     <ClInclude Include="Mathematics\ApprEllipse2.h" />
     <ClInclude Include="Mathematics\ApprEllipseByArcs.h" />
@@ -265,6 +266,7 @@
     <ClInclude Include="Mathematics\IntrAlignedBox3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrAlignedBox3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrArc2Arc2.h" />
+    <ClInclude Include="Mathematics\IntrAreaEllipse2Ellipse2.h" />
     <ClInclude Include="Mathematics\IntrCanonicalBox3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrCapsule3Capsule3.h" />
     <ClInclude Include="Mathematics\IntrCircle2Arc2.h" />

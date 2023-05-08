@@ -27,6 +27,7 @@
     <ClInclude Include="Mathematics\ApprCone3.h" />
     <ClInclude Include="Mathematics\ApprCone3EllipseAndPoints.h" />
     <ClInclude Include="Mathematics\ApprConvexQuadByRect.h" />
+    <ClInclude Include="Mathematics\ApprCurveByArcs.h" />
     <ClInclude Include="Mathematics\ApprCylinder3.h" />
     <ClInclude Include="Mathematics\ApprEllipse2.h" />
     <ClInclude Include="Mathematics\ApprEllipseByArcs.h" />

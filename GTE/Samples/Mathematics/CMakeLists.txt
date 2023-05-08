@@ -9,6 +9,7 @@ set(GTE_VERSION_MINOR 5)
 project(Mathematics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
 cmake_minimum_required(VERSION 3.8)
+add_subdirectory(ApproximateBezierCurveByArcs)
 add_subdirectory(ApproximateEllipsesByArcs)
 add_subdirectory(BSplineCurveFitter)
 add_subdirectory(BSplineCurveReduction)

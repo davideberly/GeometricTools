@@ -717,6 +717,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetDX11.v16", "S
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetGL45.v16", "Samples\Geometrics\PolylineOffset\PolylineOffsetGL45.v16.vcxproj", "{273E0ED4-036C-42E0-B346-C90489C63EB3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproximateBezierCurveByArcsDX11.v16", "Samples\Mathematics\ApproximateBezierCurveByArcs\ApproximateBezierCurveByArcsDX11.v16.vcxproj", "{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproximateBezierCurveByArcsGL45.v16", "Samples\Mathematics\ApproximateBezierCurveByArcs\ApproximateBezierCurveByArcsGL45.v16.vcxproj", "{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -3357,6 +3361,22 @@ Global
 		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x64.Build.0 = Release|x64
 		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x86.ActiveCfg = Release|Win32
 		{273E0ED4-036C-42E0-B346-C90489C63EB3}.Release|x86.Build.0 = Release|Win32
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Debug|x64.ActiveCfg = Debug|x64
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Debug|x64.Build.0 = Debug|x64
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Debug|x86.ActiveCfg = Debug|Win32
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Debug|x86.Build.0 = Debug|Win32
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Release|x64.ActiveCfg = Release|x64
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Release|x64.Build.0 = Release|x64
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Release|x86.ActiveCfg = Release|Win32
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF}.Release|x86.Build.0 = Release|Win32
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Debug|x64.ActiveCfg = Debug|x64
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Debug|x64.Build.0 = Debug|x64
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Debug|x86.ActiveCfg = Debug|Win32
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Debug|x86.Build.0 = Debug|Win32
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Release|x64.ActiveCfg = Release|x64
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Release|x64.Build.0 = Release|x64
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Release|x86.ActiveCfg = Release|Win32
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3717,6 +3737,8 @@ Global
 		{CF2AA9EE-0CDD-4BA8-A1D9-7CB5D6294AEA} = {1D2C011A-D685-4767-BBDD-6870A39D3133}
 		{159E7C50-7267-4E9D-8DEE-9F58D434A0ED} = {DBA1454A-7B35-4088-90F0-BF8B09DA90C7}
 		{273E0ED4-036C-42E0-B346-C90489C63EB3} = {9D0EE1E3-7D3A-419C-ABDE-7EBF0F025608}
+		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF} = {729CB960-76EB-4BD7-9855-300474B6E1D5}
+		{DD2CB2D8-EBCC-4C32-9A35-80B10CFB4085} = {88ACB8B5-43DB-42C3-B4AF-399E93A10312}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA181D3A-34ED-4371-B94B-6E560CCE35ED}

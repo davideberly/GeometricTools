@@ -1593,5 +1593,11 @@
     <ClInclude Include="Mathematics\OBBTreeOfSegments.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrAreaEllipse2Ellipse2.h">
+      <Filter>Intersection\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ApprCurveByArcs.h">
+      <Filter>Approximation</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
