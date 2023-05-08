@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.02.25
+// Version: 6.2.2023.05.08
 
 #pragma once
 
@@ -274,7 +274,7 @@ namespace gte
         }
 
         // Accessors for informational purposes.
-        inline std::vector<typename OBBTreeForPoints<T>::Node> const&
+        inline std::vector<OBBNode<T>> const&
         GetOBBTree() const
         {
             return mOBBTree;
@@ -298,11 +298,9 @@ namespace gte
     private:
         void CreateOBBTree(std::vector<Vector3<T>> const& points)
         {
-            uint32_t const numPoints = static_cast<uint32_t>(points.size());
-            char const* rawPoints = reinterpret_cast<char const*>(points.data());
-            size_t const stride = sizeof(points[0]);
-            OBBTreeForPoints<T> creator(numPoints, rawPoints, stride);
-            mOBBTree = creator.GetTree();
+            OBBTreeOfPoints<T> creator{};
+            creator.Create(points);
+            mOBBTree = creator.GetNodes();
         }
 
         void LocatePlanes(size_t nodeIndex)
@@ -322,12 +320,12 @@ namespace gte
                 }
             }
 
-            if (node.leftChild != std::numeric_limits<uint32_t>::max())
+            if (node.leftChild != std::numeric_limits<size_t>::max())
             {
                 LocatePlanes(node.leftChild);
             }
 
-            if (node.rightChild != std::numeric_limits<uint32_t>::max())
+            if (node.rightChild != std::numeric_limits<size_t>::max())
             {
                 LocatePlanes(node.rightChild);
             }
@@ -438,7 +436,7 @@ namespace gte
         }
 
         T mBoxExtentEpsilon, mCosAngleEpsilon;
-        std::vector<typename OBBTreeForPoints<T>::Node> mOBBTree;
+        std::vector<OBBNode<T>> mOBBTree;
         std::vector<Plane3<T>> mPlanes;
         std::vector<std::vector<int32_t>> mIndices;
         std::vector<OrientedBox3<T>> mBoxes;
