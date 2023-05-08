@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.05.05
 
 #pragma once
 
@@ -662,89 +662,114 @@ namespace gte
         static void SolveBiquadratic(Rational const& c0, Rational const& c2,
             std::map<Rational, int32_t>& rmMap)
         {
-            // Solve 0 = x^4 + c2*x^2 + c0 = (x^2 + c2/2)^2 + a1, where
-            // a1 = c0 - c2^2/2.  We know that c0 != 0 at the time of the
-            // function call, so x = 0 is not a root.  The condition c1 = 0
-            // implies the quartic Delta = 256*c0*a1^2.
+            // Solve x^4 + c2*x^2 + c0 = 0. We know that c0 != 0 at the time
+            // of the SolveBiquadratic call, so x = 0 is not a root. Define
+            // u = -c2/2 and v = c2^2/4 - c0 = u^2 - c0. Using the quadratic
+            // formula,
+            //   x^2 is in { u-sqrt(v), u+sqrt(v) }
+            // Computing the square root,
+            //   x is in { -sqrt(u-sqrt(v)), sqrt(u-sqrt(v)),
+            //             -sqrt(u+sqrt(v)), sqrt(u+sqrt(v)) }
+            // Because we know c0 != 0, which implies 0 is not a root, it
+            // must be that u-sqrt(v) != 0 and u+sqrt(v) != 0.
+            // 
+            // Let z = a+b*i with b != 0. The square roots are +/- (c+d*i)
+            // where
+            //   c = sqrt((a+sqrt(a^2+b^2))/2)
+            //   d = sign(b) * sqrt((-a+sqrt(a^2+b^2))/2)
+            // 
+            // v > 0, u-sqrt(v) > 0 [implies u+sqrt(v) > 0]: (block 23)
+            //   Four real roots: r0, -r0, r1, -r1
+            //     r0 = sqrt(u-sqrt(v))
+            //     r1 = sqrt(u+sqrt(v))
+            // 
+            // v > 0, u+sqrt(v) < 0 [implies u-sqrt(v) < 0]: (block 24)
+            //   Two complex conjugate pairs: z0, conj(z0), -z1, -conj(z1)
+            //     z0 = sqrt(-u+sqrt(v)) * i
+            //     z1 = sqrt(-u-sqrt(v)) * i
+            // 
+            // v > 0, u-sqrt(v) < 0, u+sqrt(v) > 0: (block 25)
+            //   Two real roots, one complex conjugate pair: r0, -r0, z0, conj(z0)
+            //    r0 = sqrt(u+sqrt(v))
+            //    z0 = sqrt(-u+sqrt(v)) * i
+            //
+            // v < 0: (block 26)
+            //   Two complex conjugate pairs: z0, conj(z0), -z0, -conj(z0)
+            //     z0 = sqrt((u+sqrt(u^2-v))/2) - sqrt((-u+sqrt(u^2-v))/2) * i
+            //        = sqrt((-c2/2+sqrt(c0))/2) - sqrt((c2/2+sqrt(c0))/2) * i
+            // 
+            // v = 0, u > 0: (block 27)
+            //   Two real roots, each of multiplicity 2: r0, -r0
+            //     r0 = sqrt(u) = sqrt(-c2/2)
+            //
+            // v = 0, u < 0: (block 28)
+            //   Two complex conjugate pairs: z0, conj(z0), -z0, -conj(z0)
+            //     z0 = sqrt(-u) * i = sqrt(c2/2) * i
 
-            Rational const zero = 0, rat2 = 2, rat256 = 256;
-            Rational c2Half = c2 / rat2;
-            Rational a1 = c0 - c2Half * c2Half;
-            Rational delta = rat256 * c0 * a1 * a1;
-            if (delta > zero)
+            Rational const zero = static_cast<Rational>(0);
+            Rational u = c2 / static_cast<Rational>(-2);
+            Rational v = u * u - c0;
+            if (v > zero)
             {
-                if (c2 < zero)
+                Rational sqrtv = std::sqrt(v);
+                Rational upsqrtv = u + sqrtv;
+                // Compute u - sqrt(v) = c0 / (u + sqrt(v)) to avoid
+                // subtractive cancellation.
+                Rational umsqrtv = c0 / upsqrtv;
+                if (umsqrtv > zero)
                 {
-                    if (a1 < zero)
-                    {
-                        // Four simple roots.
-                        Rational temp0 = (Rational)std::sqrt(-(double)a1);
-                        Rational temp1 = -c2Half - temp0;
-                        Rational temp2 = -c2Half + temp0;
-                        Rational root1 = (Rational)std::sqrt((double)temp1);
-                        Rational root0 = -root1;
-                        Rational root2 = (Rational)std::sqrt((double)temp2);
-                        Rational root3 = -root2;
-                        rmMap.insert(std::make_pair(root0, 1));
-                        rmMap.insert(std::make_pair(root1, 1));
-                        rmMap.insert(std::make_pair(root2, 1));
-                        rmMap.insert(std::make_pair(root3, 1));
-                        GTE_ROOTS_LOW_DEGREE_BLOCK(23);
-                    }
-                    else  // a1 > 0
-                    {
-                        // Two simple complex conjugate pairs.
-                        // double thetaDiv2 = atan2(sqrt(a1), -c2/2) / 2.0;
-                        // double cs = cos(thetaDiv2), sn = sin(thetaDiv2);
-                        // double length = pow(c0, 0.25);
-                        // Complex z0 = length*(cs + i*sn);
-                        // Complex z0conj = length*(cs - i*sn);
-                        // Complex z1 = length*(-cs + i*sn);
-                        // Complex z1conj = length*(-cs - i*sn);
-                        GTE_ROOTS_LOW_DEGREE_BLOCK(24);
-                    }
+                    // Real roots: r0, -r0, r1, -r1
+                    // r0 = sqrt(u-sqrt(v))
+                    // r1 = sqrt(u+sqrt(v))
+                    Rational r0 = std::sqrt(umsqrtv);
+                    Rational r1 = std::sqrt(upsqrtv);
+                    rmMap.insert(std::make_pair(r0, 1));
+                    rmMap.insert(std::make_pair(-r0, 1));
+                    rmMap.insert(std::make_pair(r1, 1));
+                    rmMap.insert(std::make_pair(-r1, 1));
+                    GTE_ROOTS_LOW_DEGREE_BLOCK(23);
                 }
-                else  // c2 >= 0
+                else if (upsqrtv < zero)
                 {
-                    // Two simple complex conjugate pairs.
-                    // Complex z0 = -i*sqrt(c2/2 - sqrt(-a1));
-                    // Complex z0conj = +i*sqrt(c2/2 - sqrt(-a1));
-                    // Complex z1 = -i*sqrt(c2/2 + sqrt(-a1));
-                    // Complex z1conj = +i*sqrt(c2/2 + sqrt(-a1));
+                    // Complex roots: z0, conj(z0), -z1, -conj(z1)
+                    // z0 = sqrt(-u+sqrt(v)) * i
+                    // z1 = sqrt(-u-sqrt(v)) * i
+                    GTE_ROOTS_LOW_DEGREE_BLOCK(24);
+                }
+                else  // umsqrtv < 0 and upsqrtv > 0
+                {
+                    // Real roots: r0, -r0
+                    // Complex roots: z0, conj(z0)
+                    // r0 = sqrt(u+sqrt(v))
+                    // z0 = sqrt(-u+sqrt(v)) * i
+                    Rational r0 = std::sqrt(upsqrtv);
+                    rmMap.insert(std::make_pair(r0, 1));
+                    rmMap.insert(std::make_pair(-r0, 1));
                     GTE_ROOTS_LOW_DEGREE_BLOCK(25);
                 }
             }
-            else if (delta < zero)
+            else if (v < zero)
             {
-                // Two simple real roots.
-                Rational temp0 = (Rational)std::sqrt(-(double)a1);
-                Rational temp1 = -c2Half + temp0;
-                Rational root1 = (Rational)std::sqrt((double)temp1);
-                Rational root0 = -root1;
-                rmMap.insert(std::make_pair(root0, 1));
-                rmMap.insert(std::make_pair(root1, 1));
-
-                // One complex conjugate pair.
-                // Complex z0 = -i*sqrt(c2/2 + sqrt(-a1));
-                // Complex z0conj = +i*sqrt(c2/2 + sqrt(-a1));
+                // Complex roots: z0, conj(z0), -z0, -conj(z0)
+                // z0 = sqrt((u+sqrt(u^2-v))/2)
+                //      - sqrt((-u+sqrt(u^2-v))/2) * i
                 GTE_ROOTS_LOW_DEGREE_BLOCK(26);
             }
-            else  // delta = 0
+            else // v = 0
             {
-                if (c2 < zero)
+                if (u > zero)
                 {
-                    // Two double real roots.
-                    Rational root1 = (Rational)std::sqrt(-(double)c2Half);
-                    Rational root0 = -root1;
-                    rmMap.insert(std::make_pair(root0, 2));
-                    rmMap.insert(std::make_pair(root1, 2));
+                    // Real roots: r0, r0, -r0, -r0
+                    // r0 = sqrt(u)
+                    Rational r0 = std::sqrt(u);
+                    rmMap.insert(std::make_pair(r0, 2));
+                    rmMap.insert(std::make_pair(-r0, 2));
                     GTE_ROOTS_LOW_DEGREE_BLOCK(27);
                 }
-                else  // c2 > 0
+                else  // u < 0
                 {
-                    // Two double complex conjugate pairs.
-                    // Complex z0 = -i*sqrt(c2/2);  // multiplicity 2
-                    // Complex z0conj = +i*sqrt(c2/2);  // multiplicity 2
+                    // Complex roots: z0, conj(z0), z0, conj(z0)
+                    // z0 = sqrt(-u) * i
                     GTE_ROOTS_LOW_DEGREE_BLOCK(28);
                 }
             }
@@ -917,54 +942,48 @@ namespace gte
         static void GetRootInfoBiquadratic(Rational const& c0,
             Rational const& c2, std::vector<int32_t>& info)
         {
-            // Solve 0 = x^4 + c2*x^2 + c0 = (x^2 + c2/2)^2 + a1, where
-            // a1 = c0 - c2^2/2.  We know that c0 != 0 at the time of the
-            // function call, so x = 0 is not a root.  The condition c1 = 0
-            // implies the quartic Delta = 256*c0*a1^2.
-
-            Rational const zero = 0, rat2 = 2, rat256 = 256;
-            Rational c2Half = c2 / rat2;
-            Rational a1 = c0 - c2Half * c2Half;
-            Rational delta = rat256 * c0 * a1 * a1;
-            if (delta > zero)
+            Rational const zero = static_cast<Rational>(0);
+            Rational u = c2 / static_cast<Rational>(-2);
+            Rational v = u * u - c0;
+            if (v > zero)
             {
-                if (c2 < zero)
+                Rational sqrtv = std::sqrt(v);
+                Rational upsqrtv = u + sqrtv;
+                Rational umsqrtv = c0 / upsqrtv;
+                if (umsqrtv > zero)
                 {
-                    if (a1 < zero)
-                    {
-                        // Four simple roots.
-                        info.push_back(1);
-                        info.push_back(1);
-                        info.push_back(1);
-                        info.push_back(1);
-                    }
-                    else  // a1 > 0
-                    {
-                        // Two simple complex conjugate pairs.
-                    }
+                    // Four simple roots.
+                    info.push_back(1);
+                    info.push_back(1);
+                    info.push_back(1);
+                    info.push_back(1);
                 }
-                else  // c2 >= 0
+                else if (upsqrtv < zero)
                 {
                     // Two simple complex conjugate pairs.
                 }
+                else  // umsqrtv < 0 and upsqrtv > 0
+                {
+                    // Two simple real roots, one complex conjugate pair.
+                    info.push_back(1);
+                    info.push_back(1);
+                }
             }
-            else if (delta < zero)
+            else if (v < zero)
             {
-                // Two simple real roots, one complex conjugate pair.
-                info.push_back(1);
-                info.push_back(1);
+                // Two simple complex conjugate pairs.
             }
-            else  // delta = 0
+            else // v = 0
             {
-                if (c2 < zero)
+                if (u > zero)
                 {
                     // Two double real roots.
                     info.push_back(2);
                     info.push_back(2);
                 }
-                else  // c2 > 0
+                else  // u < 0
                 {
-                    // Two double complex conjugate pairs.
+                    // Double complex conjugate pairs.
                 }
             }
         }
