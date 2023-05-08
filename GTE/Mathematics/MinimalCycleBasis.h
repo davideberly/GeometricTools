@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.05.06
 
 #pragma once
 
@@ -546,7 +546,7 @@ namespace gte
         {
             Vertex* vNext = nullptr;
             bool vCurrConvex = false;
-            std::array<Real, 2> dCurr, dNext;
+            std::array<Real, 2> dCurr{}, dNext{};
             if (vPrev)
             {
                 dCurr[0] = (*vCurr->position)[0] - (*vPrev->position)[0];
@@ -612,7 +612,7 @@ namespace gte
         {
             Vertex* vNext = nullptr;
             bool vCurrConvex = false;
-            std::array<Real, 2> dCurr, dNext;
+            std::array<Real, 2> dCurr{}, dNext{};
             if (vPrev)
             {
                 dCurr[0] = (*vCurr->position)[0] - (*vPrev->position)[0];
