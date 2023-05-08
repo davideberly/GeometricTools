@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.05.06
 
 #pragma once
 
@@ -114,7 +114,7 @@ namespace gte
             if (xmin < xmax)
             {
                 DisjointIntervals input(xmin, xmax);
-                DisjointIntervals output = std::move(*this - input);
+                DisjointIntervals output = *this - input;
                 mEndpoints = std::move(output.mEndpoints);
                 return true;
             }
