@@ -44,9 +44,9 @@ On Ubuntu 22.04.1 LTS, the code is maintained using Visual Studio Code
 1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
 gcc 11.3.0, 
 
-On Fedora 37, the code is maintained using Visual Studio Code 1.49.2
+On Fedora 38, the code is maintained using Visual Studio Code 1.49.2
 and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 12.2.1.
+gcc 13.1.1.
 
 ## Getting Started ##
 
