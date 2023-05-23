@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.05
+// Version: 6.0.2023.05.22
 
 #pragma once
 
@@ -526,7 +526,7 @@ namespace gte
                     SolveCubic(c1sqr - rat4 * c0 * c2, rat8 * c0, rat4 * c2, -rat8, rmCubicMap);
                     Rational t = (Rational)rmCubicMap.rbegin()->first;
                     Rational alphaSqr = rat2 * t - c2;
-                    Rational alpha = (Rational)std::sqrt((double)alphaSqr);
+                    Rational alpha = (Rational)std::sqrt(std::max((double)alphaSqr, 0.0));
                     double sgnC1;
                     if (c1 > zero)
                     {
@@ -637,7 +637,7 @@ namespace gte
                         Rational alpha = rat2 * root0;
                         Rational beta = c2 + rat3 * root0 * root0;
                         Rational discr = alpha * alpha - rat4 * beta;
-                        Rational temp1 = (Rational)std::sqrt((double)discr);
+                        Rational temp1 = (Rational)std::sqrt(std::max((double)discr, 0.0));
                         Rational root1 = (-alpha - temp1) / rat2;
                         Rational root2 = (-alpha + temp1) / rat2;
                         rmMap.insert(std::make_pair(root0, 2));
