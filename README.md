@@ -90,9 +90,21 @@ I have had several known problems with compilers I use for testing.
   execution after these exceptions, the applications perform correctly. If
   you then click the application Close icon, another Poco::NotFoundException
   is generated. You can continue execution after this exception. I have filed
-  a report with NVIDIA, providing a minimal-code reproduction. NOTE: Versions
-  531.29, 531.41, 531.61, 531.68, 531.79, and 532.03 of the driver were released
+  a report with NVIDIA, providing a minimal-code reproduction.
+
+  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, and 532.03 of the driver were released
   and have the same problem.
+  
+  WORKAROUND: This assumes you have checked the box
+  in MSVS Exception Settings window that says "<All C++ Exceptions not in this list>".
+  If you do not have this checked, set a breakpoint at a line of code before the
+  call to D3D11CreateDevice and run to the breakpoint. Then check the aforementioned
+  box. Continue the execution and an exception dialog is launched when the call is
+  made to D3D11CreateDevice. That dialog has a box checked "Break when this
+  exception type is thrown". Uncheck the box. You will see a new item in the
+  Exception Settings window under the "C++ Exceptions" that says "Poco::NotFoundException".
+  It is unchecked, which means the debugger will not stop execution for that
+  particular exception.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
