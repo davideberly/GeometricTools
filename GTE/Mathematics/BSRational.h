@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.05
+// Version: 6.0.2023.05.25
 
 #pragma once
 
@@ -348,7 +348,7 @@ namespace gte
         {
             mNumerator.SetSign(sign);
             mDenominator.SetSign(1);
-#if defined(GTL_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
             mValue = sign * std::fabs(mValue);
 #endif
         }
@@ -356,6 +356,14 @@ namespace gte
         inline int32_t GetSign() const
         {
             return mNumerator.GetSign() * mDenominator.GetSign();
+        }
+
+        inline void Negate()
+        {
+            mNumerator.Negate();
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline BSNumber<UInteger> const& GetNumerator() const

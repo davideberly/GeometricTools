@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.05.25
 
 #pragma once
 
@@ -324,6 +324,14 @@ namespace gte
         inline int32_t GetSign() const
         {
             return mSign;
+        }
+
+        inline void Negate()
+        {
+            mSign = -mSign;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline void SetBiasedExponent(int32_t biasedExponent)
