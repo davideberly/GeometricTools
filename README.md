@@ -90,10 +90,12 @@ I have had several known problems with compilers I use for testing.
   execution after these exceptions, the applications perform correctly. If
   you then click the application Close icon, another Poco::NotFoundException
   is generated. You can continue execution after this exception. I have filed
-  a report with NVIDIA, providing a minimal-code reproduction.
+  a report with NVIDIA, providing a minimal-code reproduction. I recently
+  posted the workaround (listed below) and asked for status on the exception.
+  No response in that forum thread, so I suspect this is low priority for NVIDIA.
 
-  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, and 532.03 of the driver were released
-  and have the same problem.
+  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, and 535.98
+  of the driver were released and have the same problem.
   
   WORKAROUND: This assumes you have checked the box
   in MSVS Exception Settings window that says "<All C++ Exceptions not in this list>".
@@ -104,7 +106,9 @@ I have had several known problems with compilers I use for testing.
   exception type is thrown". Uncheck the box. You will see a new item in the
   Exception Settings window under the "C++ Exceptions" that says "Poco::NotFoundException".
   It is unchecked, which means the debugger will not stop execution for that
-  particular exception.
+  particular exception. NOTE: This information is stored in the *.user files.
+  If you delete such a file, you lose the exception settings, which means going
+  through the aforementioned process again.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
