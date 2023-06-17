@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.05.25
+// Version: 6.6.2023.06.16
 
 #pragma once
 
@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <type_traits>
 
 // Compute the real-valued roots of a quadratic polynomial with
@@ -45,12 +46,26 @@ namespace gte
         {
         }
 
+        PolynomialRoot(PolynomialRoot const& other) = default;
+
         PolynomialRoot(T const& inX, T const& inF, size_t inM)
             :
             x(inX),
             f(inF),
             m(inM)
         {
+        }
+
+        PolynomialRoot& operator=(PolynomialRoot const& other) = default;
+
+        bool operator==(PolynomialRoot& other) const
+        {
+            return x == other.x;
+        }
+
+        bool operator<(PolynomialRoot& other) const
+        {
+            return x < other.x;
         }
 
         // x is the root (or root estimate), f is the polynomial evaluated
@@ -79,8 +94,6 @@ namespace gte
             roots[0] = PolynomialRoot<T>{};
             roots[1] = PolynomialRoot<T>{};
 
-            T xRoot{}, fRoot{};
-
             // Test whether the degree is smaller than 2.
             if (p2 == zero)
             {
@@ -93,8 +106,8 @@ namespace gte
                 }
                 else
                 {
-                    xRoot = -p0 / p1;
-                    fRoot = p0 + xRoot * p1;
+                    T xRoot = -p0 / p1;
+                    T fRoot = p0 + xRoot * p1;
                     roots[0] = PolynomialRoot<T>(xRoot, fRoot, 1);
                     return 1;
                 }
@@ -122,8 +135,8 @@ namespace gte
                     // Theoretically, F(x) = 0, but rounding errors in the
                     // computations can lead to F(x) not zero. Return the
                     // numerically computed function value.
-                    xRoot = -p1 / p2;
-                    fRoot = xRoot * (p1 + xRoot * p2);
+                    T xRoot = -p1 / p2;
+                    T fRoot = xRoot * (p1 + xRoot * p2);
                     if (xRoot > zero)
                     {
                         roots[0] = PolynomialRoot<T>(zero, zero, 1);
@@ -141,10 +154,6 @@ namespace gte
             // Using rational arithmetic, correctly classify the roots.
             Number nDiscr{};
             Classification type = GetType(p0, p1, p2, nDiscr);
-            if (type == Classification::Z0M1_Z0CONJM1)
-            {
-                return 0;
-            }
 
             // Use floating-point arithmetic to compute real roots. Root
             // polishing is used to obtain accurate results and is less
@@ -164,6 +173,7 @@ namespace gte
                 SWInterval<T> iSqrtDiscr(
                     std::nextafter(std::sqrt(discr), -tmax),
                     std::nextafter(std::sqrt(discr), +tmax));
+                VerifySqrtInterval(nDiscr, iSqrtDiscr);
 
                 // The theoretical roots are x0 and x1 with x0 < x1. The
                 // interval iX0 contains x0 and the interval iX1 contains x1.
@@ -183,16 +193,20 @@ namespace gte
                     iX1 = iTemp / p2;
                 }
 
-                roots[0] = EstimateMinRoot(p0, p1, p2, iX0);
-                roots[1] = EstimateMaxRoot(p0, p1, p2, iX1);
+                roots[0] = EstimateRootFDecreasing(p0, p1, p2, iX0[0], iX0[1]);
+                roots[1] = EstimateRootFIncreasing(p0, p1, p2, iX1[0], iX1[1]);
                 return 2;
             }
-            else // type == Classification::R0M2
+            else if (type == Classification::R0M2)
             {
-                xRoot = static_cast<T>(-0.5) * p1 / p2;
-                fRoot = p0 + xRoot * (p1 + xRoot * p2);
+                T xRoot = static_cast<T>(-0.5) * p1 / p2;
+                T fRoot = p0 + xRoot * (p1 + xRoot * p2);
                 roots[0] = PolynomialRoot<T>(xRoot, fRoot, 2);
                 return 1;
+            }
+            else // type == Classification::Z0M1_Z0CONJM1
+            {
+                return 0;
             }
         }
 
@@ -208,8 +222,6 @@ namespace gte
             roots[0] = PolynomialRoot<T>{};
             roots[1] = PolynomialRoot<T>{};
 
-            T xRoot{}, fRoot{};
-
             // Test for zero-valued roots.
             if (p0 == zero)
             {
@@ -223,8 +235,8 @@ namespace gte
                     // Theoretically, F(x) = 0, but rounding errors in the
                     // computations can lead to F(x) not zero. Return the
                     // numerically computed function value.
-                    xRoot = -p1;
-                    fRoot = xRoot * (p1 + xRoot);
+                    T xRoot = -p1;
+                    T fRoot = xRoot * (p1 + xRoot);
                     if (xRoot > zero)
                     {
                         roots[0] = PolynomialRoot<T>(zero, zero, 1);
@@ -242,10 +254,6 @@ namespace gte
             // Using rational arithmetic, correctly classify the roots.
             Number nDiscr{};
             Classification type = GetType(p0, p1, nDiscr);
-            if (type == Classification::Z0M1_Z0CONJM1)
-            {
-                return 0;
-            }
 
             // Use floating-point arithmetic to compute real roots. Root
             // polishing is used to obtain accurate results and is less
@@ -265,6 +273,7 @@ namespace gte
                 SWInterval<T> iSqrtDiscr(
                     std::nextafter(std::sqrt(discr), -tmax),
                     std::nextafter(std::sqrt(discr), +tmax));
+                VerifySqrtInterval(nDiscr, iSqrtDiscr);
 
                 // The theoretical roots are x0 and x1 with x0 < x1. The
                 // interval iX0 contains x0 and the interval iX1 contains x1.
@@ -282,16 +291,20 @@ namespace gte
                     iX0 = p0 / iX1;
                 }
 
-                roots[0] = EstimateMinRoot(p0, p1, iX0);
-                roots[1] = EstimateMaxRoot(p0, p1, iX1);
+                roots[0] = EstimateRootFDecreasing(p0, p1, iX0[0], iX0[1]);
+                roots[1] = EstimateRootFIncreasing(p0, p1, iX1[0], iX1[1]);
                 return 2;
             }
-            else // type == Classification::R0M2
+            else if (type == Classification::R0M2)
             {
-                xRoot = static_cast<T>(-0.5) * p1;
-                fRoot = p0 + xRoot * (p1 + xRoot);
+                T xRoot = static_cast<T>(-0.5) * p1;
+                T fRoot = p0 + xRoot * (p1 + xRoot);
                 roots[0] = PolynomialRoot<T>(xRoot, fRoot, 2);
                 return 1;
+            }
+            else // type == Classification::Z0M1_Z0CONJM1
+            {
+                return 0;
             }
         }
 
@@ -397,10 +410,6 @@ namespace gte
             // Using rational arithmetic, correctly classify the roots.
             Rational negP1Div2, discr{};
             Classification type = GetType(p0, p1, p2, negP1Div2, discr);
-            if (type == Classification::Z0M1_Z0CONJM1)
-            {
-                return 0;
-            }
 
             // Use floating-point arithmetic to compute real roots. Root
             // polishing is used to obtain accurate results and is less
@@ -441,12 +450,16 @@ namespace gte
                 roots[1] = PolynomialRoot<Rational>(x1, f1, 1);
                 return 2;
             }
-            else // type == Classification::R0M2
+            else if (type == Classification::R0M2)
             {
                 Rational xRoot = negP1Div2 / p2;
                 Rational fRoot = -discr / p2;
                 roots[0] = PolynomialRoot<Rational>(xRoot, fRoot, 2);
                 return 1;
+            }
+            else // type == Classification::Z0M1_Z0CONJM1
+            {
+                return 0;
             }
         }
 
@@ -489,10 +502,6 @@ namespace gte
             // Using rational arithmetic, correctly classify the roots.
             Rational negP1Div2, discr{};
             Classification type = GetType(p0, p1, negP1Div2, discr);
-            if (type == Classification::Z0M1_Z0CONJM1)
-            {
-                return 0;
-            }
 
             // Use floating-point arithmetic to compute real roots. Root
             // polishing is used to obtain accurate results and is less
@@ -531,11 +540,15 @@ namespace gte
                 roots[1] = PolynomialRoot<Rational>(x1, f1, 1);
                 return 2;
             }
-            else // type == Classification::R0M2
+            else if (type == Classification::R0M2)
             {
                 discr.Negate();
                 roots[0] = PolynomialRoot<Rational>(negP1Div2, discr, 2);
                 return 1;
+            }
+            else // type == Classification::Z0M1_Z0CONJM1
+            {
+                return 0;
             }
         }
 
@@ -572,6 +585,9 @@ namespace gte
         }
 
     private:
+        // TODO: Verify 4096 suffices for both 'float' and 'double'.
+        static size_t constexpr maxBisections = 4096;
+
         // The root classifications are guaranteed to be theoretically
         // correct assuming the floating-point coefficients are error
         // free. The computations use rational arithmetic.
@@ -614,110 +630,132 @@ namespace gte
         }
 
         template <typename T>
-        static PolynomialRoot<T> EstimateMinRoot(T p0, T p1, T p2, SWInterval<T> const& iX)
+        static PolynomialRoot<T> EstimateRootFDecreasing(T p0, T p1, T p2, T xMin, T xMax)
         {
             T const zero = static_cast<T>(0);
-            T xRoot{}, fRoot{};
-
-            T fMin = p0 + iX[0] * (p1 + iX[0] * p2);
+            T fMin = std::fma(std::fma(p2, xMin, p1), xMin, p0);
             if (fMin > zero)
             {
-                T fMax = p0 + iX[1] * (p1 + iX[1] * p2);
+                T fMax = std::fma(std::fma(p2, xMax, p1), xMax, p0);
                 if (fMax < zero)
                 {
+                    // The signs agree with the theoretical values obtained by
+                    // interval arithmetic performed by the caller. Use
+                    // bisection to estimate the root.
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, p2, xMin, xMax, +1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
+                }
+
+                if (fMax == zero)
+                {
+                    // The floating-point root estimate is xMax.
+                    return PolynomialRoot<T>(xMax, zero, 1);
+                }
+
+                // The value is fMax > 0. Both theoretical roots are in the
+                // x-interval. The polynomial value at the local minimum point
+                // -p1/(2*p2) is theoretically negative, so attempt to use
+                // this for root bounding.
+                T xMid = static_cast<T>(-0.5) * p1 / p2;
+                T fMid = std::fma(std::fma(p2, xMid, p1), xMid, p0);
+                if (fMid < zero)
+                {
                     // Use bisection to estimate the root.
-                    Bisect(p0, p1, p2, iX[0], iX[1], +1, xRoot, fRoot);
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, p2, xMin, xMid, +1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
                 }
-                else if (fMax == zero)
-                {
-                    // The floating-point root estimate is iX[1].
-                    xRoot = iX[1];
-                    fRoot = zero;
-                }
-                else // fMax > 0
-                {
-                    // Both theoretical roots are in the iX interval. The
-                    // polynomial value at the local minimum point -p1/(2*p2)
-                    // is theoretically negative, so attempt to use this for
-                    // root bounding.
-                    T xMid = static_cast<T>(-0.5) * p1 / p2;
-                    T fMid = p0 + xMid * (p1 + xMid * p2);
-                    if (fMid < zero)
-                    {
-                        // Use bisection to estimate the root.
-                        Bisect(p0, p1, p2, iX[0], xMid, +1, xRoot, fRoot);
-                    }
-                    else // fMid >= 0
-                    {
-                        // Floating-point rounding errors have occurred. Use
-                        // xMid as the root estimate.
-                        xRoot = xMid;
-                        fRoot = fMid;
-                    }
-                }
-            }
-            else  // fMin = 0
-            {
-                // Theoretically, fmin > 0 but floating-point rounding errors
-                // have occurred. Use iX[0] as the root estimate.
-                xRoot = iX[0];
-                fRoot = fMin;
+
+                // The value is fMid >= 0. Floating-point rounding errors have
+                // occurred. Use rational arithmetic instead (fall-through to
+                // last block of code).
             }
 
+            // Floating-point rounding errors have occurred that affect the
+            // signs. This occurs because the two distinct roots are nearly
+            // equal. Perform the bisection using rational arithmetic with
+            // precision that of type T (24 for 'float' and 53 for 'double').
+            Rational const rNegHalf(-0.5);
+            Rational rP0(p0), rP1(p1), rP2(p2);
+            Rational rXMin(xMin), rXMid = rNegHalf * rP1 / rP2;
+            Rational rFMin = rP0 + rXMin * (rP1 + rXMin * rP2);
+            Rational rFMid = rP0 + rXMid * (rP1 + rXMid * rP2);
+            LogAssert(
+                rFMin.GetSign() > 0 && rFMid.GetSign() < 0,
+                "Unexpected result, disagrees with the theory.");
+
+            Rational rXRoot{}, rFRoot{};
+            (void)Bisect(std::numeric_limits<T>::digits,
+                rP0, rP1, rP2, rXMin, rXMid, +1, rXRoot, rFRoot);
+
+            T xRoot = static_cast<T>(rXRoot);
+            T fRoot = static_cast<T>(rFRoot);
             return PolynomialRoot<T>(xRoot, fRoot, 1);
         }
 
         template <typename T>
-        static PolynomialRoot<T> EstimateMaxRoot(T p0, T p1, T p2, SWInterval<T> const& iX)
+        static PolynomialRoot<T> EstimateRootFIncreasing(T p0, T p1, T p2, T xMin, T xMax)
         {
             T const zero = static_cast<T>(0);
-            T xRoot{}, fRoot{};
-
-            T fMax = p0 + iX[1] * (p1 + iX[1] * p2);
+            T fMax = std::fma(std::fma(p2, xMax, p1), xMax, p0);
             if (fMax > zero)
             {
-                T fMin = p0 + iX[0] * (p1 + iX[0] * p2);
+                T fMin = std::fma(std::fma(p2, xMin, p1), xMin, p0);
                 if (fMin < zero)
                 {
+                    // The signs agree with the theoretical values obtained by
+                    // interval arithmetic performed by the caller. Use
+                    // bisection to estimate the root.
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, p2, xMin, xMax, -1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
+                }
+
+                if (fMin == zero)
+                {
+                    // The floating-point root estimate is xMin.
+                    return PolynomialRoot<T>(xMin, zero, 1);
+                }
+
+                // The value is fMin > 0. Both theoretical roots are in the
+                // x-interval. The polynomial value at the local minimum point
+                // -p1/(2*p2) is theoretically negative, so attempt to use
+                // this for root bounding.
+                T xMid = static_cast<T>(-0.5) * p1 / p2;
+                T fMid = std::fma(std::fma(p2, xMid, p1), xMid, p0);
+                if (fMid < zero)
+                {
                     // Use bisection to estimate the root.
-                    Bisect(p0, p1, p2, iX[0], iX[1], -1, xRoot, fRoot);
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, p2, xMid, xMax, -1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
                 }
-                else if (fMin == zero)
-                {
-                    // The floating-point root estimate is iX[0].
-                    xRoot = iX[0];
-                    fRoot = zero;
-                }
-                else // fMin > 0
-                {
-                    // Both theoretical roots are in the iX interval. The
-                    // polynomial value at the local minimum point -p1/(2*p2)
-                    // is theoretically negative, so attempt to use this for
-                    // root bounding.
-                    T xMid = static_cast<T>(-0.5) * p1 / p2;
-                    T fMid = p0 + xMid * (p1 + xMid * p2);
-                    if (fMid < zero)
-                    {
-                        // Use bisection to estimate the root.
-                        Bisect(p0, p1, p2, xMid, iX[1], -1, xRoot, fRoot);
-                    }
-                    else // fMid >= 0
-                    {
-                        // Floating-point rounding errors have occurred. Use
-                        // xMid as the root estimate.
-                        xRoot = xMid;
-                        fRoot = fMid;
-                    }
-                }
-            }
-            else
-            {
-                // Theoretically, fmax > 0 but floating-point rounding errors
-                // have occurred. Use iX[1] as the root estimate.
-                xRoot = iX[1];
-                fRoot = fMax;
+
+                // The value is fMid >= 0. Floating-point rounding errors have
+                // occurred. Use rational arithmetic instead (fall-through to
+                // last block of code).
             }
 
+            // Floating-point rounding errors have occurred that affect the
+            // signs. This occurs because the two distinct roots are nearly
+            // equal. Perform the bisection using rational arithmetic with
+            // precision that of type T (24 for 'float' and 53 for 'double').
+            Rational const rNegHalf(-0.5);
+            Rational rP0(p0), rP1(p1), rP2(p2);
+            Rational rXMax(xMax), rXMid = rNegHalf * rP1 / rP2;
+            Rational rFMax = rP0 + rXMax * (rP1 + rXMax * rP2);
+            Rational rFMid = rP0 + rXMid * (rP1 + rXMid * rP2);
+            LogAssert(
+                rFMax.GetSign() > 0 && rFMid.GetSign() < 0,
+                "Unexpected result, disagrees with the theory.");
+
+            Rational rXRoot{}, rFRoot{};
+            (void)Bisect(std::numeric_limits<T>::digits,
+                rP0, rP1, rP2, rXMid, rXMax, -1, rXRoot, rFRoot);
+
+            T xRoot = static_cast<T>(rXRoot);
+            T fRoot = static_cast<T>(rFRoot);
             return PolynomialRoot<T>(xRoot, fRoot, 1);
         }
 
@@ -725,36 +763,35 @@ namespace gte
         // signFMax is not used in the code explicitly, it does not need to
         // be passed to Bisect(...).
         template <typename T>
-        static void Bisect(T p0, T p1, T p2, T xMin, T xMax, int32_t signFMin,
+        static size_t Bisect(T p0, T p1, T p2, T xMin, T xMax, int32_t signFMin,
             T& xRoot, T& fAtXRoot)
         {
             // The bisection steps. The iteration algorithm terminates when
             // the midpoint of the current interval equals one of the interval
             // endpoints. At this time the interval endpoints are consecutive
-            // floating-point numbers. TODO: Verify 4096 suffices for 'float'
-            // and for 'double'.
-            size_t constexpr maxIterations = 4096;
+            // floating-point numbers.
             T const zero = static_cast<T>(0);
             T const half = static_cast<T>(0.5);
             T x0 = xMin, x1 = xMax;
-            for (size_t iteration = 1; iteration < maxIterations; ++iteration)
+            size_t iteration{};
+            for (iteration = 1; iteration < maxBisections; ++iteration)
             {
                 xRoot = half * (x0 + x1);
-                fAtXRoot = p0 + xRoot * (p1 + xRoot * p2);
+                fAtXRoot = std::fma(std::fma(p2, xRoot, p1), xRoot, p0);
 
                 if (xRoot == x0 || xRoot == x1)
                 {
                     // x0 and x1 are consecutive floating-point numbers in
                     // which case subdivision cannot produce a floating-point
                     // number between them.
-                    return;
+                    break;
                 }
 
                 int32_t signFAtXRoot = (fAtXRoot > zero ? +1 : (fAtXRoot < zero ? -1 : 0));
                 if (signFAtXRoot == 0)
                 {
                     // The function is exactly zero and a root is found.
-                    return;
+                    break;
                 }
 
                 // Update the correct endpoint to the midpoint.
@@ -771,6 +808,51 @@ namespace gte
             // The maximum number of iterations has been exceeded. The last
             // computed values of xRoot and fAtXRoot are used as the polished
             // root.
+            return iteration;
+        }
+
+        static size_t Bisect(int32_t precision, Rational const& p0, Rational const& p1,
+            Rational const& p2, Rational const& xMin, Rational const& xMax,
+            int32_t signFMin, Rational& xRoot, Rational& fAtXRoot)
+        {
+            Rational x0 = xMin, x1 = xMax;
+            size_t iteration{};
+            for (iteration = 1; iteration < maxBisections; ++iteration)
+            {
+                Rational average = std::ldexp(x0 + x1, -1);  // (x0 + x1) / 2
+                Convert(average, precision, FE_TONEAREST, xRoot);
+                fAtXRoot = p0 + xRoot * (p1 + xRoot * p2);
+
+                if (xRoot == x0 || xRoot == x1)
+                {
+                    // x0 and x1 are consecutive rational numbers of the
+                    // specified precision in which case subdivision cannot
+                    // produce a rational number between them.
+                    break;
+                }
+
+                int32_t signFAtXRoot = fAtXRoot.GetSign();
+                if (signFAtXRoot == 0)
+                {
+                    // The function is exactly zero and a root is found.
+                    break;
+                }
+
+                // Update the correct endpoint to the midpoint.
+                if (signFAtXRoot == signFMin)
+                {
+                    x0 = xRoot;
+                }
+                else // signFAtXRoot == signFMax)
+                {
+                    x1 = xRoot;
+                }
+            }
+
+            // The maximum number of iterations has been exceeded. The last
+            // computed values of xRoot and fAtXRoot are used as the polished
+            // root.
+            return iteration;
         }
 
         // Support for the floating-point monic quadratic.
@@ -795,110 +877,132 @@ namespace gte
         }
 
         template <typename T>
-        static PolynomialRoot<T> EstimateMinRoot(T p0, T p1, SWInterval<T> const& iX)
+        static PolynomialRoot<T> EstimateRootFDecreasing(T p0, T p1, T xMin, T xMax)
         {
             T const zero = static_cast<T>(0);
-            T xRoot{}, fRoot{};
-
-            T fMin = p0 + iX[0] * (p1 + iX[0]);
+            T fMin = RobustSumOfProducts(xMin, xMin, p1, xMin) + p0;
             if (fMin > zero)
             {
-                T fMax = p0 + iX[1] * (p1 + iX[1]);
+                T fMax = RobustSumOfProducts(xMax, xMax, p1, xMax) + p0;
                 if (fMax < zero)
                 {
+                    // The signs agree with the theoretical values obtained by
+                    // interval arithmetic performed by the caller. Use
+                    // bisection to estimate the root.
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, xMin, xMax, +1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
+                }
+
+                if (fMax == zero)
+                {
+                    // The floating-point root estimate is xMax.
+                    return PolynomialRoot<T>(xMax, zero, 1);
+                }
+
+                // The value is fMax > 0. Both theoretical roots are in the
+                // x-interval. The polynomial value at the local minimum point
+                // -p1/(2*p2) is theoretically negative, so attempt to use
+                // this for root bounding.
+                T xMid = static_cast<T>(-0.5) * p1;
+                T fMid = RobustSumOfProducts(xMid, xMid, p1, xMid) + p0;
+                if (fMid < zero)
+                {
                     // Use bisection to estimate the root.
-                    Bisect(p0, p1, iX[0], iX[1], +1, xRoot, fRoot);
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, xMin, xMid, +1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
                 }
-                else if (fMax == zero)
-                {
-                    // The floating-point root estimate is iX[1].
-                    xRoot = iX[1];
-                    fRoot = zero;
-                }
-                else // fMax > 0
-                {
-                    // Both theoretical roots are in the iX interval. The
-                    // polynomial value at the local minimum point -p1/2
-                    // is theoretically negative, so attempt to use this for
-                    // root bounding.
-                    T xMid = static_cast<T>(-0.5) * p1;
-                    T fMid = p0 + xMid * (p1 + xMid);
-                    if (fMid < zero)
-                    {
-                        // Use bisection to estimate the root.
-                        Bisect(p0, p1, iX[0], xMid, +1, xRoot, fRoot);
-                    }
-                    else // fMid >= 0
-                    {
-                        // Floating-point rounding errors have occurred. Use
-                        // xMid as the root estimate.
-                        xRoot = xMid;
-                        fRoot = fMid;
-                    }
-                }
-            }
-            else  // fMin = 0
-            {
-                // Theoretically, fmin > 0 but floating-point rounding errors
-                // have occurred. Use iX[0] as the root estimate.
-                xRoot = iX[0];
-                fRoot = fMin;
+
+                // The value is fMid >= 0. Floating-point rounding errors have
+                // occurred. Use rational arithmetic instead (fall-through to
+                // last block of code).
             }
 
+            // Floating-point rounding errors have occurred that affect the
+            // signs. This occurs because the two distinct roots are nearly
+            // equal. Perform the bisection using rational arithmetic with
+            // precision that of type T (24 for 'float' and 53 for 'double').
+            Number const nNegHalf(-0.5);
+            Number nP0(p0), nP1(p1);
+            Number nXMin(xMin), nXMid = nNegHalf * nP1;
+            Number nFMin = nP0 + nXMin * (nP1 + nXMin);
+            Number nFMid = nP0 + nXMid * (nP1 + nXMid);
+            LogAssert(
+                nFMin.GetSign() > 0 && nFMid.GetSign() < 0,
+                "Unexpected result, disagrees with the theory.");
+
+            Number nXRoot{}, nFRoot{};
+            (void)Bisect(std::numeric_limits<T>::digits,
+                nP0, nP1, nXMin, nXMid, +1, nXRoot, nFRoot);
+
+            T xRoot = static_cast<T>(nXRoot);
+            T fRoot = static_cast<T>(nFRoot);
             return PolynomialRoot<T>(xRoot, fRoot, 1);
         }
 
         template <typename T>
-        static PolynomialRoot<T> EstimateMaxRoot(T p0, T p1, SWInterval<T> const& iX)
+        static PolynomialRoot<T> EstimateRootFIncreasing(T p0, T p1, T xMin, T xMax)
         {
             T const zero = static_cast<T>(0);
-            T xRoot{}, fRoot{};
-
-            T fMax = p0 + iX[1] * (p1 + iX[1]);
+            T fMax = RobustSumOfProducts(xMax, xMax, p1, xMax) + p0;
             if (fMax > zero)
             {
-                T fMin = p0 + iX[0] * (p1 + iX[0]);
+                T fMin = RobustSumOfProducts(xMin, xMin, p1, xMin) + p0;
                 if (fMin < zero)
                 {
+                    // The signs agree with the theoretical values obtained by
+                    // interval arithmetic performed by the caller. Use
+                    // bisection to estimate the root.
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, xMin, xMax, -1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
+                }
+
+                if (fMin == zero)
+                {
+                    // The floating-point root estimate is xMin.
+                    return PolynomialRoot<T>(xMin, zero, 1);
+                }
+
+                // The value is fMin > 0. Both theoretical roots are in the
+                // x-interval. The polynomial value at the local minimum point
+                // -p1/(2*p2) is theoretically negative, so attempt to use
+                // this for root bounding.
+                T xMid = static_cast<T>(-0.5) * p1;
+                T fMid = RobustSumOfProducts(xMid, xMid, p1, xMid) + p0;
+                if (fMid < zero)
+                {
                     // Use bisection to estimate the root.
-                    Bisect(p0, p1, iX[0], iX[1], -1, xRoot, fRoot);
+                    T xRoot{}, fRoot{};
+                    (void)Bisect(p0, p1, xMid, xMax, -1, xRoot, fRoot);
+                    return PolynomialRoot<T>(xRoot, fRoot, 1);
                 }
-                else if (fMin == zero)
-                {
-                    // The floating-point root estimate is iX[0].
-                    xRoot = iX[0];
-                    fRoot = zero;
-                }
-                else // fMin > 0
-                {
-                    // Both theoretical roots are in the iX interval. The
-                    // polynomial value at the local minimum point -p1/2
-                    // is theoretically negative, so attempt to use this for
-                    // root bounding.
-                    T xMid = static_cast<T>(-0.5) * p1;
-                    T fMid = p0 + xMid * (p1 + xMid);
-                    if (fMid < zero)
-                    {
-                        // Use bisection to estimate the root.
-                        Bisect(p0, p1, xMid, iX[1], -1, xRoot, fRoot);
-                    }
-                    else // fMid >= 0
-                    {
-                        // Floating-point rounding errors have occurred. Use
-                        // xMid as the root estimate.
-                        xRoot = xMid;
-                        fRoot = fMid;
-                    }
-                }
-            }
-            else
-            {
-                // Theoretically, fmax > 0 but floating-point rounding errors
-                // have occurred. Use iX[1] as the root estimate.
-                xRoot = iX[1];
-                fRoot = fMax;
+
+                // The value is fMid >= 0. Floating-point rounding errors have
+                // occurred. Use rational arithmetic instead (fall-through to
+                // last block of code).
             }
 
+            // Floating-point rounding errors have occurred that affect the
+            // signs. This occurs because the two distinct roots are nearly
+            // equal. Perform the bisection using rational arithmetic with
+            // precision that of type T (24 for 'float' and 53 for 'double').
+            Number const nNegHalf(-0.5);
+            Number nP0(p0), nP1(p1);
+            Number nXMax(xMax), nXMid = nNegHalf * nP1;
+            Number nFMax = nP0 + nXMax * (nP1 + nXMax);
+            Number nFMid = nP0 + nXMid * (nP1 + nXMid);
+            LogAssert(
+                nFMax.GetSign() > 0 && nFMid.GetSign() < 0,
+                "Unexpected result, disagrees with the theory.");
+
+            Number nXRoot{}, nFRoot{};
+            (void)Bisect(std::numeric_limits<T>::digits,
+                nP0, nP1, nXMid, nXMax, -1, nXRoot, nFRoot);
+
+            T xRoot = static_cast<T>(nXRoot);
+            T fRoot = static_cast<T>(nFRoot);
             return PolynomialRoot<T>(xRoot, fRoot, 1);
         }
 
@@ -906,36 +1010,35 @@ namespace gte
         // signFMax is not used in the code explicitly, it does not need to
         // be passed to Bisect(...).
         template <typename T>
-        static void Bisect(T p0, T p1, T xMin, T xMax, int32_t signFMin,
+        static size_t Bisect(T p0, T p1, T xMin, T xMax, int32_t signFMin,
             T& xRoot, T& fAtXRoot)
         {
             // The bisection steps. The iteration algorithm terminates when
             // the midpoint of the current interval equals one of the interval
             // endpoints. At this time the interval endpoints are consecutive
-            // floating-point numbers. TODO: Verify 4096 suffices for 'float'
-            // and for 'double'.
-            size_t constexpr maxIterations = 4096;
+            // floating-point numbers.
             T const zero = static_cast<T>(0);
             T const half = static_cast<T>(0.5);
             T x0 = xMin, x1 = xMax;
-            for (size_t iteration = 1; iteration < maxIterations; ++iteration)
+            size_t iteration{};
+            for (iteration = 1; iteration < maxBisections; ++iteration)
             {
                 xRoot = half * (x0 + x1);
-                fAtXRoot = p0 + xRoot * (p1 + xRoot);
+                fAtXRoot = RobustSumOfProducts(xRoot, xRoot, p1, xRoot) + p0;
 
                 if (xRoot == x0 || xRoot == x1)
                 {
                     // x0 and x1 are consecutive floating-point numbers in
                     // which case subdivision cannot produce a floating-point
                     // number between them.
-                    return;
+                    break;
                 }
 
                 int32_t signFAtXRoot = (fAtXRoot > zero ? +1 : (fAtXRoot < zero ? -1 : 0));
                 if (signFAtXRoot == 0)
                 {
                     // The function is exactly zero and a root is found.
-                    return;
+                    break;
                 }
 
                 // Update the correct endpoint to the midpoint.
@@ -952,6 +1055,51 @@ namespace gte
             // The maximum number of iterations has been exceeded. The last
             // computed values of xRoot and fAtXRoot are used as the polished
             // root.
+            return iteration;
+        }
+
+        static size_t Bisect(int32_t precision, Number const& p0, Number const& p1,
+            Number const& xMin, Number const& xMax,
+            int32_t signFMin, Number& xRoot, Number& fAtXRoot)
+        {
+            Number x0 = xMin, x1 = xMax;
+            size_t iteration{};
+            for (iteration = 1; iteration < maxBisections; ++iteration)
+            {
+                Number average = std::ldexp(x0 + x1, -1);  // (x0 + x1) / 2
+                Convert(average, precision, FE_TONEAREST, xRoot);
+                fAtXRoot = p0 + xRoot * (p1 + xRoot);
+
+                if (xRoot == x0 || xRoot == x1)
+                {
+                    // x0 and x1 are consecutive rational numbers of the
+                    // specified precision in which case subdivision cannot
+                    // produce a rational number between them.
+                    break;
+                }
+
+                int32_t signFAtXRoot = fAtXRoot.GetSign();
+                if (signFAtXRoot == 0)
+                {
+                    // The function is exactly zero and a root is found.
+                    break;
+                }
+
+                // Update the correct endpoint to the midpoint.
+                if (signFAtXRoot == signFMin)
+                {
+                    x0 = xRoot;
+                }
+                else // signFAtXRoot == signFMax)
+                {
+                    x1 = xRoot;
+                }
+            }
+
+            // The maximum number of iterations has been exceeded. The last
+            // computed values of xRoot and fAtXRoot are used as the polished
+            // root.
+            return iteration;
         }
 
         // Support for the rational general quadratic.
@@ -998,5 +1146,44 @@ namespace gte
                 return Classification::R0M2;
             }
         }
+
+        // Compute a*b+c*d robustly using floating-point arithmetic that
+        // incorporates fused-multiply-add instructions. This is based on
+        // https://pharr.org/matt/blog/2019/11/03/difference-of-floats
+        // which references
+        // https://people.eecs.berkeley.edu/~wkahan/Qdrtcs.pdf
+        // that has the analysis of the algorithm.
+        template <typename T>
+        inline static T RobustSumOfProducts(T a, T b, T c, T d)
+        {
+            T stdCD = c * d;
+            T error = std::fma(c, d, -stdCD);
+            T fmaABCD = std::fma(a, b, stdCD);
+            T result = fmaABCD + error;
+            return result;
+        }
+
+#if defined(GTE_DEBUG_ROOTS_QUADRATIC)
+        template <typename T>
+        static void VerifySqrtInterval(Number const& nDiscr, SWInterval<T> const& iSqrtDiscr)
+        {
+            Number nLower(iSqrtDiscr[0]);
+            Number nLowerSqr = nLower * nLower;
+            LogAssert(
+                nLowerSqr <= nDiscr,
+                "Invalid interval minimum for sqrt(discr).");
+
+            Number nUpper(iSqrtDiscr[1]);
+            Number nUpperSqr = nUpper * nUpper;
+            LogAssert(
+                nDiscr <= nUpperSqr,
+                "Invalid interval maximum for sqrt(discr).");
+        }
+#else
+        template <typename T>
+        static void VerifySqrtInterval(Number const&, SWInterval<T> const&)
+        {
+        }
+#endif
     };
 }
