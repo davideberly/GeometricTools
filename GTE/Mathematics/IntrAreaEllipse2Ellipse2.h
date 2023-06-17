@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.05.05
+// Version: 6.6.2023.06.16
 
 #pragma once
 
@@ -54,68 +54,25 @@ namespace gte
             T area;
         };
 
-        // The ellipse axes are already normalized, which most likely
-        // introduced rounding errors.
+        // The ellipse axes are not required to be normalized. The ellipse
+        // has a rational representation.
         Result operator()(Ellipse2<T> const& ellipse0, Ellipse2<T> const& ellipse1)
         {
             EllipseInfo E0{};
             E0.center = ellipse0.center;
             E0.axis = ellipse0.axis;
             E0.extent = ellipse0.extent;
-            E0.sqrExtent = ellipse0.extent * ellipse0.extent;
             FinishEllipseInfo(E0);
 
             EllipseInfo E1{};
             E1.center = ellipse1.center;
             E1.axis = ellipse1.axis;
             E1.extent = ellipse1.extent;
-            E1.sqrExtent = ellipse1.extent * ellipse1.extent;
             FinishEllipseInfo(E1);
 
             Result ar{};
             ar.configuration = Result::Configuration::INVALID;
             ar.findResult = EIQuery{}(ellipse0, ellipse1);
-            ar.area = mZero;
-            AreaDispatch(E0, E1, ar);
-            return ar;
-        }
-
-        // The axis directions do not have to be unit length.  The positive
-        // definite matrices are constructed according to the details of the
-        // PDF documentabout the intersection of ellipses.
-        Result operator()(
-            Vector2<T> const& center0,
-            std::array<Vector2<T>, 2> const& axis0,
-            Vector2<T> const& sqrExtent0,
-            Vector2<T> const& center1,
-            std::array<Vector2<T>, 2> const& axis1,
-            Vector2<T> const& sqrExtent1)
-        {
-            EllipseInfo E0{};
-            E0.center = center0;
-            E0.axis = { axis0[0], axis0[1] };
-            E0.extent =
-            {
-                std::sqrt(sqrExtent0[0]),
-                std::sqrt(sqrExtent0[1])
-            };
-            E0.sqrExtent = sqrExtent0;
-            FinishEllipseInfo(E0);
-
-            EllipseInfo E1{};
-            E1.center = center1;
-            E1.axis = { axis1[0], axis1[1] };
-            E1.extent =
-            {
-                std::sqrt(sqrExtent1[0]),
-                std::sqrt(sqrExtent1[1])
-            };
-            E1.sqrExtent = sqrExtent1;
-            FinishEllipseInfo(E1);
-
-            Result ar{};
-            ar.configuration = Result::Configuration::INVALID;
-            ar.findResult = EIQuery{}(center0, axis0, sqrExtent0, center1, axis1, sqrExtent1);
             ar.area = mZero;
             AreaDispatch(E0, E1, ar);
             return ar;
@@ -129,7 +86,6 @@ namespace gte
                 center(Vector2<T>::Zero()),
                 axis{ Vector2<T>::Zero() , Vector2<T>::Zero() },
                 extent(Vector2<T>::Zero()),
-                sqrExtent(Vector2<T>::Zero()),
                 M{},
                 AB((T)0),
                 halfAB((T)0),
@@ -140,7 +96,7 @@ namespace gte
 
             Vector2<T> center;
             std::array<Vector2<T>, 2> axis;
-            Vector2<T> extent, sqrExtent;
+            Vector2<T> extent;
             Matrix2x2<T> M;
             T AB;        // extent[0] * extent[1]
             T halfAB;    // extent[0] * extent[1] / 2
@@ -148,14 +104,12 @@ namespace gte
             T BmA;       // extent[1] - extent[0]
         };
 
-        // The axis, extent and sqrExtent members of E must be set before
-        // this function is called.
         void FinishEllipseInfo(EllipseInfo& E)
         {
             E.M = OuterProduct(E.axis[0], E.axis[0]) /
-                (E.sqrExtent[0] * Dot(E.axis[0], E.axis[0]));
+                (E.extent[0] * E.extent[0] * Dot(E.axis[0], E.axis[0]));
             E.M += OuterProduct(E.axis[1], E.axis[1]) /
-                (E.sqrExtent[1] * Dot(E.axis[1], E.axis[1]));
+                (E.extent[1] * E.extent[1] * Dot(E.axis[1], E.axis[1]));
             E.AB = E.extent[0] * E.extent[1];
             E.halfAB = E.AB / mTwo;
             E.BpA = E.extent[1] + E.extent[0];
