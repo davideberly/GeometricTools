@@ -84,7 +84,7 @@ I have had several known problems with compilers I use for testing.
   Configuration | C++ | Command Line. The problem has been fixed as of
   version 17.4.5.
 
-* After installing NVIDIA driver version 531.18 on a Windows 11 machine with
+* After installing NVIDIA GeForce driver version 531.18 on a Windows 11 machine with
   Microsoft Visual Studio 17.5.1, all DirectX 11 samples throw 2 exceptions
   in D3D11CreateDevice, both tagged as Poco::NotFoundException. If you continue
   execution after these exceptions, the applications perform correctly. If
@@ -94,8 +94,9 @@ I have had several known problems with compilers I use for testing.
   posted the workaround (listed below) and asked for status on the exception.
   No response in that forum thread, so I suspect this is low priority for NVIDIA.
 
-  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, and 535.98
-  of the driver were released and have the same problem.
+  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, 535.98, and
+  536.40 of the driver were released and have the same problem. The NVIDIO Studio
+  drivers do not generate these exceptions.
   
   WORKAROUND: This assumes you have checked the box
   in MSVS Exception Settings window that says "<All C++ Exceptions not in this list>".
