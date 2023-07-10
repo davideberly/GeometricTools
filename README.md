@@ -110,6 +110,12 @@ I have had several known problems with compilers I use for testing.
   particular exception. NOTE: This information is stored in the *.user files.
   If you delete such a file, you lose the exception settings, which means going
   through the aforementioned process again.
+
+* On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
+  driver version 31.0.101.4146 throws two C++ exceptions (in igc64.dll). The first is
+  MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
+  second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
+  exceptions can be ignored.
  
 ## Links to GTE-Based Projects ##
 * Seb Wouter's improvement for my LCP-based test-intersection query between
