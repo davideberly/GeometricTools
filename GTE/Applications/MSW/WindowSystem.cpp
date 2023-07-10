@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.02.02
+// Version: 6.0.2023.07.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -146,7 +146,7 @@ void WindowSystem::CreateEngineAndProgramFactory(Window::Parameters& parameters)
     {
         // If parameters.deviceCreationFlags is 0 (no flags specified), the
         // first adapter in the adapter enumeration is selected. This is
-        // invariable the adapter to which the display monitors are attached.
+        // invariably the adapter to which the display monitors are attached.
         //
         // If the debug layer is selected using D3D11_CREATE_DEVICE_DEBUG,
         // choosing a non-null adapter does not work. It will cause the
