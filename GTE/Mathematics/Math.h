@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.06.16
 
 #pragma once
 
@@ -563,6 +563,24 @@ namespace gte
         return x * x;
     }
 
+    // Robust sum of products (SOP) u*v+w*z.
+    inline float RobustSOP(float u, float v, float w, float z)
+    {
+        float productWZ = w * z;
+        float roundingError = std::fma(w, z, -productWZ);
+        float result = std::fma(u, v, productWZ) + roundingError;
+        return result;
+    }
+
+    // Robust difference of products (DOP) u*v-w*z.
+    inline float RobustDOP(float u, float v, float w, float z)
+    {
+        float productWZ = w * z;
+        float roundingError = std::fma(-w, z, productWZ);
+        float result = std::fma(u, v, -productWZ) + roundingError;
+        return result;
+    }
+
 
     inline double atandivpi(double x)
     {
@@ -617,6 +635,24 @@ namespace gte
     inline double sqr(double x)
     {
         return x * x;
+    }
+
+    // Robust sum of products (SOP) u*v+w*z.
+    inline double RobustSOP(double u, double v, double w, double z)
+    {
+        double productWZ = w * z;
+        double roundingError = std::fma(w, z, -productWZ);
+        double result = std::fma(u, v, productWZ) + roundingError;
+        return result;
+    }
+
+    // Robust difference of products (DOP) u*v-w*z.
+    inline double RobustDOP(double u, double v, double w, double z)
+    {
+        double productWZ = w * z;
+        double roundingError = std::fma(-w, z, productWZ);
+        double result = std::fma(u, v, -productWZ) + roundingError;
+        return result;
     }
 }
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.07.10
 
 #pragma once
 
@@ -107,16 +107,17 @@ namespace gte
 
             // Clamp the infinite cylinder's closest point to the finite
             // cylinder.
-            if (result.closest[1][2] > height)
+            T halfHeight = static_cast<T>(0.5) * height;
+            if (result.closest[1][2] > halfHeight)
             {
-                result.closest[1][2] = height;
+                result.closest[1][2] = halfHeight;
                 Vector3<T> diff = result.closest[1] - P;
                 result.sqrDistance = Dot(diff, diff);
                 result.distance = std::sqrt(result.sqrDistance);
             }
-            else if (result.closest[1][2] < -height)
+            else if (result.closest[1][2] < -halfHeight)
             {
-                result.closest[1][2] = -height;
+                result.closest[1][2] = -halfHeight;
                 Vector3<T> diff = result.closest[1] - P;
                 result.sqrDistance = Dot(diff, diff);
                 result.distance = std::sqrt(result.sqrDistance);

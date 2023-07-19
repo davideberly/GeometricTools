@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.06.16
 
 #pragma once
 
@@ -324,6 +324,14 @@ namespace gte
         inline int32_t GetSign() const
         {
             return mSign;
+        }
+
+        inline void Negate()
+        {
+            mSign = -mSign;
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline void SetBiasedExponent(int32_t biasedExponent)
@@ -1262,6 +1270,13 @@ namespace std
     }
 
     template <typename UInteger>
+    inline gte::BSNumber<UInteger> fma(gte::BSNumber<UInteger> const& u,
+        gte::BSNumber<UInteger> const& v, gte::BSNumber<UInteger> const& w)
+    {
+        return u * v + w;
+    }
+
+    template <typename UInteger>
     inline gte::BSNumber<UInteger> fmod(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
     {
         return (gte::BSNumber<UInteger>)std::fmod((double)x, (double)y);
@@ -1417,6 +1432,24 @@ namespace gte
     inline BSNumber<UInteger> sqr(BSNumber<UInteger> const& x)
     {
         return (BSNumber<UInteger>)sqr((double)x);
+    }
+
+    // Sum of products (SOP) u*v+w*z.
+    template <typename UInteger>
+    inline BSNumber<UInteger> RobustSOP(
+        BSNumber<UInteger> const& u, BSNumber<UInteger> const& v,
+        BSNumber<UInteger> const& w, BSNumber<UInteger> const& z)
+    {
+        return u * v + w * z;
+    }
+
+    // Difference of products (DOP) u*v-w*z.
+    template <typename UInteger>
+    inline BSNumber<UInteger> RobustDOP(
+        BSNumber<UInteger> const& u, BSNumber<UInteger> const& v,
+        BSNumber<UInteger> const& w, BSNumber<UInteger> const& z)
+    {
+        return u * v - w * z;
     }
 
     // See the comments in Math.h about trait is_arbitrary_precision.

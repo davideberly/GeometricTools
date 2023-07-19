@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.05
+// Version: 6.0.2023.06.16
 
 #pragma once
 
@@ -304,14 +304,14 @@ namespace gte
         // round-to-nearest-ties-to-even.
         operator float() const
         {
-            float output;
+            float output{};
             Convert(*this, FE_TONEAREST, output);
             return output;
         }
 
         operator double() const
         {
-            double output;
+            double output{};
             Convert(*this, FE_TONEAREST, output);
             return output;
         }
@@ -348,7 +348,7 @@ namespace gte
         {
             mNumerator.SetSign(sign);
             mDenominator.SetSign(1);
-#if defined(GTL_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
             mValue = sign * std::fabs(mValue);
 #endif
         }
@@ -356,6 +356,14 @@ namespace gte
         inline int32_t GetSign() const
         {
             return mNumerator.GetSign() * mDenominator.GetSign();
+        }
+
+        inline void Negate()
+        {
+            mNumerator.Negate();
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            mValue = (double)*this;
+#endif
         }
 
         inline BSNumber<UInteger> const& GetNumerator() const
@@ -878,6 +886,13 @@ namespace std
     }
 
     template <typename UInteger>
+    inline gte::BSRational<UInteger> fma(gte::BSRational<UInteger> const& u,
+        gte::BSRational<UInteger> const& v, gte::BSRational<UInteger> const& w)
+    {
+        return u * v + w;
+    }
+
+    template <typename UInteger>
     inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int32_t* exponent)
     {
         gte::BSRational<UInteger> result = x;
@@ -1039,6 +1054,24 @@ namespace gte
     inline BSRational<UInteger> sqr(BSRational<UInteger> const& x)
     {
         return (BSRational<UInteger>)sqr((double)x);
+    }
+
+    // Sum of products (SOP) u*v+w*z.
+    template <typename UInteger>
+    inline BSRational<UInteger> RobustSOP(
+        BSRational<UInteger> const& u, BSRational<UInteger> const& v,
+        BSRational<UInteger> const& w, BSRational<UInteger> const& z)
+    {
+        return u * v + w * z;
+    }
+
+    // Difference of products (DOP) u*v-w*z.
+    template <typename UInteger>
+    inline BSRational<UInteger> RobustDOP(
+        BSRational<UInteger> const& u, BSRational<UInteger> const& v,
+        BSRational<UInteger> const& w, BSRational<UInteger> const& z)
+    {
+        return u * v - w * z;
     }
 
     // See the comments in Math.h about traits is_arbitrary_precision

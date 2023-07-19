@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.09.23
+// Version: 6.0.2023.06.17
 
 #pragma once
 
@@ -324,7 +324,7 @@ namespace gte
                 }
                 else  // tHat > +h/2
                 {
-                    sMin = -(e1pc1 + d0 * hDiv2) / d1;
+                    sMin = -(e0pc0 + d0 * hDiv2) / d1;
                 }
             }
             else  // tHat < -h/2

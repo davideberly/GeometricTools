@@ -3,27 +3,34 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.05
+// Version: 6.0.2023.06.16
 
 #pragma once
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
+#include <Mathematics/AlignedBox.h>
 #include <Mathematics/Hyperellipsoid.h>
+#include <Mathematics/Matrix2x2.h>
+#include <Mathematics/Polynomial1.h>
 #include <Mathematics/RootsBisection.h>
 #include <Mathematics/RootsPolynomial.h>
 #include <Mathematics/SymmetricEigensolver2x2.h>
-#include <Mathematics/Matrix2x2.h>
 
 // The test-intersection and find-intersection queries implemented here are
 // discussed in the document
-//   https://www.geometrictools.com/Documentation/IntersectionOfEllipses.pdf
+// https://www.geometrictools.com/Documentation/IntersectionOfEllipses.pdf
 // The T type should support exact rational arithmetic in order for the
-// polynomial root construction to be robust.  The classification of the
+// polynomial root construction to be robust.s The classification of the
 // intersections depends on various sign tests of computed values.  If these
 // values are computed with floating-point arithmetic, the sign tests can
 // lead to misclassification.
+//
+// The find-intersection query had some robustness issues when computing with
+// floating-point only. The current implementation fixes those. The algorithm
+// is described in
+// https://www.geometrictools.com/Documentation/RobustIntersectionOfEllipses.pdf
 
 namespace gte
 {
@@ -49,11 +56,12 @@ namespace gte
         // introduced rounding errors.
         Classification operator()(Ellipse2<T> const& ellipse0, Ellipse2<T> const& ellipse1)
         {
-            T const zero = 0, one = 1;
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
 
             // Get the parameters of ellipe0.
             Vector2<T> K0 = ellipse0.center;
-            Matrix2x2<T> R0;
+            Matrix2x2<T> R0{};
             R0.SetCol(0, ellipse0.axis[0]);
             R0.SetCol(1, ellipse0.axis[1]);
             Matrix2x2<T> D0{
@@ -62,12 +70,14 @@ namespace gte
 
             // Get the parameters of ellipse1.
             Vector2<T> K1 = ellipse1.center;
-            Matrix2x2<T> R1;
+            Matrix2x2<T> R1{};
             R1.SetCol(0, ellipse1.axis[0]);
             R1.SetCol(1, ellipse1.axis[1]);
-            Matrix2x2<T> D1{
+            Matrix2x2<T> D1
+            {
                 one / (ellipse1.extent[0] * ellipse1.extent[0]), zero,
-                zero, one / (ellipse1.extent[1] * ellipse1.extent[1]) };
+                zero, one / (ellipse1.extent[1] * ellipse1.extent[1])
+            };
 
             // Compute K2 = D0^{1/2}*R0^T*(K1-K0). In the GTE code, the
             // quantity U = R0^T*(K1-K0) is a 2x1 vector which can be computed
@@ -80,12 +90,18 @@ namespace gte
             // as a 2x1 vector. See Matrix.h, the operator function
             // Vector<?> operator*(Vector<?> const&, Matrix<?> const&) which
             // computes V^T*M for a Vector<?> V and a Matrix<?> M.
-            Matrix2x2<T> D0NegHalf{
+            Matrix2x2<T> D0NegHalf
+            {
                 ellipse0.extent[0], zero,
-                zero, ellipse0.extent[1] };
-            Matrix2x2<T> D0Half{
+                zero, ellipse0.extent[1]
+            };
+
+            Matrix2x2<T> D0Half
+            {
                 one / ellipse0.extent[0], zero,
-                zero, one / ellipse0.extent[1] };
+                zero, one / ellipse0.extent[1]
+            };
+
             Vector2<T> K2 = D0Half * ((K1 - K0) * R0);
 
             // Compute M2.
@@ -93,11 +109,11 @@ namespace gte
             Matrix2x2<T> M2 = MultiplyATB(R1TR0D0NegHalf, D1) * R1TR0D0NegHalf;
 
             // Factor M2 = R*D*R^T.
-            SymmetricEigensolver2x2<T> es;
-            std::array<T, 2> D;
-            std::array<std::array<T, 2>, 2> evec;
+            SymmetricEigensolver2x2<T> es{};
+            std::array<T, 2> D{};
+            std::array<std::array<T, 2>, 2> evec{};
             es(M2(0, 0), M2(0, 1), M2(1, 1), +1, D, evec);
-            Matrix2x2<T> R;
+            Matrix2x2<T> R{};
             R.SetCol(0, evec[0]);
             R.SetCol(1, evec[1]);
 
@@ -117,7 +133,7 @@ namespace gte
             if (K == Vector2<T>::Zero())
             {
                 // The special case of common centers must be handled
-                // separately.  It is not possible for the ellipses to be
+                // separately. It is not possible for the ellipses to be
                 // separated.
                 for (int32_t i = 0; i < 2; ++i)
                 {
@@ -142,7 +158,7 @@ namespace gte
             T d0 = D[0], d1 = D[1];
             T c0 = K[0] * K[0], c1 = K[1] * K[1];
 
-            // Sort the values so that d0 >= d1.  This allows us to bound the
+            // Sort the values so that d0 >= d1. This allows us to bound the
             // roots of f(s), of which there are at most 4.
             std::vector<std::pair<T, T>> param(2);
             if (d0 >= d1)
@@ -217,7 +233,7 @@ namespace gte
         void GetRoots(T d0, T c0, int32_t& numRoots, T* roots)
         {
             // f(s) = d0*c0/(d0*s-1)^2 - 1
-            T const one = (T)1;
+            T const one = static_cast<T>(1);
             T temp = std::sqrt(d0 * c0);
             T inv = one / d0;
             numRoots = 2;
@@ -229,7 +245,8 @@ namespace gte
         {
             // f(s) = d0*c0/(d0*s-1)^2 + d1*c1/(d1*s-1)^2 - 1 with d0 > d1
 
-            T const zero = 0, one = (T)1;
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
             T d0c0 = d0 * c0;
             T d1c1 = d1 * c1;
             T sum = d0c0 + d1c1;
@@ -247,7 +264,7 @@ namespace gte
 
             std::function<T(T)> DF = [&one, d0, d1, d0c0, d1c1](T s)
             {
-                T const two = 2;
+                T const two = static_cast<T>(2);
                 T invN0 = one / (d0 * s - one);
                 T invN1 = one / (d1 * s - one);
                 T term0 = d0 * d0c0 * invN0 * invN0 * invN0;
@@ -257,14 +274,13 @@ namespace gte
             };
 
             uint32_t const maxIterations = static_cast<uint32_t>(
-                3 + std::numeric_limits<T>::digits -
-                std::numeric_limits<T>::min_exponent);
-            uint32_t iterations;
+                3 + std::numeric_limits<T>::digits - std::numeric_limits<T>::min_exponent);
+            uint32_t iterations{};
             numRoots = 0;
 
             T invD0 = one / d0;
             T invD1 = one / d1;
-            T smin, smax, fval, s = (T)0;
+            T smin{}, smax{}, fval{}, s = zero;
 
             // Compute root in (-infinity,1/d0).  Obtain a lower bound for the
             // root better than -std::numeric_limits<T>::max().
@@ -280,22 +296,21 @@ namespace gte
             {
                 smin = zero;
             }
-            iterations = RootsBisection<T>::Find(F, smin, smax, -one, one,
-                maxIterations, s);
+            iterations = RootsBisection<T>::Find(F, smin, smax, -one, one, maxIterations, s);
             fval = F(s);
             LogAssert(iterations > 0, "Unexpected condition.");
             roots[numRoots++] = s;
 
-            // Compute roots (if any) in (1/d0,1/d1).  It is the case that
+            // Compute roots (if any) in (1/d0,1/d1). It is the case that
             //   F(1/d0) = +infinity, F'(1/d0) = -infinity
             //   F(1/d1) = +infinity, F'(1/d1) = +infinity
             //   F"(s) > 0 for all s in the domain of F
-            // Compute the unique root r of F'(s) on (1/d0,1/d1).  The
+            // Compute the unique root r of F'(s) on (1/d0,1/d1). The
             // bisector needs only the signs at the endpoints, so we pass -1
-            // and +1 instead of the infinite values.  If F(r) < 0, F(s) has
-            // two roots in the interval.  If F(r) = 0, F(s) has only one root
+            // and +1 instead of the infinite values. If F(r) < 0, F(s) has
+            // two roots in the interval. If F(r) = 0, F(s) has only one root
             // in the interval.
-            T const oneThird = (T)1 / (T)3;
+            T const oneThird = static_cast<T>(1) / static_cast<T>(3);
             T rho = std::pow(d0 * d0c0 / (d1 * d1c1), oneThird);
             T smid = (one + rho) / (d0 + rho * d1);
             T fmid = F(smid);
@@ -303,13 +318,11 @@ namespace gte
             {
                 // Pass in signs rather than infinities, because the bisector cares
                 // only about the signs.
-                iterations = RootsBisection<T>::Find(F, invD0, smid, one, -one,
-                    maxIterations, s);
+                iterations = RootsBisection<T>::Find(F, invD0, smid, one, -one, maxIterations, s);
                 fval = F(s);
                 LogAssert(iterations > 0, "Unexpected condition.");
                 roots[numRoots++] = s;
-                iterations = RootsBisection<T>::Find(F, smid, invD1, -one, one,
-                    maxIterations, s);
+                iterations = RootsBisection<T>::Find(F, smid, invD1, -one, one, maxIterations, s);
                 fval = F(s);
                 LogAssert(iterations > 0, "Unexpected condition.");
                 roots[numRoots++] = s;
@@ -319,14 +332,13 @@ namespace gte
                 roots[numRoots++] = smid;
             }
 
-            // Compute root in (1/d1,+infinity).  Obtain an upper bound for
+            // Compute root in (1/d1,+infinity). Obtain an upper bound for
             // the root better than std::numeric_limits<T>::max().
             smin = invD1;
             smax = (one + sqrtsum) * invD1;  // > 1/d1
             fval = F(smax);
             LogAssert(fval <= zero, "Unexpected condition.");
-            iterations = RootsBisection<T>::Find(F, smin, smax, one, -one,
-                maxIterations, s);
+            iterations = RootsBisection<T>::Find(F, smin, smax, one, -one, maxIterations, s);
             fval = F(s);
             LogAssert(iterations > 0, "Unexpected condition.");
             roots[numRoots++] = s;
@@ -334,7 +346,7 @@ namespace gte
 
         Classification Classify(T minSqrDistance, T maxSqrDistance, T d0c0pd1c1)
         {
-            T const one = (T)1;
+            T const one = static_cast<T>(1);
 
             if (maxSqrDistance < one)
             {
@@ -388,23 +400,7 @@ namespace gte
     {
     public:
         // The queries find the intersections (if any) of the ellipses treated
-        // as hollow objects.  The implementations use the same concepts.
-        FIQuery()
-            :
-            mZero((T)0),
-            mOne((T)1),
-            mTwo((T)2),
-            mA{ (T)0, (T)0, (T)0, (T)0, (T)0 },
-            mB{ (T)0, (T)0, (T)0, (T)0, (T)0 },
-            mD{ (T)0, (T)0, (T)0, (T)0, (T)0 },
-            mF{ (T)0, (T)0, (T)0, (T)0, (T)0 },
-            mC{ (T)0, (T)0, (T)0 },
-            mE{ (T)0, (T)0, (T)0 },
-            mA2Div2((T)0),
-            mA4Div2((T)0)
-        {
-        }
-
+        // as hollow objects. The implementations use the same concepts.
         struct Result
         {
             Result()
@@ -421,492 +417,394 @@ namespace gte
             bool intersect;
 
             // If the ellipses are not the same, numPoints is 0 through 4 and
-            // that number of elements of 'points' are valid.  If the ellipses
-            // are the same, numPoints is set to maxInt and 'points' is
-            // invalid.
-            int32_t numPoints;
+            // that number of elements of 'points' are valid. If the ellipses
+            // are the same, numPoints is std::numeric_limits<size_t>::max()
+            // and 'points' is invalid (set to zero-valued vectors).
+            size_t numPoints;
             std::array<Vector2<T>, 4> points;
             std::array<bool, 4> isTransverse;
         };
 
-        // The ellipse axes are already normalized, which most likely
-        // introducedrounding errors.
-        Result operator()(Ellipse2<T> const& ellipse0, Ellipse2<T> const& ellipse1)
+        void GetStandardForm(Ellipse2<T> const& ellipse, Vector2<T>& C, Matrix2x2<T>& M)
         {
-            Vector2<T> rCenter, rSqrExtent;
-            std::array<Vector2<T>, 2> rAxis{};
-
-            rCenter = { ellipse0.center[0], ellipse0.center[1] };
-            rAxis[0] = { ellipse0.axis[0][0], ellipse0.axis[0][1] };
-            rAxis[1] = { ellipse0.axis[1][0], ellipse0.axis[1][1] };
-            rSqrExtent =
-            {
-                ellipse0.extent[0] * ellipse0.extent[0],
-                ellipse0.extent[1] * ellipse0.extent[1]
-            };
-            ToCoefficients(rCenter, rAxis, rSqrExtent, mA);
-
-            rCenter = { ellipse1.center[0], ellipse1.center[1] };
-            rAxis[0] = { ellipse1.axis[0][0], ellipse1.axis[0][1] };
-            rAxis[1] = { ellipse1.axis[1][0], ellipse1.axis[1][1] };
-            rSqrExtent =
-            {
-                ellipse1.extent[0] * ellipse1.extent[0],
-                ellipse1.extent[1] * ellipse1.extent[1]
-            };
-            ToCoefficients(rCenter, rAxis, rSqrExtent, mB);
-
-            Result result;
-            DoRootFinding(result);
-            return result;
+            Matrix2x2<T> UUTrn = OuterProduct(ellipse.axis[0], ellipse.axis[0]);
+            Matrix2x2<T> VVTrn = OuterProduct(ellipse.axis[1], ellipse.axis[1]);
+            T USqrLen = Trace(UUTrn);
+            T aSqr = ellipse.extent[0] * ellipse.extent[0];
+            T bSqr = ellipse.extent[1] * ellipse.extent[1];
+            C = ellipse.center;
+            M = (UUTrn / aSqr + VVTrn / bSqr) / USqrLen;
         }
 
-        // The axis directions do not have to be unit length.  The quadratic
-        // equations are constructed according to the details of the PDF
-        // document about the intersection of ellipses.
+        void ComputeAlignedBox(Ellipse2<T> const& ellipse, AlignedBox2<T>& box)
+        {
+            Vector2<T> C{};
+            Matrix2x2<T> M{};
+            GetStandardForm(ellipse, C, M);
+            ComputeAlignedBox(C, M, box);
+        }
+
+        void ComputeAlignedBox(Vector2<T> const& C, Matrix2x2<T> const& M, AlignedBox2<T>& box)
+        {
+            T determinant = M(0, 0) * M(1, 1) - M(0, 1) * M(0, 1);
+            std::array<T, 2> distance
+            {
+                std::sqrt(M(1, 1) / determinant),
+                    std::sqrt(M(0, 0) / determinant)
+            };
+
+            for (int32_t i = 0; i < 2; ++i)
+            {
+                box.min[i] = C[i] - distance[i];
+                box.max[i] = C[i] + distance[i];
+            }
+        }
+
         Result operator()(
-            Vector2<T> const& center0,
-            std::array<Vector2<T>, 2> const& axis0,
-            Vector2<T> const& sqrExtent0,
-            Vector2<T> const& center1,
-            std::array<Vector2<T>, 2> const& axis1,
-            Vector2<T> const& sqrExtent1)
+            Vector2<T> const& C0, Matrix2x2<T> const& M0,
+            Vector2<T> const& C1, Matrix2x2<T> const& M1,
+            bool useEarlyExitNoIntersectionTest = true)
         {
-            Vector2<T> rCenter, rSqrExtent;
-            std::array<Vector2<T>, 2> rAxis{};
+            Result result{};
 
-            rCenter = { center0[0], center0[1] };
-            rAxis[0] = { axis0[0][0], axis0[0][1] };
-            rAxis[1] = { axis0[1][0], axis0[1][1] };
-            rSqrExtent = { sqrExtent0[0], sqrExtent0[1] };
-            ToCoefficients(rCenter, rAxis, rSqrExtent, mA);
-
-            rCenter = { center1[0], center1[1] };
-            rAxis[0] = { axis1[0][0], axis1[0][1] };
-            rAxis[1] = { axis1[1][0], axis1[1][1] };
-            rSqrExtent = { sqrExtent1[0], sqrExtent1[1] };
-            ToCoefficients(rCenter, rAxis, rSqrExtent, mB);
-
-            Result result;
-            DoRootFinding(result);
-            return result;
-        }
-
-    private:
-        // Compute the coefficients of the quadratic equation but with the
-        // y^2-coefficient of 1.
-        void ToCoefficients(
-            Vector2<T> const& center,
-            std::array<Vector2<T>, 2> const& axis,
-            Vector2<T> const& sqrExtent,
-            std::array<T, 5>& coeff)
-        {
-            T denom0 = Dot(axis[0], axis[0]) * sqrExtent[0];
-            T denom1 = Dot(axis[1], axis[1]) * sqrExtent[1];
-            Matrix2x2<T> outer0 = OuterProduct(axis[0], axis[0]);
-            Matrix2x2<T> outer1 = OuterProduct(axis[1], axis[1]);
-            Matrix2x2<T> A = outer0 / denom0 + outer1 / denom1;
-            Vector2<T> product = A * center;
-            Vector2<T> B = -mTwo * product;
-            T const& denom = A(1, 1);
-            coeff[0] = (Dot(center, product) - mOne) / denom;
-            coeff[1] = B[0] / denom;
-            coeff[2] = B[1] / denom;
-            coeff[3] = A(0, 0) / denom;
-            coeff[4] = mTwo * A(0, 1) / denom;
-            // coeff[5] = A(1, 1) / denom = 1;
-        }
-
-        void DoRootFinding(Result& result)
-        {
-            bool allZero = true;
-            for (int32_t i = 0; i < 5; ++i)
+            // Test whether the ellipses are the same. If so, report that
+            // there are infinitely many points of intersection.
+            if (C0 == C1 && M0 == M1)
             {
-                mD[i] = mA[i] - mB[i];
-                if (mD[i] != mZero)
+                result.numPoints = std::numeric_limits<size_t>::max();
+                return result;
+            }
+
+            if (useEarlyExitNoIntersectionTest)
+            {
+                // Test whether the axis-aligned bounding boxes are disjoint.
+                // If so, the ellipses do not intersect.
+                AlignedBox2<T> box0{}, box1{};
+                ComputeAlignedBox(C0, M0, box0);
+                ComputeAlignedBox(C1, M1, box1);
+                for (int32_t i = 0; i < 2; i++)
                 {
-                    allZero = false;
-                }
-            }
-            if (allZero)
-            {
-                result.intersect = false;
-                result.numPoints = std::numeric_limits<int32_t>::max();
-                return;
-            }
-
-            result.numPoints = 0;
-
-            mA2Div2 = mA[2] / mTwo;
-            mA4Div2 = mA[4] / mTwo;
-            mC[0] = mA[0] - mA2Div2 * mA2Div2;
-            mC[1] = mA[1] - mA2Div2 * mA[4];
-            mC[2] = mA[3] - mA4Div2 * mA4Div2;  // c[2] > 0
-            mE[0] = mD[0] - mA2Div2 * mD[2];
-            mE[1] = mD[1] - mA2Div2 * mD[4] - mA4Div2 * mD[2];
-            mE[2] = mD[3] - mA4Div2 * mD[4];
-
-            if (mD[4] != mZero)
-            {
-                T xbar = -mD[2] / mD[4];
-                T ebar = mE[0] + xbar * (mE[1] + xbar * mE[2]);
-                if (ebar != mZero)
-                {
-                    D4NotZeroEBarNotZero(result);
-                }
-                else
-                {
-                    D4NotZeroEBarZero(xbar, result);
-                }
-            }
-            else if (mD[2] != mZero)  // d[4] = 0
-            {
-                if (mE[2] != mZero)
-                {
-                    D4ZeroD2NotZeroE2NotZero(result);
-                }
-                else
-                {
-                    D4ZeroD2NotZeroE2Zero(result);
-                }
-            }
-            else  // d[2] = d[4] = 0
-            {
-                D4ZeroD2Zero(result);
-            }
-
-            result.intersect = (result.numPoints > 0);
-        }
-
-        void D4NotZeroEBarNotZero(Result& result)
-        {
-            // The graph of w = -e(x)/d(x) is a hyperbola.
-            T d2d2 = mD[2] * mD[2], d2d4 = mD[2] * mD[4], d4d4 = mD[4] * mD[4];
-            T e0e0 = mE[0] * mE[0], e0e1 = mE[0] * mE[1], e0e2 = mE[0] * mE[2];
-            T e1e1 = mE[1] * mE[1], e1e2 = mE[1] * mE[2], e2e2 = mE[2] * mE[2];
-            std::array<T, 5> f =
-            {
-                mC[0] * d2d2 + e0e0,
-                mC[1] * d2d2 + mTwo * (mC[0] * d2d4 + e0e1),
-                mC[2] * d2d2 + mC[0] * d4d4 + e1e1 + mTwo * (mC[1] * d2d4 + e0e2),
-                mC[1] * d4d4 + mTwo * (mC[2] * d2d4 + e1e2),
-                mC[2] * d4d4 + e2e2  // > 0
-            };
-
-            std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2],
-                f[3], f[4], rmMap);
-
-            // xbar cannot be a root of f(x), so d(x) != 0 and we can solve
-            // directly for w = -e(x)/d(x).
-            for (auto const& rm : rmMap)
-            {
-                T const& x = rm.first;
-                T wnumer = -(mE[0] + x * (mE[1] + x * mE[2]));
-                T wdenom = mD[2] + mD[4] * x;
-                T w = wnumer / wdenom;
-                T y = w - (mA2Div2 + x * mA4Div2);
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = (rm.second == 1);
-            }
-        }
-
-        void D4NotZeroEBarZero(T const& xbar, Result& result)
-        {
-            // Factor e(x) = (d2 + d4*x)*(h0 + h1*x).  The w-equation has
-            // two solution components, x = xbar and w = -(h0 + h1*x).
-            T translate, w, y;
-
-            // Compute intersection of x = xbar with ellipse.
-            T ncbar = -(mC[0] + xbar * (mC[1] + xbar * mC[2]));
-            if (ncbar >= mZero)
-            {
-                translate = mA2Div2 + xbar * mA4Div2;
-                w = std::sqrt(ncbar);
-                y = w - translate;
-                result.points[result.numPoints] = { xbar, y };
-                if (w > mZero)
-                {
-                    result.isTransverse[result.numPoints++] = true;
-                    w = -w;
-                    y = w - translate;
-                    result.points[result.numPoints] = { xbar, y };
-                    result.isTransverse[result.numPoints++] = true;
-                }
-                else
-                {
-                    result.isTransverse[result.numPoints++] = false;
-                }
-            }
-
-            // Compute intersections of w = -(h0 + h1*x) with ellipse.
-            std::array<T, 2> h;
-            h[1] = mE[2] / mD[4];
-            h[0] = (mE[1] - mD[2] * h[1]) / mD[4];
-            std::array<T, 3> f =
-            {
-                mC[0] + h[0] * h[0],
-                mC[1] + mTwo * h[0] * h[1],
-                mC[2] + h[1] * h[1]  // > 0
-            };
-
-            std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
-            for (auto const& rm : rmMap)
-            {
-                T const& x = rm.first;
-                translate = mA2Div2 + x * mA4Div2;
-                w = -(h[0] + x * h[1]);
-                y = w - translate;
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = (rm.second == 1);
-            }
-        }
-
-        void D4ZeroD2NotZeroE2NotZero(Result& result)
-        {
-            T d2d2 = mD[2] * mD[2];
-            std::array<T, 5> f =
-            {
-                mC[0] * d2d2 + mE[0] * mE[0],
-                mC[1] * d2d2 + mTwo * mE[0] * mE[1],
-                mC[2] * d2d2 + mE[1] * mE[1] + mTwo * mE[0] * mE[2],
-                mTwo * mE[1] * mE[2],
-                mE[2] * mE[2]  // > 0
-            };
-
-            std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuartic<T>(f[0], f[1], f[2], f[3],
-                f[4], rmMap);
-            for (auto const& rm : rmMap)
-            {
-                T const& x = rm.first;
-                T translate = mA2Div2 + x * mA4Div2;
-                T w = -(mE[0] + x * (mE[1] + x * mE[2])) / mD[2];
-                T y = w - translate;
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = (rm.second == 1);
-            }
-        }
-
-        void D4ZeroD2NotZeroE2Zero(Result& result)
-        {
-            T d2d2 = mD[2] * mD[2];
-            std::array<T, 3> f =
-            {
-                mC[0] * d2d2 + mE[0] * mE[0],
-                mC[1] * d2d2 + mTwo * mE[0] * mE[1],
-                mC[2] * d2d2 + mE[1] * mE[1]
-            };
-
-            std::map<T, int32_t> rmMap;
-            RootsPolynomial<T>::template SolveQuadratic<T>(f[0], f[1], f[2], rmMap);
-            for (auto const& rm : rmMap)
-            {
-                T const& x = rm.first;
-                T translate = mA2Div2 + x * mA4Div2;
-                T w = -(mE[0] + x * mE[1]) / mD[2];
-                T y = w - translate;
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = (rm.second == 1);
-            }
-        }
-
-        void D4ZeroD2Zero(Result& result)
-        {
-            // e(x) cannot be identically zero, because if it were, then all
-            // d[i] = 0.  But we tested that case previously and exited.
-
-            if (mE[2] != mZero)
-            {
-                // Make e(x) monic, f(x) = e(x)/e2 = x^2 + (e1/e2)*x + (e0/e2)
-                // = x^2 + f1*x + f0.
-                std::array<T, 2> f = { mE[0] / mE[2], mE[1] / mE[2] };
-
-                T mid = -f[1] / mTwo;
-                T discr = mid * mid - f[0];
-                if (discr > mZero)
-                {
-                    // The theoretical roots of e(x) are
-                    // x = -f1/2 + s*sqrt(discr) where s in {-1,+1}.  For each
-                    // root, determine exactly the sign of c(x).  We need
-                    // c(x) <= 0 in order to solve for w^2 = -c(x).  At the
-                    // root,
-                    //  c(x) = c0 + c1*x + c2*x^2 = c0 + c1*x - c2*(f0 + f1*x)
-                    //       = (c0 - c2*f0) + (c1 - c2*f1)*x
-                    //       = g0 + g1*x
-                    // We need g0 + g1*x <= 0.
-                    T sqrtDiscr = std::sqrt(discr);
-                    std::array<T, 2> g =
+                    if (box0.max[i] < box1.min[i] || box0.min[i] > box1.max[i])
                     {
-                        mC[0] - mC[2] * f[0],
-                        mC[1] - mC[2] * f[1]
-                    };
-
-                    if (g[1] > mZero)
-                    {
-                        // We need s*sqrt(discr) <= -g[0]/g[1] + f1/2.
-                        T r = -g[0] / g[1] - mid;
-
-                        // s = +1:
-                        if (r >= mZero)
-                        {
-                            T rsqr = r * r;
-                            if (discr < rsqr)
-                            {
-                                SpecialIntersection(mid + sqrtDiscr, true, result);
-                            }
-                            else if (discr == rsqr)
-                            {
-                                SpecialIntersection(mid + sqrtDiscr, false, result);
-                            }
-                        }
-
-                        // s = -1:
-                        if (r > mZero)
-                        {
-                            SpecialIntersection(mid - sqrtDiscr, true, result);
-                        }
-                        else
-                        {
-                            T rsqr = r * r;
-                            if (discr > rsqr)
-                            {
-                                SpecialIntersection(mid - sqrtDiscr, true, result);
-                            }
-                            else if (discr == rsqr)
-                            {
-                                SpecialIntersection(mid - sqrtDiscr, false, result);
-                            }
-                        }
-                    }
-                    else if (g[1] < mZero)
-                    {
-                        // We need s*sqrt(discr) >= -g[0]/g[1] + f1/2.
-                        T r = -g[0] / g[1] - mid;
-
-                        // s = -1:
-                        if (r <= mZero)
-                        {
-                            T rsqr = r * r;
-                            if (discr < rsqr)
-                            {
-                                SpecialIntersection(mid - sqrtDiscr, true, result);
-                            }
-                            else
-                            {
-                                SpecialIntersection(mid - sqrtDiscr, false, result);
-                            }
-                        }
-
-                        // s = +1:
-                        if (r < mZero)
-                        {
-                            SpecialIntersection(mid + sqrtDiscr, true, result);
-                        }
-                        else
-                        {
-                            T rsqr = r * r;
-                            if (discr > rsqr)
-                            {
-                                SpecialIntersection(mid + sqrtDiscr, true, result);
-                            }
-                            else if (discr == rsqr)
-                            {
-                                SpecialIntersection(mid + sqrtDiscr, false, result);
-                            }
-                        }
-                    }
-                    else  // g[1] = 0
-                    {
-                        // The graphs of c(x) and f(x) are parabolas of the
-                        // same shape.  One is a vertical translation of the
-                        // other.
-                        if (g[0] < mZero)
-                        {
-                            // The graph of f(x) is above that of c(x).
-                            SpecialIntersection(mid - sqrtDiscr, true, result);
-                            SpecialIntersection(mid + sqrtDiscr, true, result);
-                        }
-                        else if (g[0] == mZero)
-                        {
-                            // The graphs of c(x) and f(x) are the same parabola.
-                            SpecialIntersection(mid - sqrtDiscr, false, result);
-                            SpecialIntersection(mid + sqrtDiscr, false, result);
-                        }
-                    }
-                }
-                else if (discr == mZero)
-                {
-                    // The theoretical root of f(x) is x = -f1/2.
-                    T nchat = -(mC[0] + mid * (mC[1] + mid * mC[2]));
-                    if (nchat > mZero)
-                    {
-                        SpecialIntersection(mid, true, result);
-                    }
-                    else if (nchat == mZero)
-                    {
-                        SpecialIntersection(mid, false, result);
+                        // The member result.intersect is set to 'false' by the
+                        // constructor.
+                        return result;
                     }
                 }
             }
-            else if (mE[1] != mZero)
-            {
-                T xhat = -mE[0] / mE[1];
-                T nchat = -(mC[0] + xhat * (mC[1] + xhat * mC[2]));
-                if (nchat > mZero)
-                {
-                    SpecialIntersection(xhat, true, result);
-                }
-                else if (nchat == mZero)
-                {
-                    SpecialIntersection(xhat, false, result);
-                }
-            }
-        }
 
-        // Helper function for D4ZeroD2Zero.
-        void SpecialIntersection(T const& x, bool transverse, Result& result)
-        {
-            if (transverse)
-            {
-                T translate = mA2Div2 + x * mA4Div2;
-                T nc = -(mC[0] + x * (mC[1] + x * mC[2]));
-                if (nc < mZero)
-                {
-                    // Clamp to eliminate the rounding error, but duplicate
-                    // the point because we know that it is a transverse
-                    // intersection.
-                    nc = mZero;
-                }
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            T const two = static_cast<T>(2);
 
-                T w = std::sqrt(nc);
-                T y = w - translate;
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = true;
-                w = -w;
-                y = w - translate;
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = true;
+            T ell = M0(0, 1) / M0(0, 0);
+            T d0 = M0(0, 0);
+            T d1 = RobustDOP(M0(0, 0), M0(1, 1), M0(0, 1), M0(0, 1)) / M0(0, 0);
+            T k0 = C1[0] - C0[0];
+            T k1 = C1[1] - C0[1];
+            T term0 = RobustSOP(k0, M1(0, 0), k1, M1(0, 1));
+            T term1 = RobustSOP(k0, M1(0, 1), k1, M1(1, 1));
+            T g0 = RobustSOP(k0, term0, k1, term1) - one;
+            T g1 = -two * term0;
+            T g2 = two * std::fma(term0, ell, -term1);
+            T g3 = M1(0, 0);
+            T g4 = -two * std::fma(M1(0, 0), ell, -M1(0, 1));
+            T g5 = std::fma(-ell, RobustDOP(two, M1(0, 1), ell, M1(0, 0)), M1(1, 1));
+            T e0 = std::fma(d1, g0, g5);
+            T e1 = d1 * g1;
+            T e2 = d1 * g2;
+            T e3 = RobustDOP(d1, g3, d0, g5);
+            T e4 = d1 * g4;
+
+            if (e4 != zero)
+            {
+                CaseE4NotZero(C0, ell, d0, d1, e0, e1, e2, e3, e4, result);
             }
             else
             {
-                // The vertical line at the root is tangent to the ellipse.
-                T y = -(mA2Div2 + x * mA4Div2);  // w = 0
-                result.points[result.numPoints] = { x, y };
-                result.isTransverse[result.numPoints++] = false;
+                if (e2 != zero)
+                {
+                    if (e3 != zero)
+                    {
+                        CaseE4ZeroE2NotZeroE3NotZero(C0, ell, d0, d1, e0, e1, e2, e3, result);
+                    }
+                    else
+                    {
+                        CaseE4ZeroE2NotZeroE3Zero(C0, ell, d0, d1, e0, e1, e2, result);
+                    }
+                }
+                else
+                {
+                    if (e3 != zero)
+                    {
+                        CaseE4ZeroE2ZeroE3NotZero(C0, ell, d0, d1, e0, e1, e3, result);
+                    }
+                    else if (e1 != zero)
+                    {
+                        CaseE4ZeroE2ZeroE3Zero(C0, ell, d0, d1, e0, e1, result);
+                    }
+                    // else: The ellipses are axis-aligned and have the same
+                    // center. The extent vectors are parallel but not equal.
+                    // One ellipse is strictly inside the other, so there is
+                    // no intersection.
+                }
+            }
+
+            return result;
+        }
+
+        Result operator()(
+            Ellipse2<T> const& ellipse0,
+            Ellipse2<T> const& ellipse1,
+            bool useEarlyExitNoIntersectionTest = true)
+        {
+            Vector2<T> C0{}, C1{};
+            Matrix2x2<T> M0{}, M1{};
+            GetStandardForm(ellipse0, C0, M0);
+            GetStandardForm(ellipse1, C1, M1);
+            return operator()(C0, M0, C1, M1, useEarlyExitNoIntersectionTest);
+        }
+
+    private:
+        void CaseE4ZeroE2ZeroE3NotZero(
+            Vector2<T> const& C0, T const& ell, T const& d0, T const& d1,
+            T const& e0, T const& e1, T const& e3,
+            Result& result)
+        {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+
+            std::map<T, int32_t> rmMap{};
+            RootsPolynomial<T>::SolveQuadratic(e0, e1, e3, rmMap);
+            for (auto const& rm : rmMap)
+            {
+                T y0 = rm.first;
+                T lambda = std::fma(-d0, y0 * y0, one);
+                if (lambda < zero)
+                {
+                    continue;
+                }
+
+                if (lambda > zero)
+                {
+                    T y1 = -std::sqrt(lambda / d1);
+                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.isTransverse[result.numPoints] = (rm.second == 1);
+                    ++result.numPoints;
+                    y1 = -y1;
+                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.isTransverse[result.numPoints] = (rm.second == 1);
+                    ++result.numPoints;
+                }
+                else
+                {
+                    result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                    result.isTransverse[result.numPoints] = false;
+                    ++result.numPoints;
+                }
+
+                result.intersect = true;
             }
         }
 
-        // Constants that are set up once (optimization for rational
-        // arithmetic).
-        T mZero, mOne, mTwo;
+        void CaseE4ZeroE2ZeroE3Zero(
+            Vector2<T> const& C0, T const& ell, T const& d0, T const& d1,
+            T const& e0, T const& e1,
+            Result& result)
+        {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
 
-        // Various polynomial coefficients.  The names are intended to
-        // match the variable names used in the PDF documentation.
-        std::array<T, 5> mA, mB, mD, mF;
-        std::array<T, 3> mC, mE;
-        T mA2Div2, mA4Div2;
+            T y0 = -e0 / e1;
+            T lambda = std::fma(-d0, y0 * y0, one);
+            if (lambda < zero)
+            {
+                return;
+            }
+
+            if (lambda > zero)
+            {
+                T y1 = -std::sqrt(lambda / d1);
+                result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                result.isTransverse[result.numPoints] = true;
+                ++result.numPoints;
+                y1 = -y1;
+                result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                result.isTransverse[result.numPoints] = true;
+                ++result.numPoints;
+            }
+            else
+            {
+                result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                result.isTransverse[result.numPoints] = false;
+                ++result.numPoints;
+            }
+
+            result.intersect = true;
+        }
+
+        void CaseE4ZeroE2NotZeroE3Zero(
+            Vector2<T> const& C0, T const& ell, T const& d0, T const& d1,
+            T const& e0, T const& e1, T const& e2,
+            Result& result)
+        {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+
+            Polynomial1<T> poly0{ -one, zero, d0 };
+            Polynomial1<T> poly1{ e0, e1 };
+            Polynomial1<T> H = e2 * e2 * poly0 + d1 * poly1 * poly1;
+            std::map<T, int32_t> rmMap{};
+            RootsPolynomial<T>::SolveQuadratic(H[0], H[1], H[2], rmMap);
+            for (auto const& rm : rmMap)
+            {
+                T y0 = rm.first;
+                T lambda = std::fma(-d0, y0 * y0, one);
+                if (lambda < zero)
+                {
+                    continue;
+                }
+
+                if (lambda > zero)
+                {
+                    // Choose the y1-root with smallest
+                    // |(e0 + e1 * y0) + (e2) * y1|.
+                    T y1cand0 = -std::sqrt(lambda / d1);
+                    T test0 = std::fabs(e0 + RobustSOP(e1, y0, e2, y1cand0));
+                    T y1cand1 = -y1cand0;
+                    T test1 = std::fabs(e0 + RobustSOP(e1, y0, e2, y1cand1));
+                    T y1 = (test0 <= test1 ? y1cand0 : y1cand1);
+                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                }
+                else
+                {
+                    result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                }
+
+                result.isTransverse[result.numPoints] = (rm.second == 1);
+                ++result.numPoints;
+
+                result.intersect = true;
+            }
+        }
+
+        void CaseE4ZeroE2NotZeroE3NotZero(
+            Vector2<T> const& C0, T const& ell, T const& d0, T const& d1,
+            T const& e0, T const& e1, T const& e2, T const& e3,
+            Result& result)
+        {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+
+            Polynomial1<T> poly0{ -one, zero, d0 };
+            Polynomial1<T> poly1{ e0, e1, e3 };
+            Polynomial1<T> H = e2 * e2 * poly0 + d1 * poly1 * poly1;
+            std::map<T, int32_t> rmMap{};
+            RootsPolynomial<T>::SolveQuartic(H[0], H[1], H[2], H[3], H[4], rmMap);
+            for (auto const& rm : rmMap)
+            {
+                T y0 = rm.first;
+                T lambda = std::fma(-d0, y0 * y0, one);
+                if (lambda < zero)
+                {
+                    continue;
+                }
+
+                if (lambda > zero)
+                {
+                    // Choose the y1-root with smallest
+                    // |(e0 + e1 * y0 + e3 * y0^2) + (e2) * y1|.
+                    T term0 = std::fma(e3, y0, e1);
+                    T term1 = std::fma(term0, y0, e0);
+                    T y1cand0 = -std::sqrt(lambda / d1);
+                    T test0 = std::fabs(std::fma(e2, y1cand0, term1));
+                    T y1cand1 = -y1cand0;
+                    T test1 = std::fabs(std::fma(e2, y1cand1, term1));
+                    T y1 = (test0 < test1 ? y1cand0 : y1cand1);
+                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                }
+                else
+                {
+                    result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                }
+
+                result.isTransverse[result.numPoints] = (rm.second == 1);
+                ++result.numPoints;
+
+                result.intersect = true;
+            }
+        }
+
+        void CaseE4NotZero(
+            Vector2<T> const& C0, T const& ell, T const& d0, T const& d1,
+            T const& e0, T const& e1, T const& e2, T const& e3, T const& e4,
+            Result& result)
+        {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+
+            Polynomial1<T> poly0{ -one, zero, d0 };
+            Polynomial1<T> poly1{ e0, e1, e3 };
+            Polynomial1<T> poly2{ e2, e4 };
+            Polynomial1<T> H = poly2 * poly2 * poly0 + d1 * poly1 * poly1;
+            std::map<T, int32_t> rmMap{};
+            RootsPolynomial<T>::SolveQuartic(H[0], H[1], H[2], H[3], H[4], rmMap);
+            for (auto const& rm : rmMap)
+            {
+                T y0 = rm.first;
+                T lambda = std::fma(-d0, y0 * y0, one);
+                if (lambda < zero)
+                {
+                    continue;
+                }
+
+                T divisor = e2 + e4 * y0;
+                if (divisor != zero)
+                {
+                    if (lambda > zero)
+                    {
+                        // Choose the y1-root with smallest
+                        // |(e0 + e1 * y0 + e3 * y0^2) + (e2 + e4 * y0) * y1|.
+                        T y1cand0 = -std::sqrt(lambda / d1);
+                        T term0 = std::fma(e3, y0, e1);
+                        T term1 = std::fma(term0, y0, e0);
+                        T test0 = std::fabs(std::fma(divisor, y1cand0, term1));
+                        T y1cand1 = -y1cand0;
+                        T test1 = std::fabs(std::fma(divisor, y1cand1, term1));
+                        T y1 = (test0 < test1 ? y1cand0 : y1cand1);
+                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    }
+                    else
+                    {
+                        result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                    }
+
+                    result.isTransverse[result.numPoints] = (rm.second == 1);
+                    ++result.numPoints;
+
+                    result.intersect = true;
+                }
+                else
+                {
+                    if (lambda > zero)
+                    {
+                        T y1 = -std::sqrt(lambda / d1);
+                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        y1 = -y1;
+                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    }
+                    else
+                    {
+                        result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                    }
+
+                    result.isTransverse[result.numPoints] = (lambda > zero);
+                    ++result.numPoints;
+
+                    result.intersect = true;
+                }
+            }
+        }
     };
 
     // Template aliases for convenience.

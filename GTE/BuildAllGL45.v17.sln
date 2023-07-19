@@ -357,6 +357,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolylineOffsetGL45.v17", "S
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproximateBezierCurveByArcsGL45.v17", "Samples\Mathematics\ApproximateBezierCurveByArcs\ApproximateBezierCurveByArcsGL45.v17.vcxproj", "{BCC70527-698D-45BB-88E9-49BBFC5266D9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectEllipsesGL45.v17", "Samples\Intersection\IntersectEllipses\IntersectEllipsesGL45.v17.vcxproj", "{44933AD1-B81E-471D-BCC6-DC707CB298A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1701,6 +1703,14 @@ Global
 		{BCC70527-698D-45BB-88E9-49BBFC5266D9}.Release|x64.Build.0 = Release|x64
 		{BCC70527-698D-45BB-88E9-49BBFC5266D9}.Release|x86.ActiveCfg = Release|Win32
 		{BCC70527-698D-45BB-88E9-49BBFC5266D9}.Release|x86.Build.0 = Release|Win32
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Debug|x64.ActiveCfg = Debug|x64
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Debug|x64.Build.0 = Debug|x64
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Debug|x86.Build.0 = Debug|Win32
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Release|x64.ActiveCfg = Release|x64
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Release|x64.Build.0 = Release|x64
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Release|x86.ActiveCfg = Release|Win32
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1881,6 +1891,7 @@ Global
 		{42673DE3-56CB-43B0-9703-389DA6AB13DC} = {883613DC-0E4D-4F51-9631-18D37D62743E}
 		{3C4F6D47-AB73-4291-977A-8317CDA45B9E} = {749D8E36-5391-4845-9B67-0DB892B7DB3F}
 		{BCC70527-698D-45BB-88E9-49BBFC5266D9} = {EBAAB217-F1FC-411B-82C2-CBF89C78F7A4}
+		{44933AD1-B81E-471D-BCC6-DC707CB298A7} = {883613DC-0E4D-4F51-9631-18D37D62743E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED7EAE6E-B55C-4B19-9F14-6DF816AB8730}
