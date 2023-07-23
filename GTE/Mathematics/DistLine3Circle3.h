@@ -338,6 +338,7 @@ namespace gte
                     T t = -Dot(line.direction, D);
                     GetClosestPair(line.direction, D, circle.normal, circle.radius, t,
                         result.lineClosest[0], result.circleClosest[0]);
+                    output.lineClosest[0] += circle.center;
                     result.circleClosest[0] += circle.center;
                     result.equidistant = false;
                 }
