@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.22
+// Version: 6.0.2023.07.23
 
 #pragma once
 
@@ -297,6 +297,7 @@ namespace gte
                     {
                         GetClosestPair(line.direction, oldD, circle.normal, circle.radius, t,
                             info.lineClosest, info.circleClosest);
+                        info.lineClosest += circle.center;
                         info.circleClosest += circle.center;
                         info.equidistant = false;
                     }
