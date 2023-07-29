@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.07.17
+// Version: 6.7.2023.07.28
 
 #pragma once
 
@@ -45,7 +45,7 @@ namespace gte
         using Rational = BSRational<UIntegerAP32>;
 
         // Solve the general quadratic g0 + g1*x + g2*x^2 = 0.
-        static size_t Solve(
+        static size_t Solve(bool useBisection,
             T const& g0, T const& g1, T const& g2,
             PolynomialRoot<T>* roots)
         {
@@ -73,7 +73,7 @@ namespace gte
             ComputeClassifiers(g0, g1, g2, rD0, rM1Div2);
 
             std::array<PolynomialRoot<Rational>, 2> rRoots{};
-            size_t numRoots = ComputeDepressedRoots(rD0, rRoots.data());
+            size_t numRoots = ComputeDepressedRoots(useBisection, rD0, rRoots.data());
             for (size_t i = 0; i < numRoots; ++i)
             {
                 roots[i] = { rRoots[i].x - rM1Div2, rRoots[i].m };
@@ -82,7 +82,7 @@ namespace gte
         }
 
         // Solve the monic quadratic m0 + m1*x + x^2 = 0.
-        static size_t Solve(
+        static size_t Solve(bool useBisection,
             T const& m0, T const& m1,
             PolynomialRoot<T>* roots)
         {
@@ -104,7 +104,7 @@ namespace gte
             ComputeClassifiers(m0, m1, rD0, rM1Div2);
 
             std::array<PolynomialRoot<Rational>, 2> rRoots{};
-            size_t numRoots = ComputeDepressedRoots(rD0, rRoots.data());
+            size_t numRoots = ComputeDepressedRoots(useBisection, rD0, rRoots.data());
             for (size_t i = 0; i < numRoots; ++i)
             {
                 roots[i] = { rRoots[i].x - rM1Div2, rRoots[i].m };
@@ -113,7 +113,7 @@ namespace gte
         }
 
         // Solve the depressed quadratic d0 + x^2 = 0.
-        static size_t Solve(
+        static size_t Solve(bool useBisection,
             T const& d0,
             PolynomialRoot<T>* roots)
         {
@@ -125,7 +125,7 @@ namespace gte
             // inverse transforming are necessary. A copy is required in case
             // T != Rational, in which case an implicit conversion occurs.
             std::array<PolynomialRoot<Rational>, 2> rRoots{};
-            size_t numRoots = ComputeDepressedRoots(d0, rRoots.data());
+            size_t numRoots = ComputeDepressedRoots(useBisection, d0, rRoots.data());
             for (size_t i = 0; i < numRoots; ++i)
             {
                 roots[i] = { rRoots[i].x, rRoots[i].m };
@@ -133,43 +133,18 @@ namespace gte
             return numRoots;
         }
 
-        static size_t ComputeDepressedRoots(
+        static size_t ComputeDepressedRoots(bool useBisection,
             Rational const& rD0,
             PolynomialRoot<Rational>* rRoots)
         {
-            int32_t signD0 = rD0.GetSign();
-            if (signD0 > 0)
+            if (useBisection)
             {
-                // Two non-real roots, each multiplicity 1.
-                return 0;
+                return ComputeDepressedRootsBisection(rD0, rRoots);
             }
-
-            if (signD0 == 0)
+            else
             {
-                // One real root, multiplicity 2.
-                rRoots[0] = { Rational(0), 2 };
-                return 1;
+                return ComputeDepressedRootsClosedForm(rD0, rRoots);
             }
-
-            // Two real roots, each multiplicity 1. The Cauchy bound for F(x)
-            // is b = max{1,|d_0|}$. Use bisection on the interval [-b,b] to
-            // estimate the roots.
-            double d0 = rD0;
-            double b = std::max(1.0, std::fabs(d0));
-            auto F = [&d0](double x)
-            {
-                return std::fma(x, x, d0);
-            };
-
-            // Bisect on the interval [0,b]. The polynomial is an even
-            // function, so we do not have to bisect on the interval [-b,0].
-            double xMin = 0.0, xMax = b;
-            PolynomialRootBisect<double>(F, -1, +1, xMin, xMax);
-            Rational average = Rational(0.5) * (Rational(xMin) + Rational(xMax));
-            rRoots[1] = { average, 1 };
-            average.Negate();
-            rRoots[0] = { average, 1 };
-            return 2;
         }
 
     private:
@@ -234,6 +209,72 @@ namespace gte
         {
             rM1Div2 = Rational(0.5) * rM1;
             rD0 = rM0 - rM1Div2 * rM1Div2;
+        }
+
+        static size_t ComputeDepressedRootsBisection(
+            Rational const& rD0,
+            PolynomialRoot<Rational>* rRoots)
+        {
+            int32_t signD0 = rD0.GetSign();
+            if (signD0 > 0)
+            {
+                // Two non-real roots, each multiplicity 1.
+                return 0;
+            }
+
+            if (signD0 == 0)
+            {
+                // One real root, multiplicity 2.
+                rRoots[0] = { Rational(0), 2 };
+                return 1;
+            }
+
+            // Two real roots, each multiplicity 1. The Cauchy bound for F(x)
+            // is b = max{1,|d_0|}$. Use bisection on the interval [-b,b] to
+            // estimate the roots.
+            double d0 = rD0;
+            double b = std::max(1.0, std::fabs(d0));
+            auto F = [&d0](double x)
+            {
+                return std::fma(x, x, d0);
+            };
+
+            // Bisect on the interval [0,b]. The polynomial is an even
+            // function, so we do not have to bisect on the interval [-b,0].
+            double xMin = 0.0, xMax = b;
+            PolynomialRootBisect<double>(F, -1, +1, xMin, xMax);
+            Rational average = Rational(0.5) * (Rational(xMin) + Rational(xMax));
+            rRoots[1] = { average, 1 };
+            average.Negate();
+            rRoots[0] = { average, 1 };
+            return 2;
+        }
+
+        static size_t ComputeDepressedRootsClosedForm(
+            Rational const& rD0,
+            PolynomialRoot<Rational>* rRoots)
+        {
+            int32_t signD0 = rD0.GetSign();
+            if (signD0 > 0)
+            {
+                // Two non-real roots, each multiplicity 1.
+                return 0;
+            }
+
+            if (signD0 == 0)
+            {
+                // One real root, multiplicity 2.
+                rRoots[0] = { Rational(0), 2 };
+                return 1;
+            }
+
+            // Two real roots, each multiplicity 1. Use the closed-form
+            // representation of the roots.
+            Rational rSqrtNegD0 = std::sqrt(-rD0);
+            rRoots[1] = { rSqrtNegD0, 1 };
+            rSqrtNegD0.Negate();
+            rRoots[0] = { rSqrtNegD0, 1 };
+            return 2;
         }
     };
 }
