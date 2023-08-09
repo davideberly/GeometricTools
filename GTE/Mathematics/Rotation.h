@@ -3,24 +3,27 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// Conversions among various representations of rotations. The value of N must
+// be 3 or 4. The latter case supports affine algebra when you use 4-tuple
+// vectors (w-component is 1 for points and 0 for vector) and 4x4 matrices for
+// affine transformations. Rotation axes must be unit length. The angles are
+// in radians. The Euler angles are in world coordinates; we have not yet
+// added support for body coordinates.
 
 #include <Mathematics/AxisAngle.h>
 #include <Mathematics/EulerAngles.h>
 #include <Mathematics/Matrix.h>
 #include <Mathematics/Quaternion.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {
-    // Conversions among various representations of rotations.  The value of
-    // N must be 3 or 4.  The latter case supports affine algebra when you use
-    // 4-tuple vectors (w-component is 1 for points and 0 for vector) and 4x4
-    // matrices for affine transformations.  Rotation axes must be unit
-    // length.  The angles are in radians.  The Euler angles are in world
-    // coordinates; we have not yet added support for body coordinates.
-
     template <int32_t N, typename Real>
     class Rotation
     {

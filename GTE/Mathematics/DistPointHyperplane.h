@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DCPQuery.h>
-#include <Mathematics/Hyperplane.h>
 
 // Compute the distance between a point and a line (N = 2), between a point
 // and a plane (N = 3) or generally between a point and a hyperplane (N >= 2).
@@ -17,6 +14,12 @@
 // N is a unit-length normal for the plane.
 //
 // TODO: Modify to support non-unit-length N.
+
+#include <Mathematics/DCPQuery.h>
+#include <Mathematics/Hyperplane.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

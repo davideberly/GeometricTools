@@ -3,15 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The queries consider the cylinder to be a solid.
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/Cylinder3.h>
 #include <Mathematics/Vector3.h>
-
-// The queries consider the cylinder to be a solid.
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
 
 namespace gte
 {

@@ -3,19 +3,23 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/GMatrix.h>
-#include <Mathematics/LinearSystem.h>
-#include <functional>
 
 // Computing geodesics on a surface is a differential geometric topic that
 // involves Riemannian geometry.  The algorithm for constructing geodesics
 // that is implemented here uses a multiresolution approach.  A description
 // of the algorithm is in the document
 // https://www.geometrictools.com/Documentation/RiemannianGeodesics.pdf
+
+#include <Mathematics/GMatrix.h>
+#include <Mathematics/LinearSystem.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <vector>
 
 namespace gte
 {
@@ -210,8 +214,8 @@ namespace gte
         bool Subdivide(GVector<Real> const& end0, GVector<Real>& mid, GVector<Real> const& end1)
         {
             mid = (Real)0.5 * (end0 + end1);
-            auto save = refineCallback;
-            refineCallback = []() {};
+            std::function<void(void)> save = refineCallback;
+            refineCallback = [](){};
             bool changed = Refine(end0, mid, end1);
             refineCallback = save;
             return changed;

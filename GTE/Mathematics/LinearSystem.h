@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix2x2.h>
-#include <Mathematics/Matrix3x3.h>
-#include <Mathematics/Matrix4x4.h>
-#include <Mathematics/GaussianElimination.h>
-#include <map>
 
 // Solve linear systems of equations where the matrix A is NxN.  The return
 // value of a function is 'true' when A is invertible.  In this case the
@@ -24,6 +18,17 @@
 // on the discussion in "Matrix Computations, 2nd edition" by G. H. Golub
 // and Charles F. Van Loan, The Johns Hopkins Press, Baltimore MD, Fourth
 // Printing 1993.
+
+#include <Mathematics/Matrix2x2.h>
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/Matrix4x4.h>
+#include <Mathematics/GaussianElimination.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <map>
+#include <vector>
 
 namespace gte
 {

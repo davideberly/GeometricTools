@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/Vector3.h>
 
 // Least-squares fit of a plane to height data (x,y,f(x,y)). The plane is of
 // the form (z - zAvr) = a*(x - xAvr) + b*(y - yAvr), where (xAvr,yAvr,zAvr)
@@ -17,6 +14,13 @@
 // mParameters values are ((xAvr,yAvr,zAvr),(a,b,-1)) on success and
 // ((0,0,0),(0,0,0)) on failure. The error for (x0,y0,z0) is
 // [a*(x0-xAvr)+b*(y0-yAvr)-(z0-zAvr)]^2.
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/Vector3.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
 
 namespace gte
 {

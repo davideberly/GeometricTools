@@ -3,20 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/SymmetricEigensolver2x2.h>
-#include <Mathematics/Vector2.h>
 
 // Least-squares fit of a line to (x,y) data by using distance measurements
 // orthogonal to the proposed line. The return value is 'true' if and only
 // if the fit is unique (always successful, 'true' when a minimum eigenvalue
 // is unique). The mParameters value is a line with (P,D) =
 // (origin,direction). The error for S = (x0,y0) is (S-P)^T*(I - D*D^T)*(S-P).
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/SymmetricEigensolver2x2.h>
+#include <Mathematics/Vector2.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {

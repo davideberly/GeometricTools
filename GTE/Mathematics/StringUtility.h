@@ -3,12 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -35,7 +36,7 @@ namespace gte
     {
         std::string output;
         std::transform(input.begin(), input.end(), std::back_inserter(output),
-            [](int32_t c) { return static_cast<char>(::tolower(c)); });
+            [](int32_t c) { return static_cast<char>(std::tolower(c)); });
         return output;
     }
 
@@ -43,7 +44,7 @@ namespace gte
     {
         std::string output;
         std::transform(input.begin(), input.end(), std::back_inserter(output),
-            [](int32_t c) { return static_cast<char>(::toupper(c)); });
+            [](int32_t c) { return static_cast<char>(std::toupper(c)); });
         return output;
     }
 
@@ -126,9 +127,9 @@ namespace gte
             std::string temp;
             for (int32_t i = 0; i <= 32; ++i)
             {
-                temp += char(i);
+                temp += static_cast<char>(i);
             }
-            temp += char(127);
+            temp += static_cast<char>(127);
             return temp;
         }
         ();

@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Math.h>
 
 // The algorithms here are based on solving the linear heat equation using
 // finite differences in scale, not in time.  The following document has
@@ -44,6 +42,9 @@
 // the image.  The upper bound on b guarantees stability of the finite
 // difference method used to approximate the partial differential equation.
 // The method assumes a pixel size of h = 1.
+
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

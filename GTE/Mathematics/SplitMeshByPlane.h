@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistPointHyperplane.h>
-#include <Mathematics/EdgeKey.h>
-#include <map>
 
 // The algorithm for splitting a mesh by a plane is described in
 // https://www.geometrictools.com/Documentation/ClipMesh.pdf
@@ -17,6 +13,14 @@
 // mesh (from the "positive" and "zero" vertices) by attaching
 // triangulated faces to the mesh, where the those faces live in
 // the splitting plane.  (TODO: Add this code.)
+
+#include <Mathematics/DistPointHyperplane.h>
+#include <Mathematics/EdgeKey.h>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

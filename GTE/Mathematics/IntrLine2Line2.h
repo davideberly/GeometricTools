@@ -3,18 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.25
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// Test-intersection and find-intersection queries for two lines. The line
+// directions are nonzero but not required to be unit length.
 
 #include <Mathematics/Vector2.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 #include <limits>
-
-// Test-intersection and find-intersection queries for two lines. The line
-// directions are nonzero but not required to be unit length.
 
 namespace gte
 {

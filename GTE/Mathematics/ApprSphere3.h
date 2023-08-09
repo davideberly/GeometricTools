@@ -3,19 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Hypersphere.h>
-#include <Mathematics/Vector3.h>
-#include <cstdint>
 
 // Least-squares fit of a sphere to a set of points. The algorithms are
 // described in Section 5 of
 //   https://www.geometrictools.com/Documentation/LeastSquaresFitting.pdf
 // FitUsingLengths uses the algorithm of Section 5.1.
 // FitUsingSquaredLengths uses the algorithm of Section 5.2.
+
+#include <Mathematics/Hypersphere.h>
+#include <Mathematics/Vector3.h>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

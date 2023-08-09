@@ -3,18 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <array>
 
 // The interpolator is for uniformly spaced(x,y z)-values.  The input samples
 // must be stored in lexicographical order to represent f(x,y,z); that is,
 // F[c + xBound*(r + yBound*s)] corresponds to f(x,y,z), where c is the index
 // corresponding to x, r is the index corresponding to y, and s is the index
 // corresponding to z.
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

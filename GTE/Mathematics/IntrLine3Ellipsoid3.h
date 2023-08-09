@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/Hyperellipsoid.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/Matrix3x3.h>
 
 // The queries consider the ellipsoid to be a solid.
 //
@@ -20,6 +14,15 @@
 // quadratic equation Q(t) = a2*t^2 + 2*a1*t + a0 = 0, where a2 = D^T*M*D,
 // a1 = D^T*M*(P-C) and a0 = (P-C)^T*M*(P-C)-1. The algorithm involves an
 // analysis of the real-valued roots of Q(t) for all real t.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/Hyperellipsoid.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/Matrix3x3.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
 
 namespace gte
 {

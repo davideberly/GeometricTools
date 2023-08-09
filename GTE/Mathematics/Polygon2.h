@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/IntrSegment2Segment2.h>
-#include <set>
-#include <vector>
 
 // The Polygon2 object represents a simple polygon:  No duplicate vertices,
 // closed (each vertex is shared by exactly two edges), and no
@@ -36,6 +32,14 @@
 // can match.  Even with a shared vertex pool, the indices can be "rotated",
 // leading to the same polygon abstractly but the data structures do not
 // match.
+
+#include <Mathematics/IntrSegment2Segment2.h>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <set>
+#include <vector>
 
 namespace gte
 {

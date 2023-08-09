@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.01.17
+// Version: 6.6.2023.08.08
 
 #pragma once
-
-#include <Mathematics/TSManifoldMesh.h>
-#include <map>
-#include <unordered_set>
 
 // The VTSManifoldMesh class represents a triangle-tetrahedron manifold mesh
 // but additionally stores vertex adjacency information. The 'V' stands for
@@ -19,6 +15,13 @@
 // use of C++ container classes (unordered sets and maps). If your application
 // requires a static vertex-triangle-simplex manifold mesh for which no
 // modifications will occur, a better choice is StaticVTSManifoldMesh.
+
+#include <Mathematics/TSManifoldMesh.h>
+#include <cstdint>
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 namespace gte
 {

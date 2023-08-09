@@ -3,16 +3,25 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.06.16
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/BSNumber.h>
 
 // See the comments in BSNumber.h about the UInteger requirements. The
 // denominator of a BSRational is chosen to be positive, which allows some
 // simplification of comparisons. Also see the comments about exposing the
 // GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE conditional define.
+
+#include <Mathematics/BSNumber.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <istream>
+#include <limits>
+#include <ostream>
+#include <type_traits>
+#include <utility>
 
 namespace gte
 {
@@ -886,13 +895,6 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSRational<UInteger> fma(gte::BSRational<UInteger> const& u,
-        gte::BSRational<UInteger> const& v, gte::BSRational<UInteger> const& w)
-    {
-        return u * v + w;
-    }
-
-    template <typename UInteger>
     inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int32_t* exponent)
     {
         gte::BSRational<UInteger> result = x;
@@ -951,6 +953,15 @@ namespace std
     inline gte::BSRational<UInteger> pow(gte::BSRational<UInteger> const& x, gte::BSRational<UInteger> const& y)
     {
         return (gte::BSRational<UInteger>)std::pow((double)x, (double)y);
+    }
+
+    template <typename UInteger>
+    inline gte::BSRational<UInteger> remainder(gte::BSRational<UInteger> const& x, gte::BSRational<UInteger> const& y)
+    {
+        double dx = static_cast<double>(x);
+        double dy = static_cast<double>(y);
+        double result = std::remainder(dx, dy);
+        return static_cast<gte::BSRational<UInteger>>(result);
     }
 
     template <typename UInteger>
@@ -1056,11 +1067,23 @@ namespace gte
         return (BSRational<UInteger>)sqr((double)x);
     }
 
+    // Compute u * v + w.
+    template <typename UInteger>
+    inline BSRational<UInteger> FMA(
+        BSRational<UInteger> const& u,
+        BSRational<UInteger> const& v,
+        BSRational<UInteger> const& w)
+    {
+        return u * v + w;
+    }
+
     // Sum of products (SOP) u*v+w*z.
     template <typename UInteger>
     inline BSRational<UInteger> RobustSOP(
-        BSRational<UInteger> const& u, BSRational<UInteger> const& v,
-        BSRational<UInteger> const& w, BSRational<UInteger> const& z)
+        BSRational<UInteger> const& u,
+        BSRational<UInteger> const& v,
+        BSRational<UInteger> const& w,
+        BSRational<UInteger> const& z)
     {
         return u * v + w * z;
     }
@@ -1068,17 +1091,19 @@ namespace gte
     // Difference of products (DOP) u*v-w*z.
     template <typename UInteger>
     inline BSRational<UInteger> RobustDOP(
-        BSRational<UInteger> const& u, BSRational<UInteger> const& v,
-        BSRational<UInteger> const& w, BSRational<UInteger> const& z)
+        BSRational<UInteger> const& u,
+        BSRational<UInteger> const& v,
+        BSRational<UInteger> const& w,
+        BSRational<UInteger> const& z)
     {
         return u * v - w * z;
     }
 
-    // See the comments in Math.h about traits is_arbitrary_precision
+    // See the comments in TypeTraits.h about traits is_arbitrary_precision
     // and has_division_operator.
     template <typename UInteger>
-    struct is_arbitrary_precision_internal<BSRational<UInteger>> : std::true_type {};
+    struct _is_arbitrary_precision_internal<BSRational<UInteger>> : std::true_type {};
 
     template <typename UInteger>
-    struct has_division_operator_internal<BSRational<UInteger>> : std::true_type {};
+    struct _has_division_operator_internal<BSRational<UInteger>> : std::true_type {};
 }

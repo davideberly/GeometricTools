@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.03
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/ConvexHull2.h>
 
 // Compute a minimum-area oriented box containing the specified points. The
 // algorithm uses the rotating calipers method, but with a dual pair of
@@ -23,14 +20,25 @@
 // https://www.geometrictools.com/Documentation/MinimumAreaRectangle.pdf
 //
 // NOTE: This algorithm guarantees a correct output only when ComputeType is
-// an exact arithmetic type that supports division. In GTEngine, one such
+// an exact arithmetic type that supports division. In GTE, one such
 // type is BSRational<UIntegerAP32> (arbitrary precision). Another such type
 // is BSRational<UIntegerFP32<N>> (fixed precision), where N is chosen large
 // enough for your input data sets. If you choose ComputeType to be 'float'
 // or 'double', the output is not guaranteed to be correct.
 //
-// See GeometricTools/GTEngine/Samples/Geometrics/MinimumAreaBox2 for an
+// See GeometricTools/GTE/Samples/Geometrics/MinimumAreaBox2 for an
 // example of how to use the code.
+
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/ConvexHull2.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

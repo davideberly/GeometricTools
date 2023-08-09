@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.08
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <algorithm>
-#include <array>
-#include <map>
-#include <set>
-#include <vector>
 
 // UniqueVerticesTriangles is a helper class that provides support for several
 // mesh generation and mesh reduction operations. The vertices have type
@@ -41,7 +34,16 @@
 
 // Uncomment this preprocessor symbol to validate the preconditions of the
 // inputs of the class member functions.
-#define GTL_VALIDATE_UNIQUE_VERTICES_TRIANGLES
+//#define GTL_VALIDATE_UNIQUE_VERTICES_TRIANGLES
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

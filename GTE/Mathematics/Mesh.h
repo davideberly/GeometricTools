@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Matrix.h>
-#include <Mathematics/IndexAttribute.h>
-#include <Mathematics/VertexAttribute.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
 
 // The Mesh class is designed to support triangulations of surfaces of a small
 // number of topologies. See the documents
@@ -48,6 +41,17 @@
 // For each provided vertex attribute, a derived class can initialize
 // that attribute by overriding one of the Initialize*() functions whose
 // stubs are defined in this class.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Matrix.h>
+#include <Mathematics/IndexAttribute.h>
+#include <Mathematics/VertexAttribute.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/Array2.h>
-#include <Mathematics/GMatrix.h>
-#include <array>
 
 // The samples are (x[i],y[i],z[i],w[i]) for 0 <= i < S. Think of w as a
 // function of x, y, and z, say w = f(x,y,z). The function fits the samples
@@ -39,6 +34,17 @@
 // The original polynomial is evaluated as
 //   w = rng * sum_{i=0}^{d0} sum_{j=0}^{d1} sum_{k=0}^{d2} c'[i][j][k] *
 //       ((x-xcen)/rng)^i * ((y-ycen)/rng)^j * ((z-zcen)/rng)^k
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/Array2.h>
+#include <Mathematics/GMatrix.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

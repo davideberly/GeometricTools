@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix.h>
-#include <Mathematics/SymmetricEigensolver.h>
 
 // A hyperellipsoid has center K; axis directions U[0] through U[N-1], all
 // unit-length vectors; and extents e[0] through e[N-1], all positive numbers.
@@ -38,6 +35,13 @@
 //                                       + k[9]*x[2]*x[2]
 // This equation can be factored to the form (X-K)^T * M * (X-K) = 1, where
 // K = -A^{-1}*B/2, M = A/(B^T*A^{-1}*B/4-C).
+
+#include <Mathematics/Matrix.h>
+#include <Mathematics/SymmetricEigensolver.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {

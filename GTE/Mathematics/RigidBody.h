@@ -3,21 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix3x3.h>
-#include <Mathematics/Rotation.h>
-#include <Mathematics/LinearSystem.h>
-#include <functional>
-#include <memory>
 
 // The classes in this file support an implementation of collision response
 // for acceleration-based constrained motion using impulse functions. The
 // description is in Chapter 6 of "Game Physics, 2nd edition". For a
 // description of the construction of impulse forces, see
 // https://www.geometrictools.com/Documentation/ComputingImpulsiveForces.pdf
+
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/Rotation.h>
+#include <Mathematics/LinearSystem.h>
+#include <functional>
+#include <memory>
 
 namespace gte
 {

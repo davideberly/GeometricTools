@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ContScribeCircle2.h>
-#include <vector>
 
 // The ellipse is (x/a)^2 + (y/b)^2 = 1, but only the portion in the first
 // quadrant (x >= 0 and y >= 0) is approximated.  Generate numArcs >= 2 arcs
@@ -19,6 +16,12 @@
 // points[i+1] has center centers[i] and radius radii[i].  The algorithm
 // is described in
 //   https://www.geometrictools.com/Documentation/ApproximateEllipse.pdf
+
+#include <Mathematics/ContScribeCircle2.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

@@ -3,12 +3,27 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// The BSplineReduction class is an implementation of the algorithm in
+// https://www.geometrictools.com/Documentation/BSplineReduction.pdf
+// for least-squares fitting of points in the continuous sense by
+// an L2 integral norm.  The least-squares fitting implemented in the
+// file BSplineCurveFit.h is in the discrete sense by an L2 summation.
+// The intended use for this class is to take an open B-spline curve,
+// defined by its control points and degree, and reducing the number of
+// control points dramatically to obtain another curve that is close to
+// the original one.
+
 #include <Mathematics/BasisFunction.h>
 #include <Mathematics/ParametricSurface.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
@@ -118,7 +133,7 @@ namespace gte
                 return;
             }
 
-            int32_t iumin, iumax, ivmin, ivmax;
+            int32_t iumin{}, iumax{}, ivmin{}, ivmax{};
             mBasisFunction[0].Evaluate(u, order, iumin, iumax);
             mBasisFunction[1].Evaluate(v, order, ivmin, ivmax);
 
@@ -150,7 +165,7 @@ namespace gte
 
             int32_t const numControls0 = mNumControls[0];
             int32_t const numControls1 = mNumControls[1];
-            Vector<N, Real> result;
+            Vector<N, Real> result{};
             result.MakeZero();
             for (int32_t iv = ivmin; iv <= ivmax; ++iv)
             {

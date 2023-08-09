@@ -3,12 +3,17 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <Mathematics/Vector.h>
 #include <Mathematics/GaussianElimination.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
 
 namespace gte
 {
@@ -485,7 +490,7 @@ namespace gte
     Matrix<N, N, Real> Inverse(Matrix<N, N, Real> const& M, bool* reportInvertibility = nullptr)
     {
         Matrix<N, N, Real> invM;
-        Real determinant;
+        Real determinant{};
         bool invertible = GaussianElimination<Real>()(N, &M[0], &invM[0],
             determinant, nullptr, nullptr, nullptr, 0, nullptr);
         if (reportInvertibility)
@@ -498,7 +503,7 @@ namespace gte
     template <int32_t N, typename Real>
     Real Determinant(Matrix<N, N, Real> const& M)
     {
-        Real determinant;
+        Real determinant{};
         GaussianElimination<Real>()(N, &M[0], nullptr, determinant, nullptr,
             nullptr, nullptr, 0, nullptr);
         return determinant;

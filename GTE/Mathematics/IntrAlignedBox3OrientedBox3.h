@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/Vector3.h>
 
 // The queries consider the box to be a solid.
 //
@@ -42,6 +36,17 @@
 // of edges, Cross(N[i0],box1.Axis[i1]), then (i0,i1) is returned. If
 // 'intersect' is true, the separating[] values are invalid because there is
 // no separation.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {

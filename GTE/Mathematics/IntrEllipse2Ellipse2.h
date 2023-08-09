@@ -3,20 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.06.16
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/Hyperellipsoid.h>
-#include <Mathematics/Matrix2x2.h>
-#include <Mathematics/Polynomial1.h>
-#include <Mathematics/RootsBisection.h>
-#include <Mathematics/RootsPolynomial.h>
-#include <Mathematics/SymmetricEigensolver2x2.h>
 
 // The test-intersection and find-intersection queries implemented here are
 // discussed in the document
@@ -31,6 +20,27 @@
 // floating-point only. The current implementation fixes those. The algorithm
 // is described in
 // https://www.geometrictools.com/Documentation/RobustIntersectionOfEllipses.pdf
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/Functions.h>
+#include <Mathematics/Hyperellipsoid.h>
+#include <Mathematics/Matrix2x2.h>
+#include <Mathematics/Polynomial1.h>
+#include <Mathematics/RootsBisection.h>
+#include <Mathematics/RootsPolynomial.h>
+#include <Mathematics/SymmetricEigensolver2x2.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -450,7 +460,7 @@ namespace gte
             std::array<T, 2> distance
             {
                 std::sqrt(M(1, 1) / determinant),
-                    std::sqrt(M(0, 0) / determinant)
+                std::sqrt(M(0, 0) / determinant)
             };
 
             for (int32_t i = 0; i < 2; ++i)
@@ -499,21 +509,21 @@ namespace gte
 
             T ell = M0(0, 1) / M0(0, 0);
             T d0 = M0(0, 0);
-            T d1 = RobustDOP(M0(0, 0), M0(1, 1), M0(0, 1), M0(0, 1)) / M0(0, 0);
+            T d1 = gte::RobustDOP(M0(0, 0), M0(1, 1), M0(0, 1), M0(0, 1)) / M0(0, 0);
             T k0 = C1[0] - C0[0];
             T k1 = C1[1] - C0[1];
-            T term0 = RobustSOP(k0, M1(0, 0), k1, M1(0, 1));
-            T term1 = RobustSOP(k0, M1(0, 1), k1, M1(1, 1));
-            T g0 = RobustSOP(k0, term0, k1, term1) - one;
+            T term0 = gte::RobustSOP(k0, M1(0, 0), k1, M1(0, 1));
+            T term1 = gte::RobustSOP(k0, M1(0, 1), k1, M1(1, 1));
+            T g0 = gte::RobustSOP(k0, term0, k1, term1) - one;
             T g1 = -two * term0;
-            T g2 = two * std::fma(term0, ell, -term1);
+            T g2 = two * gte::FMA(term0, ell, -term1);
             T g3 = M1(0, 0);
-            T g4 = -two * std::fma(M1(0, 0), ell, -M1(0, 1));
-            T g5 = std::fma(-ell, RobustDOP(two, M1(0, 1), ell, M1(0, 0)), M1(1, 1));
-            T e0 = std::fma(d1, g0, g5);
+            T g4 = -two * gte::FMA(M1(0, 0), ell, -M1(0, 1));
+            T g5 = gte::FMA(-ell, gte::RobustDOP(two, M1(0, 1), ell, M1(0, 0)), M1(1, 1));
+            T e0 = gte::FMA(d1, g0, g5);
             T e1 = d1 * g1;
             T e2 = d1 * g2;
-            T e3 = RobustDOP(d1, g3, d0, g5);
+            T e3 = gte::RobustDOP(d1, g3, d0, g5);
             T e4 = d1 * g4;
 
             if (e4 != zero)
@@ -579,7 +589,7 @@ namespace gte
             for (auto const& rm : rmMap)
             {
                 T y0 = rm.first;
-                T lambda = std::fma(-d0, y0 * y0, one);
+                T lambda = gte::FMA(-d0, y0 * y0, one);
                 if (lambda < zero)
                 {
                     continue;
@@ -588,11 +598,11 @@ namespace gte
                 if (lambda > zero)
                 {
                     T y1 = -std::sqrt(lambda / d1);
-                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                     result.isTransverse[result.numPoints] = (rm.second == 1);
                     ++result.numPoints;
                     y1 = -y1;
-                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                     result.isTransverse[result.numPoints] = (rm.second == 1);
                     ++result.numPoints;
                 }
@@ -616,7 +626,7 @@ namespace gte
             T const one = static_cast<T>(1);
 
             T y0 = -e0 / e1;
-            T lambda = std::fma(-d0, y0 * y0, one);
+            T lambda = gte::FMA(-d0, y0 * y0, one);
             if (lambda < zero)
             {
                 return;
@@ -625,11 +635,11 @@ namespace gte
             if (lambda > zero)
             {
                 T y1 = -std::sqrt(lambda / d1);
-                result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                 result.isTransverse[result.numPoints] = true;
                 ++result.numPoints;
                 y1 = -y1;
-                result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                 result.isTransverse[result.numPoints] = true;
                 ++result.numPoints;
             }
@@ -659,7 +669,7 @@ namespace gte
             for (auto const& rm : rmMap)
             {
                 T y0 = rm.first;
-                T lambda = std::fma(-d0, y0 * y0, one);
+                T lambda = gte::FMA(-d0, y0 * y0, one);
                 if (lambda < zero)
                 {
                     continue;
@@ -670,11 +680,11 @@ namespace gte
                     // Choose the y1-root with smallest
                     // |(e0 + e1 * y0) + (e2) * y1|.
                     T y1cand0 = -std::sqrt(lambda / d1);
-                    T test0 = std::fabs(e0 + RobustSOP(e1, y0, e2, y1cand0));
+                    T test0 = std::fabs(e0 + gte::RobustSOP(e1, y0, e2, y1cand0));
                     T y1cand1 = -y1cand0;
-                    T test1 = std::fabs(e0 + RobustSOP(e1, y0, e2, y1cand1));
+                    T test1 = std::fabs(e0 + gte::RobustSOP(e1, y0, e2, y1cand1));
                     T y1 = (test0 <= test1 ? y1cand0 : y1cand1);
-                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                 }
                 else
                 {
@@ -704,7 +714,7 @@ namespace gte
             for (auto const& rm : rmMap)
             {
                 T y0 = rm.first;
-                T lambda = std::fma(-d0, y0 * y0, one);
+                T lambda = gte::FMA(-d0, y0 * y0, one);
                 if (lambda < zero)
                 {
                     continue;
@@ -714,14 +724,14 @@ namespace gte
                 {
                     // Choose the y1-root with smallest
                     // |(e0 + e1 * y0 + e3 * y0^2) + (e2) * y1|.
-                    T term0 = std::fma(e3, y0, e1);
-                    T term1 = std::fma(term0, y0, e0);
+                    T term0 = gte::FMA(e3, y0, e1);
+                    T term1 = gte::FMA(term0, y0, e0);
                     T y1cand0 = -std::sqrt(lambda / d1);
-                    T test0 = std::fabs(std::fma(e2, y1cand0, term1));
+                    T test0 = std::fabs(gte::FMA(e2, y1cand0, term1));
                     T y1cand1 = -y1cand0;
-                    T test1 = std::fabs(std::fma(e2, y1cand1, term1));
+                    T test1 = std::fabs(gte::FMA(e2, y1cand1, term1));
                     T y1 = (test0 < test1 ? y1cand0 : y1cand1);
-                    result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                    result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                 }
                 else
                 {
@@ -752,7 +762,7 @@ namespace gte
             for (auto const& rm : rmMap)
             {
                 T y0 = rm.first;
-                T lambda = std::fma(-d0, y0 * y0, one);
+                T lambda = gte::FMA(-d0, y0 * y0, one);
                 if (lambda < zero)
                 {
                     continue;
@@ -766,13 +776,13 @@ namespace gte
                         // Choose the y1-root with smallest
                         // |(e0 + e1 * y0 + e3 * y0^2) + (e2 + e4 * y0) * y1|.
                         T y1cand0 = -std::sqrt(lambda / d1);
-                        T term0 = std::fma(e3, y0, e1);
-                        T term1 = std::fma(term0, y0, e0);
-                        T test0 = std::fabs(std::fma(divisor, y1cand0, term1));
+                        T term0 = gte::FMA(e3, y0, e1);
+                        T term1 = gte::FMA(term0, y0, e0);
+                        T test0 = std::fabs(gte::FMA(divisor, y1cand0, term1));
                         T y1cand1 = -y1cand0;
-                        T test1 = std::fabs(std::fma(divisor, y1cand1, term1));
+                        T test1 = std::fabs(gte::FMA(divisor, y1cand1, term1));
                         T y1 = (test0 < test1 ? y1cand0 : y1cand1);
-                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                     }
                     else
                     {
@@ -789,9 +799,9 @@ namespace gte
                     if (lambda > zero)
                     {
                         T y1 = -std::sqrt(lambda / d1);
-                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                         y1 = -y1;
-                        result.points[result.numPoints] = { std::fma(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
                     }
                     else
                     {

@@ -3,9 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.05.06
+// Version: 6.6.2023.08.08
 
 #pragma once
+
+// Approximate a 2-dimensional parametric curve X(t) for t in [tmin,tmax] by a
+// collection of circular arcs. Some of the arcs can be degenerate in that the
+// arc center is a point at infinity. In this case, the arc represents a line
+// segment connecting its endpoints, and the arc radius is set to the number
+// std::numeric_limits<T>::max() to let the caller know the object is actually
+// a line segment. The algorithm is described in
+//   https://www.geometrictools.com/Documentation/ApproximateCurveByArcs.pdf
+// The collection of arcs form a C0-continuous curve. Generally, the
+// derivatives at a curve point shared by two arcs are not equal.
 
 #include <Mathematics/Arc2.h>
 #include <Mathematics/Logger.h>
@@ -17,16 +27,6 @@
 #include <memory>
 #include <type_traits>
 #include <vector>
-
-// Approximate a 2-dimensional parametric curve X(t) for t in [tmin,tmax] by a
-// collection of circular arcs. Some of the arcs can be degenerate in that the
-// arc center is a point at infinity. In this case, the arc represents a line
-// segment connecting its endpoints, and the arc radius is set to the number
-// std::numeric_limits<T>::max() to let the caller know the object is actually
-// a line segment. The algorithm is described in
-//   https://www.geometrictools.com/Documentation/ApproximateCurveByArcs.pdf
-// The collection of arcs form a C0-continuous curve. Generally, the
-// derivatives at a curve point shared by two arcs are not equal.
 
 namespace gte
 {

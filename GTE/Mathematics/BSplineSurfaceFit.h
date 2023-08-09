@@ -3,16 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The algorithm implemented here is based on the document
+// https://www.geometrictools.com/Documentation/BSplineSurfaceLeastSquaresFit.pdf
 
 #include <Mathematics/BandedMatrix.h>
 #include <Mathematics/BasisFunction.h>
 #include <Mathematics/Vector3.h>
-
-// The algorithm implemented here is based on the document
-// https://www.geometrictools.com/Documentation/BSplineSurfaceLeastSquaresFit.pdf
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <vector>
 
 namespace gte
 {
@@ -76,8 +80,8 @@ namespace gte
             // A0^T*A0*Q*A1^T*A1 = A0^T*P*A1, where A0^T*A0 and A1^T*A1 are
             // banded matrices, P contains the sample data, and Q is the
             // unknown matrix of control points.
-            Real t;
-            int32_t i0, i1, i2, imin, imax;
+            Real t{};
+            int32_t i0{}, i1{}, i2{}, imin{}, imax{};
 
             // Construct the matrices A0^T*A0 and A1^T*A1.
             BandedMatrix<Real> ATAMat[2] =
@@ -211,7 +215,7 @@ namespace gte
         // [0,1], it is clamped to [0,1].
         Vector3<Real> GetPosition(Real u, Real v) const
         {
-            int32_t iumin, iumax, ivmin, ivmax;
+            int32_t iumin{}, iumax{}, ivmin{}, ivmax{};
             mBasis[0].Evaluate(u, 0, iumin, iumax);
             mBasis[1].Evaluate(v, 0, ivmin, ivmax);
 

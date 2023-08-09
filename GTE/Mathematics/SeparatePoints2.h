@@ -3,17 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ConvexHull2.h>
 
 // Separate two point sets, if possible, by computing a line for which the
 // point sets lie on opposite sides.  The algorithm computes the convex hull
 // of the point sets, then uses the method of separating axes to determine
 // whether the two convex polygons are disjoint.
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
+
+#include <Mathematics/ConvexHull2.h>
+#include <cstdint>
 
 namespace gte
 {

@@ -7,7 +7,10 @@
 
 #include <MathematicsGPU/GTMathematicsGPUPCH.h>
 #include <MathematicsGPU/GPUFluid2InitializeSource.h>
+#include <algorithm>
+#include <cstring>
 #include <random>
+
 using namespace gte;
 
 GPUFluid2InitializeSource::GPUFluid2InitializeSource(

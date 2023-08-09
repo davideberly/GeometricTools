@@ -3,18 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// Queries for intersection of objects with halfspaces.  These are useful for
+// containment testing, object culling, and clipping.
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
 #include <Mathematics/Vector3.h>
 #include <Mathematics/Halfspace.h>
 #include <Mathematics/Segment.h>
-
-// Queries for intersection of objects with halfspaces.  These are useful for
-// containment testing, object culling, and clipping.
+#include <algorithm>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

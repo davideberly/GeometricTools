@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <algorithm>
-#include <array>
-#include <vector>
 
 // A class for solving the Linear Complementarity Problem (LCP)
 // w = q + M * z, w^T * z = 0, w >= 0, z >= 0.  The vectors q, w, and z are
@@ -30,6 +25,13 @@
 // algorithm failed to converge.  Again, you can handle this as you please.
 //
 //#define GTE_THROW_ON_LCPSOLVER_ERRORS
+
+#include <Mathematics/Logger.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

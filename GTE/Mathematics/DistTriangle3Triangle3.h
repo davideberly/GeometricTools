@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistSegment3Triangle3.h>
 
 // Compute the distance between two solid triangles in 3D.
 // 
@@ -20,6 +18,10 @@
 // stored in closest[1] with barycentric coordinates relative to its vertices.
 // When there are infinitely many choices for the pair of closest points, only
 // one pair is returned.
+
+#include <Mathematics/DistSegment3Triangle3.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

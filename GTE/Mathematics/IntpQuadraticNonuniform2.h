@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Delaunay2.h>
-#include <Mathematics/ContScribeCircle2.h>
-#include <Mathematics/DistPointAlignedBox.h>
 
 // Quadratic interpolation of a network of triangles whose vertices are of
 // the form (x,y,f(x,y)).  This code is an implementation of the algorithm
@@ -31,6 +27,15 @@
 //   bool GetBarycentrics(int32_t, Vector2<Real> const&,
 //      std::array<Real, 3>&) const;
 //   int32_t GetContainingTriangle(Vector2<Real> const&) const;
+
+#include <Mathematics/Delaunay2.h>
+#include <Mathematics/ContScribeCircle2.h>
+#include <Mathematics/DistPointAlignedBox.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

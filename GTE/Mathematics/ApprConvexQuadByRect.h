@@ -3,19 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.01.24
+// Version: 6.6.2023.08.08
 
 #pragma once
+
+// Least-squares fit of a rectangle to a convex quadrilateral that is nearly
+// a rectangle. The algorithm is described in
+//   https://www.geometrictools.com/Documentation/FitConvexQuadByRect.pdf
 
 #include <Mathematics/OrientedBox.h>
 #include <Mathematics/Vector2.h>
 #include <array>
 #include <cstddef>
 #include <cmath>
-
-// Least-squares fit of a rectangle to a convex quadrilateral that is nearly
-// a rectangle. The algorithm is described in
-//   https://www.geometrictools.com/Documentation/FitConvexQuadByRect.pdf
 
 namespace gte
 {

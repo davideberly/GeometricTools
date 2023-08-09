@@ -3,18 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.07.28
+// Version: 6.7.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/RootsLinear.h>
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <type_traits>
 
 // Compute the real-valued roots of a quadratic polynomial with real-valued
 // coefficients. The general quadratic polynomial is
@@ -31,6 +22,15 @@
 // of degree n, Cauchy's bound is
 //   b = max(1,|p[0]/p[n]|, |p[1]/p[n]|, ..., |p[n-1]/p[n]|)
 // The real roots lie in the interval [-b,b].
+
+#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/RootsLinear.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
 
 namespace gte
 {
@@ -236,7 +236,7 @@ namespace gte
             double b = std::max(1.0, std::fabs(d0));
             auto F = [&d0](double x)
             {
-                return std::fma(x, x, d0);
+                return gte::FMA(x, x, d0);
             };
 
             // Bisect on the interval [0,b]. The polynomial is an even

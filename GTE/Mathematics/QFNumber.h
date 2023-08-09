@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
 
 // Class QFNumber is an implementation for quadratic fields with N >= 1
 // square root terms. The theory and details are provided in
@@ -16,7 +14,11 @@
 // Enable this macro if you want the logging system to trap when arithmetic
 // operations are performed on two quadratic elements that do not share the
 // same value d
-#define GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D
+//#define GTE_ASSERT_ON_QFNUMBER_MISMATCHED_D
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

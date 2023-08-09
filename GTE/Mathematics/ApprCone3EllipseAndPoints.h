@@ -3,9 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2023.05.08
+// Version: 6.2.2023.08.08
 
 #pragma once
+
+// An infinite single-sided cone is fit to a 3D ellipse that is known to be
+// the intersection of a plane with the cone. The ellipse itself is not
+// enough information, producing the cone vertex and cone direction as a
+// function of the cone angle. Additional points on the cone are required
+// to determine the cone angle. The algorithm description is
+// https://www.geometrictools.com/Documentation/FitConeToEllipseAndPoints.pdf
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/ApprGaussian3.h>
@@ -15,13 +22,12 @@
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/Minimize1.h>
 #include <Mathematics/OBBTreeOfPoints.h>
-
-// An infinite single-sided cone is fit to a 3D ellipse that is known to be
-// the intersection of a plane with the cone. The ellipse itself is not
-// enough information, producing the cone vertex and cone direction as a
-// function of the cone angle. Additional points on the cone are required
-// to determine the cone angle. The algorithm description is
-// https://www.geometrictools.com/Documentation/FitConeToEllipseAndPoints.pdf
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

@@ -3,17 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.07.28
+// Version: 6.7.2023.08.08
 
 #pragma once
-
-#include <Mathematics/RootsQuadratic.h>
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
-#include <type_traits>
 
 // Compute the real-valued roots of a cubic polynomial with real-valued
 // coefficients. The general cubic polynomial is
@@ -44,6 +36,14 @@
 // For a polynomial of degree n, Cauchy's bound is
 //   b = max(1,|p[0]/p[n]|, |p[1]/p[n]|, ..., |p[n-1]/p[n]|)
 // The real roots lie in the interval [-b,b].
+
+#include <Mathematics/RootsQuadratic.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
 
 namespace gte
 {
@@ -287,7 +287,7 @@ namespace gte
                 double b = std::max(1.0, std::fabs(d0));
                 auto F = [&d0](double x)
                 {
-                    return std::fma(x, x * x, d0);
+                    return gte::FMA(x, x * x, d0);
                 };
 
                 // Bisect on the interval [-b,b].
@@ -322,7 +322,7 @@ namespace gte
                 double twoS = rTwoS;
                 auto F = [&d0, &d1](double x)
                 {
-                    return std::fma(x, std::fma(x, x, d1), d0);
+                    return gte::FMA(x, gte::FMA(x, x, d1), d0);
                 };
 
                 Rational const half = static_cast<Rational>(0.5);
@@ -357,7 +357,7 @@ namespace gte
                 double b = std::max(1.0, std::max(std::fabs(d0), std::fabs(d1)));
                 auto F = [&d0, &d1](double x)
                 {
-                    return std::fma(x, std::fma(x, x, d1), d0);
+                    return gte::FMA(x, gte::FMA(x, x, d1), d0);
                 };
 
                 // Bisect on the interval [-b,b].

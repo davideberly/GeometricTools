@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistPlane3CanonicalBox3.h>
-#include <Mathematics/AlignedBox.h>
 
 // Compute the distance between a plane and a solid aligned box in 3D.
 // 
@@ -23,6 +20,10 @@
 // for the pair of closest points, only one of them is returned.
 //
 // TODO: Modify to support non-unit-length N.
+
+#include <Mathematics/DistPlane3CanonicalBox3.h>
+#include <Mathematics/AlignedBox.h>
+#include <cstddef>
 
 namespace gte
 {

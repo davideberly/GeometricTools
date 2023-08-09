@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Matrix3x3.h>
-#include <Mathematics/Matrix4x4.h>
-#include <Mathematics/Rotation.h>
 
 // Transforms when GTE_USE_MAT_VEC is defined in the preprocessor symbols.
 //
@@ -52,6 +47,13 @@
 // that is, the inverse of R*S is S^{-1}*R^t which cannot always be factored
 // as S^{-1} * R^t = R' * S'.  You would need to SetMatrix using S^{-1}*R^t
 // as the input.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/Matrix4x4.h>
+#include <Mathematics/Rotation.h>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

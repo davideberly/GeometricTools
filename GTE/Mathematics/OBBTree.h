@@ -3,21 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.04.11
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/BitHacks.h>
-#include <Mathematics/SymmetricEigensolver3x3.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/Vector3.h>
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <limits>
-#include <numeric>
-#include <vector>
 
 // OBBTree is an abstract class for computing an oriented bounding box tree of
 // a collection of primitives. The derived classes are OBBTreeOfPoints
@@ -44,6 +32,18 @@
 // primitives into two subsets of equal size or absolute size difference of 1.
 // This leads to a balanced tree, which is helpful for performance of tree
 // traversals.
+
+#include <Mathematics/BitHacks.h>
+#include <Mathematics/SymmetricEigensolver3x3.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <numeric>
+#include <vector>
 
 namespace gte
 {

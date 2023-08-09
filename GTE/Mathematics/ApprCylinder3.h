@@ -3,17 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Cylinder3.h>
-#include <Mathematics/Matrix3x3.h>
-#include <Mathematics/SymmetricEigensolver3x3.h>
-#include <Mathematics/ApprCircle2.h>
-#include <cstdint>
-#include <vector>
-#include <thread>
 
 // The algorithm for least-squares fitting of a point set by a cylinder is
 // described in
@@ -28,6 +20,20 @@
 // TODO: ApprCylinder3 needs to be redesigned in GTL to have at most a
 // single constructor but multiple operator()(...) functions, one per
 // ConstructorType.
+
+#include <Mathematics/Constants.h>
+#include <Mathematics/Cylinder3.h>
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/SymmetricEigensolver3x3.h>
+#include <Mathematics/ApprCircle2.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <thread>
+#include <vector>
 
 namespace gte
 {

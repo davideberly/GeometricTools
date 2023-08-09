@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Cone.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/IntrAlignedBox3Cone3.h>
 
 // Test for intersection of a box and a cone.  The cone can be infinite
 //   0 <= minHeight < maxHeight = std::numeric_limits<Real>::max()
@@ -33,6 +29,11 @@
 // rewritten for the new class design.  FOR NOW, the queries will work with
 // float/double when you create a cone using the cone-frustum constructor
 // Cone(ray, angle, minHeight, std::numeric_limits<Real>::max()).
+
+#include <Mathematics/Cone.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/IntrAlignedBox3Cone3.h>
+#include <cstdint>
 
 namespace gte
 {

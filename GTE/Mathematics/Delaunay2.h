@@ -3,22 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.03.20
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-// Remove includes of <Mathematics/PrimalQuery2.h> and <set> once
-// Delaunay2<InputType, ComputeType> is removed.
-#include <Mathematics/Logger.h>
-#include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/HashCombine.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/PrimalQuery2.h>
-#include <Mathematics/SWInterval.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/VETManifoldMesh.h>
-#include <numeric>
-#include <set>
 
 // Delaunay triangulation of points (intrinsic dimensionality 2).
 //   VQ = number of vertices
@@ -49,6 +36,28 @@
 // be exact) is to choose ComputeType for exact rational arithmetic. You may
 // use BSNumber. No divisions are performed in this computation, so you do
 // not have to use BSRational.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/HashCombine.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/PrimalQuery2.h>
+#include <Mathematics/SWInterval.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/VETManifoldMesh.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <set>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -1319,7 +1328,7 @@ namespace gte
             // Support for hashing in std::unordered_set<>. The first
             // operator() is the hash function. The second operator() is
             // the equality comparison used for elements in the same bucket.
-            std::size_t operator()(ProcessedVertex const& v) const
+            size_t operator()(ProcessedVertex const& v) const
             {
                 return HashValue(v.vertex[0], v.vertex[1]);
             }

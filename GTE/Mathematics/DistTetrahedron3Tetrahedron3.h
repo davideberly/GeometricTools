@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.02.06
+// Version: 6.1.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistTriangle3Triangle3.h>
-#include <Mathematics/ContTetrahedron3.h>
-#include <array>
 
 // Compute the distance between two solid tetrahedra in 3D.
 // 
@@ -22,6 +18,11 @@
 // in closest[1] with barycentric coordinates relative to its vertices. When
 // there are infinitely many choices for the pair of closest points, only one
 // pair is returned.
+
+#include <Mathematics/DistTriangle3Triangle3.h>
+#include <Mathematics/ContTetrahedron3.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

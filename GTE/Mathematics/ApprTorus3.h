@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/ApprOrthogonalPlane3.h>
-#include <Mathematics/RootsPolynomial.h>
-#include <Mathematics/GaussNewtonMinimizer.h>
-#include <Mathematics/LevenbergMarquardtMinimizer.h>
 
 // Let the torus center be C with plane of symmetry containing C and having
 // directions D0 and D1.  The axis of symmetry is the line containing C and
@@ -56,6 +50,19 @@
 // are computed.  For each root compute the corresponding u.  For all pairs
 // (u,v) with u > v > 0, evaluate H(u,v) and choose the pair that minimizes
 // H(u,v).  The torus radii are r0 = sqrt(u) and r1 = sqrt(u - v).
+
+#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/ApprOrthogonalPlane3.h>
+#include <Mathematics/RootsPolynomial.h>
+#include <Mathematics/GaussNewtonMinimizer.h>
+#include <Mathematics/LevenbergMarquardtMinimizer.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <map>
+#include <utility>
 
 namespace gte
 {

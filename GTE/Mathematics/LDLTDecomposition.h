@@ -3,16 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix.h>
-#include <Mathematics/GMatrix.h>
 
 // Factor a positive symmetric matrix A = L * D * L^T, where L is a lower
 // triangular matrix with diagonal entries all 1 (L is lower unit triangular)
 // and where D is a diagonal matrix with diagonal entries all positive.
+
+#include <Mathematics/Matrix.h>
+#include <Mathematics/GMatrix.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

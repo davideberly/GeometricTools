@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/LexicoArray2.h>
-#include <cstring>
-#include <vector>
 
 // The input matrix M must be NxN.  The storage convention for element lookup
 // is determined by GTE_USE_ROW_MAJOR or GTE_USE_COL_MAJOR, whichever is
@@ -21,6 +16,15 @@
 // and X.  If you want to solve M*Y = C for Y, where X and C are NxK, pass
 // nonnull pointers for C and Y and pass K to numCols.  In all cases, pass
 // N to numRows.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/LexicoArray2.h>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <type_traits>
+#include <vector>
 
 namespace gte
 {

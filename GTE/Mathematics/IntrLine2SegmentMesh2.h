@@ -3,17 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.5.2022.12.12
+// Version: 6.5.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/IntrLine2Segment2.h>
-#include <Mathematics/SegmentMesh.h>
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <vector>
 
 // The query performs an exhaustive search of the segments and finds
 // line-segment intersections.
@@ -26,6 +18,14 @@
 // reduce the O(n) line-segment intersection tests to O(log n). This is
 // similar to the picking system in the scene graph management code for
 // ray-triangle intersection tests.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/IntrLine2Segment2.h>
+#include <Mathematics/SegmentMesh.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <vector>
 
 namespace gte
 {

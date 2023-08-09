@@ -3,19 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.01.17
+// Version: 6.6.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <limits>
-#include <map>
-#include <thread>
-#include <utility>
-#include <vector>
 
 // StaticVTSManifoldMesh3 represents a vertex-triangle-simplex manifold mesh
 // for which tetrahedra (the simplices) are provided as a single batch and no
@@ -29,6 +19,14 @@
 // manifold mesh with consistently ordered tetrahedra. In most applications,
 // this requirement is already satisfied. See the comments for static class
 // member 'face' regarding ordering of tetrahedra.
+
+#include <Mathematics/Logger.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <limits>
+#include <thread>
+#include <vector>
 
 namespace gte
 {
@@ -177,9 +175,7 @@ namespace gte
             GetNumTetrahedraAtVertex(numTetrahedraAtVertex);
             InitializeVertexStorage(numTetrahedraAtVertex);
             PopulateVertices();
-            //Print("TetraBefore.txt");
             UpdateAdjacencyForSharedFaces(numThreads);
-            //Print("TetraAfter.txt");
         }
 
         // Member access.

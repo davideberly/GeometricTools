@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/Hypersphere.h>
-#include <Mathematics/Sector2.h>
 
 // The Circle2 object is considered to be a disk whose points X satisfy the
 // constraint |X-C| <= R, where C is the disk center and R is the disk
@@ -32,6 +28,11 @@
 // If the disk is outside the cone, there is no intersection.  If the disk
 // overlaps the cone, we then need to test whether the disk overlaps the
 // disk of the sector.
+
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/Hypersphere.h>
+#include <Mathematics/Sector2.h>
+#include <cmath>
 
 namespace gte
 {

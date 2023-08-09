@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -12,7 +12,15 @@
 #include <Mathematics/TriangulateEC.h>
 #include <Mathematics/Vector3.h>
 #include <Mathematics/VETManifoldMesh.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <map>
+#include <memory>
 #include <set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -464,7 +472,7 @@ namespace gte
 
             // Remove the old triangle neighborhood, which will lead to the
             // vertex itself being removed from the mesh.
-            for (auto tri : removed)
+            for (auto const& tri : removed)
             {
                 mMesh.Remove(tri.V[0], tri.V[1], tri.V[2]);
             }

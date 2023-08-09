@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.06.16
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/BitHacks.h>
-#include <Mathematics/Math.h>
-#include <Mathematics/IEEEBinary.h>
-#include <istream>
-#include <ostream>
 
 // The class BSNumber (binary scientific number) is designed to provide exact
 // arithmetic for robust algorithms, typically those for which we need to know
@@ -45,22 +39,36 @@
 //          bool Read(std::ifstream& input);
 //      };
 //
-// GTEngine currently has 32-bits-per-word storage for UInteger. See the
-// classes UIntegerAP32 (arbitrary precision), UIntegerFP32<N> (fixed
-// precision), and UIntegerALU32 (arithmetic logic unit shared by the previous
-// two classes). The document at the following link describes the design,
+// GTE currently has 32-bits-per-word storage for UInteger. See the classes
+// UIntegerAP32 (arbitrary precision), UIntegerFP32<N> (fixed precision),
+// and UIntegerALU32 (arithmetic logic unit shared by the previous two
+// classes). The document at the following link describes the design,
 // implementation, and use of BSNumber and BSRational.
 //   https://www.geometrictools.com/Documentation/ArbitraryPrecision.pdf
+
+#include <Mathematics/BitHacks.h>
+#include <Mathematics/Functions.h>
+#include <Mathematics/IEEEBinary.h>
+#include <Mathematics/TypeTraits.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cfenv>
+#include <istream>
+#include <ostream>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 // Support for unit testing algorithm correctness. The invariant for a
 // nonzero BSNumber is that the UInteger part is a positive odd number.
 // Expose this define to allow validation of the invariant.
-#define GTE_VALIDATE_BSNUMBER
+//#define GTE_VALIDATE_BSNUMBER
 
 // Enable this to throw exceptions in ConvertFrom when infinities or NaNs
 // are the floating-point inputs. BSNumber does not have representations
 // for these numbers.
-#define GTE_THROW_ON_CONVERT_FROM_INFINITY_OR_NAN
+//#define GTE_THROW_ON_CONVERT_FROM_INFINITY_OR_NAN
 
 // Support for debugging algorithms that use exact rational arithmetic. Each
 // BSNumber and BSRational has a double-precision member that is exposed when
@@ -1117,6 +1125,19 @@ namespace gte
         int32_t outExponent = input.GetExponent();
         if (roundingMode == FE_TONEAREST)
         {
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+            // After refactoring headers, tHe code analysis tool complained:
+            // warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=4-1'
+            // is not true at this call.: Lines: 1041, 1046, 1047, 1048, 1053,
+            // 1062, 1063, 1072, 1073, 1074, 1075, 1076, 1077, 1078, 1079,
+            // 1080, 1082, 1083, 1084, 1085, 1086, 1087, 1089, 1090, 1092,
+            // 1099, 1102, 1109, 1112, 1119, 1090, 1092, 1099, 1102, 1109,
+            // 1112, 1119, 1090, 1124, 1125, 1126, 1129.
+            // I do not understand the warning. What is _Param(1)? And why
+            // is it being tested for containment in {0,1,2,3}? Before the
+            // refactoring there was no complaint.
+#endif
             // Determine whether u_{n-p} is positive.
             uint32_t positive = (inBits[inCurrent] & inMask) != 0u;
             if (positive && (np1mp > 1 || lastBit == 1))
@@ -1125,6 +1146,9 @@ namespace gte
                 outExponent += outW.RoundUp();
             }
             // else round down, equivalent to truncating the r bits
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
         }
         else if (roundingMode == FE_UPWARD)
         {
@@ -1270,13 +1294,6 @@ namespace std
     }
 
     template <typename UInteger>
-    inline gte::BSNumber<UInteger> fma(gte::BSNumber<UInteger> const& u,
-        gte::BSNumber<UInteger> const& v, gte::BSNumber<UInteger> const& w)
-    {
-        return u * v + w;
-    }
-
-    template <typename UInteger>
     inline gte::BSNumber<UInteger> fmod(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
     {
         return (gte::BSNumber<UInteger>)std::fmod((double)x, (double)y);
@@ -1329,6 +1346,15 @@ namespace std
     inline gte::BSNumber<UInteger> pow(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
     {
         return (gte::BSNumber<UInteger>)std::pow((double)x, (double)y);
+    }
+
+    template <typename UInteger>
+    inline gte::BSNumber<UInteger> remainder(gte::BSNumber<UInteger> const& x, gte::BSNumber<UInteger> const& y)
+    {
+        double dx = static_cast<double>(x);
+        double dy = static_cast<double>(y);
+        double result = std::remainder(dx, dy);
+        return static_cast<gte::BSNumber<UInteger>>(result);
     }
 
     template <typename UInteger>
@@ -1434,25 +1460,39 @@ namespace gte
         return (BSNumber<UInteger>)sqr((double)x);
     }
 
-    // Sum of products (SOP) u*v+w*z.
+    // Compute u * v + w.
+    template <typename UInteger>
+    inline BSNumber<UInteger> FMA(
+        BSNumber<UInteger> const& u,
+        BSNumber<UInteger> const& v,
+        BSNumber<UInteger> const& w)
+    {
+        return u * v + w;
+    }
+
+    // Sum of products (SOP) u * v + w * z.
     template <typename UInteger>
     inline BSNumber<UInteger> RobustSOP(
-        BSNumber<UInteger> const& u, BSNumber<UInteger> const& v,
-        BSNumber<UInteger> const& w, BSNumber<UInteger> const& z)
+        BSNumber<UInteger> const& u,
+        BSNumber<UInteger> const& v,
+        BSNumber<UInteger> const& w,
+        BSNumber<UInteger> const& z)
     {
         return u * v + w * z;
     }
 
-    // Difference of products (DOP) u*v-w*z.
+    // Difference of products (DOP) u * v - w * z.
     template <typename UInteger>
     inline BSNumber<UInteger> RobustDOP(
-        BSNumber<UInteger> const& u, BSNumber<UInteger> const& v,
-        BSNumber<UInteger> const& w, BSNumber<UInteger> const& z)
+        BSNumber<UInteger> const& u,
+        BSNumber<UInteger> const& v,
+        BSNumber<UInteger> const& w,
+        BSNumber<UInteger> const& z)
     {
         return u * v - w * z;
     }
 
-    // See the comments in Math.h about trait is_arbitrary_precision.
+    // See the comments in TypeTraits.h about trait is_arbitrary_precision.
     template <typename UInteger>
-    struct is_arbitrary_precision_internal<BSNumber<UInteger>> : std::true_type {};
+    struct _is_arbitrary_precision_internal<BSNumber<UInteger>> : std::true_type {};
 }

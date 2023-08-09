@@ -3,18 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
-#include <Mathematics/Vector2.h>
-
 // Queries about the relation of a point to various geometric objects.  The
 // choices for N when using UIntegerFP32<N> for either BSNumber of BSRational
-// are determined in GeometricTools/GTEngine/Tools/PrecisionCalculator.  These
+// are determined in GeometricTools/GTE/Tools/PrecisionCalculator.  These
 // N-values are worst case scenarios. Your specific input data might require
 // much smaller N, in which case you can modify PrecisionCalculator to use the
 // BSPrecision(int32_t,int32_t,int32_t,bool) constructors.
+
+#include <Mathematics/Vector2.h>
+#include <cstdint>
 
 namespace gte
 {

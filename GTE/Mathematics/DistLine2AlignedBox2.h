@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DCPQuery.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/Vector2.h>
 
 // Compute the distance between a line and a solid aligned box in 2D.
 //
@@ -23,6 +17,17 @@
 // The closest point on the line is stored in closest[0] with parameter t. The
 // closest point on the box is stored in closest[1]. When there are infinitely
 // many choices for the pair of closest points, only one of them is returned.
+
+#include <Mathematics/DCPQuery.h>
+#include <Mathematics/Functions.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/Vector2.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {

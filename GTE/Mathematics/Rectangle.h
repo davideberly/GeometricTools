@@ -3,16 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector.h>
 
 // Points are R(s0,s1) = C + s0*A0 + s1*A1, where C is the center of the
 // rectangle and A0 and A1 are unit-length and perpendicular axes.  The
 // parameters s0 and s1 are constrained by |s0| <= e0 and |s1| <= e1,
 // where e0 > 0 and e1 > 0 are the extents of the rectangle.
+
+#include <Mathematics/Vector.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

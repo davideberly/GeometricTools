@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/LinearSystem.h>
-#include <Mathematics/Matrix.h>
-#include <Mathematics/Vector3.h>
 
 // Least-squares fit of a paraboloid to a set of point.  The paraboloid is
 // of the form z = c0*x^2+c1*x*y+c2*y^2+c3*x+c4*y+c5.  A successful fit is
@@ -44,6 +40,11 @@
 // |                                       s(y^2)   s(y)   ||p4|   |s(z y)  |
 // |                                                s(1)   ||p5|   |s(z)    |
 // +-                                                     -++  +   +-      -+
+
+#include <Mathematics/LinearSystem.h>
+#include <Mathematics/Matrix.h>
+#include <Mathematics/Vector3.h>
+#include <cstdint>
 
 namespace gte
 {

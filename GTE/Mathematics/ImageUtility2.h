@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Image2.h>
-#include <cmath>
-#include <functional>
-#include <limits>
 
 // Image utilities for Image2<int32_t> objects.  TODO: Extend this to a template
 // class to allow the pixel type to be int32_t*_t and uint*_t for * in
@@ -25,6 +20,15 @@
 // image, make a copy of it before calling these functions.  Dilation and
 // erosion functions do not have the requirement that the boundary pixels of
 // the binary image inputs be zero.
+
+#include <Mathematics/Image2.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

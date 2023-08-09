@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector3.h>
-#include <memory>
-#include <set>
-#include <vector>
 
 // The Polyhedron3 object represents a simple polyhedron.  The 'vertexPool'
 // array can contain more points than needed to define the polyhedron, which
@@ -31,6 +26,13 @@
 // can match.  Even with a shared vertex pool, the indices can be permuted,
 // leading to the same polyhedron abstractly but the data structures do not
 // match.
+
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+#include <set>
+#include <vector>
 
 namespace gte
 {

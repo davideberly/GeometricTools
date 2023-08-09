@@ -3,18 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Compute Boolean operations of disjoint sets of half-open intervals of the
+// form [xmin,xmax) with xmin < xmax.
+
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace gte
 {
-    // Compute Boolean operations of disjoint sets of half-open intervals of
-    // the form [xmin,xmax) with xmin < xmax.
     template <typename Scalar>
     class DisjointIntervals
     {

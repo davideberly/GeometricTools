@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/GVector.h>
-#include <Mathematics/Minimize1.h>
-#include <cstring>
 
 // The Cartesian-product domain provided to GetMinimum(*) has minimum values
 // stored in t0[0..d-1] and maximum values stored in t1[0..d-1], where d is
@@ -20,6 +16,15 @@
 // Minimize1<Real>, so read the documentation for that class (in its header
 // file) to understand what these mean. The input 'maxIterations' is the
 // number of iterations for the direction-set method.
+
+#include <Mathematics/GVector.h>
+#include <Mathematics/Minimize1.h>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

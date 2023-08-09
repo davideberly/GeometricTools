@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <cmath>
-#include <cstdint>
-#include <functional>
 
 // This is an implementation of Brent's Method for computing a root of a
 // function on an interval [t0,t1] for which F(t0)*F(t1) < 0.  The method
@@ -38,6 +34,11 @@
 //       subinterval [tsub0,tsub1] is sufficiently small, say,
 //       |tsub1 - tsub0| <= tolerance.  This parameter is that tolerance
 //       and should be nonnegative.
+
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <functional>
 
 namespace gte
 {

@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistPointTriangle.h>
-#include <Mathematics/Tetrahedron3.h>
 
 // Compute the distance between a point and a solid tetrahedron in 3D.
 // 
@@ -23,6 +20,12 @@
 // 
 // The input P is stored in closest[0]. The closest point on the tetrahedron
 // is stored in closest[1] with barycentric coordinates (b[0],b[1],b[2],b[3]).
+
+#include <Mathematics/DistPointTriangle.h>
+#include <Mathematics/Tetrahedron3.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
 
 namespace gte
 {

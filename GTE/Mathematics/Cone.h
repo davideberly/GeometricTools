@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <Mathematics/Ray.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Matrix3x3.h>
-#include <Mathematics/UniqueVerticesSimplices.h>
 
 // An infinite cone is defined by a vertex V, a unit-length direction D and an
 // angle A with 0 < A < pi/2. A point X is on the cone when
@@ -103,6 +96,19 @@
 // IntrIntervals.h provides implementations for computing the
 // intersection of two intervals, where either or both intervals are
 // semi-infinite.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Constants.h>
+#include <Mathematics/Ray.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Matrix3x3.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+#include <vector>
 
 namespace gte
 {

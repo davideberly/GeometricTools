@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -102,7 +102,7 @@ namespace gte
 
         // HLSL has a shader intrinsic lit() function but GLSL does not.  The
         // string returned by this function is an implementation for GLSL.
-        // Various shader strings in GTEngine are class-static and need to
+        // Various shader strings in GTE are class-static and need to
         // prepend the lit-string.  Because the order of initialization of
         // such global data can vary with compiler and linker, we need to
         // return the string as data within the code segment rather than the

@@ -3,13 +3,15 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <Mathematics/ApprGaussian2.h>
 #include <Mathematics/Hyperellipsoid.h>
 #include <Mathematics/Projection.h>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {
@@ -127,7 +129,7 @@ namespace gte
             Line2<Real> line(merge.center, merge.axis[j]);
 
             // Project ellipsoids onto the axis.
-            Real min0, max0, min1, max1;
+            Real min0{}, max0{}, min1{}, max1{};
             Project(ellipse0, line, min0, max0);
             Project(ellipse1, line, min1, max1);
 

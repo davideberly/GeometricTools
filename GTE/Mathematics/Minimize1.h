@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <algorithm>
-#include <cstdint>
-#include <functional>
 
 // Search for a minimum of F(t) on [t0,t1] using successive parabolic
 // interpolation. The search is recursive based on the polyline associated
@@ -28,6 +22,13 @@
 //
 // If the polyline is not V-shaped, both subintervals [t0,tm] and [tm,t1]
 // are searched for a minimum.
+
+#include <Mathematics/Logger.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <functional>
+#include <limits>
 
 namespace gte
 {

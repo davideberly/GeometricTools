@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -95,7 +95,7 @@ namespace gte
     class GraphicsObject
     {
     public:
-        // This is an abstract base class that is used for bridging GTEngine
+        // This is an abstract base class that is used for bridging GTE
         // graphics objects with DX11 and GL45 graphics objects.
         virtual ~GraphicsObject();
     protected:

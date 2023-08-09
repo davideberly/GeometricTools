@@ -3,17 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The OrientedBox2 object is considered to be a solid.
 
 #include <Mathematics/TIQuery.h>
 #include <Mathematics/OrientedBox.h>
 #include <Mathematics/DistPointSegment.h>
 #include <Mathematics/IntrHalfspace2Polygon2.h>
 #include <Mathematics/Sector2.h>
-
-// The OrientedBox2 object is considered to be a solid.
+#include <cmath>
+#include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

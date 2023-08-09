@@ -3,22 +3,23 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.07
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix.h>
-#include <Mathematics/Matrix4x4.h>
-#include <Mathematics/ParametricCurve.h>
-#include <array>
-#include <cstdint>
-#include <vector>
 
 // Documentation for natural splines is found in
 // https://www.geometrictools.com/Documentation/NaturalSplines.pdf
 // The number of points must be 2 or larger. The points[] and times[] arrays
 // must have the same number of elements. The times[] values must be strictly
 // increasing.
+
+#include <Mathematics/Matrix.h>
+#include <Mathematics/Matrix4x4.h>
+#include <Mathematics/ParametricCurve.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
@@ -311,7 +312,7 @@ namespace gte
                 T LUProd0 = -r3 * sigmasqr, LUProd1 = sigmacub;
                 T sign = -r1;
 
-                for (int32_t i = 1; i <= numPm3; ++i)
+                for (size_t i = 1; i <= static_cast<size_t>(numPm3); ++i)
                 {
                     Btrg -= sign * (LUProd0 * B[4 * i] + LUProd1 * B[4 * i + 1]);
                     sigma = mDelta[i] / mDelta[i + 1];
@@ -338,7 +339,7 @@ namespace gte
                 T LUProd0 = r8 * sigmasqr, LUProd1 = -r3 * sigmacub;
                 T sign = -r1;
 
-                for (int32_t i = 1; i <= numPm3; ++i)
+                for (size_t i = 1; i <= static_cast<size_t>(numPm3); ++i)
                 {
                     Btrg -= sign * (LUProd0 * B[4 * i] + LUProd1 * B[4 * i + 1]);
                     sigma = mDelta[i] / mDelta[i + 1];

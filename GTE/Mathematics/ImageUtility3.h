@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Image3.h>
-#include <functional>
 
 // Image utilities for Image3<int32_t> objects.  TODO: Extend this to a template
 // class to allow the pixel type to be int32_t*_t and uint*_t for * in
@@ -22,6 +19,13 @@
 // time the input image is modified by the algorithms.  If you need to
 // preserve the input image, make a copy of it before calling these
 // functions.
+
+#include <Mathematics/Image3.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <vector>
 
 namespace gte
 {

@@ -3,17 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector.h>
 
 // A canonical box has center at the origin and is aligned with the standard
 // Euclidean basis vectors. It has E = (e[0],e[1],...,e[N-1]) with e[i] >= 0
 // for all i. A zero extent is allowed, meaning the box is degenerate in the
 // corresponding direction. A box point is X = (x[0],x[1],...,x[N-1]) with
 // |x[i]| <= e[i] for all i.
+
+#include <Mathematics/Vector.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -60,44 +61,39 @@ namespace gte
 
         // It is required that extent[i] >= 0.
         Vector<N, T> extent;
+
+    public:
+        // Comparisons to support sorted containers.
+        bool operator==(CanonicalBox<N, T> const& box) const
+        {
+            return extent == box.extent;
+        }
+
+        bool operator!=(CanonicalBox<N, T> const& box) const
+        {
+            return !operator==(box);
+        }
+
+        bool operator<(CanonicalBox<N, T> const& box) const
+        {
+            return extent < box.extent;
+        }
+
+        bool operator<=(CanonicalBox<N, T> const& box) const
+        {
+            return !box.operator<(*this);
+        }
+
+        bool operator>(CanonicalBox<N, T> const& box) const
+        {
+            return box.operator<(*this);
+        }
+
+        bool operator>=(CanonicalBox<N, T> const& box) const
+        {
+            return !operator<(box);
+        }
     };
-
-    // Comparisons to support sorted containers.
-    template <typename T, size_t N>
-    bool operator==(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return box0.extent == box1.extent;
-    }
-
-    template <typename T, size_t N>
-    bool operator!=(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return !operator==(box0, box1);
-    }
-
-    template <typename T, size_t N>
-    bool operator<(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return box0.extent < box1.extent;
-    }
-
-    template <typename T, size_t N>
-    bool operator<=(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return !operator<(box1, box0);
-    }
-
-    template <typename T, size_t N>
-    bool operator>(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return operator<(box1, box0);
-    }
-
-    template <typename T, size_t N>
-    bool operator>=(CanonicalBox<N, T> const& box0, CanonicalBox<N, T> const& box1)
-    {
-        return !operator<(box0, box1);
-    }
 
     // Template aliases for convenience.
     template <typename T> using CanonicalBox2 = CanonicalBox<2, T>;

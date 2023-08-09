@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -11,6 +11,13 @@
 #include <Mathematics/Image3.h>
 #include <Mathematics/UniqueVerticesSimplices.h>
 #include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -79,12 +86,12 @@ namespace gte
                 int32_t j0 = mesh.topology.vpair[i][0];
                 int32_t j1 = mesh.topology.vpair[i][1];
 
-                Real corner0[3];
+                std::array<Real, 3> corner0{};
                 corner0[0] = static_cast<Real>(j0 & 1);
                 corner0[1] = static_cast<Real>((j0 & 2) >> 1);
                 corner0[2] = static_cast<Real>((j0 & 4) >> 2);
 
-                Real corner1[3];
+                std::array<Real, 3> corner1{};
                 corner1[0] = static_cast<Real>(j1 & 1);
                 corner1[1] = static_cast<Real>((j1 & 2) >> 1);
                 corner1[2] = static_cast<Real>((j1 & 4) >> 2);
@@ -116,16 +123,16 @@ namespace gte
                 {
                     for (int32_t x = 0; x + 1 < mImage.GetDimension(0); ++x)
                     {
-                        std::array<size_t, 8> corners;
+                        std::array<size_t, 8> corners{};
                         mImage.GetCorners(x, y, z, corners);
 
-                        std::array<Real, 8> F;
+                        std::array<Real, 8> F{};
                         for (int32_t k = 0; k < 8; ++k)
                         {
                             F[k] = mImage[corners[k]] - level;
                         }
 
-                        Mesh mesh;
+                        Mesh mesh{};
 
                         if (Extract(F, mesh))
                         {
@@ -300,7 +307,7 @@ namespace gte
             Real oneMZ = (Real)1 - position[2];
 
             // Get image values at corners of voxel.
-            std::array<size_t, 8> corners;
+            std::array<size_t, 8> corners{};
             mImage.GetCorners(x, y, z, corners);
             Real f000 = mImage[corners[0]];
             Real f100 = mImage[corners[1]];

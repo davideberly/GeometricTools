@@ -3,9 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.07.28
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The 3D line-circle distance algorithm is described in
+// https://www.geometrictools.com/Documentation/DistanceToCircle3.pdf
+// The notation used in the code matches that of the document.
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Circle3.h>
@@ -13,10 +17,14 @@
 #include <Mathematics/RootsBisection.h>
 #include <Mathematics/RootsPolynomial.h>
 #include <Mathematics/Polynomial1.h>
-
-// The 3D line-circle distance algorithm is described in
-// https://www.geometrictools.com/Documentation/DistanceToCircle3.pdf
-// The notation used in the code matches that of the document.
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <map>
 
 namespace gte
 {
@@ -641,7 +649,7 @@ namespace gte
             // of 'double' is intentional in case T is a BSNumber or BSRational
             // type.  We want the bisections to terminate in a reasonable amount of
             // time.
-            uint32_t const maxIterations = GTE_C_MAX_BISECTIONS_GENERIC;
+            uint32_t const maxIterations = 2048u;
             T root = static_cast<T>(0);
             T one = static_cast<T>(1);
             RootsBisection<T>::Find(G, smin, smax, -one, one, maxIterations, root);

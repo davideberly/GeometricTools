@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/CubicRootsQR.h>
 
 // An implementation of the QR algorithm described in "Matrix Computations,
 // 2nd edition" by G. H. Golub and C. F. Van Loan, The Johns Hopkins
@@ -15,6 +13,11 @@
 // the implementation is based on Chapter 7 (The Unsymmetric Eigenvalue
 // Problem), Section 7.5 (The Practical QR Algorithm).  The algorithm is
 // specialized for the companion matrix associated with a quartic polynomial.
+
+#include <Mathematics/CubicRootsQR.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

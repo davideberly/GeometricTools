@@ -3,9 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.04.11
+// Version: 6.6.2023.08.08
 
 #pragma once
+
+// Read the comments in OBBTree.h regarding tree construction.
 
 #include <Mathematics/OBBTree.h>
 #include <array>
@@ -13,8 +15,6 @@
 #include <cstdint>
 #include <limits>
 #include <vector>
-
-// Read the comments in OBBTree.h regarding tree construction.
 
 namespace gte
 {

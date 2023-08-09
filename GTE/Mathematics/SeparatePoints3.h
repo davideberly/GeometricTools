@@ -3,18 +3,22 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ConvexHull3.h>
-#include <Mathematics/Hyperplane.h>
 
 // Separate two point sets, if possible, by computing a plane for which the
 // point sets lie on opposite sides.  The algorithm computes the convex hull
 // of the point sets, then uses the method of separating axes to determine
 // whether the two convex polyhedra are disjoint.
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
+
+#include <Mathematics/ConvexHull3.h>
+#include <Mathematics/Hyperplane.h>
+#include <cstddef>
+#include <cstdint>
+#include <set>
+#include <utility>
 
 namespace gte
 {

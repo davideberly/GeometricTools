@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <cstdint>
-#include <functional>
 
 // Compute a root of a function F(t) on an interval [t0, t1].  The caller
 // specifies the maximum number of iterations, in case you want limited
@@ -22,6 +19,9 @@
 //   1: F(t0) = 0 or F(t1) = 0
 //   2..maxIterations:  the number of bisections plus one
 //   maxIterations+1:  the loop executed without a break (no convergence)
+
+#include <cstdint>
+#include <functional>
 
 namespace gte
 {

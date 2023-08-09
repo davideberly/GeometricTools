@@ -3,19 +3,22 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.07
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// NOTE: This class is now deprecated and will not be ported to GTL. Use
+// instead the new class NaturalCubicSpline. There is also an extension of
+// the idea in the new class NaturalQuinticSpline.
+
 #include <Mathematics/LinearSystem.h>
 #include <Mathematics/ParametricCurve.h>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
-    // NOTE: This class is now deprecated and will not be ported to GTL.
-    // Use instead the new class NaturalCubicSpline. There is also an
-    // extension of the idea in the new class NaturalQuinticSpline.
-
     template <int32_t N, typename Real>
     class NaturalSplineCurve : public ParametricCurve<N, Real>
     {

@@ -3,17 +3,22 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Compute Boolean operations of disjoint sets of half-open rectangles of the
+// form [xmin,xmax)x[ymin,ymax) with xmin < xmax and ymin < ymax.
+
 #include <Mathematics/DisjointIntervals.h>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
-    // Compute Boolean operations of disjoint sets of half-open rectangles of
-    // the form [xmin,xmax)x[ymin,ymax) with xmin < xmax and ymin < ymax.
     template <typename Scalar>
     class DisjointRectangles
     {

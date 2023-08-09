@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Hyperplane.h>
-#include <Mathematics/Vector3.h>
 
 // The tetrahedron is represented as an array of four vertices, V[i] for
 // 0 <= i <= 3. The vertices are ordered so that the triangular faces are
@@ -17,6 +14,11 @@
 // face 2 = <V[0],V[3],V[2]> and face 3 = <V[1],V[2],V[3]>. The canonical
 // tetrahedron has V[0] = (0,0,0), V[1] = (1,0,0), V[2] = (0,1,0) and
 // V[3] = (0,0,1).
+
+#include <Mathematics/Hyperplane.h>
+#include <Mathematics/Vector3.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

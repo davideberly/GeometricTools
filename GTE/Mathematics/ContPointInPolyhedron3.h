@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/ContPointInPolygon2.h>
-#include <Mathematics/IntrRay3Plane3.h>
-#include <Mathematics/IntrRay3Triangle3.h>
-#include <vector>
 
 // This class contains various implementations for point-in-polyhedron
 // queries.  The planes stored with the faces are used in all cases to
@@ -29,6 +23,15 @@
 // Whichever result occurs N+1 or more times is the "winner".  The input
 // rayQuantity is 2*N+1.  The input array Direction must have rayQuantity
 // elements.  If you are feeling lucky, choose rayQuantity to be 1.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/ContPointInPolygon2.h>
+#include <Mathematics/IntrRay3Plane3.h>
+#include <Mathematics/IntrRay3Triangle3.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

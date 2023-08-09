@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.01.17
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ETManifoldMesh.h>
-#include <map>
 
 // The VETManifoldMesh class represents an edge-triangle manifold mesh but
 // additionally stores vertex adjacency information. It is general purpose,
@@ -17,6 +14,14 @@
 // (unordered sets and maps). If your application requires a
 // vertex-edge-triangle manifold mesh for which no triangles will be
 // removed, a better choice is StaticVETManifoldMesh.
+
+#include <Mathematics/ETManifoldMesh.h>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 
 namespace gte
 {

@@ -3,14 +3,28 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Create a mesh (x(u,v),y(u,v),z(u,v)) defined by the specified medial curve
+// and radial function. The mesh has torus topology when 'closed' is true and
+// has cylinder topology when 'closed' is/ false. The client is responsible
+// for setting the topology correctly in the 'description' input. The rows
+// correspond to medial samples and the columns correspond to radial samples.
+// The medial curve is sampled according to its natural t-parameter when
+// 'sampleByArcLength' is false; otherwise, it is sampled uniformly in
+// arclength. TODO: Allow TORUS and remove the 'closed' input.
+
+#include <Mathematics/Constants.h>
 #include <Mathematics/Mesh.h>
 #include <Mathematics/FrenetFrame.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 #include <functional>
 #include <memory>
+#include <vector>
 
 namespace gte
 {
@@ -18,15 +32,6 @@ namespace gte
     class TubeMesh : public Mesh<Real>
     {
     public:
-        // Create a mesh (x(u,v),y(u,v),z(u,v)) defined by the specified
-        // medial curve and radial function.  The mesh has torus topology
-        // when 'closed' is true and has cylinder topology when 'closed' is
-        // false.  The client is responsible for setting the topology
-        // correctly in the 'description' input.  The rows correspond to
-        // medial samples and the columns correspond to radial samples.  The
-        // medial curve is sampled according to its natural t-parameter when
-        // 'sampleByArcLength' is false; otherwise, it is sampled uniformly
-        // in arclength.  TODO: Allow TORUS and remove the 'closed' input
         TubeMesh(MeshDescription const& description,
             std::shared_ptr<ParametricCurve<3, Real>> const& medial,
             std::function<Real(Real)> const& radial, bool closed,

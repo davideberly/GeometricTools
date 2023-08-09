@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/IntrCanonicalBox3Cylinder3.h>
 
 // The query is for finite cylinders. The cylinder and box are considered to
 // be solids. The cylinder has center C, unit-length axis direction D, radius
@@ -17,6 +14,9 @@
 // canonical box. See the comments in IntrCanonicalBox3Cylinder3.h for a brief
 // description. The details are in
 //   https://www.geometrictools.com/Documentation/IntersectionBoxCylinder.pdf
+
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/IntrCanonicalBox3Cylinder3.h>
 
 namespace gte
 {

@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/DistPlane3CanonicalBox3.h>
-#include <Mathematics/DistSegment3CanonicalBox3.h>
-#include <Mathematics/Triangle.h>
 
 // Compute the distance between a solid triangle and a solid canonical box
 // in 3D.
@@ -26,6 +22,12 @@
 // barycentric coordinates (b[0],b[1],b[2]). The closest point on the box is
 // stored in closest[1]. When there are infinitely many choices for the pair
 // of closest points, only one of them is returned.
+
+#include <Mathematics/DistPlane3CanonicalBox3.h>
+#include <Mathematics/DistSegment3CanonicalBox3.h>
+#include <Mathematics/Triangle.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

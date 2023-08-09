@@ -3,11 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <Mathematics/Delaunay3.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {
@@ -20,6 +22,9 @@ namespace gte
             :
             mDelaunay(&delaunay)
         {
+            LogAssert(
+                mDelaunay->GetDimension() == 3,
+                "Invalid Delaunay dimension.");
         }
 
         // Mesh information.
@@ -52,31 +57,35 @@ namespace gte
 
         int32_t GetContainingTetrahedron(Vector3<InputType> const& P) const
         {
-            typename Delaunay3<InputType, ComputeType>::SearchInfo info;
+            typename Delaunay3<InputType, ComputeType>::SearchInfo info{};
             return mDelaunay->GetContainingTetrahedron(P, info);
         }
 
         bool GetVertices(int32_t t, std::array<Vector3<InputType>, 4>& vertices) const
         {
-            if (mDelaunay->GetDimension() == 3)
+            std::array<int32_t, 4> indices{};
+            if (mDelaunay->GetIndices(t, indices))
             {
-                std::array<int32_t, 4> indices;
-                if (mDelaunay->GetIndices(t, indices))
+                PrimalQuery3<ComputeType> const& query = mDelaunay->GetQuery();
+                Vector3<ComputeType> const* ctVertices = query.GetVertices();
+                for (int32_t i = 0; i < 4; ++i)
                 {
-                    PrimalQuery3<ComputeType> const& query = mDelaunay->GetQuery();
-                    Vector3<ComputeType> const* ctVertices = query.GetVertices();
-                    for (int32_t i = 0; i < 4; ++i)
+                    Vector3<ComputeType> const& V = ctVertices[indices[i]];
+                    for (int32_t j = 0; j < 3; ++j)
                     {
-                        Vector3<ComputeType> const& V = ctVertices[indices[i]];
-                        for (int32_t j = 0; j < 3; ++j)
-                        {
-                            vertices[i][j] = (InputType)V[j];
-                        }
+                        vertices[i][j] = (InputType)V[j];
                     }
-                    return true;
                 }
+                return true;
             }
-            return false;
+            else
+            {
+                for (auto& vertex : vertices)
+                {
+                    vertex.MakeZero();
+                }
+                return false;
+            }
         }
 
         bool GetIndices(int32_t t, std::array<int32_t, 4>& indices) const
@@ -91,7 +100,7 @@ namespace gte
 
         bool GetBarycentrics(int32_t t, Vector3<InputType> const& P, std::array<InputType, 4>& bary) const
         {
-            std::array<int32_t, 4> indices;
+            std::array<int32_t, 4> indices{};
             if (mDelaunay->GetIndices(t, indices))
             {
                 PrimalQuery3<ComputeType> const& query = mDelaunay->GetQuery();
@@ -116,6 +125,11 @@ namespace gte
                     }
                     return true;
                 }
+            }
+
+            for (auto& b : bary)
+            {
+                b = (InputType)0;
             }
             return false;
         }

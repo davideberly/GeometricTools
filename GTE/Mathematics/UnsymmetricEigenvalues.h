@@ -3,23 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Math.h>
-#include <algorithm>
-#include <array>
-#include <cstdint>
-#include <cstring>
-#include <functional>
-#include <vector>
 
 // An implementation of the QR algorithm described in "Matrix Computations,
 // 2nd edition" by G. H. Golub and C. F. Van Loan, The Johns Hopkins
 // University Press, Baltimore MD, Fourth Printing 1993.  In particular,
 // the implementation is based on Chapter 7 (The Unsymmetric Eigenvalue
 // Problem), Section 7.5 (The Practical QR Algorithm).
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <vector>
 
 namespace gte
 {

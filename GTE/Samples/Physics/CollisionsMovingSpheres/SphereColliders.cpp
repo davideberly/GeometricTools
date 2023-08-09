@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.20
+// Version: 6.3.2023.08.08
 
 #include <Mathematics/Logger.h>
 #include "SphereColliders.h"
+#include <limits>
 
 SphereColliders::SphereColliders(Sphere3<float> const& sphere0,
     Sphere3<float> const& sphere1)

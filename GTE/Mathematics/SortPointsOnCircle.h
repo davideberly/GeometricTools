@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.02.25
+// Version: 6.6.2023.08.08
 
 #pragma once
-
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <vector>
 
 // The sorting algorithms are described in
 // https://www.geometrictools.com/Documentation/SortPointsOnCircle.pdf
@@ -24,6 +19,12 @@
 // counterclockwise from the reference ray are negative and in (-pi,0]. The
 //  output 'indices[]' provides an indirect sorting. The sorted points are
 // P[indices[0]], P[indices[1]], ..., P[indices[P.size()-1]].
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <vector>
 
 namespace gte
 {

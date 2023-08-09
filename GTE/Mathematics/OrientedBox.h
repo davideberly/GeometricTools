@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector.h>
 
 // A box has center C, axis directions U[i], and extents e[i].  The set
 // {U[0],...,U[N-1]} is orthonormal, which means the vectors are
@@ -16,6 +14,10 @@
 // direction.  A point X is represented in box coordinates by
 // X = C + y[0]*U[0] + y[1]*U[1].  This point is inside or on the
 // box whenever |y[i]| <= e[i] for all i.
+
+#include <Mathematics/Vector.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {
