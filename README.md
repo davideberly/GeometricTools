@@ -94,9 +94,9 @@ I have had several known problems with compilers I use for testing.
   posted the workaround (listed below) and asked for status on the exception.
   No response in that forum thread, so I suspect this is low priority for NVIDIA.
 
-  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, 535.98, and
-  536.40 of the driver were released and have the same problem. The NVIDIA Studio
-  drivers do not generate these exceptions.
+  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, 535.98,
+  536.40, and 536.99 of the driver were released and have the same problem. The
+  NVIDIA Studio drivers do not generate these exceptions.
   
   WORKAROUND: This assumes you have checked the box
   in MSVS Exception Settings window that says "<All C++ Exceptions not in this list>".
