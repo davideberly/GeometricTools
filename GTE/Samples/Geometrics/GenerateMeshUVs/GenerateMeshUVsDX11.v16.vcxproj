@@ -184,9 +184,6 @@
     <ProjectReference Include="..\..\..\GTGraphicsDX11.v16.vcxproj">
       <Project>{B24EA8FC-D596-42A1-AA46-72DEF1BE24BC}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\GTMathematicsGPU.v16.vcxproj">
-      <Project>{123a05f9-5e7d-4e42-ae99-257ab584702f}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GenerateMeshUVsMain.cpp" />
