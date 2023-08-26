@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.08.08
+// Version: 6.7.2023.08.26
 
 #pragma once
 
@@ -54,11 +54,9 @@ namespace gte
             }
 
             // These members are relevant for any line and circle. If the line
-            // is tangent to the circle, the members result.parameter and
-            // result.closest[] are valid. Additionally, numIntersections is
-            // set to 1, result.intersectionParameters[0] is set to
-            // result.parameter, and result.intersections[0] is set to
-            // result.closest[0].
+            // is tangent to the circle, the members result.parameter[0] and
+            // result.closest[] are valid and result.numClosestPairs is set
+            // to 1.
             T distance, sqrDistance;
             size_t numClosestPairs;
             std::array<T, 2> parameter;
@@ -156,6 +154,10 @@ namespace gte
                 result.numClosestPairs = 2;
                 result.parameter[0] = temp / dotDirDir;
                 result.parameter[1] = a0 / temp;
+                if (result.parameter[0] > result.parameter[1])
+                {
+                    std::swap(result.parameter[0], result.parameter[1]);
+                }
 
                 // Compute the intersection points.
                 result.closest[0][0] = delta + result.parameter[0] * direction;
