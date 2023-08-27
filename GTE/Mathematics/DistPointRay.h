@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.08.27
 
 #pragma once
 
@@ -48,7 +48,7 @@ namespace gte
 
             T const zero = static_cast<T>(0);
             Vector<N, T> diff = point - ray.origin;
-            result.parameter = Dot(ray.direction, diff);
+            result.parameter = Dot(ray.direction, diff) / Dot(ray.direction, ray.direction);
             result.closest[0] = point;
             if (result.parameter > zero)
             {
