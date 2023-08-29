@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.08.26
+// Version: 6.7.2023.08.28
 
 #pragma once
 
@@ -11,17 +11,18 @@
 // considered to be a curve, not a solid disk.
 //
 // The line is P + t * D, where P is a point on the line and D is not required
-// to be unit length.
+// to be unit length. The t-value is any real number.
 //
 // The circle is C + r * U(s), where C is the center, r > 0 is the radius,
 // and U(s) = (cos(s), sin(s)) for s in [0,2*pi).
 //
-// The closest point on the line is stored in closest[0] with parameter t. The
-// closest point on the circle is stored in closest[1]. If the line intersects
-// the circle in 1 or 2 points, Result.numIntersections is that number of
-// points. The Result.intersections array has that number of valid points.
-// When Result.numIntersections is 2, Result.parameter and Result.closest[0,1]
-// store Result.intersectionParameters[0] and Result.intersections[0].
+// The number of pairs of closest points is result.numClosestPairs which is
+// 1 or 2. If result.numClosestPairs is 1, result.parameter[0] is the line
+// t-value for its closest point result.closest[0][0]. The circle closest
+// point is result.closest[0][1]. If result.numClosestPairs is 2,
+// result.parameter[0] and result.parameter[1] are the line t-values for its
+// closest points result.closest[0][0] and result.closest[1][0]. The circle
+// closest points are result.closest[0][1] and result.closest[1][1].
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Hypersphere.h>
@@ -53,10 +54,6 @@ namespace gte
             {
             }
 
-            // These members are relevant for any line and circle. If the line
-            // is tangent to the circle, the members result.parameter[0] and
-            // result.closest[] are valid and result.numClosestPairs is set
-            // to 1.
             T distance, sqrDistance;
             size_t numClosestPairs;
             std::array<T, 2> parameter;
