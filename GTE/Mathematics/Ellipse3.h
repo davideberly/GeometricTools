@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
 
 // The plane containing ellipse is Dot(N,X-C) = 0 where X is any point in the
 // plane, C is the ellipse center, and N is a unit-length normal to the plane.
@@ -16,6 +13,10 @@
 // the plane is parameterized by X = C + e0*cos(t)*A0 + e1*sin(t)*A1, where A0
 // is the major axis, A1 is the minor axis, and e0 and e1 are the extents
 // along those axes.  The angle t is in [-pi,pi) and e0 >= e1 > 0.
+
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <array>
 
 namespace gte
 {

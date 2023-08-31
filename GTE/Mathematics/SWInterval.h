@@ -3,17 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <array>
-
 // The SWInterval [e0,e1] must satisfy e0 <= e1. Expose this define to trap
 // invalid construction where e0 > e1.
-#define GTE_THROW_ON_INVALID_SWINTERVAL
+//#define GTE_THROW_ON_INVALID_SWINTERVAL
+
+#include <Mathematics/Logger.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <type_traits>
 
 namespace gte
 {
@@ -98,7 +102,7 @@ namespace gte
         // nodes of the expression tree.
         inline static SWInterval Add(T u, T v)
         {
-            SWInterval w;
+            SWInterval w{};
             T add = u + v;
             w.mEndpoints[0] = std::nextafter(add, -max);
             w.mEndpoints[1] = std::nextafter(add, +max);
@@ -107,7 +111,7 @@ namespace gte
 
         inline static SWInterval Sub(T u, T v)
         {
-            SWInterval w;
+            SWInterval w{};
             T sub = u - v;
             w.mEndpoints[0] = std::nextafter(sub, -max);
             w.mEndpoints[1] = std::nextafter(sub, +max);
@@ -116,7 +120,7 @@ namespace gte
 
         inline static SWInterval Mul(T u, T v)
         {
-            SWInterval w;
+            SWInterval w{};
             T mul = u * v;
             w.mEndpoints[0] = std::nextafter(mul, -max);
             w.mEndpoints[1] = std::nextafter(mul, +max);
@@ -127,7 +131,7 @@ namespace gte
         {
             if (v != zero)
             {
-                SWInterval w;
+                SWInterval w{};
                 T div = u / v;
                 w.mEndpoints[0] = std::nextafter(div, -max);
                 w.mEndpoints[1] = std::nextafter(div, +max);
@@ -149,7 +153,7 @@ namespace gte
         // defined after the class definition.
         inline static SWInterval Add(T u0, T u1, T v0, T v1)
         {
-            SWInterval w;
+            SWInterval w{};
             w.mEndpoints[0] = std::nextafter(u0 + v0, -max);
             w.mEndpoints[1] = std::nextafter(u1 + v1, +max);
             return w;
@@ -157,7 +161,7 @@ namespace gte
 
         inline static SWInterval Sub(T u0, T u1, T v0, T v1)
         {
-            SWInterval w;
+            SWInterval w{};
             w.mEndpoints[0] = std::nextafter(u0 - v1, -max);
             w.mEndpoints[1] = std::nextafter(u1 - v0, +max);
             return w;
@@ -165,7 +169,7 @@ namespace gte
 
         inline static SWInterval Mul(T u0, T u1, T v0, T v1)
         {
-            SWInterval w;
+            SWInterval w{};
             w.mEndpoints[0] = std::nextafter(u0 * v0, -max);
             w.mEndpoints[1] = std::nextafter(u1 * v1, +max);
             return w;
@@ -182,7 +186,7 @@ namespace gte
 
         inline static SWInterval Div(T u0, T u1, T v0, T v1)
         {
-            SWInterval w;
+            SWInterval w{};
             w.mEndpoints[0] = std::nextafter(u0 / v1, -max);
             w.mEndpoints[1] = std::nextafter(u1 / v0, +max);
             return w;
@@ -190,7 +194,7 @@ namespace gte
 
         inline static SWInterval Reciprocal(T v0, T v1)
         {
-            SWInterval w;
+            SWInterval w{};
             w.mEndpoints[0] = std::nextafter(one / v1, -max);
             w.mEndpoints[1] = std::nextafter(one / v0, +max);
             return w;

@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.07
+// Version: 6.2.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ConvexHull2.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/RotatingCalipers.h>
-#include <functional>
 
 // The width for a set of 2D points is the minimum distance between pairs
 // of parallel lines, each pair bounding the points. The width for a set
@@ -20,6 +15,16 @@
 // the width of a set of 2D points, see
 // http://www-cgrl.cs.mcgill.ca/~godfried/research/calipers.html
 // https://web.archive.org/web/20150330010154/http://cgm.cs.mcgill.ca/~orm/rotcal.html
+
+#include <Mathematics/ConvexHull2.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/RotatingCalipers.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

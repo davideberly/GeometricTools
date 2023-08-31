@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.28
+// Version: 6.3.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/Torus3.h>
-#include <Mathematics/Polynomial1.h>
-#include <Mathematics/RootsPolynomial.h>
 
 // The line is parameterized by L(t) = P + t * D, where P is a point on the
 // line and D is a nonzero direction vector that is not necessarily unit
@@ -50,6 +44,16 @@
 // The rational arithmetic allows for a theoretically correct classification
 // of the polynomial roots, although the actual root computation will have
 // rounding errors when converting to a floating-point result.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/Torus3.h>
+#include <Mathematics/Polynomial1.h>
+#include <Mathematics/RootsPolynomial.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <map>
 
 namespace gte
 {

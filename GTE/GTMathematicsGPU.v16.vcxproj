@@ -72,7 +72,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{123A05F9-5E7D-4E42-AE99-257AB584702F}</ProjectGuid>
+    <ProjectGuid>{9E47E043-2A79-4B04-A8E0-F93EF3FA386D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>GTMathematicsGPU.v16</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

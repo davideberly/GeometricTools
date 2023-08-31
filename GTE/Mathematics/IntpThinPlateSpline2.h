@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/GMatrix.h>
-#include <array>
 
 // WARNING.  The implementation allows you to transform the inputs (x,y) to
 // the unit square and perform the interpolation in that space.  The idea is
@@ -18,6 +15,14 @@
 // rotations of (x,y) but not to scaling.  The following document is about
 // thin plate splines.
 //   https://www.geometrictools.com/Documentation/ThinPlateSplines.pdf
+
+#include <Mathematics/GMatrix.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {
@@ -132,7 +137,7 @@ namespace gte
             }
 
             // Compute P*z.
-            std::array<Real, 3> prod;
+            std::array<Real, 3> prod{};
             for (row = 0; row < 3; ++row)
             {
                 prod[row] = (Real)0;

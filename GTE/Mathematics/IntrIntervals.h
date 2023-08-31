@@ -3,17 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <array>
 
 // The intervals are of the form [t0,t1], [t0,+infinity) or (-infinity,t1].
 // Degenerate intervals are allowed (t0 = t1). The queries do not perform
 // validation on the input intervals to test whether t0 <= t1.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <limits>
 
 namespace gte
 {

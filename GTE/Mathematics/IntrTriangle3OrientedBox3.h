@@ -3,9 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The test-intersection query is based on the document
+// https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
+// The find-intersection query clips the triangle against the faces of
+// the oriented box.
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
@@ -13,11 +18,9 @@
 #include <Mathematics/Triangle.h>
 #include <Mathematics/OrientedBox.h>
 #include <Mathematics/Vector3.h>
-
-// The test-intersection query is based on the document
-// https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
-// The find-intersection query clips the triangle against the faces of
-// the oriented box.
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

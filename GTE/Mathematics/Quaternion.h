@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector.h>
-#include <Mathematics/Matrix.h>
-#include <Mathematics/ChebyshevRatio.h>
 
 // A quaternion is of the form
 //   q = x * i + y * j + z * k + w * 1 = x * i + y * j + z * k + w
@@ -20,6 +16,14 @@
 // I assume that you are familiar with the arithmetic and algebraic properties
 // of quaternions.  See
 // https://www.geometrictools.com/Documentation/Quaternions.pdf
+
+#include <Mathematics/Vector.h>
+#include <Mathematics/Matrix.h>
+#include <Mathematics/ChebyshevRatio.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {
@@ -386,9 +390,8 @@ namespace gte
             sign = (Real)-1;
         }
 
-        Real f0, f1;
-        ChebyshevRatio<Real>::Get(t, cosA, f0, f1);
-        return q0 * f0 + q1 * (sign * f1);
+        std::array<Real, 2> f = ChebyshevRatiosUsingCosAngle(t, cosA);
+        return q0 * f[0] + q1 * (sign * f[1]);
     }
 
     // The angle between q0 and q1 must be in [0,pi/2].  The suffix R is for
@@ -405,9 +408,8 @@ namespace gte
     template <typename Real>
     Quaternion<Real> SlerpR(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1)
     {
-        Real f0, f1;
-        ChebyshevRatio<Real>::Get(t, Dot(q0, q1), f0, f1);
-        return q0 * f0 + q1 * f1;
+        std::array<Real, 2> f = ChebyshevRatiosUsingCosAngle(t, Dot(q0, q1));
+        return q0 * f[0] + q1 * f[1];
     }
 
     // The angle between q0 and q1 must be in [0,pi/2].  The suffix R is for
@@ -433,9 +435,8 @@ namespace gte
     template <typename Real>
     Quaternion<Real> SlerpRP(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1, Real cosA)
     {
-        Real f0, f1;
-        ChebyshevRatio<Real>::Get(t, cosA, f0, f1);
-        return q0 * f0 + q1 * f1;
+        std::array<Real, 2> f = ChebyshevRatiosUsingCosAngle(t, cosA);
+        return q0 * f[0] + q1 * f[1];
     }
 
     // The angle between q0 and q1 is A and must be in [0,pi/2].  The suffix R
@@ -467,17 +468,16 @@ namespace gte
     Quaternion<Real> SlerpRPH(Real t, Quaternion<Real> const& q0, Quaternion<Real> const& q1,
         Quaternion<Real> const& qh, Real cosAH)
     {
-        Real f0, f1;
         Real twoT = static_cast<Real>(2) * t;
         if (twoT <= static_cast<Real>(1))
         {
-            ChebyshevRatio<Real>::Get(twoT, cosAH, f0, f1);
-            return q0 * f0 + qh * f1;
+            std::array<Real, 2> f = ChebyshevRatiosUsingCosAngle(twoT, cosAH);
+            return q0 * f[0] + qh * f[1];
         }
         else
         {
-            ChebyshevRatio<Real>::Get(twoT - static_cast<Real>(1), cosAH, f0, f1);
-            return qh * f0 + q1 * f1;
+            std::array<Real, 2> f = ChebyshevRatiosUsingCosAngle(twoT - static_cast<Real>(1), cosAH);
+            return qh * f[0] + q1 * f[1];
         }
     }
 }

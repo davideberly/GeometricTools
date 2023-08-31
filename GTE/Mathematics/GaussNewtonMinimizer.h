@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/CholeskyDecomposition.h>
-#include <functional>
 
 // Let F(p) = (F_{0}(p), F_{1}(p), ..., F_{n-1}(p)) be a vector-valued
 // function of the parameters p = (p_{0}, p_{1}, ..., p_{m-1}).  The
@@ -49,6 +46,13 @@
 // advantage; for example, 3-tuples of components of F(p) might correspond to
 // vectors that can be manipulated using an already existing mathematics
 // library.  The implementation here supports both approaches.
+
+#include <Mathematics/CholeskyDecomposition.h>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <functional>
 
 namespace gte
 {

@@ -3,19 +3,25 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/GMatrix.h>
-#include <array>
 
 // Fit the data with a polynomial of the form
 //     w = sum_{i=0}^{n-1} c[i]*x^{p[i]}
 // where p[i] are distinct nonnegative powers provided by the caller. A
 // least-squares fitting algorithm is used, but the input data is first
 // mapped to (x,w) in [-1,1]^2 for numerical robustness.
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/GMatrix.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {
@@ -30,7 +36,6 @@ namespace gte
             mDegrees(degrees),
             mParameters(degrees.size(), (Real)0)
         {
-#if !defined(GTE_NO_LOGGER)
             LogAssert(mDegrees.size() > 0, "The input array must have elements.");
             int32_t lastDegree = -1;
             for (auto degree : mDegrees)
@@ -38,7 +43,6 @@ namespace gte
                 LogAssert(degree > lastDegree, "Degrees must be increasing.");
                 lastDegree = degree;
             }
-#endif
 
             mXDomain[0] = std::numeric_limits<Real>::max();
             mXDomain[1] = -mXDomain[0];

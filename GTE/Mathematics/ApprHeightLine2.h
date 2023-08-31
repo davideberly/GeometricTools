@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/Vector2.h>
 
 // Least-squares fit of a line to height data (x,f(x)). The line is of the
 // form: (y - yAvr) = a*(x - xAvr), where (xAvr,yAvr) is the average of the
@@ -16,6 +13,13 @@
 // successful (the input points are not degenerate to a single point). The
 // mParameters values are ((xAvr,yAvr),(a,-1)) on success and ((0,0),(0,0)) on
 // failure. The error for (x0,y0) is [a*(x0-xAvr)-(y0-yAvr)]^2.
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/Vector2.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
 
 namespace gte
 {

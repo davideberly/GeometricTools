@@ -185,7 +185,7 @@
       <Project>{93806879-D052-48B1-AFAF-BF190FC67B7F}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\GTMathematicsGPU.v16.vcxproj">
-      <Project>{123a05f9-5e7d-4e42-ae99-257ab584702f}</Project>
+      <Project>{9E47E043-2A79-4B04-A8E0-F93EF3FA386D}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

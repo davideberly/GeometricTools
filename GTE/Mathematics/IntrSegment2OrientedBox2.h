@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/IntrSegment2AlignedBox2.h>
-#include <Mathematics/OrientedBox.h>
 
 // The queries consider the box to be a solid.
 //
@@ -16,6 +13,11 @@
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The find-intersection queries use parametric clipping against the four
 // edges of the box.
+
+#include <Mathematics/IntrSegment2AlignedBox2.h>
+#include <Mathematics/OrientedBox.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

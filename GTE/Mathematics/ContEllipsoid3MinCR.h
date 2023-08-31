@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix3x3.h>
-#include <random>
 
 // Compute the minimum-volume ellipsoid, (X-C)^T R D R^T (X-C) = 1, given the
 // center C and orientation matrix R.  The columns of R are the axes of the
@@ -20,6 +17,14 @@
 // for all input points P[i] with 0 <= i < N.  Each constraint has the form
 //   A[0]*D[0] + A[1]*D[1] + A[2]*D[2] <= 1
 // where A[0] >= 0, A[1] >= 0, and A[2] >= 0.
+
+#include <Mathematics/Matrix3x3.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <random>
+#include <vector>
 
 namespace gte
 {

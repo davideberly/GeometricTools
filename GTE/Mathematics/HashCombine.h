@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <cstddef>
-#include <functional>
 
 // Support for creating hash values for a list of types, each such type T
 // having a valid std::hash<T>() function.
@@ -25,23 +22,26 @@
 //   Information Science and Technology, vol. 54, no. 3, February 2003.
 //   https://dl.acm.org/doi/10.1002/asi.10170
 
+#include <cstddef>
+#include <functional>
+
 namespace gte
 {
     template <typename T>
-    inline void HashCombine(std::size_t& seed, T const& value)
+    inline void HashCombine(size_t& seed, T const& value)
     {
         seed ^= std::hash<T>()(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     }
 
     // Functions to create a hash value using a seed.
     template <typename T>
-    inline void HashValue(std::size_t& seed, T const& value)
+    inline void HashValue(size_t& seed, T const& value)
     {
         HashCombine(seed, value);
     }
 
     template <typename T, typename... Tail>
-    inline void HashValue(std::size_t& seed, T const& value, Tail const&... arguments)
+    inline void HashValue(size_t& seed, T const& value, Tail const&... arguments)
     {
         HashCombine(seed, value);
         HashValue(seed, arguments...);
@@ -49,9 +49,9 @@ namespace gte
 
     // Functions to create a hash value from a list of arguments.
     template <typename... Tail>
-    inline std::size_t HashValue(Tail const&... arguments)
+    inline size_t HashValue(Tail const&... arguments)
     {
-        std::size_t seed = 0;
+        size_t seed = 0;
         HashValue(seed, arguments...);
         return seed;
     }

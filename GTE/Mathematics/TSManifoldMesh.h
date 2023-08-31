@@ -3,17 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.01.17
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/HashCombine.h>
-#include <Mathematics/TetrahedronKey.h>
-#include <Mathematics/TriangleKey.h>
-#include <map>
-#include <memory>
-#include <unordered_map>
 
 // The TSManifoldMesh class represents a triangle-tetrahedron mesh. The 'T'
 // stands for triangle (face) and the 'S' stands for simplex (tetrahedron).
@@ -22,6 +14,18 @@
 // container classes (unordered sets and maps). If your application requires
 // a triangle-tetrahedron manifold mesh for which no tetrahedra will be
 // removed, a better choice is StaticVTSManifoldMesh.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/HashCombine.h>
+#include <Mathematics/TetrahedronKey.h>
+#include <Mathematics/TriangleKey.h>
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <unordered_map>
+#include <utility>
 
 namespace gte
 {

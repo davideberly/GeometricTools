@@ -3,21 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <algorithm>
-#include <numeric>
-#include <random>
-#include <vector>
 
 // Base class support for least-squares fitting algorithms and for RANSAC
 // algorithms.
 
 // Expose this define if you want the code to verify that the incoming
 // indices to the fitting functions are valid.
-#define GTE_APPR_QUERY_VALIDATE_INDICES
+//#define GTE_APPR_QUERY_VALIDATE_INDICES
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <numeric>
+#include <random>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

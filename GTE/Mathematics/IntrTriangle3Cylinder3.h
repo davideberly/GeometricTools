@@ -3,21 +3,23 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/Triangle.h>
-#include <Mathematics/Cylinder3.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
 
 // An algorithm for the test-intersection query between a triangle and a
 // finite cylinder is described in
 // https://www.geometrictools.com/Documentation/IntersectionTriangleCylinder.pdf
 // The code here is an implementation of that algorithm. The comments include
 // references to Figure 1 of the PDF.
+
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/Triangle.h>
+#include <Mathematics/Cylinder3.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <array>
+#include <cstddef>
 
 namespace gte
 {

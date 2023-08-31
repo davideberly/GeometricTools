@@ -3,19 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/AlignedBox.h>
 
 // The queries consider the box to be a solid.
 //
 // The aligned-aligned queries use simple min-max comparisions.  The
 // interesection of aligned boxes is an aligned box, possibly degenerate,
 // where min[d] == max[d] for at least one dimension d.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/AlignedBox.h>
+#include <cstdint>
 
 namespace gte
 {

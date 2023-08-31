@@ -3,17 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <array>
 
 // The interpolator is for uniformly spaced (x,y)-values.  The input samples
 // F must be stored in row-major order to represent f(x,y); that is,
 // F[c + xBound*r] corresponds to f(x,y), where c is the index corresponding
 // to x and r is the index corresponding to y.
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.03
+// Version: 6.2.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/Vector2.h>
 
 // The rotating calipers algorithm finds all antipodal vertex-edge pairs for a
 // convex polygon. The algorithm is O(n) in time for n polygon edges. The
@@ -18,6 +15,15 @@
 // O(n log n). A description can be found at
 // http://www-cgrl.cs.mcgill.ca/~godfried/research/calipers.html
 // https://web.archive.org/web/20150330010154/http://cgm.cs.mcgill.ca/~orm/rotcal.html
+
+#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/Vector2.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+#include <vector>
 
 namespace gte
 {

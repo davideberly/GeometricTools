@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Ray.h>
-#include <Mathematics/IntrLine3Cone3.h>
 
 // The queries consider the cone to be single sided and solid.  The
 // cone height range is [hmin,hmax].  The cone can be infinite where
@@ -17,6 +14,10 @@
 // or a cone frustum where hmin > 0 and hmax < +infinity.  The
 // algorithm details are found in
 // https://www.geometrictools.com/Documentation/IntersectionLineCone.pdf
+
+#include <Mathematics/Ray.h>
+#include <Mathematics/IntrLine3Cone3.h>
+#include <algorithm>
 
 namespace gte
 {

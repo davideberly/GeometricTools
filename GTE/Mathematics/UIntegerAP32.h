@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/UIntegerALU32.h>
-#include <limits>
-#include <istream>
-#include <ostream>
-#include <vector>
 
 // Class UIntegerAP32 is designed to support arbitrary precision arithmetic
 // using BSNumber and BSRational.  It is not a general-purpose class for
@@ -41,6 +34,17 @@ namespace gte
     extern std::atomic<size_t> gsUIntegerAP32MaxSize;
 }
 #endif
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/UIntegerALU32.h>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <istream>
+#include <ostream>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -87,7 +91,7 @@ namespace gte
                 int32_t last = BitHacks::GetTrailingBit(number);
                 number >>= last;
                 mNumBits = first - last + 1;
-                mBits.resize(static_cast<size_t>(1) + (mNumBits - 1) / 32);
+                mBits.resize(static_cast<size_t>(1) + (static_cast<size_t>(mNumBits) - 1) / 32);
                 mBits[0] = (uint32_t)(number & 0x00000000FFFFFFFFull);
                 if (mBits.size() > 1)
                 {
@@ -132,7 +136,7 @@ namespace gte
             if (numBits > 0)
             {
                 mNumBits = numBits;
-                mBits.resize(static_cast<size_t>(1) + (numBits - 1) / 32);
+                mBits.resize(static_cast<size_t>(1) + (static_cast<size_t>(numBits) - 1) / 32);
             }
             else if (numBits == 0)
             {
@@ -198,7 +202,7 @@ namespace gte
                 return false;
             }
 
-            std::size_t size = mBits.size();
+            size_t size = mBits.size();
             if (output.write((char const*)& size, sizeof(size)).bad())
             {
                 return false;
@@ -214,7 +218,7 @@ namespace gte
                 return false;
             }
 
-            std::size_t size;
+            size_t size{};
             if (input.read((char*)& size, sizeof(size)).bad())
             {
                 return false;

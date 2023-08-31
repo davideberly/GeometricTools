@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -110,7 +110,7 @@ namespace gte
         // and SamplerState objects.  GLSL combines these into a sampler2D
         // object.  The textureName and samplerName are both used by HLSL.
         // The samplerName is used for the GLSL sampler2D and the textureName
-        // is ignored.  The GTEngine sample applications are created to
+        // is ignored.  The GTE sample applications are created to
         // compile using either DX11 or OpenGL.  If you set up your
         // application the same way, you will need to be consistent in your
         // naming of HLSL Texture* objects and GLSL sampler2D objects.  Even

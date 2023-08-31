@@ -3,19 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The algorithm for the perspective projection of an ellipsoid onto a
+// plane is described in
+// https://www.geometrictools.com/Documentation/PerspectiveProjectionEllipsoid.pdf
 
 #include <Mathematics/Hyperellipsoid.h>
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/Matrix2x2.h>
 #include <Mathematics/Matrix3x3.h>
-
-// The algorithm for the perspective projection of an ellipsoid onto a
-// plane is described in
-// https://www.geometrictools.com/Documentation/PerspectiveProjectionEllipsoid.pdf
+#include <array>
+#include <cmath>
 
 namespace gte
 {

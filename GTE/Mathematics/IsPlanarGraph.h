@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <algorithm>
-#include <array>
-#include <map>
-#include <set>
-#include <vector>
 
 // Test whether an undirected graph is planar.  The input positions must be
 // unique and the input edges must be unique, so the number of positions is
@@ -28,6 +22,14 @@
 // element is a pair of indices into the 'edges' array; the indices are
 // ordered so that element[0] < element[1].  The Real type must be chosen
 // to guarantee exact computation of edge-edge intersections.
+
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

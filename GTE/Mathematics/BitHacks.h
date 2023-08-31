@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.05.30
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <array>
-#include <cstdint>
 
 // The leadingBit table in GetLeadingBit and the trailingBit table in
 // GetTrailingBit are based on De Bruijn sequences.  The leadingBit table
@@ -21,7 +17,11 @@
 // The int32_t inputs to the bit-hack functions are required to be
 // nonnegative.  Expose this if you want exceptions thrown when the
 // int32_t inputs are negative.
-#define GTE_THROW_ON_BITHACKS_ERROR
+//#define GTE_THROW_ON_BITHACKS_ERROR
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

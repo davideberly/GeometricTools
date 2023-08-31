@@ -3,9 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// Compute the distance between an oriented box and a cone frustum. The
+// frustum is part of a single-sided cone with heights measured along the
+// axis direction. The single-sided cone heights h satisfy
+// 0 <= h <= infinity. The cone frustum has heights that satisfy
+// 0 <= hmin < h <= hmax < infinity. The algorithm is described in
+// https://www.geometrictools.com/Documentation/DistanceBox3Cone3.pdf
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Cone.h>
@@ -14,13 +21,11 @@
 #include <Mathematics/Matrix.h>
 #include <Mathematics/Minimize1.h>
 #include <Mathematics/Vector3.h>
-
-// Compute the distance between an oriented box and a cone frustum. The
-// frustum is part of a single-sided cone with heights measured along the
-// axis direction. The single-sided cone heights h satisfy
-// 0 <= h <= infinity. The cone frustum has heights that satisfy
-// 0 <= hmin < h <= hmax < infinity. The algorithm is described in
-// https://www.geometrictools.com/Documentation/DistanceBox3Cone3.pdf
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <type_traits>
 
 namespace gte
 {

@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <array>
-#include <string>
 
 // Create the lookup table for the Marching Cubes algorithm that is used to
 // extract a triangular mesh that represents a level surface of a 3D image
@@ -28,6 +25,11 @@
 // Configuration table.  TODO: Expand the macro manually for the table
 // creation.
 #define GTE_MC_ENTRY(name) CT_##name, &MarchingCubes::name
+
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <string>
 
 namespace gte
 {

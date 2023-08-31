@@ -3,17 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.7.2023.08.08
+
+#pragma once
 
 // Rotation matrices can be constructed using estimates of the coefficients
 // that involve trigonometric and polynomial terms. See
 // https://www.geometrictools.com/Documentation/RotationEstimation.pdf
 // for the length details.
 
-#pragma once
-
-#include <Mathematics/Matrix.h>
+#include <Mathematics/Matrix3x3.h>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {
@@ -48,22 +50,22 @@ namespace gte
         },
         {   // degree 12
             +1.00000000000000000e+00,
-            -1.66666661172424985e-01,
-            +8.33332258782319701e-03,
-            -1.98405693280704135e-04,
-            +2.75362742468406608e-06,
-            -2.47308402190765123e-08,
-            +1.36149932075244694e-10
+            -1.66666661172424652e-01,
+            +8.33332258782261241e-03,
+            -1.98405693280411671e-04,
+            +2.75362742462233601e-06,
+            -2.47308402132623094e-08,
+            +1.36149931873379692e-10
         },
         {   // degree 14
             +1.00000000000000000e+00,
-            -1.66666666601880786e-01,
-            +8.33333316679120591e-03,
-            -1.98412553530683797e-04,
-            +2.75567210003238900e-06,
-            -2.50388692626200884e-08,
-            +1.58972932135933544e-10,
-            -6.61111627233688785e-13
+            -1.66666666641878403e-01,
+            +8.33333324542580994e-03,
+            -1.98412602287003715e-04,
+            +2.75568576745228666e-06,
+            -2.50407933908690801e-08,
+            +1.59105811932465814e-10,
+            -6.64696382424593659e-13
         },
         {   // degree 16
             +1.00000000000000000e+00,
@@ -84,8 +86,8 @@ namespace gte
         2.2379506089580e-04,    // degree 6
         4.8670096434722e-06,    // degree 8
         7.5654711606532e-08,    // degree 10
-        8.7939172610518e-10,    // degree 12
-        7.9199615615755e-12,    // degree 14
+        8.7939167753293e-10,    // degree 12
+        1.8030021919913e-12,    // degree 14
         6.8001160258291e-16     // degree 16
     };
 
@@ -112,20 +114,20 @@ namespace gte
         },
         {   // degree 10
             +5.00000000000000000e-01,
-            -4.16666414534321572e-02,
-            +1.38885303988537192e-03,
-            -2.47850001122705350e-05,
-            +2.72207208413898425e-07,
-            -1.77358008600681907e-09
+            -4.16666414534323168e-02,
+            +1.38885303988547384e-03,
+            -2.47850001122907892e-05,
+            +2.72207208415419378e-07,
+            -1.77358008604198045e-09
         },
         {   // degree 12
             +5.00000000000000000e-01,
-            -4.16666663178411334e-02,
-            +1.38888820709641924e-03,
-            -2.48011431705518285e-05,
-            +2.75439902962340229e-07,
-            -2.06736081122602257e-09,
-            +9.93003618302030503e-12
+            -4.16666663178411056e-02,
+            +1.38888820709637153e-03,
+            -2.48011431705276915e-05,
+            +2.75439902957067131e-07,
+            -2.06736081072201315e-09,
+            +9.93003616566537400e-12
         },
         {   // degree 14
             +5.00000000000000000e-01,
@@ -155,7 +157,7 @@ namespace gte
         9.2119010150538e-04,    // degree 4
         2.3251261806301e-05,    // degree 6
         4.1693160884870e-07,    // degree 8
-        5.5177887536839e-09,    // degree 10
+        5.5177887814395e-09,    // degree 10
         5.5865700954172e-11,    // degree 12
         7.1609385088323e-15,    // degree 14
         7.2164496600635e-16     // degree 16
@@ -184,20 +186,20 @@ namespace gte
         },
         {   // degree 10
             +3.33333333333333315e-01,
-            -3.33333098285273563e-02,
-            +1.19044276839748377e-03,
-            -2.20303898188601926e-05,
-            +2.47382309397892291e-07,
-            -1.63412179599052932e-09
+            -3.33333098285276269e-02,
+            +1.19044276839769606e-03,
+            -2.20303898189124444e-05,
+            +2.47382309403030923e-07,
+            -1.63412179616686230e-09
         },
         {   // degree 12
             +3.33333333333333315e-01,
-            -3.33333330053029661e-02,
-            +1.19047554930589209e-03,
-            -2.20454376925152508e-05,
-            +2.50395723787030737e-07,
-            -1.90797721719554658e-09,
-            +9.25661051509749896e-12
+            -3.33333330053041110e-02,
+            +1.19047554930712374e-03,
+            -2.20454376929804210e-05,
+            +2.50395723867477426e-07,
+            -1.90797722371463640e-09,
+            +9.25661071605387496e-12
         },
         {   // degree 14
             +3.33333333333333315e-01,
@@ -227,8 +229,8 @@ namespace gte
         8.1461508460229e-04,    // degree 4
         2.1075025784856e-05,    // degree 6
         3.8414838612888e-07,    // degree 8
-        5.1435967152180e-09,    // degree 10
-        5.2533588590364e-11,    // degree 12
+        5.1435966597069e-09,    // degree 10
+        5.2533449812486e-11,    // degree 12
         7.7715611723761e-15,    // degree 14
         2.2759572004816e-15     // degree 16
     };
@@ -256,11 +258,11 @@ namespace gte
         },
         {   // degree 10
             +8.33333333333333287e-02,
-            -5.55555406357728914e-03,
-            +1.48807404153008735e-04,
-            -2.20360578108261882e-06,
-            +2.06782449582308932e-08,
-            -1.19178562817913197e-10
+            -5.55555406357867952e-03,
+            +1.48807404154064368e-04,
+            -2.20360578135342372e-06,
+            +2.06782449868995703e-08,
+            -1.19178563894098852e-10
         },
         {   // degree 12
             +8.33333333333333287e-02,
@@ -299,7 +301,7 @@ namespace gte
         8.4612036888886e-05,    // degree 4
         1.8051973185995e-06,    // degree 6
         2.8016103950645e-08,    // degree 8
-        3.2675415151395e-10,    // degree 10
+        3.2675391559156e-10,    // degree 10
         1.3714029911682e-13,    // degree 12
         3.2078506517763e-14,    // degree 14
         4.7774284528401e-14     // degree 16
@@ -312,19 +314,21 @@ namespace gte
     // estimate is
     //   float t;  // in [0,pi]
     //   float result = RotC0Estimate<float, 6>(t);
-    template <typename Real, size_t Degree>
-    inline Real RotC0Estimate(Real t)
+    template <typename T, size_t Degree>
+    inline T RotC0Estimate(T t)
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
 
         size_t constexpr select = (Degree - 4) / 2;
         auto constexpr& coeff = C_ROTC0_EST_COEFF[select];
         size_t constexpr last = Degree / 2;
-        Real tsqr = t * t;
-        Real poly = static_cast<Real>(coeff[last]);
+        T tsqr = t * t;
+        T poly = static_cast<T>(coeff[last]);
         for (size_t i = 0, index = last - 1; i < last; ++i, --index)
         {
-            poly = static_cast<Real>(coeff[index]) + poly * tsqr;
+            poly = static_cast<T>(coeff[index]) + poly * tsqr;
         }
         return poly;
     }
@@ -333,19 +337,21 @@ namespace gte
     // a degree-6 estimate is
     //   float t;  // in [0,pi]
     //   float result = RotC1Estimate<float, 6>(t);
-    template <typename Real, size_t Degree>
-    inline Real RotC1Estimate(Real t)
+    template <typename T, size_t Degree>
+    inline T RotC1Estimate(T t)
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
 
         size_t constexpr select = (Degree - 4) / 2;
         auto constexpr& coeff = C_ROTC1_EST_COEFF[select];
         size_t constexpr last = Degree / 2;
-        Real tsqr = t * t;
-        Real poly = static_cast<Real>(coeff[last]);
+        T tsqr = t * t;
+        T poly = static_cast<T>(coeff[last]);
         for (size_t i = 0, index = last - 1; i < last; ++i, --index)
         {
-            poly = static_cast<Real>(coeff[index]) + poly * tsqr;
+            poly = static_cast<T>(coeff[index]) + poly * tsqr;
         }
         return poly;
     }
@@ -354,19 +360,21 @@ namespace gte
     // example, a degree-6 estimate is
     //   float t;  // in [0,pi]
     //   float result = RotC2Estimate<float, 6>(t);
-    template <typename Real, size_t Degree>
-    inline Real RotC2Estimate(Real t)
+    template <typename T, size_t Degree>
+    inline T RotC2Estimate(T t)
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
 
         size_t constexpr select = (Degree - 4) / 2;
         auto constexpr& coeff = C_ROTC2_EST_COEFF[select];
         size_t constexpr last = Degree / 2;
-        Real tsqr = t * t;
-        Real poly = static_cast<Real>(coeff[last]);
+        T tsqr = t * t;
+        T poly = static_cast<T>(coeff[last]);
         for (size_t i = 0, index = last - 1; i < last; ++i, --index)
         {
-            poly = static_cast<Real>(coeff[index]) + poly * tsqr;
+            poly = static_cast<T>(coeff[index]) + poly * tsqr;
         }
         return poly;
     }
@@ -375,191 +383,222 @@ namespace gte
     // [0,pi]. For example, a degree-6 estimate is
     //   float t;  // in [0,pi]
     //   float result = RotC3Estimate<float, 6>(t);
-    template <typename Real, size_t Degree>
-    inline Real RotC3Estimate(Real t)
+    template <typename T, size_t Degree>
+    inline T RotC3Estimate(T t)
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
 
         size_t constexpr select = (Degree - 4) / 2;
         auto constexpr& coeff = C_ROTC3_EST_COEFF[select];
         size_t constexpr last = Degree / 2;
-        Real tsqr = t * t;
-        Real poly = static_cast<Real>(coeff[last]);
+        T tsqr = t * t;
+        T poly = static_cast<T>(coeff[last]);
         for (size_t i = 0, index = last - 1; i < last; ++i, --index)
         {
-            poly = static_cast<Real>(coeff[index]) + poly * tsqr;
+            poly = static_cast<T>(coeff[index]) + poly * tsqr;
         }
         return poly;
     }
 
-    template <typename Real, size_t Degree>
-    Real constexpr GetRotC0EstimateMaxError()
+    template <typename T, size_t Degree>
+    T constexpr GetRotC0EstimateMaxError()
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
-        return static_cast<Real>(C_ROTC0_EST_MAX_ERROR[(Degree - 4) / 2]);
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        return static_cast<T>(C_ROTC0_EST_MAX_ERROR[(Degree - 4) / 2]);
     }
 
-    template <typename Real, size_t Degree>
-    Real constexpr GetRotC1EstimateMaxError()
+    template <typename T, size_t Degree>
+    T constexpr GetRotC1EstimateMaxError()
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
-        return static_cast<Real>(C_ROTC1_EST_MAX_ERROR[(Degree - 4) / 2]);
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        return static_cast<T>(C_ROTC1_EST_MAX_ERROR[(Degree - 4) / 2]);
     }
 
-    template <typename Real, size_t Degree>
-    Real constexpr GetRotC2EstimateMaxError()
+    template <typename T, size_t Degree>
+    T constexpr GetRotC2EstimateMaxError()
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
-        return static_cast<Real>(C_ROTC2_EST_MAX_ERROR[(Degree - 4) / 2]);
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        return static_cast<T>(C_ROTC2_EST_MAX_ERROR[(Degree - 4) / 2]);
     }
 
-    template <typename Real, size_t Degree>
-    Real constexpr GetRotC3EstimateMaxError()
+    template <typename T, size_t Degree>
+    T constexpr GetRotC3EstimateMaxError()
     {
-        static_assert((Degree & 1) == 0 && 4 <= Degree && Degree <= 16, "Invalid degree.");
-        return static_cast<Real>(C_ROTC3_EST_MAX_ERROR[(Degree - 4) / 2]);
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        return static_cast<T>(C_ROTC3_EST_MAX_ERROR[(Degree - 4) / 2]);
     }
 
     // Construct the estimate for the rotation matrix
     //   R = exp(S) = I + rotc0(t) * S + rotc1(t) * S^2
     // from a vector (p0,p1,p2) with length t = |(p0,p1,p2)| and
     // skew-symmetric matrix S = {{0,-p2,p1},{p2,0,-p0},{-p1,p0,0}}.
-    template <typename Real, size_t Degree>
-    void RotationEstimate(Vector<3, Real> const& p,
-        Matrix<3, 3, Real>& R)
+    template <typename T, size_t Degree>
+    void RotationEstimate(Vector3<T> const& p,
+        Matrix3x3<T>& R)
     {
-        Real const zero(0), one(1);
+        T const zero = static_cast<T>(0);
+        T const one = static_cast<T>(1);
 
-        Matrix<3, 3, Real> I{
+        Matrix3x3<T> I
+        {
             one, zero, zero,
             zero, one, zero,
             zero, zero, one
         };
 
-        Matrix<3, 3, Real> S{
+        Matrix3x3<T> S
+        {
             zero, -p[2], p[1],
             p[2], zero, -p[0],
             -p[1], p[0], zero
         };
 
-        Real p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
-        Real p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
-        Matrix<3, 3, Real> Ssqr{
+        T p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
+        T p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
+        Matrix3x3<T> Ssqr
+        {
             -(p1p1 + p2p2), p0p1, p0p2,
             p0p1, -(p0p0 + p2p2), p1p2,
             p0p2, p1p2, -(p0p0 + p1p1)
         };
 
-        Real t = Length(p);
-        Real a = RotC0Estimate<Real, Degree>(t);
-        Real b = RotC1Estimate<Real, Degree>(t);
+        T t = Length(p);
+        T a = RotC0Estimate<T, Degree>(t);
+        T b = RotC1Estimate<T, Degree>(t);
         R = I + a * S + b * Ssqr;
     };
 
-    template <typename Real, size_t Degree>
-    void RotationDerivativeEstimate(Vector<3, Real> const& p,
-        std::array<Matrix<3, 3, Real>, 3>& Rder)
+    template <typename T, size_t Degree>
+    void RotationDerivativeEstimate(Vector3<T> const& p,
+        std::array<Matrix3x3<T>, 3>& Rder)
     {
-        Real const zero(0), one(1), negOne(-1);
+        T const zero = static_cast<T>(0);
+        T const one = static_cast<T>(1);
 
-        std::array<Matrix<3, 3, Real>, 3> skewE =
+        std::array<Matrix3x3<T>, 3> skewE
         {
-            Matrix<3, 3, Real>{
+            Matrix3x3<T>
+            {
                 zero, zero, zero,
-                zero, zero, negOne,
+                zero, zero, -one,
                 zero, one, zero
             },
 
-            Matrix<3, 3, Real>{
+            Matrix3x3<T>
+            {
                 zero, zero, one,
                 zero, zero, zero,
-                negOne, zero, zero
+                -one, zero, zero
             },
 
-            Matrix<3, 3, Real>{
-                zero, negOne, zero,
+            Matrix3x3<T>
+            {
+                zero, -one, zero,
                 one, zero, zero,
                 zero, zero, zero
             }
         };
 
-        Matrix<3, 3, Real> S{
+        Matrix3x3<T> S
+        {
             zero, -p[2], p[1],
             p[2], zero, -p[0],
             -p[1], p[0], zero
         };
 
-        Real p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
-        Real p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
-        Matrix<3, 3, Real> Ssqr{
+        T p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
+        T p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
+        Matrix3x3<T> Ssqr
+        {
             -(p1p1 + p2p2), p0p1, p0p2,
             p0p1, -(p0p0 + p2p2), p1p2,
             p0p2, p1p2, -(p0p0 + p1p1)
         };
 
-        Real t = Length(p);
-        Real a = RotC0Estimate<Real, Degree>(t);
-        Real b = RotC1Estimate<Real, Degree>(t);
-        Real c = RotC2Estimate<Real, Degree>(t);
-        Real d = RotC3Estimate<Real, Degree>(t);
+        T t = Length(p);
+        T a = RotC0Estimate<T, Degree>(t);
+        T b = RotC1Estimate<T, Degree>(t);
+        T c = RotC2Estimate<T, Degree>(t);
+        T d = RotC3Estimate<T, Degree>(t);
         for (int32_t i = 0; i < 3; ++i)
         {
             Rder[i] = a * skewE[i] + b * (S * skewE[i] + skewE[i] * S) - p[i] * (c * S + d * Ssqr);
         }
     }
 
-    template <typename Real, size_t Degree>
-    void RotationAndDerivativeEstimate(Vector<3, Real> const& p,
-        Matrix<3, 3, Real>& R, std::array<Matrix<3, 3, Real>, 3>& Rder)
+    template <typename T, size_t Degree>
+    void RotationAndDerivativeEstimate(Vector3<T> const& p,
+        Matrix3x3<T>& R, std::array<Matrix3x3<T>, 3>& Rder)
     {
-        Real const zero(0), one(1), negOne(-1);
+        T const zero = static_cast<T>(0);
+        T const one = static_cast<T>(1);
 
-        Matrix<3, 3, Real> I{
+        Matrix3x3<T> I
+        {
             one, zero, zero,
             zero, one, zero,
             zero, zero, one
         };
 
-        std::array<Matrix<3, 3, Real>, 3> skewE =
+        std::array<Matrix3x3<T>, 3> skewE
         {
-            Matrix<3, 3, Real>{
+            Matrix3x3<T>
+            {
                 zero, zero, zero,
-                zero, zero, negOne,
+                zero, zero, -one,
                 zero, one, zero
             },
 
-            Matrix<3, 3, Real>{
+            Matrix3x3<T>
+            {
                 zero, zero, one,
                 zero, zero, zero,
-                negOne, zero, zero
+                -one, zero, zero
             },
 
-            Matrix<3, 3, Real>{
-                zero, negOne, zero,
+            Matrix3x3<T>
+            {
+                zero, -one, zero,
                 one, zero, zero,
                 zero, zero, zero
             }
         };
 
-        Matrix<3, 3, Real> S{
+        Matrix3x3<T> S
+        {
             zero, -p[2], p[1],
             p[2], zero, -p[0],
             -p[1], p[0], zero
         };
 
-        Real p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
-        Real p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
-        Matrix<3, 3, Real> Ssqr{
+        T p0p0 = p[0] * p[0], p0p1 = p[0] * p[1], p0p2 = p[0] * p[2];
+        T p1p1 = p[1] * p[1], p1p2 = p[1] * p[2], p2p2 = p[2] * p[2];
+        Matrix3x3<T> Ssqr
+        {
             -(p1p1 + p2p2), p0p1, p0p2,
             p0p1, -(p0p0 + p2p2), p1p2,
             p0p2, p1p2, -(p0p0 + p1p1)
         };
 
-        Real t = Length(p);
-        Real a = RotC0Estimate<Real, Degree>(t);
-        Real b = RotC1Estimate<Real, Degree>(t);
-        Real c = RotC2Estimate<Real, Degree>(t);
-        Real d = RotC3Estimate<Real, Degree>(t);
+        T t = Length(p);
+        T a = RotC0Estimate<T, Degree>(t);
+        T b = RotC1Estimate<T, Degree>(t);
+        T c = RotC2Estimate<T, Degree>(t);
+        T d = RotC3Estimate<T, Degree>(t);
 
         R = I + a * S + b * Ssqr;
         for (int32_t i = 0; i < 3; ++i)

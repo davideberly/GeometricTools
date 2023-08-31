@@ -3,16 +3,17 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.07.17
+// Version: 6.7.2023.08.08
 
 #pragma once
-
-#include <Mathematics/PolynomialRoot.h>
-#include <type_traits>
 
 // Compute the real-valued root of a linear polynomial with real-valued
 // coefficients. The general linear polynomial is g(x) = g0 + g1 * x and the
 // monic linear polynomial is m(x) = m0 + x.
+
+#include <Mathematics/PolynomialRoot.h>
+#include <cstddef>
+#include <type_traits>
 
 namespace gte
 {

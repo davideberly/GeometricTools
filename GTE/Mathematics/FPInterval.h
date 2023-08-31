@@ -3,17 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <array>
-
 // The FPInterval [e0,e1] must satisfy e0 <= e1. Expose this define to trap
 // invalid construction where e0 > e1.
-#define GTE_THROW_ON_INVALID_INTERVAL
+//#define GTE_THROW_ON_INVALID_INTERVAL
+
+#include <Mathematics/Logger.h>
+#include <array>
+#include <cfenv>
+#include <cstddef>
+#include <limits>
+#include <type_traits>
 
 namespace gte
 {
@@ -92,7 +95,7 @@ namespace gte
         // nodes of the expression tree.
         inline static FPInterval Add(FPType u, FPType v)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u + v;
@@ -104,7 +107,7 @@ namespace gte
 
         inline static FPInterval Sub(FPType u, FPType v)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u - v;
@@ -116,7 +119,7 @@ namespace gte
 
         inline static FPInterval Mul(FPType u, FPType v)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u * v;
@@ -131,7 +134,7 @@ namespace gte
             FPType const zero = static_cast<FPType>(0);
             if (v != zero)
             {
-                FPInterval w;
+                FPInterval w{};
                 auto saveMode = std::fegetround();
                 std::fesetround(FE_DOWNWARD);
                 w.mEndpoints[0] = u / v;
@@ -157,7 +160,7 @@ namespace gte
             std::array<FPType, 2> const& v)
         {
             FPType const zero = static_cast<FPType>(0);
-            FPType w0;
+            FPType w0{};
             if (u[0] >= zero)
             {
                 if (v[0] >= zero)
@@ -215,7 +218,7 @@ namespace gte
             std::array<FPType, 2> const& v)
         {
             FPType const zero = static_cast<FPType>(0);
-            FPType w1;
+            FPType w1{};
             if (u[0] >= zero)
             {
                 if (v[0] >= zero)
@@ -272,7 +275,7 @@ namespace gte
         // defined after the class definition.
         inline static FPInterval Add(FPType u0, FPType u1, FPType v0, FPType v1)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u0 + v0;
@@ -284,7 +287,7 @@ namespace gte
 
         inline static FPInterval Sub(FPType u0, FPType u1, FPType v0, FPType v1)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u0 - v1;
@@ -296,7 +299,7 @@ namespace gte
 
         inline static FPInterval Mul(FPType u0, FPType u1, FPType v0, FPType v1)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u0 * v0;
@@ -321,7 +324,7 @@ namespace gte
 
         inline static FPInterval Div(FPType u0, FPType u1, FPType v0, FPType v1)
         {
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = u0 / v1;
@@ -334,7 +337,7 @@ namespace gte
         inline static FPInterval Reciprocal(FPType v0, FPType v1)
         {
             FPType const one = static_cast<FPType>(1);
-            FPInterval w;
+            FPInterval w{};
             auto saveMode = std::fegetround();
             std::fesetround(FE_DOWNWARD);
             w.mEndpoints[0] = one / v1;

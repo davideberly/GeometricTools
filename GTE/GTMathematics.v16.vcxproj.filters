@@ -513,9 +513,6 @@
     <ClInclude Include="Mathematics\IEEEBinary16.h">
       <Filter>Arithmetic</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\Math.h">
-      <Filter>Arithmetic</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\UIntegerALU32.h">
       <Filter>Arithmetic</Filter>
     </ClInclude>
@@ -1595,6 +1592,42 @@
     </ClInclude>
     <ClInclude Include="Mathematics\ApprCurveByArcs.h">
       <Filter>Approximation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsQuadratic.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsQuartic.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsCubic.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsLinear.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\PolynomialRoot.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ChebyshevRatioEstimate.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\Constants.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\Functions.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\Slerp.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\TypeTraits.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRay2Circle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine2Circle2.h">
+      <Filter>Distance\2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

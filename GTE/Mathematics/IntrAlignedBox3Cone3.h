@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/Cone.h>
-#include <Mathematics/IntrRay3AlignedBox3.h>
-#include <Mathematics/IntrSegment3AlignedBox3.h>
 
 // Test for intersection of a box and a cone.  The cone can be infinite
 //   0 <= minHeight < maxHeight = std::numeric_limits<T>::max()
@@ -34,6 +29,16 @@
 // rewritten for the new class design.  FOR NOW, the queries will work with
 // float/double when you create a cone using the cone-frustum constructor
 // Cone(ray, angle, minHeight, std::numeric_limits<T>::max()).
+
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/Cone.h>
+#include <Mathematics/IntrRay3AlignedBox3.h>
+#include <Mathematics/IntrSegment3AlignedBox3.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <limits>
 
 namespace gte
 {
@@ -329,7 +334,7 @@ namespace gte
             Vector3<T> const& U = cone.ray.direction;
             Vector3<T> CmV = C - V;
             T DdCmV = Dot(U, CmV);
-            T radius = e[0] * std::abs(U[0]) + e[1] * std::abs(U[1]) + e[2] * std::abs(U[2]);
+            T radius = e[0] * std::fabs(U[0]) + e[1] * std::fabs(U[1]) + e[2] * std::fabs(U[2]);
             boxMinHeight = DdCmV - radius;
             boxMaxHeight = DdCmV + radius;
         }

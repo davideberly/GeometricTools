@@ -3,20 +3,15 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <Mathematics/Polynomial1.h>
-#include <array>
 
 // IntpBSplineUniform is the class for B-spline interpolation of uniformly
 // spaced N-dimensional data.  The algorithm is described in
 //   https://www.geometrictools.com/Documentation/BSplineInterpolation.pdf
 // A sample application for this topic is
-//   GeometricTools/GTEngine/Samples/Imagics/BSplineInterpolation
+//   GeometricTools/GTE/Samples/Imagics/BSplineInterpolation
 //
 // The Controls adapter allows access to your control points without regard
 // to how you organize your data.  You can even defer the computation of a
@@ -49,6 +44,15 @@
 //   // components).
 //   Type operator() (int32_t i0, int32_t i1, ..., int32_t inm1) const;
 // }
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Polynomial1.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

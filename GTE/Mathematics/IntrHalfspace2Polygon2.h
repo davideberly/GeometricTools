@@ -3,18 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The queries consider the box to be a solid and the polygon to be a
+// convex solid.
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/Halfspace.h>
 #include <Mathematics/OrientedBox.h>
 #include <Mathematics/Vector2.h>
+#include <cstdint>
 #include <vector>
-
-// The queries consider the box to be a solid and the polygon to be a
-// convex solid.
 
 namespace gte
 {

@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/MinHeap.h>
-#include <limits>
 
 // The topic of fast marching methods are discussed in the book
 //   Level Set Methods and Fast Marching Methods:
@@ -16,6 +13,12 @@
 //     Computer Vision, and Materials Science
 //   J.A. Sethian,
 //   Cambridge University Press, 1999
+
+#include <Mathematics/MinHeap.h>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

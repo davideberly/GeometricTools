@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/Vector2.h>
 
 // The queries consider the box to be a solid.
 //
@@ -23,6 +17,15 @@
 // but only one is reported.  The value is 0 when box0.axis[0] separates,
 // 1 when box0.axis[1] separates, 2 when box1.axis[0] separates, or 3 when
 // box1.axis[1] separates.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/Vector2.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

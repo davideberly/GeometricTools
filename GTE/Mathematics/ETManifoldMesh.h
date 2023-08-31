@@ -3,22 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.01.17
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/EdgeKey.h>
-#include <Mathematics/HashCombine.h>
-#include <Mathematics/TriangleKey.h>
-#include <limits>
-#include <map>
-#include <memory>
-#include <queue>
-#include <set>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
 
 // The ETManifoldMesh class represents an edge-triangle manifold mesh. The 'E'
 // stands for edge and the 'T' stands for triangle. It is general purpose,
@@ -27,6 +14,22 @@
 // (unordered sets and maps). If your application requires an edge-triangle
 // manifold mesh for which no triangles will be removed, a better choice is
 // StaticVETManifoldMesh.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/EdgeKey.h>
+#include <Mathematics/HashCombine.h>
+#include <Mathematics/TriangleKey.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <map>
+#include <memory>
+#include <queue>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

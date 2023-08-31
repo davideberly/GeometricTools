@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -12,10 +12,19 @@
 // https://www.geometrictools.com/Documentation/IntersectionOfCylinders.pdf
 
 #include <Mathematics/TIQuery.h>
+#include <Mathematics/Constants.h>
+#include <Mathematics/Functions.h>
 #include <Mathematics/Cylinder3.h>
 #include <Mathematics/Vector3.h>
 #include <Mathematics/RootsBisection.h>
 #include <Mathematics/Minimize1.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <utility>
 #include <vector>
 
 namespace gte
@@ -430,7 +439,7 @@ namespace gte
 
             T r0Term = mR0 * Dot(crossDW0, crossLW0) / Length(crossDW0);
             T r1Term = mR1 * Dot(crossDW1, crossLW1) / Length(crossDW1);
-            T sgn = sign(t);
+            T sgn = gte::sign(t);
             T h0Term = mHalfH0 * std::fabs(dotLW0) * sgn;
             T h1Term = mHalfH1 * std::fabs(dotLW1) * sgn;
 

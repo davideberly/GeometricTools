@@ -3,18 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Delaunay2Mesh.h>
-#include <Mathematics/IntpQuadraticNonuniform2.h>
-#include <memory>
 
 // Interpolation of a scalar-valued function defined on a sphere.  Although
 // the sphere lives in 3D, the interpolation is a 2D method whose input
 // points are angles (theta,phi) from spherical coordinates.  The domains of
 // the angles are -pi <= theta <= pi and 0 <= phi <= pi.
+
+#include <Mathematics/Delaunay2Mesh.h>
+#include <Mathematics/IntpQuadraticNonuniform2.h>
+#include <cmath>
+#include <cstdint>
+#include <memory>
+#include <vector>
 
 namespace gte
 {

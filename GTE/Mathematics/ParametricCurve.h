@@ -3,13 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.08
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// Abstract base class for a parameterized curve X(t), where t is the
+// parameter in [tmin,tmax] and X is an N-tuple position.  The first
+// constructor is for single-segment curves. The second constructor is
+// for multiple-segment curves. The times must be strictly increasing.
 
 #include <Mathematics/Integration.h>
 #include <Mathematics/RootsBisection.h>
 #include <Mathematics/Vector.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <vector>
 
 namespace gte
 {
@@ -17,10 +28,6 @@ namespace gte
     class ParametricCurve
     {
     protected:
-        // Abstract base class for a parameterized curve X(t), where t is the
-        // parameter in [tmin,tmax] and X is an N-tuple position.  The first
-        // constructor is for single-segment curves. The second constructor is
-        // for multiple-segment curves. The times must be strictly increasing.
         ParametricCurve(Real tmin, Real tmax)
             :
             mTime(2),

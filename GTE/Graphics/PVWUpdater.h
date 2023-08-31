@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -91,7 +91,7 @@ namespace gte
         // 'pvwMatrixName' is the name specified in the shader program for the
         // PVW matrix and is used in SetMember<Matrix4x4<float>>(...) of the
         // ConstantBuffer object storing that matrix.  The default "pvwMatrix"
-        // is used by GTEngine VisualEffect vertex shaders.
+        // is used by GTE VisualEffect vertex shaders.
         bool Subscribe(Matrix4x4<float> const& worldMatrix,
             std::shared_ptr<ConstantBuffer> const& cbuffer,
             std::string const& pvwMatrixName = "pvwMatrix");

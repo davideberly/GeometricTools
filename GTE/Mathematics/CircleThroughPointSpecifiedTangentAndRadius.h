@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Hypersphere.h>
-#include <Mathematics/Vector2.h>
 
 // This file provides an implementation of the algorithm in Section 8.7 of the
 // book
@@ -61,6 +58,11 @@
 //        the tangent line and P must be the label on the intersection point
 //        farthest from the tangent line. The construction of the centers is
 //        the same as that (5a).
+
+#include <Mathematics/Hypersphere.h>
+#include <Mathematics/Vector2.h>
+#include <array>
+#include <cmath>
 
 namespace gte
 {

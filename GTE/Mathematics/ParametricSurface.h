@@ -3,11 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.08
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Abstract base class for a parameterized surface X(u,v).  The
+// parametric domain is either rectangular or triangular.  Valid
+// (u,v) values for a rectangular domain satisfy
+//   umin <= u <= umax,  vmin <= v <= vmax
+// and valid (u,v) values for a triangular domain satisfy
+//   umin <= u <= umax,  vmin <= v <= vmax,
+//   (vmax-vmin)*(u-umin)+(umax-umin)*(v-vmax) <= 0
+
 #include <Mathematics/Vector.h>
+#include <array>
 #include <cstdint>
 
 namespace gte
@@ -16,13 +25,6 @@ namespace gte
     class ParametricSurface
     {
     protected:
-        // Abstract base class for a parameterized surface X(u,v).  The
-        // parametric domain is either rectangular or triangular.  Valid
-        // (u,v) values for a rectangular domain satisfy
-        //   umin <= u <= umax,  vmin <= v <= vmax
-        // and valid (u,v) values for a triangular domain satisfy
-        //   umin <= u <= umax,  vmin <= v <= vmax,
-        //   (vmax-vmin)*(u-umin)+(umax-umin)*(v-vmax) <= 0
         ParametricSurface(Real umin, Real umax, Real vmin, Real vmax, bool rectangular)
             :
             mUMin(umin),

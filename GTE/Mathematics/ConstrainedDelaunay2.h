@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.03.20
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Delaunay2.h>
 
 // Compute the Delaunay triangulation of the input point and then insert
 // edges that are constrained to be in the triangulation. For each such
@@ -17,6 +15,18 @@
 // with the retriangulation of the first edge. Although the code here
 // will do what is requested, a pair of such edges usually indicates the
 // upstream process that generated the edges is not doing what it should.
+
+#include <Mathematics/Delaunay2.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <set>
+#include <string>
+#include <type_traits>
+#include <unordered_set>
+#include <vector>
 
 namespace gte
 {

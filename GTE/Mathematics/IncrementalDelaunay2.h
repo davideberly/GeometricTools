@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
@@ -57,9 +57,18 @@
 #include <Mathematics/SWInterval.h>
 #include <Mathematics/Vector2.h>
 #include <Mathematics/VETManifoldMesh.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <functional>
+#include <limits>
 #include <map>
 #include <set>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace gte
     // The input type must be 'float' or 'double'. The compute type is defined

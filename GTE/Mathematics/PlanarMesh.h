@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.02.01
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ContPointInPolygon2.h>
-#include <Mathematics/ETManifoldMesh.h>
-#include <Mathematics/PrimalQuery2.h>
-#include <set>
 
 // The planar mesh class is convenient for many applications involving
 // searches for triangles containing a specified point.  A couple of
@@ -77,6 +72,18 @@
 //
 // The PlanarMesh<*>::Contains function does not require the triangles to
 // be ordered.
+
+#include <Mathematics/ContPointInPolygon2.h>
+#include <Mathematics/ETManifoldMesh.h>
+#include <Mathematics/PrimalQuery2.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

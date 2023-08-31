@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector.h>
 
 // The segment is represented by (1-t)*P0 + t*P1, where P0 and P1 are the
 // endpoints of the segment and 0 <= t <= 1.  Some algorithms prefer a
@@ -16,6 +14,10 @@
 // center of the segment, D = (P1 - P0)/|P1 - P0| is a unit-length direction
 // vector for the segment, and |t| <= e.  The value e = |P1 - P0|/2 is the
 // extent (or radius or half-length) of the segment.
+
+#include <Mathematics/Vector.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/LightEffect.h>
@@ -74,7 +74,7 @@ void LightEffect::UpdateGeometryConstant()
 // where the vector N is the normal vector, L is the direction to light and H
 // is the half vector.  All three vectors are unit length.  The inputs are
 // NdotL = Dot(N,L), NdotH = Dot(N,H), and m is the specular exponent that is
-// stored in Material:diffuse[3] in GTEngine.
+// stored in Material:diffuse[3] in GTE.
 std::string LightEffect::GetGLSLLitFunction()
 {
     return

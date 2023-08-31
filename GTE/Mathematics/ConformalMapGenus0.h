@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/ETManifoldMesh.h>
-#include <Mathematics/LinearSystem.h>
-#include <Mathematics/Polynomial1.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
 
 // Conformally map a 2-dimensional manifold mesh with the topology of a sphere
 // to a sphere.  The algorithm is an implementation of the one in the paper
@@ -22,6 +15,20 @@
 //    Volume 6, Number 2, pages 181–189, 2000
 // The paper is available at https://ieeexplore.ieee.org/document/856998 but
 // is not freely downloadable.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Constants.h>
+#include <Mathematics/ETManifoldMesh.h>
+#include <Mathematics/LinearSystem.h>
+#include <Mathematics/Polynomial1.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
@@ -112,7 +119,9 @@ namespace gte
                 std::array<int32_t, 2> lookup = { i, i };
                 A[lookup] = tmp[i];
             }
-            LogAssert(static_cast<size_t>(numPositions) + emap.size() == A.size(), "Mismatched sizes.");
+            LogAssert(
+                static_cast<size_t>(numPositions) + emap.size() == A.size(),
+                "Mismatched sizes.");
 
             // Construct the sparse column vector B.
             currentIndex = &indices[3 * punctureTriangle];
@@ -367,12 +376,16 @@ namespace gte
             poly1 = poly1 * qpoly2;
 
             Polynomial1<Real> poly2 = poly1 - poly0;
-            LogAssert(poly2.GetDegree() <= 8, "Expecting degree no larger than 8.");
+            LogAssert(
+                poly2.GetDegree() <= 8,
+                "Expecting degree no larger than 8.");
 
             // Bound a root near zero and apply bisection to find t.
             Real tmin = (Real)0, fmin = poly2(tmin);
             Real tmax = (Real)1, fmax = poly2(tmax);
-            LogAssert(fmin > (Real)0 && fmax < (Real)0, "Expecting opposite-signed extremes.");
+            LogAssert(
+                fmin > (Real)0 && fmax < (Real)0,
+                "Expecting opposite-signed extremes.");
 
             // Determine the number of iterations to get 'digits' of accuracy.
             int32_t const digits = 6;

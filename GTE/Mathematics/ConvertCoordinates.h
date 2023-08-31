@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix.h>
-#include <Mathematics/GaussianElimination.h>
 
 // Convert points and transformations between two coordinate systems.
 // The mathematics involves a change of basis.  See the document
@@ -146,6 +143,10 @@
 // P0 = U*X;
 // P1 = V*Y;
 // diff = P0 - P1;  // { 0, 0, 0, 0 }
+
+#include <Mathematics/Matrix.h>
+#include <Mathematics/GaussianElimination.h>
+#include <cstdint>
 
 namespace gte
 {

@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2023.08.08
 
 #include <Mathematics/ArbitraryPrecision.h>
 using namespace gte;
 
 // sizeof(BSNumber<UIntegerFP32<N>>) = 4 * (N + 4)
 
+// FusedMultiplyAdd
 // SumOfTwoSquares
 // RotatingCalipersAngle
 //
@@ -26,6 +27,15 @@ using namespace gte;
 // PrimalQuery3ToCircumsphere
 // PrimalQuery3Colinear
 // PrimalQuery3Coplanar
+
+int FusedMultiplyAdd(BSPrecision::Type type, bool forBSNumber)
+{
+    // w = x * y + z
+    BSPrecision u(type);
+    BSPrecision product = u * u;
+    BSPrecision sum = product + u;
+    return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
+}
 
 int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
 {
@@ -583,6 +593,11 @@ int main()
 {
     int32_t bsNumberFloatWords, bsNumberDoubleWords;
     int32_t bsRationalFloatWords, bsRationalDoubleWords;
+
+    bsNumberFloatWords = FusedMultiplyAdd(BSPrecision::Type::IS_FLOAT, true);  // 13
+    bsNumberDoubleWords = FusedMultiplyAdd(BSPrecision::Type::IS_DOUBLE, true);  // 98
+    bsRationalFloatWords = FusedMultiplyAdd(BSPrecision::Type::IS_FLOAT, false);  // 26
+    bsRationalDoubleWords = FusedMultiplyAdd(BSPrecision::Type::IS_DOUBLE, false);  // 197
 
     bsNumberFloatWords = SumOfTwoSquares(BSPrecision::Type::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = SumOfTwoSquares(BSPrecision::Type::IS_DOUBLE, true);  // 132

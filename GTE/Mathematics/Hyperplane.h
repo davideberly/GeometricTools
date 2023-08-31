@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Matrix.h>
-#include <Mathematics/SingularValueDecomposition.h>
-#include <Mathematics/Vector3.h>
 
 // The hyperplane is represented as Dot(U, X - P) = 0 where U is a unit-length
 // normal vector, P is the hyperplane origin, and X is any point on the
@@ -33,6 +29,13 @@
 // // If you consume plane now, the origin and constant are inconsistent
 // // because P = (0,0,0) but Dot(N,P) = 0 != 3 = c. Instead use
 // plane = Plane3<T>({ 0, 0, 1 }, 3);
+
+#include <Mathematics/Matrix.h>
+#include <Mathematics/SingularValueDecomposition.h>
+#include <Mathematics/Vector3.h>
+#include <array>
+#include <cstdint>
+#include <type_traits>
 
 namespace gte
 {

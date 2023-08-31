@@ -3,18 +3,19 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Axis-angle representation for N = 3 or N = 4. When N = 4, the axis must be
+// a vector of the form (x,y,z,0) [affine representation of the 3-tuple
+// direction].
+
 #include <Mathematics/Vector.h>
+#include <cstdint>
 
 namespace gte
 {
-    // Axis-angle representation for N = 3 or N = 4.  When N = 4, the axis
-    // must be a vector of the form (x,y,z,0) [affine representation of the
-    // 3-tuple direction].
-
     template <int32_t N, typename Real>
     class AxisAngle
     {

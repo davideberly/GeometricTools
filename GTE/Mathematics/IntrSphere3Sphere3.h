@@ -7,12 +7,15 @@
 
 #pragma once
 
+// The queries consider the spheres to be solids.
+
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>
 #include <Mathematics/Hypersphere.h>
 #include <Mathematics/Circle3.h>
-
-// The queries consider the spheres to be solids.
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

@@ -76,11 +76,13 @@
     <ClInclude Include="Mathematics\BSPrecision.h" />
     <ClInclude Include="Mathematics\BSRational.h" />
     <ClInclude Include="Mathematics\CanonicalBox.h" />
+    <ClInclude Include="Mathematics\ChebyshevRatioEstimate.h" />
     <ClInclude Include="Mathematics\CholeskyDecomposition.h" />
     <ClInclude Include="Mathematics\CircleThroughPointSpecifiedTangentAndRadius.h" />
     <ClInclude Include="Mathematics\CircleThroughTwoPointsSpecifiedRadius.h" />
     <ClInclude Include="Mathematics\CLODPolyline.h" />
     <ClInclude Include="Mathematics\ConformalMapGenus0.h" />
+    <ClInclude Include="Mathematics\Constants.h" />
     <ClInclude Include="Mathematics\ConstrainedDelaunay2.h" />
     <ClInclude Include="Mathematics\ContAlignedBox.h" />
     <ClInclude Include="Mathematics\ContAlignedBox2Arc2.h" />
@@ -120,6 +122,7 @@
     <ClInclude Include="Mathematics\DisjointRectangles.h" />
     <ClInclude Include="Mathematics\DistAlignedBox3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistLine2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistLine2Circle2.h" />
     <ClInclude Include="Mathematics\DistLine2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistLine3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistOrientedBox3Cone3.h" />
@@ -132,6 +135,7 @@
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />
     <ClInclude Include="Mathematics\DistRay2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistRay2Circle2.h" />
     <ClInclude Include="Mathematics\DistRay2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h" />
@@ -153,6 +157,7 @@
     <ClInclude Include="Mathematics\FastMarch3.h" />
     <ClInclude Include="Mathematics\FPInterval.h" />
     <ClInclude Include="Mathematics\FrenetFrame.h" />
+    <ClInclude Include="Mathematics\Functions.h" />
     <ClInclude Include="Mathematics\GaussianBlur2.h" />
     <ClInclude Include="Mathematics\GaussianBlur3.h" />
     <ClInclude Include="Mathematics\GenerateMeshUV.h" />
@@ -410,6 +415,7 @@
     <ClInclude Include="Mathematics\PolyhedralMassProperties.h" />
     <ClInclude Include="Mathematics\Polyhedron3.h" />
     <ClInclude Include="Mathematics\PolylineOffset.h" />
+    <ClInclude Include="Mathematics\PolynomialRoot.h" />
     <ClInclude Include="Mathematics\Projection.h" />
     <ClInclude Include="Mathematics\QFNumber.h" />
     <ClInclude Include="Mathematics\QuarticRootsQR.h" />
@@ -425,7 +431,11 @@
     <ClInclude Include="Mathematics\RootsBisection1.h" />
     <ClInclude Include="Mathematics\RootsBisection2.h" />
     <ClInclude Include="Mathematics\RootsBrentsMethod.h" />
+    <ClInclude Include="Mathematics\RootsCubic.h" />
+    <ClInclude Include="Mathematics\RootsLinear.h" />
     <ClInclude Include="Mathematics\RootsPolynomial.h" />
+    <ClInclude Include="Mathematics\RootsQuadratic.h" />
+    <ClInclude Include="Mathematics\RootsQuartic.h" />
     <ClInclude Include="Mathematics\RotatingCalipers.h" />
     <ClInclude Include="Mathematics\RotationEstimate.h" />
     <ClInclude Include="Mathematics\Sector2.h" />
@@ -433,6 +443,7 @@
     <ClInclude Include="Mathematics\SegmentMesh.h" />
     <ClInclude Include="Mathematics\SinEstimate.h" />
     <ClInclude Include="Mathematics\SingularValueDecomposition.h" />
+    <ClInclude Include="Mathematics\Slerp.h" />
     <ClInclude Include="Mathematics\SlerpEstimate.h" />
     <ClInclude Include="Mathematics\SortPointsOnCircle.h" />
     <ClInclude Include="Mathematics\SqrtEstimate.h" />
@@ -459,6 +470,7 @@
     <ClInclude Include="Mathematics\TriangleKey.h" />
     <ClInclude Include="Mathematics\TSManifoldMesh.h" />
     <ClInclude Include="Mathematics\TubeMesh.h" />
+    <ClInclude Include="Mathematics\TypeTraits.h" />
     <ClInclude Include="Mathematics\UniqueVerticesSimplices.h" />
     <ClInclude Include="Mathematics\UniqueVerticesTriangles.h" />
     <ClInclude Include="Mathematics\UnsymmetricEigenvalues.h" />
@@ -470,7 +482,6 @@
     <ClInclude Include="Mathematics\IEEEBinary.h" />
     <ClInclude Include="Mathematics\IEEEBinary16.h" />
     <ClInclude Include="Mathematics\LexicoArray2.h" />
-    <ClInclude Include="Mathematics\Math.h" />
     <ClInclude Include="Mathematics\Matrix.h" />
     <ClInclude Include="Mathematics\Matrix2x2.h" />
     <ClInclude Include="Mathematics\Matrix3x3.h" />

@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.06.17
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/CanonicalBox.h>
-#include <Mathematics/Cylinder3.h>
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
 
 // The query is for finite cylinders. The cylinder and box are considered to
 // be solids. The cylinder has center C, unit-length axis direction D, radius
@@ -42,6 +35,17 @@
 // and avoids using a generic convex hull algorithm. Reductions in dimension
 // occur based on the number of 0-valued components of the cylinder axis
 // direction.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/CanonicalBox.h>
+#include <Mathematics/Cylinder3.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

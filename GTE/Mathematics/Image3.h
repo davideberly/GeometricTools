@@ -3,16 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.24
 
 #pragma once
+
+// Enable this define to throw exceptions when image operations are invalid.
+//#define GTE_THROW_ON_IMAGE3_ERRORS
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/Image.h>
 #include <array>
-#include <string>
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+#include <vector>
 
-//#define GTE_THROW_ON_IMAGE3_ERRORS
+#if defined(GTE_THROW_ON_IMAGE3_ERRORS)
+#include <string>
+#endif
 
 namespace gte
 {
@@ -143,7 +151,7 @@ namespace gte
 
         inline std::array<int32_t, 3> GetCoordinates(size_t index) const
         {
-            std::array<int32_t, 3> coord;
+            std::array<int32_t, 3> coord{};
 #if defined(GTE_THROW_ON_IMAGE3_ERRORS)
             if (index < this->mPixels.size())
             {
@@ -524,7 +532,7 @@ namespace gte
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 6>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int32_t, 6> inbr;
+            std::array<int32_t, 6> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 6; ++i)
             {
@@ -535,7 +543,7 @@ namespace gte
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 18>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int32_t, 18> inbr;
+            std::array<int32_t, 18> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 18; ++i)
             {
@@ -546,7 +554,7 @@ namespace gte
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<size_t, 26>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int32_t, 26> inbr;
+            std::array<int32_t, 26> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 26; ++i)
             {
@@ -557,7 +565,7 @@ namespace gte
         void GetCorners(int32_t x, int32_t y, int32_t z, std::array<size_t, 8>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int32_t, 8> inbr;
+            std::array<int32_t, 8> inbr{};
             GetCorners(inbr);
             for (int32_t i = 0; i < 8; ++i)
             {
@@ -568,7 +576,7 @@ namespace gte
         void GetFull(int32_t x, int32_t y, int32_t z, std::array<size_t, 27>& nbr) const
         {
             size_t index = GetIndex(x, y, z);
-            std::array<int32_t, 27> inbr;
+            std::array<int32_t, 27> inbr{};
             GetFull(inbr);
             for (int32_t i = 0; i < 27; ++i)
             {
@@ -688,7 +696,7 @@ namespace gte
 
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 6>& nbr) const
         {
-            std::array<std::array<int32_t, 3>, 6> inbr;
+            std::array<std::array<int32_t, 3>, 6> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 6; ++i)
             {
@@ -700,7 +708,7 @@ namespace gte
 
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 18>& nbr) const
         {
-            std::array<std::array<int32_t, 3>, 18> inbr;
+            std::array<std::array<int32_t, 3>, 18> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 18; ++i)
             {
@@ -712,7 +720,7 @@ namespace gte
 
         void GetNeighborhood(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 26>& nbr) const
         {
-            std::array<std::array<int32_t, 3>, 26> inbr;
+            std::array<std::array<int32_t, 3>, 26> inbr{};
             GetNeighborhood(inbr);
             for (int32_t i = 0; i < 26; ++i)
             {
@@ -724,7 +732,7 @@ namespace gte
 
         void GetCorners(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 8>& nbr) const
         {
-            std::array<std::array<int32_t, 3>, 8> inbr;
+            std::array<std::array<int32_t, 3>, 8> inbr{};
             GetCorners(inbr);
             for (int32_t i = 0; i < 8; ++i)
             {
@@ -736,7 +744,7 @@ namespace gte
 
         void GetFull(int32_t x, int32_t y, int32_t z, std::array<std::array<size_t, 3>, 27>& nbr) const
         {
-            std::array<std::array<int32_t, 3>, 27> inbr;
+            std::array<std::array<int32_t, 3>, 27> inbr{};
             GetFull(inbr);
             for (int32_t i = 0; i < 27; ++i)
             {

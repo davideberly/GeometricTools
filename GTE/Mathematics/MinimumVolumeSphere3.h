@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/ContSphere3.h>
-#include <Mathematics/LinearSystem.h>
-#include <functional>
-#include <random>
 
 // Compute the minimum volume sphere containing the input set of points.  The
 // algorithm randomly permutes the input points so that the construction
@@ -36,6 +30,19 @@
 // shuffle that occurs is highly likely to be different from the previous
 // shuffle, and there is a chance that the algorithm can succeed just because
 // of the different ordering of points.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/ContSphere3.h>
+#include <Mathematics/LinearSystem.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <random>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

@@ -3,16 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// Compute the distance from a point to an orthogonal frustum. The algorithm
+// is described in
+// https://www.geometrictools.com/Documentation/DistancePointToFrustum.pdf
+
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Frustum3.h>
-
-// The algorithm for computing the distance from a point to an orthogonal
-// frustum is described in
-// https://www.geometrictools.com/Documentation/DistancePointToFrustum.pdf
+#include <array>
+#include <cmath>
 
 namespace gte
 {

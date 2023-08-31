@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <limits>
 
 // The document
 // https://www.geometrictools.com/Documentation/RobustEigenSymmetric3x3.pdf
@@ -18,7 +13,14 @@
 // symmetric real-valued matrix. The iterative algorithm is implemented
 // by class SymmmetricEigensolver3x3. The noniterative algorithm is
 // implemented by class NISymmetricEigensolver3x3. The code does not use
-// GTEngine objects.
+// GTE objects.
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
 
 namespace gte
 {

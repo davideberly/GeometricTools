@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <functional>
 
 // Estimate a root on an interval [tMin,tMax] for a continuous function F(t)
 // defined on that interval. If a root is found, the function returns it via
@@ -25,6 +21,15 @@
 // The latter conditions can occur because of the fixed precision used in
 // the computations (24-bit precision for 'float', 53-bit precision for
 // 'double' or a user-specified precision for arbitrary-precision numbers.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/TypeTraits.h>
+#include <cfenv>
+#include <cmath>
+#include <cstdint>
+#include <functional>
+#include <limits>
+#include <type_traits>
 
 namespace gte
 {
@@ -78,7 +83,7 @@ namespace gte
 
             // Use floating-point inputs as is. Round arbitrary-precision
             // inputs to the specified precision.
-            Real t0, t1;
+            Real t0{}, t1{};
             RoundInitial(tMin, tMax, t0, t1);
             Real f0 = F(t0), f1 = F(t1);
             return operator()(F, t0, t1, f0, f1, tRoot, fAtTRoot);
@@ -194,7 +199,7 @@ namespace gte
             Real average = std::ldexp(t0 + t1, -1);  // = (t0 + t1) / 2
             if (mPrecision < std::numeric_limits<uint32_t>::max())
             {
-                Real roundedAverage;
+                Real roundedAverage{};
                 Convert(average, mPrecision, FE_TONEAREST, roundedAverage);
                 return roundedAverage;
             }

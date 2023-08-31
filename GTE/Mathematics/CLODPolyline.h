@@ -3,14 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/MinHeap.h>
-#include <Mathematics/DistPointSegment.h>
-#include <vector>
 
 // The continuous level of detail (CLOD) algorithm implemented here is
 // described in
@@ -18,6 +13,14 @@
 // It is an algorithm to reduce incrementally the number of vertices in a
 // polyline (open or closed).  The sequence of vertex collapses is based on
 // vertex weights associated with distance from vertices to polyline segments.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/MinHeap.h>
+#include <Mathematics/DistPointSegment.h>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

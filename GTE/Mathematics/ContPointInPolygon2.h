@@ -3,16 +3,17 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector2.h>
 
 // Given a polygon as an order list of vertices (x[i],y[i]) for 0 <= i < N
 // and a test point (xt,yt), return 'true' if (xt,yt) is in the polygon and
 // 'false' if it is not.  All queries require that the number of vertices
 // satisfies N >= 3.
+
+#include <Mathematics/Vector2.h>
+#include <cstdint>
 
 namespace gte
 {

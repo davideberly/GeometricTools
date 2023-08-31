@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.22
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Math.h>
-#include <algorithm>
-#include <cstdint>
-#include <map>
-#include <vector>
 
 // The Find functions return the number of roots, if any, and this number
 // of elements of the outputs are valid.  If the polynomial is identically
@@ -51,6 +45,14 @@ extern void RootsLowDegreeBlock(int32_t);
 #else
 #define GTE_ROOTS_LOW_DEGREE_BLOCK(block)
 #endif
+
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

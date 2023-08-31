@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FIQuery.h>
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/Vector3.h>
-#include <Mathematics/Hypersphere.h>
-#include <Mathematics/Line.h>
 
 // The queries consider the sphere to be a solid.
 //
@@ -20,6 +14,15 @@
 // Q(t) = t^2 + 2*a1*t + a0 = 0, where a1 = D^T*(P-C) and
 // a0 = (P-C)^T*(P-C)-r^2. The algorithm involves an analysis of the
 // real-valued roots of Q(t) for all real t.
+
+#include <Mathematics/FIQuery.h>
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/Vector3.h>
+#include <Mathematics/Hypersphere.h>
+#include <Mathematics/Line.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
 
 namespace gte
 {

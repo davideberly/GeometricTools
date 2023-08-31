@@ -3,18 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Vector2.h>
-#include <Mathematics/Vector3.h>
-#include <Mathematics/ETManifoldMesh.h>
-#include <cstdint>
-#include <cstring>
-#include <functional>
-#include <set>
-#include <thread>
 
 // This class is an implementation of the barycentric mapping algorithm
 // described in Section 5.3 of the book
@@ -33,6 +24,21 @@
 // texture coordinates are propagated inward by updating the vertices in
 // topological distance order, leading to fast convergence for large numbers
 // of vertices.
+
+#include <Mathematics/Constants.h>
+#include <Mathematics/Vector2.h>
+#include <Mathematics/Vector3.h>
+#include <Mathematics/ETManifoldMesh.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <limits>
+#include <set>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

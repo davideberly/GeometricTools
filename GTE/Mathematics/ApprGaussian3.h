@@ -3,20 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/ApprQuery.h>
-#include <Mathematics/OrientedBox.h>
-#include <Mathematics/SymmetricEigensolver3x3.h>
-#include <Mathematics/Vector3.h>
 
 // Fit points with a Gaussian distribution. The center is the mean of the
 // points, the axes are the eigenvectors of the covariance matrix and the
 // extents are the eigenvalues of the covariance matrix and are returned in
 // increasing order. An oriented box is used to store the mean, axes and
 // extents.
+
+#include <Mathematics/ApprQuery.h>
+#include <Mathematics/OrientedBox.h>
+#include <Mathematics/SymmetricEigensolver3x3.h>
+#include <Mathematics/Vector3.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace gte
 {

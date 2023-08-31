@@ -3,13 +3,17 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.03.23
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <Mathematics/GVector.h>
 #include <Mathematics/GaussianElimination.h>
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
@@ -450,7 +454,7 @@ namespace gte
         if (M.GetNumRows() == M.GetNumCols())
         {
             GMatrix<Real> invM(M.GetNumRows(), M.GetNumCols());
-            Real determinant;
+            Real determinant{};
             bool invertible = GaussianElimination<Real>()(M.GetNumRows(), &M[0],
                 &invM[0], determinant, nullptr, nullptr, nullptr, 0, nullptr);
             if (reportInvertibility)
@@ -467,7 +471,7 @@ namespace gte
     {
         if (M.GetNumRows() == M.GetNumCols())
         {
-            Real determinant;
+            Real determinant{};
             GaussianElimination<Real>()(M.GetNumRows(), &M[0], nullptr,
                 determinant, nullptr, nullptr, nullptr, 0, nullptr);
             return determinant;

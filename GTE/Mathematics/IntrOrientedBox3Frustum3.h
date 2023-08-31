@@ -3,19 +3,22 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/TIQuery.h>
-#include <Mathematics/Frustum3.h>
-#include <Mathematics/OrientedBox.h>
 
 // The test-intersection query uses the method of separating axes.
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The potential separating axes include the 3 box face normals, the 5
 // distinct frustum normals (near and far plane have the same normal), and
 // cross products of normals, one from the box and one from the frustum.
+
+#include <Mathematics/TIQuery.h>
+#include <Mathematics/Frustum3.h>
+#include <Mathematics/OrientedBox.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
 
 namespace gte
 {

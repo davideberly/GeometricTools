@@ -3,12 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Matrix2x2.h>
 
 // Compute the minimum-area ellipse, (X-C)^T R D R^T (X-C) = 1, given the
 // center C and the orientation matrix R.  The columns of R are the axes of
@@ -20,6 +17,12 @@
 // for all input points P[i] with 0 <= i < N.  Each constraint has the form
 //   A[0]*D[0] + A[1]*D[1] <= 1
 // where A[0] >= 0 and A[1] >= 0.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Matrix2x2.h>
+#include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {

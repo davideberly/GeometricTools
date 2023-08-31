@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Math.h>
-#include <algorithm>
-#include <functional>
-#include <vector>
 
 // The SingularValueDecomposition class is an implementation of Algorithm
 // 8.3.2 (The SVD Algorithm) described in "Matrix Computations, 2nd
@@ -47,6 +41,15 @@
 // the Householder u-vectors, so the essential parts of these vectors is not
 // stored in the local copy of A (as suggested by Golub and van Loan) in order
 // to make the implementation more readable.
+
+#include <Mathematics/Logger.h>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <functional>
+#include <limits>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

@@ -3,20 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.01.17
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/PrimalQuery3.h>
-#include <Mathematics/TSManifoldMesh.h>
-#include <Mathematics/Line.h>
-#include <Mathematics/Hyperplane.h>
-#include <Mathematics/SWInterval.h>
-#include <numeric>
-#include <set>
-#include <unordered_set>
-#include <vector>
 
 // Delaunay tetrahedralization of points (intrinsic dimensionality 3).
 //   VQ = number of vertices
@@ -56,6 +45,26 @@
 // be exact) is to choose ComputeType for exact rational arithmetic.  You may
 // use BSNumber.  No divisions are performed in this computation, so you do
 // not have to use BSRational.
+
+#include <Mathematics/ArbitraryPrecision.h>
+#include <Mathematics/Logger.h>
+#include <Mathematics/PrimalQuery3.h>
+#include <Mathematics/TSManifoldMesh.h>
+#include <Mathematics/Line.h>
+#include <Mathematics/Hyperplane.h>
+#include <Mathematics/SWInterval.h>
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <set>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
@@ -1476,7 +1485,7 @@ namespace gte
             // Support for hashing in std::unordered_set<>. The first
             // operator() is the hash function. The second operator() is
             // the equality comparison used for elements in the same bucket.
-            std::size_t operator()(ProcessedVertex const& v) const
+            size_t operator()(ProcessedVertex const& v) const
             {
                 return HashValue(v.vertex[0], v.vertex[1], v.vertex[2], v.location);
             }

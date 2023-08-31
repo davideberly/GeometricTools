@@ -3,11 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/FeatureKey.h>
 
 // An ordered triangle has V[0] = min(v0, v1, v2).  Choose
 // (V[0], V[1], V[2]) to be a permutation of (v0, v1, v2) so that the final
@@ -20,6 +18,11 @@
 //
 // An unordered triangle stores a permutation of (v0, v1, v2) so that
 // V[0] < V[1] < V[2].
+
+#include <Mathematics/FeatureKey.h>
+#include <algorithm>
+#include <cstdint>
+#include <type_traits>
 
 namespace gte
 {

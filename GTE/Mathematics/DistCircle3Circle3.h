@@ -3,20 +3,27 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
+
+// The 3D circle-circle distance algorithm is described in
+// https://www.geometrictools.com/Documentation/DistanceToCircle3.pdf
+// The notation used in the code matches that of the document.
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Circle3.h>
 #include <Mathematics/Polynomial1.h>
 #include <Mathematics/RootsPolynomial.h>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <set>
-
-// The 3D circle-circle distance algorithm is described in
-// https://www.geometrictools.com/Documentation/DistanceToCircle3.pdf
-// The notation used in the code matches that of the document.
+#include <utility>
+#include <type_traits>
 
 namespace gte
 {

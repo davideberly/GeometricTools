@@ -3,15 +3,28 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
+// The extremal queries for convex objects is based on the algorithm
+// described in
+// https://www.geometrictools.com/Documentation/ExtremalPolytopeQueries.pdf
+
+#include <Mathematics/Functions.h>
 #include <Mathematics/ExtremalQuery3.h>
 #include <Mathematics/RangeIteration.h>
 #include <Mathematics/VETManifoldMesh.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <set>
 #include <stack>
 #include <queue>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace gte
 {

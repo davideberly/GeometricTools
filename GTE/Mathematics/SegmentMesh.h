@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.5.2022.12.12
+// Version: 6.5.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Logger.h>
-#include <Mathematics/Vector.h>
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <vector>
 
 // The 'vertices' are a vertex pool that contain the vertices of the mesh. The
 // 'indices' are index pairs into 'vertices', each pair representing a segment
@@ -21,6 +14,13 @@
 // are unrestricted. They can form an open or closed polysegment. They can
 // intersect at interior points of the segments. A segment can be degenerate
 // whereby its endpoints are equal.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/Vector.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace gte
 {
@@ -104,7 +104,7 @@ namespace gte
             {
                 mTopology = Topology::CONTIGUOUS_OPEN;
                 mIndices.resize(vertices.size() - 1);
-                for (size_t i0 = 0, i1 = 1; i1 < mIndices.size(); i0 = i1++)
+                for (size_t i0 = 0, i1 = 1; i0 < mIndices.size(); i0 = i1++)
                 {
                     mIndices[i0][0] = i0;
                     mIndices[i0][1] = i1;

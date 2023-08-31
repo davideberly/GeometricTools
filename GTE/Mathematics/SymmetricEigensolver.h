@@ -3,15 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/Math.h>
-#include <Mathematics/RangeIteration.h>
-#include <algorithm>
-#include <cstring>
-#include <vector>
 
 // The SymmetricEigensolver class is an implementation of Algorithm 8.2.3
 // (Symmetric QR Algorithm) described in "Matrix Computations, 2nd edition"
@@ -99,6 +93,15 @@
 // comperr is the computation E = Q^T*A*Q - D.  The construction of the full
 // eigenvector matrix is, of course, quite expensive.  If you need only a
 // small number of eigenvectors, use function GetEigenvector(int32_t,Real*).
+
+#include <Mathematics/RangeIteration.h>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
+#include <vector>
 
 namespace gte
 {

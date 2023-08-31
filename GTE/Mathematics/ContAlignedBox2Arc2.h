@@ -3,18 +3,20 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.5.2022.08.23
+// Version: 6.5.2023.08.08
 
 #pragma once
-
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/Arc2.h>
 
 // Compute the smallest-area axis-aligned box containing an arc. Let the arc
 // have endpoints E[0] and E[1] and live on a circle with center C and radius
 // r. The extreme circle points in the axis directions are P[0] = C+(r,0),
 // P[1] = C-(r,0), P[2] = C+(0,r) and P[3] = C-(0,r). The box is supported by
 // the E0 and E1 and points P[i] that are on the arc.
+
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/Arc2.h>
+#include <array>
+#include <cstdint>
 
 namespace gte
 {

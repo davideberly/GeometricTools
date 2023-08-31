@@ -3,13 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/NURBSSurface.h>
-#include <Mathematics/Vector3.h>
-#include <functional>
 
 // The algorithm for representing a circle as a NURBS curve or a sphere as a
 // NURBS surface is described in
@@ -22,6 +18,12 @@
 // Once support is added for triangular domains, make that new class a
 // base class of the sphere-representing NURBS.  This will allow sharing
 // of the NURBS basis functions and evaluation framework.
+
+#include <Mathematics/NURBSSurface.h>
+#include <Mathematics/Vector3.h>
+#include <cmath>
+#include <cstdint>
+#include <functional>
 
 namespace gte
 {

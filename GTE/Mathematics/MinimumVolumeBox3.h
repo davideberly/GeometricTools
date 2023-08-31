@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.08.16
+// Version: 6.0.2023.08.08
 
 #pragma once
-#include <Mathematics/Logger.h>
-#include <Mathematics/ConvexHull3.h>
-#include <Mathematics/MinimumAreaBox2.h>
-#include <Mathematics/VETManifoldMesh.h>
-#include <Mathematics/AlignedBox.h>
-#include <Mathematics/UniqueVerticesSimplices.h>
-#include <cstring>
 
 // Compute a minimum-volume oriented box containing the specified points. The
 // algorithm is really about computing the minimum-volume box containing the
@@ -33,27 +26,44 @@
 // to obtain the exact minimum-volume box, but you will obtain a good
 // approximation to it based on how many samples the minimizer uses in its
 // search. You can also derive from a class and override the virtual
-// functions that are used for minimization in order to provided your own
+// functions that are used for minimization in order to provide your own
 // minimizer algorithm.
+
+#include <Mathematics/Logger.h>
+#include <Mathematics/ConvexHull3.h>
+#include <Mathematics/MinimumAreaBox2.h>
+#include <Mathematics/VETManifoldMesh.h>
+#include <Mathematics/AlignedBox.h>
+#include <Mathematics/UniqueVerticesSimplices.h>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
+#include <map>
+#include <thread>
+#include <type_traits>
+#include <vector>
 
 namespace gte
 {
     // The InputType is 'float' or 'double'. The ComputeType is 'double' when
-    // computeDouble is 'true' or it is the appropriate fixed-precision
-    // BSNumber<> class when computeDouble is 'false'. If you use rational
+    // ComputeDouble is 'true' or it is the appropriate fixed-precision
+    // BSNumber<> class when ComputeDouble is 'false'. If you use rational
     // arithmetic for the computations, you must increase the default program
     // stack size significantly. In Microsoft Visual Studio, I set the Stack
     // Reserve Size to 1 GB (which is 1073741824 bytes and is probably much
     // more than required.).
-    template <typename InputType, bool computeDouble>
+    template <typename InputType, bool ComputeDouble>
     class MinimumVolumeBox3
     {
     public:
         // Supporting constants and types for numerical computing.
         static int32_t constexpr NumWords = std::is_same<InputType, float>::value ? 342 : 2561;
         using UIntegerType = UIntegerFP32<NumWords>;
-        using ComputeType = typename std::conditional<computeDouble, double, BSNumber<UIntegerType>>::type;
-        using RationalType = typename std::conditional<computeDouble, double, BSRational<UIntegerType>>::type;
+        using ComputeType = typename std::conditional<ComputeDouble, double, BSNumber<UIntegerType>>::type;
+        using RationalType = typename std::conditional<ComputeDouble, double, BSRational<UIntegerType>>::type;
         using VCompute3 = Vector3<ComputeType>;
         using RVCompute3 = Vector3<RationalType>;
 
@@ -555,14 +565,14 @@ namespace gte
             }
         }
 
-        template <bool useDouble = computeDouble>
+        template <bool useDouble = ComputeDouble>
         typename std::enable_if<useDouble, void>::type
             ComputeNormal(VCompute3 const& edge0, VCompute3 const& edge1, VCompute3& normal)
         {
             normal = UnitCross(edge0, edge1);
         }
 
-        template <bool useDouble = computeDouble>
+        template <bool useDouble = ComputeDouble>
         typename std::enable_if<!useDouble, void>::type
             ComputeNormal(VCompute3 const& edge0, VCompute3 const& edge1, VCompute3& normal)
         {
@@ -993,14 +1003,14 @@ namespace gte
         }
 
         // The subdivision-based sampling functions.
-        template <bool useDouble = computeDouble>
+        template <bool useDouble = ComputeDouble>
         typename std::enable_if<useDouble, void>::type
             Adjust(VCompute3& normal)
         {
             Normalize(normal);
         }
 
-        template <bool useDouble = computeDouble>
+        template <bool useDouble = ComputeDouble>
         typename std::enable_if<!useDouble, void>::type
             Adjust(VCompute3&)
         {

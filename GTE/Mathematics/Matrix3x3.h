@@ -3,12 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.08.08
 
 #pragma once
 
 #include <Mathematics/Matrix.h>
 #include <Mathematics/Vector3.h>
+#include <cstdint>
 
 namespace gte
 {
@@ -93,7 +94,7 @@ namespace gte
     // Multiply M and V according to the user-selected convention.  If it is
     // GTE_USE_MAT_VEC, the function returns M*V.  If it is GTE_USE_VEC_MAT,
     // the function returns V*M.  This function is provided to hide the
-    // preprocessor symbols in the GTEngine sample applications.
+    // preprocessor symbols in the GTE sample applications.
     template <typename Real>
     Vector3<Real> DoTransform(Matrix3x3<Real> const& M, Vector3<Real> const& V)
     {

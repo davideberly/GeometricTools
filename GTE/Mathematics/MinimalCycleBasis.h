@@ -3,16 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.05.06
+// Version: 6.0.2023.08.08
 
 #pragma once
-
-#include <Mathematics/MinHeap.h>
-#include <array>
-#include <map>
-#include <memory>
-#include <set>
-#include <stack>
 
 // Extract the minimal cycle basis for a planar graph.  The input vertices and
 // edges must form a graph for which edges intersect only at vertices; that is,
@@ -29,6 +22,17 @@
 // arithmetic type BSNumber<UIntegerAP32> suffices for ComputeType when you
 // want to ensure a correct output.  (Floating-point rounding errors
 // potentially can lead to an incorrect output.)
+
+#include <Mathematics/MinHeap.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <set>
+#include <stack>
+#include <utility>
+#include <vector>
 
 namespace gte
 {
