@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.09.17
 
 #pragma once
 
@@ -27,6 +27,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <set>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -873,9 +874,19 @@ namespace gte
                 // the last triangle is encountered. The final edge of the
                 // last triangle is the next boundary edge and starts at
                 // vEdge[1].
+                std::set<Triangle const*> visited{};
+                visited.insert(tri);
                 while (tri->T[i1] != nullptr)
                 {
                     tri = tri->T[i1];
+                    auto result = visited.insert(tri);
+
+                    // It this assertion is trigerred, try calling
+                    // <mesh>.IsOriented() before calling GetBoundaryPolygons.
+                    // If <mesh>.IsOriented() returns 'false', the call to
+                    // GetBoundaryPolygons() will fail.
+                    LogAssert(result.second, "Triangle already visited. Is the mesh orientable?");
+
                     size_t j{};
                     for (j = 0; j < 3; ++j)
                     {
