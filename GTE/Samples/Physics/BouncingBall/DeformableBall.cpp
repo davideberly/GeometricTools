@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.09.24
 
 #include "DeformableBall.h"
 #include <Mathematics/SurfaceExtractorMC.h>
@@ -62,7 +62,7 @@ void DeformableBall::CreateBall(std::shared_ptr<Texture2Effect> const& effect)
     // Extract the level surface.
     std::vector<Vector3<float>> vertices;
     std::vector<int32_t> indices;
-    extractor.Extract(0.0f, vertices, indices);
+    extractor.Extract(0.0f, 0.0f, vertices, indices);
     extractor.MakeUnique(vertices, indices);
     extractor.OrientTriangles(vertices, indices, true);
 

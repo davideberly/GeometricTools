@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.22
+// Version: 6.0.2023.09.24
 
 #pragma once
 
@@ -45,9 +45,11 @@ namespace gte
         {
             // All members are set to zeros.
             Mesh()
+                :
+                topology{},
+                vertices{}
             {
-                std::array<T, 3> zero = { (T)0, (T)0, (T)0 };
-                std::fill(vertices.begin(), vertices.end(), zero);
+                vertices.fill(Vector3<T>::Zero());
             }
 
             Topology topology;
@@ -90,23 +92,22 @@ namespace gte
             for (int32_t i = 0, mask = 1; i < 8; ++i, mask <<= 1)
             {
                 localF[i] = F[i] - level;
+                if (localF[i] == zero)
+                {
+                    localF[i] += perturb;
+                }
+
                 if (localF[i] < zero)
                 {
                     entry |= mask;
                 }
-                else if (localF[i] > zero)
+                else if (localF[i] == zero)
                 {
-                    continue;
-                }
-
-                // If 'perturb' is zero, the function will report that no
-                // geometry is generated for this voxel. If 'perturb' is
-                // not zero, the comparison to zero still needs to be made
-                // after the perturbation in case floating-point rounding
-                // errors cause localF[i] still to be zero.
-                localF[i] += perturb;
-                if (localF[i] == zero)
-                {
+                    // If 'perturb' is zero, the function will report that no
+                    // geometry is generated for this voxel. If 'perturb' is
+                    // not zero, the comparison to zero still needs to be made
+                    // after the perturbation in case floating-point rounding
+                    // errors cause localF[i] still to be zero.
                     return false;
                 }
             }
