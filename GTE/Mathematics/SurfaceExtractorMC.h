@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.24
+// Version: 6.0.2023.09.25
 
 #pragma once
 
@@ -21,14 +21,12 @@
 
 namespace gte
 {
-    template <typename T>
-    class SurfaceExtractorMC : public MarchingCubes
+    template <typename T, typename IndexType>
+    class SurfaceExtractorMC : public MarchingCubes<IndexType>
     {
     public:
         // Construction and destruction.
-        virtual ~SurfaceExtractorMC()
-        {
-        }
+        virtual ~SurfaceExtractorMC() = default;
 
         SurfaceExtractorMC(Image3<T> const& image)
             :
@@ -52,8 +50,8 @@ namespace gte
                 vertices.fill(Vector3<T>::Zero());
             }
 
-            Topology topology;
-            std::array<Vector3<T>, MAX_VERTICES> vertices;
+            MarchingCubes<IndexType>::Topology topology;
+            std::array<Vector3<T>, MarchingCubes<IndexType>::Topology::maxVertices> vertices;
         };
 
         // Extract the triangle mesh approximating F = level for a single
@@ -88,8 +86,8 @@ namespace gte
             T const one = static_cast<T>(1);
             std::array<T, 8> localF{};
 
-            int32_t entry = 0;
-            for (int32_t i = 0, mask = 1; i < 8; ++i, mask <<= 1)
+            size_t entry = 0;
+            for (size_t i = 0, mask = 1; i < 8; ++i, mask <<= 1)
             {
                 localF[i] = F[i] - level;
                 if (localF[i] == zero)
@@ -112,12 +110,12 @@ namespace gte
                 }
             }
 
-            mesh.topology = GetTable(entry);
+            mesh.topology = MarchingCubes<IndexType>::GetTable(entry);
 
-            for (int32_t i = 0; i < mesh.topology.numVertices; ++i)
+            for (size_t i = 0; i < mesh.topology.numVertices; ++i)
             {
-                int32_t j0 = mesh.topology.vpair[i][0];
-                int32_t j1 = mesh.topology.vpair[i][1];
+                IndexType j0 = mesh.topology.vpair[i][0];
+                IndexType j1 = mesh.topology.vpair[i][1];
 
                 // The vertex can be computed with 3D-only computations as
                 //   V = (F[j0] * k1 - F[j1] * k0) / (F[j1] - F[j0])
@@ -130,8 +128,8 @@ namespace gte
                 // rounding errors. It is guaranteed that j0 < j1, so multiple
                 // voxels sharing the same edge will generate the same vertex.
                 auto& vertex = mesh.vertices[i];
-                std::array<int32_t, 3> k0 = { j0 & 1, (j0 & 2) >> 1, (j0 & 4) >> 2 };
-                std::array<int32_t, 3> k1 = { j1 & 1, (j1 & 2) >> 1, (j1 & 4) >> 2 };
+                std::array<IndexType, 3> k0 = { j0 & 1, (j0 & 2) >> 1, (j0 & 4) >> 2 };
+                std::array<IndexType, 3> k1 = { j1 & 1, (j1 & 2) >> 1, (j1 & 4) >> 2 };
                 for (int32_t index = 0; index < 3; ++index)
                 {
                     if (k0[index] == 0)
@@ -178,7 +176,7 @@ namespace gte
         // value is smaller than the minimum absolute value of the differences
         // between voxel values and 'level'.
         void Extract(T const& level, T const& perturb,
-            std::vector<Vector3<T>>& vertices, std::vector<int32_t>& indices) const
+            std::vector<Vector3<T>>& vertices, std::vector<IndexType>& indices) const
         {
             vertices.clear();
             indices.clear();
@@ -203,8 +201,8 @@ namespace gte
 
                         if (Extract(level, perturb, F, mesh))
                         {
-                            int32_t vbase = static_cast<int32_t>(vertices.size());
-                            for (int32_t i = 0; i < mesh.topology.numVertices; ++i)
+                            IndexType vbase = static_cast<IndexType>(vertices.size());
+                            for (size_t i = 0; i < mesh.topology.numVertices; ++i)
                             {
                                 Vector3<T> position = mesh.vertices[i];
                                 position[0] += static_cast<T>(x0);
@@ -213,9 +211,9 @@ namespace gte
                                 vertices.push_back(position);
                             }
 
-                            for (int32_t i = 0; i < mesh.topology.numTriangles; ++i)
+                            for (size_t i = 0; i < mesh.topology.numTriangles; ++i)
                             {
-                                for (int32_t j = 0; j < 3; ++j)
+                                for (size_t j = 0; j < 3; ++j)
                                 {
                                     indices.push_back(vbase + mesh.topology.itriple[i][j]);
                                 }
@@ -228,11 +226,12 @@ namespace gte
 
         // The extraction has duplicate vertices on edges shared by voxels.
         // This function will eliminate the duplication.
-        void MakeUnique(std::vector<Vector3<T>>& vertices, std::vector<int32_t>& indices) const
+        void MakeUnique(std::vector<Vector3<T>>& vertices,
+            std::vector<IndexType>& indices) const
         {
             std::vector<Vector3<T>> outVertices{};
-            std::vector<int32_t> outIndices{};
-            UniqueVerticesSimplices<Vector3<T>, int32_t, 3> uvt{};
+            std::vector<IndexType> outIndices{};
+            UniqueVerticesSimplices<Vector3<T>, IndexType, 3> uvt{};
             uvt.RemoveDuplicateVertices(vertices, indices, outVertices, outIndices);
             vertices = std::move(outVertices);
             indices = std::move(outIndices);
@@ -249,17 +248,18 @@ namespace gte
         // build a table of vertex, edge, and face adjacencies, but the
         // resulting data structure is somewhat expensive to process to
         // reorient triangles.
-        void OrientTriangles(std::vector<Vector3<T>> const& vertices, std::vector<int32_t>& indices, bool sameDir) const
+        void OrientTriangles(std::vector<Vector3<T>> const& vertices,
+            std::vector<IndexType>&indices, bool sameDir) const
         {
             T const zero = static_cast<T>(0);
-            int32_t const numTriangles = static_cast<int32_t>(indices.size() / 3);
-            int32_t* triangle = indices.data();
-            for (int32_t t = 0; t < numTriangles; ++t, triangle += 3)
+            size_t const numTriangles = indices.size() / 3;
+            IndexType* triangle = indices.data();
+            for (size_t t = 0; t < numTriangles; ++t, triangle += 3)
             {
                 // Get triangle vertices.
-                Vector3<T> v0 = vertices[triangle[0]];
-                Vector3<T> v1 = vertices[triangle[1]];
-                Vector3<T> v2 = vertices[triangle[2]];
+                Vector3<T> v0 = vertices[static_cast<size_t>(triangle[0])];
+                Vector3<T> v1 = vertices[static_cast<size_t>(triangle[1])];
+                Vector3<T> v2 = vertices[static_cast<size_t>(triangle[2])];
 
                 // Construct triangle normal based on current orientation.
                 Vector3<T> edge1 = v1 - v0;
@@ -272,7 +272,7 @@ namespace gte
                 Vector3<T> gradient2 = GetGradient(v2);
 
                 // Compute the average gradient.
-                Vector3<T> gradientAvr = (gradient0 + gradient1 + gradient2) / (T)3;
+                Vector3<T> gradientAvr = (gradient0 + gradient1 + gradient2) / static_cast<T>(3);
 
                 // Compute the dot product of normal and average gradient.
                 T dot = Dot(gradientAvr, normal);
@@ -298,22 +298,23 @@ namespace gte
         }
 
         // Compute vertex normals for the mesh.
-        void ComputeNormals(std::vector<Vector3<T>> const& vertices, std::vector<int32_t> const& indices,
+        void ComputeNormals(std::vector<Vector3<T>> const& vertices,
+            std::vector<IndexType> const& indices,
             std::vector<Vector3<T>>& normals) const
         {
             // Maintain a running sum of triangle normals at each vertex.
-            int32_t const numVertices = static_cast<int32_t>(vertices.size());
-            normals.resize(numVertices);
-            Vector3<T> zero = Vector3<T>::Zero();
-            std::fill(normals.begin(), normals.end(), zero);
+            normals.resize(vertices.size());
+            std::fill(normals.begin(), normals.end(), Vector3<T>::Zero());
 
-            int32_t const numTriangles = static_cast<int32_t>(indices.size() / 3);
-            int32_t const* current = indices.data();
-            for (int32_t i = 0; i < numTriangles; ++i)
+            size_t const numTriangles = indices.size() / 3;
+            IndexType const* triangle = indices.data();
+            for (size_t t = 0; t < numTriangles; ++t)
             {
-                int32_t i0 = *current++;
-                int32_t i1 = *current++;
-                int32_t i2 = *current++;
+                IndexType i0 = static_cast<size_t>(triangle[0]);
+                IndexType i1 = static_cast<size_t>(triangle[1]);
+                IndexType i2 = static_cast<size_t>(triangle[2]);
+
+                // Get triangle vertices.
                 Vector3<T> v0 = vertices[i0];
                 Vector3<T> v1 = vertices[i1];
                 Vector3<T> v2 = vertices[i2];
@@ -341,20 +342,45 @@ namespace gte
     protected:
         Vector3<T> GetGradient(Vector3<T> position) const
         {
-            int32_t x = static_cast<int32_t>(std::floor(position[0]));
-            if (x < 0 || x >= mImage.GetDimension(0) - 1)
+            T const zero = static_cast<T>(0);
+            int32_t x = 0;
+            if (position[0] >= zero)
+            {
+                x = static_cast<int32_t>(std::floor(position[0]));
+                if (x + 1 >= mImage.GetDimension(0))
+                {
+                    return Vector3<T>::Zero();
+                }
+            }
+            else
             {
                 return Vector3<T>::Zero();
             }
 
-            int32_t y = static_cast<int32_t>(std::floor(position[1]));
-            if (y < 0 || y >= mImage.GetDimension(1) - 1)
+            int32_t y = 0;
+            if (position[1] >= zero)
+            {
+                y = static_cast<size_t>(std::floor(position[1]));
+                if (y + 1 >= mImage.GetDimension(1))
+                {
+                    return Vector3<T>::Zero();
+                }
+            }
+            else
             {
                 return Vector3<T>::Zero();
             }
 
-            int32_t z = static_cast<int32_t>(std::floor(position[2]));
-            if (z < 0 || z >= mImage.GetDimension(2) - 1)
+            int32_t z = 0;
+            if (position[2] >= zero)
+            {
+                z = static_cast<int32_t>(std::floor(position[2]));
+                if (z + 1 >= mImage.GetDimension(2))
+                {
+                    return Vector3<T>::Zero();
+                }
+            }
+            else
             {
                 return Vector3<T>::Zero();
             }
