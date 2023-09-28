@@ -3,14 +3,15 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.09.28
 
 #include "PolygonBooleanOperationsWindow2.h"
 
 PolygonBooleanOperationsWindow2::PolygonBooleanOperationsWindow2(Parameters& parameters)
     :
     Window2(parameters),
-    mEpsilon(0.00001),
+    //mEpsilon(0.00001),  // use this when Numeric is 'double'
+    mEpsilon(0),  // use this when Numeric is BRational<UIntegerAP32>
     mIntersection(mEpsilon),
     mUnion(mEpsilon),
     mDiff01(mEpsilon),
@@ -18,7 +19,7 @@ PolygonBooleanOperationsWindow2::PolygonBooleanOperationsWindow2(Parameters& par
     mXor(mEpsilon),
     mActive(nullptr),
     mChoice(0),
-    mSize(static_cast<double>(mXSize))
+    mSize(static_cast<Numeric>(mXSize))
 {
     mPoly0 = ConstructInvertedEll();
     mPoly1 = ConstructPentagon();
@@ -110,183 +111,183 @@ bool PolygonBooleanOperationsWindow2::OnCharPress(uint8_t key, int32_t x, int32_
     return true;
 }
 
-std::unique_ptr<BSPPolygon2<double>> PolygonBooleanOperationsWindow2::ConstructInvertedEll()
+std::unique_ptr<BSPPolygon2<Numeric>> PolygonBooleanOperationsWindow2::ConstructInvertedEll()
 {
-    double d1d8 = 0.125 * mSize;
-    double d2d8 = 0.250 * mSize;
-    double d3d8 = 0.375 * mSize;
-    double d5d8 = 0.625 * mSize;
-    double d6d8 = 0.750 * mSize;
-    double d7d8 = 0.875 * mSize;
+    Numeric d1d8 = static_cast<Numeric>(0.125) * mSize;
+    Numeric d2d8 = static_cast<Numeric>(0.250) * mSize;
+    Numeric d3d8 = static_cast<Numeric>(0.375) * mSize;
+    Numeric d5d8 = static_cast<Numeric>(0.625) * mSize;
+    Numeric d6d8 = static_cast<Numeric>(0.750) * mSize;
+    Numeric d7d8 = static_cast<Numeric>(0.875) * mSize;
 
     int32_t constexpr numVertices = 10;
-    std::array<Vector2<double>, numVertices> vertices =
+    std::array<Vector2<Numeric>, numVertices> vertices =
     {
-        Vector2<double>{ d1d8, d1d8 },
-        Vector2<double>{ d3d8, d1d8 },
-        Vector2<double>{ d3d8, d3d8 },
-        Vector2<double>{ d2d8, d3d8 },
-        Vector2<double>{ d2d8, d6d8 },
-        Vector2<double>{ d5d8, d6d8 },
-        Vector2<double>{ d5d8, d5d8 },
-        Vector2<double>{ d7d8, d5d8 },
-        Vector2<double>{ d7d8, d7d8 },
-        Vector2<double>{ d1d8, d7d8 }
+        Vector2<Numeric>{ d1d8, d1d8 },
+        Vector2<Numeric>{ d3d8, d1d8 },
+        Vector2<Numeric>{ d3d8, d3d8 },
+        Vector2<Numeric>{ d2d8, d3d8 },
+        Vector2<Numeric>{ d2d8, d6d8 },
+        Vector2<Numeric>{ d5d8, d6d8 },
+        Vector2<Numeric>{ d5d8, d5d8 },
+        Vector2<Numeric>{ d7d8, d5d8 },
+        Vector2<Numeric>{ d7d8, d7d8 },
+        Vector2<Numeric>{ d1d8, d7d8 }
     };
 
-    auto poly = std::make_unique<BSPPolygon2<double>>(mEpsilon);
+    auto poly = std::make_unique<BSPPolygon2<Numeric>>(mEpsilon);
     for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
     {
         poly->InsertVertex(vertices[i1]);
-        poly->InsertEdge(BSPPolygon2<double>::Edge(i0, i1));
+        poly->InsertEdge(BSPPolygon2<Numeric>::Edge(i0, i1));
     }
     poly->Finalize();
     return poly;
 }
 
-std::unique_ptr<BSPPolygon2<double>> PolygonBooleanOperationsWindow2::ConstructPentagon()
+std::unique_ptr<BSPPolygon2<Numeric>> PolygonBooleanOperationsWindow2::ConstructPentagon()
 {
     int32_t constexpr numVertices = 5;
 
-    double primitiveAngle = GTE_C_TWO_PI / static_cast<double>(numVertices);
-    double radius = 0.35 * mSize;
-    double cx = 0.5 * mSize;
-    double cy = 0.5 * mSize;
+    Numeric primitiveAngle = static_cast<Numeric>(GTE_C_TWO_PI) / static_cast<Numeric>(numVertices);
+    Numeric radius = static_cast<Numeric>(35) / static_cast<Numeric>(100) * mSize;
+    Numeric cx = static_cast<Numeric>(0.5) * mSize;
+    Numeric cy = static_cast<Numeric>(0.5) * mSize;
 
-    std::array<Vector2<double>, numVertices> vertices{};
+    std::array<Vector2<Numeric>, numVertices> vertices{};
     for (int32_t i = 0; i < numVertices; ++i)
     {
-        double angle = i * primitiveAngle;
+        Numeric angle = static_cast<Numeric>(i) * primitiveAngle;
         vertices[i][0] = cx + radius * std::cos(angle);
         vertices[i][1] = cy + radius * std::sin(angle);
     }
 
-    auto poly = std::make_unique<BSPPolygon2<double>>(mEpsilon);
+    auto poly = std::make_unique<BSPPolygon2<Numeric>>(mEpsilon);
     for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
     {
         poly->InsertVertex(vertices[i1]);
-        poly->InsertEdge(BSPPolygon2<double>::Edge(i0, i1));
+        poly->InsertEdge(BSPPolygon2<Numeric>::Edge(i0, i1));
     }
     poly->Finalize();
     return poly;
 }
 
-std::unique_ptr<BSPPolygon2<double>> PolygonBooleanOperationsWindow2::ConstructSquare()
+std::unique_ptr<BSPPolygon2<Numeric>> PolygonBooleanOperationsWindow2::ConstructSquare()
 {
-    double d2d8 = 0.250 * mSize;
-    double d6d8 = 0.750 * mSize;
+    Numeric d2d8 = static_cast<Numeric>(0.250) * mSize;
+    Numeric d6d8 = static_cast<Numeric>(0.750) * mSize;
 
     int32_t constexpr numVertices = 4;
-    std::array<Vector2<double>, numVertices> vertices =
+    std::array<Vector2<Numeric>, numVertices> vertices =
     {
-        Vector2<double>{ d2d8, d2d8 },
-        Vector2<double>{ d6d8, d2d8 },
-        Vector2<double>{ d6d8, d6d8 },
-        Vector2<double>{ d2d8, d6d8 }
+        Vector2<Numeric>{ d2d8, d2d8 },
+        Vector2<Numeric>{ d6d8, d2d8 },
+        Vector2<Numeric>{ d6d8, d6d8 },
+        Vector2<Numeric>{ d2d8, d6d8 }
     };
 
-    auto poly = std::make_unique<BSPPolygon2<double>>(mEpsilon);
+    auto poly = std::make_unique<BSPPolygon2<Numeric>>(mEpsilon);
     for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
     {
         poly->InsertVertex(vertices[i1]);
-        poly->InsertEdge(BSPPolygon2<double>::Edge(i0, i1));
+        poly->InsertEdge(BSPPolygon2<Numeric>::Edge(i0, i1));
     }
     poly->Finalize();
     return poly;
 }
 
-std::unique_ptr<BSPPolygon2<double>> PolygonBooleanOperationsWindow2::ConstructSShape()
+std::unique_ptr<BSPPolygon2<Numeric>> PolygonBooleanOperationsWindow2::ConstructSShape()
 {
-    double d10d32 = 10.0 * mSize / 32.0;
-    double d12d32 = 12.0 * mSize / 32.0;
-    double d13d32 = 13.0 * mSize / 32.0;
-    double d16d32 = 16.0 * mSize / 32.0;
-    double d19d32 = 19.0 * mSize / 32.0;
-    double d20d32 = 20.0 * mSize / 32.0;
-    double d22d32 = 22.0 * mSize / 32.0;
-    double d24d32 = 24.0 * mSize / 32.0;
-    double d26d32 = 26.0 * mSize / 32.0;
-    double d28d32 = 28.0 * mSize / 32.0;
+    Numeric d10d32 = static_cast<Numeric>(10) * mSize / static_cast<Numeric>(32);
+    Numeric d12d32 = static_cast<Numeric>(12) * mSize / static_cast<Numeric>(32);
+    Numeric d13d32 = static_cast<Numeric>(13) * mSize / static_cast<Numeric>(32);
+    Numeric d16d32 = static_cast<Numeric>(16) * mSize / static_cast<Numeric>(32);
+    Numeric d19d32 = static_cast<Numeric>(19) * mSize / static_cast<Numeric>(32);
+    Numeric d20d32 = static_cast<Numeric>(20) * mSize / static_cast<Numeric>(32);
+    Numeric d22d32 = static_cast<Numeric>(22) * mSize / static_cast<Numeric>(32);
+    Numeric d24d32 = static_cast<Numeric>(24) * mSize / static_cast<Numeric>(32);
+    Numeric d26d32 = static_cast<Numeric>(26) * mSize / static_cast<Numeric>(32);
+    Numeric d28d32 = static_cast<Numeric>(28) * mSize / static_cast<Numeric>(32);
 
     int32_t constexpr numVertices = 12;
-    std::array<Vector2<double>, numVertices> vertices =
+    std::array<Vector2<Numeric>, numVertices> vertices =
     {
-        Vector2<double>{ d24d32, d10d32 },
-        Vector2<double>{ d28d32, d10d32 },
-        Vector2<double>{ d28d32, d16d32 },
-        Vector2<double>{ d22d32, d16d32 },
-        Vector2<double>{ d22d32, d19d32 },
-        Vector2<double>{ d24d32, d19d32 },
-        Vector2<double>{ d24d32, d22d32 },
-        Vector2<double>{ d20d32, d22d32 },
-        Vector2<double>{ d20d32, d13d32 },
-        Vector2<double>{ d26d32, d13d32 },
-        Vector2<double>{ d26d32, d12d32 },
-        Vector2<double>{ d24d32, d12d32 }
+        Vector2<Numeric>{ d24d32, d10d32 },
+        Vector2<Numeric>{ d28d32, d10d32 },
+        Vector2<Numeric>{ d28d32, d16d32 },
+        Vector2<Numeric>{ d22d32, d16d32 },
+        Vector2<Numeric>{ d22d32, d19d32 },
+        Vector2<Numeric>{ d24d32, d19d32 },
+        Vector2<Numeric>{ d24d32, d22d32 },
+        Vector2<Numeric>{ d20d32, d22d32 },
+        Vector2<Numeric>{ d20d32, d13d32 },
+        Vector2<Numeric>{ d26d32, d13d32 },
+        Vector2<Numeric>{ d26d32, d12d32 },
+        Vector2<Numeric>{ d24d32, d12d32 }
     };
 
-    auto poly = std::make_unique<BSPPolygon2<double>>(mEpsilon);
+    auto poly = std::make_unique<BSPPolygon2<Numeric>>(mEpsilon);
     for (int32_t i0 = numVertices - 1, i1 = 0; i1 < numVertices; i0 = i1++)
     {
         poly->InsertVertex(vertices[i1]);
-        poly->InsertEdge(BSPPolygon2<double>::Edge(i0, i1));
+        poly->InsertEdge(BSPPolygon2<Numeric>::Edge(i0, i1));
     }
     poly->Finalize();
     return poly;
 }
 
-std::unique_ptr<BSPPolygon2<double>> PolygonBooleanOperationsWindow2::ConstructPolyWithHoles()
+std::unique_ptr<BSPPolygon2<Numeric>> PolygonBooleanOperationsWindow2::ConstructPolyWithHoles()
 {
-    double d2d16 = 2.0 * mSize / 16.0;
-    double d3d16 = 3.0 * mSize / 16.0;
-    double d4d16 = 4.0 * mSize / 16.0;
-    double d6d16 = 6.0 * mSize / 16.0;
-    double d14d16 = 14.0 * mSize / 16.0;
+    Numeric d2d16 = static_cast<Numeric>(2) * mSize / static_cast<Numeric>(16);
+    Numeric d3d16 = static_cast<Numeric>(3) * mSize / static_cast<Numeric>(16);
+    Numeric d4d16 = static_cast<Numeric>(4) * mSize / static_cast<Numeric>(16);
+    Numeric d6d16 = static_cast<Numeric>(6) * mSize / static_cast<Numeric>(16);
+    Numeric d14d16 = static_cast<Numeric>(14) * mSize / static_cast<Numeric>(16);
 
     int32_t constexpr numVertices = 6;
-    std::array<Vector2<double>, numVertices> vertices =
+    std::array<Vector2<Numeric>, numVertices> vertices =
     {
         // outer boundary
-        Vector2<double>{ d2d16, d2d16 },
-        Vector2<double>{ d14d16, d2d16 },
-        Vector2<double>{ d2d16, d14d16 },
+        Vector2<Numeric>{ d2d16, d2d16 },
+        Vector2<Numeric>{ d14d16, d2d16 },
+        Vector2<Numeric>{ d2d16, d14d16 },
 
         // inner boundary
-        Vector2<double>{ d4d16, d3d16 },
-        Vector2<double>{ d6d16, d6d16 },
-        Vector2<double>{ d6d16, d3d16 }
+        Vector2<Numeric>{ d4d16, d3d16 },
+        Vector2<Numeric>{ d6d16, d6d16 },
+        Vector2<Numeric>{ d6d16, d3d16 }
     };
 
-    auto poly = std::make_unique<BSPPolygon2<double>>(mEpsilon);
+    auto poly = std::make_unique<BSPPolygon2<Numeric>>(mEpsilon);
     for (int32_t i = 0; i < numVertices; ++i)
     {
         poly->InsertVertex(vertices[i]);
     }
 
-    poly->InsertEdge(BSPPolygon2<double>::Edge(0, 1));
-    poly->InsertEdge(BSPPolygon2<double>::Edge(1, 2));
-    poly->InsertEdge(BSPPolygon2<double>::Edge(2, 0));
-    poly->InsertEdge(BSPPolygon2<double>::Edge(3, 4));
-    poly->InsertEdge(BSPPolygon2<double>::Edge(4, 5));
-    poly->InsertEdge(BSPPolygon2<double>::Edge(5, 3));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(0, 1));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(1, 2));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(2, 0));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(3, 4));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(4, 5));
+    poly->InsertEdge(BSPPolygon2<Numeric>::Edge(5, 3));
 
     poly->Finalize();
     return poly;
 }
 
-void PolygonBooleanOperationsWindow2::DrawPolySolid(BSPPolygon2<double>& polygon, uint32_t color)
+void PolygonBooleanOperationsWindow2::DrawPolySolid(BSPPolygon2<Numeric>& polygon, uint32_t color)
 {
     // Draw the edges.
     for (int32_t i = 0; i < polygon.GetNumEdges(); ++i)
     {
-        BSPPolygon2<double>::Edge edge = polygon.GetEdge(i);
-        Vector2<double> v0 = polygon.GetVertex(edge.V[0]);
-        Vector2<double> v1 = polygon.GetVertex(edge.V[1]);
+        BSPPolygon2<Numeric>::Edge edge = polygon.GetEdge(i);
+        Vector2<Numeric> v0 = polygon.GetVertex(edge.V[0]);
+        Vector2<Numeric> v1 = polygon.GetVertex(edge.V[1]);
 
-        int32_t x0 = static_cast<int32_t>(v0[0] + 0.5f);
-        int32_t y0 = mXSize - 1 - static_cast<int32_t>(v0[1] + 0.5f);
-        int32_t x1 = static_cast<int32_t>(v1[0] + 0.5f);
-        int32_t y1 = mYSize - 1 - static_cast<int32_t>(v1[1] + 0.5f);
+        int32_t x0 = static_cast<int32_t>(static_cast<double>(v0[0] + static_cast<Numeric>(0.5)));
+        int32_t y0 = mXSize - 1 - static_cast<int32_t>(static_cast<double>(v0[1] + static_cast<Numeric>(0.5)));
+        int32_t x1 = static_cast<int32_t>(static_cast<double>(v1[0] + static_cast<Numeric>(0.5)));
+        int32_t y1 = mYSize - 1 - static_cast<int32_t>(static_cast<double>(v1[1] + static_cast<Numeric>(0.5)));
 
         DrawLine(x0, y0, x1, y1, color);
     }
@@ -295,9 +296,9 @@ void PolygonBooleanOperationsWindow2::DrawPolySolid(BSPPolygon2<double>& polygon
     uint32_t black = 0xFF000000;
     for (int32_t i = 0; i < polygon.GetNumVertices(); ++i)
     {
-        Vector2<double> v = polygon.GetVertex(i);
-        int32_t x = static_cast<int32_t>(v[0] + 0.5f);
-        int32_t y = mYSize - 1 - static_cast<int32_t>(v[1] + 0.5f);
+        Vector2<Numeric> v = polygon.GetVertex(i);
+        int32_t x = static_cast<int32_t>(static_cast<double>(v[0] + static_cast<Numeric>(0.5)));
+        int32_t y = mYSize - 1 - static_cast<int32_t>(static_cast<double>(v[1] + static_cast<Numeric>(0.5)));
         DrawThickPixel(x, y, 1, black);
     }
 }
