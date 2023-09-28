@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.09.28
 
 #pragma once
 
@@ -108,9 +108,14 @@ namespace gte
             }
             else  // discr == 0
             {
+                // The line is tangent to the circle. Set the parameters to
+                // the same number because other queries involving linear
+                // components and circular components use interval-interval
+                // intersection tests which consume both parameters.
                 result.intersect = true;
                 result.numIntersections = 1;
                 result.parameter[0] = -a1;
+                result.parameter[1] = -a1;
             }
         }
     };
