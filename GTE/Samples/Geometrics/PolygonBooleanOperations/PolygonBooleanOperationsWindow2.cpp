@@ -3,15 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.28
+// Version: 6.0.2023.09.30
 
 #include "PolygonBooleanOperationsWindow2.h"
 
 PolygonBooleanOperationsWindow2::PolygonBooleanOperationsWindow2(Parameters& parameters)
     :
     Window2(parameters),
-    //mEpsilon(0.00001),  // use this when Numeric is 'double'
-    mEpsilon(0),  // use this when Numeric is BRational<UIntegerAP32>
+#if defined(USE_RATIONAL_ARITHMETIC)
+    mEpsilon(0),
+#else
+    mEpsilon(0.00001),
+#endif
     mIntersection(mEpsilon),
     mUnion(mEpsilon),
     mDiff01(mEpsilon),

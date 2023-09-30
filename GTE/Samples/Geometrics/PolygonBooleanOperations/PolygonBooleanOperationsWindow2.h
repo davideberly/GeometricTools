@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.28
+// Version: 6.0.2023.09.30
 
 #pragma once
 
@@ -25,8 +25,12 @@ using namespace gte;
 // a sort-and-sweep approach in order to have better performance when the
 // numeric type is rational.
 
-//using Numeric = double;
+#define USE_RATIONAL_ARITHMETIC
+#if defined(USE_RATIONAL_ARITHMETIC)
 using Numeric = BSRational<UIntegerAP32>;
+#else
+using Numeric = double;
+#endif
 
 class PolygonBooleanOperationsWindow2 : public Window2
 {
