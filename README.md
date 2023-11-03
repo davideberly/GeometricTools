@@ -27,7 +27,7 @@ licensed under the
 ## Supported Platforms ##
 
 The mathematics code is in a header-only library, GTMathematics. A
-mathematics library with GPU-based implementations is provided,
+mathematics library with GPU-based implementations is provided,s
 GTMathematicsGPU. The CPU-based common graphics engine code is in its
 own library, GTGraphics. DirectX 11 wrappers are provided for graphics
 and applications, GTGraphicsDX11 and GTApplicationsDX11, on Microsoft
@@ -94,7 +94,8 @@ I have had several known problems with compilers I use for testing.
   posted a workaround, listed below, and asked for status on the exception. The
   only response regarding status was posted on 14 June 2023 indicating that
   "... there are people working on this, trying to find a fix." The exceptions
-  still occur through driver version 546.01 released on 31 October 2023.
+  still occur through driver version 546.01 released on 31 October 2023. And they
+  also occur with the NVIDIA Studio driver version 546.01.
     
   WORKAROUND: This assumes you have checked the box in the MSVS Exception Settings
   window that says "<All C++ Exceptions not in this list>". If you do not have this
