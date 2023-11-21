@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.25
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -50,7 +50,7 @@ namespace gte
                 vertices.fill(Vector3<T>::Zero());
             }
 
-            MarchingCubes<IndexType>::Topology topology;
+            typename MarchingCubes<IndexType>::Topology topology;
             std::array<Vector3<T>, MarchingCubes<IndexType>::Topology::maxVertices> vertices;
         };
 
@@ -112,7 +112,7 @@ namespace gte
 
             mesh.topology = MarchingCubes<IndexType>::GetTable(entry);
 
-            for (size_t i = 0; i < mesh.topology.numVertices; ++i)
+            for (IndexType i = 0; i < mesh.topology.numVertices; ++i)
             {
                 IndexType j0 = mesh.topology.vpair[i][0];
                 IndexType j1 = mesh.topology.vpair[i][1];
@@ -202,7 +202,7 @@ namespace gte
                         if (Extract(level, perturb, F, mesh))
                         {
                             IndexType vbase = static_cast<IndexType>(vertices.size());
-                            for (size_t i = 0; i < mesh.topology.numVertices; ++i)
+                            for (IndexType i = 0; i < mesh.topology.numVertices; ++i)
                             {
                                 Vector3<T> position = mesh.vertices[i];
                                 position[0] += static_cast<T>(x0);
@@ -211,7 +211,7 @@ namespace gte
                                 vertices.push_back(position);
                             }
 
-                            for (size_t i = 0; i < mesh.topology.numTriangles; ++i)
+                            for (IndexType i = 0; i < mesh.topology.numTriangles; ++i)
                             {
                                 for (size_t j = 0; j < 3; ++j)
                                 {
@@ -360,7 +360,7 @@ namespace gte
             int32_t y = 0;
             if (position[1] >= zero)
             {
-                y = static_cast<size_t>(std::floor(position[1]));
+                y = static_cast<int32_t>(std::floor(position[1]));
                 if (y + 1 >= mImage.GetDimension(1))
                 {
                     return Vector3<T>::Zero();
