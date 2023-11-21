@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.17
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -245,6 +245,12 @@ namespace gte
                     // This is the second time the edge is encountered.
                     edge = eiter->second.get();
                     LogAssert(edge != nullptr, "Unexpected condition.");
+
+                    if (mThrowOnNonmanifoldInsertion)
+                    {
+                        LogAssert(edge->V[0] == tri->V[i1] && edge->V[1] == tri->V[i0],
+                            "Attempt to create nonmanifold mesh.");
+                    }
 
                     // Update the edge.
                     if (edge->T[1])
