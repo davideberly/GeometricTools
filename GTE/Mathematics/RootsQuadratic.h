@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.08.08
+// Version: 6.7.2023.11.20
 
 #pragma once
 
@@ -19,7 +19,7 @@
 // https://www.geometrictools.com/Documentation/LowDegreePolynomialRoots.pdf
 //
 // The code uses bisection on bounding intervals for roots. For a polynomial
-// of degree n, Cauchy's bound is
+// of degree n, Lagrange's bound is
 //   b = max(1,|p[0]/p[n]|, |p[1]/p[n]|, ..., |p[n-1]/p[n]|)
 // The real roots lie in the interval [-b,b].
 

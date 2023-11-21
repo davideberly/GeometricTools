@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -54,10 +54,14 @@ extern void RootsLowDegreeBlock(int32_t);
 #include <utility>
 #include <vector>
 
+// NOTE: RootsPolynomial is deprecated. For low-degree root finders, use
+// RootsLinear, RootsQuadratic, RootsCubic, and RootsQuartic. For general
+// degree, use RootsGeneralPolynomial.
+
 namespace gte
 {
     template <typename Real>
-    class RootsPolynomial
+    class RootsPolynomial // [deprecated("Use RootsGeneralPolynomial instead.")]
     {
     public:
         // Low-degree root finders.  These use exact rational arithmetic for
