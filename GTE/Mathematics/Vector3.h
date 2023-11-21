@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -92,6 +92,38 @@ namespace gte
         }
 
         return (Real)0;
+    }
+
+    // Compute a right-handed orthonormal basis {v0,v1,v2} for the orthogonal
+    // complement of a unit-length vector v2.
+    template <typename Real>
+    void ComputeOrthogonalComplement(Vector3<Real>& v0, Vector3<Real>& v1, Vector3<Real> const& v2)
+    {
+        // A rotation matrix R = [v0 v1 v2] can be computed from a unit-length
+        // quaternion q = x*i + y*j + z*k + w. The columns of R are v0, v1,
+        // and v2. They are
+        //   v0 = (w^2+x^2-y^2-z^2, 2*(x*y + w*z), 2*(x*z - w*y))
+        //   v1 = (2*(x*y - w*z), w^2-x^2+y^2-z^2, 2*(y*z + w*x))
+        //   v2 = (2*(x*z + w*y), 2*(y*z - w*x), w^2-x^2-y^2+z^2)
+        Real const zero = static_cast<Real>(0);
+        Real const one = static_cast<Real>(1);
+        Real const two = static_cast<Real>(2);
+
+        Real oneMinusV22 = one - v2[2];
+        Real denominator = std::sqrt(two * oneMinusV22);
+        Real x = oneMinusV22 / denominator;
+        Real y = zero;
+        Real z = v2[0] / denominator;
+        Real w = -v2[1] / denominator;
+
+        Real XX = x * x, YY = y * y, ZZ = z * z, WW = w * w;
+        Real WWpXX = WW + XX, WWmXX = WW - XX, YYpZZ = YY + ZZ, YYmZZ = YY - ZZ;
+        Real twoX = two * x, twoY = two * y, twoZ = two * z;
+        Real twoXY = twoX * y, twoXZ = twoX * z, twoXW = twoX * w;
+        Real twoYZ = twoY * z, twoYW = twoY * w, twoZW = twoZ * w;
+
+        v0 = { WWpXX - YYpZZ, twoXY + twoZW, twoXZ - twoYW };
+        v1 = { twoXY - twoZW, WWmXX + YYmZZ, twoYZ + twoXW };
     }
 
     // Compute the barycentric coordinates of the point P with respect to the
