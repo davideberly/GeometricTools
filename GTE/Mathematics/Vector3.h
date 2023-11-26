@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.11.21
+// Version: 6.0.2023.11.26
 
 #pragma once
 
@@ -99,7 +99,7 @@ namespace gte
     // https://www.geometrictools.com/Documentation/FastOrthogonalComplement.pdf
     //
     template <typename Real>
-    void ComputeOrthogonalComplement(Vector3<Real>& v0, Vector3<Real>& v1, Vector3<Real> const& v2)
+    void FastComputeOrthogonalComplement(Vector3<Real> const& v2, Vector3<Real>& v0, Vector3<Real>& v1)
     {
         Real const zero = static_cast<Real>(0);
         Real const one = static_cast<Real>(1);
