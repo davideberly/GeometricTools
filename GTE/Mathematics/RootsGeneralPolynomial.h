@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.9.2023.11.20
+// Version: 6.9.2023.11.27
 
 #pragma once
 
@@ -47,7 +47,9 @@
 #include <cstdint>
 #include <cmath>
 #include <limits>
+#include <thread>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace gte
@@ -58,7 +60,7 @@ namespace gte
     public:
         using Rational = BSRational<UIntegerAP32>;
 
-        static void Solve(std::vector<T> const& p, std::vector<T>& roots)
+        static void Solve(std::vector<T> const& p, bool useThreading, std::vector<T>& roots)
         {
             static_assert(
                 std::is_floating_point<T>::value,
@@ -121,7 +123,7 @@ namespace gte
             // Compute Cauchy bounds and solve for roots using recursion on
             // the polynomial degree.
             std::vector<Rational> rRoots{};
-            InitiateSolver(rP, rRoots);
+            InitiateSolver(rP, useThreading, rRoots);
 
             // Convert the rational roots to floating-point.
             roots.resize(rRoots.size());
@@ -131,7 +133,7 @@ namespace gte
             }
         }
 
-        static void Solve(std::vector<Rational> const& rP, std::vector<Rational>& rRoots)
+        static void Solve(std::vector<Rational> const& rP, bool useThreading, std::vector<Rational>& rRoots)
         {
             static_assert(
                 std::is_floating_point<T>::value,
@@ -192,11 +194,12 @@ namespace gte
 
             // Compute Cauchy bounds and solve for roots using recursion on
             // the polynomial degree.
-            InitiateSolver(rPMonic, rRoots);
+            InitiateSolver(rPMonic, useThreading, rRoots);
         }
 
     private:
-        static void InitiateSolver(std::vector<Rational> const& rP, std::vector<Rational>& rRoots)
+        static void InitiateSolver(std::vector<Rational> const& rP, bool useThreading,
+            std::vector<Rational>& rRoots)
         {
             // Compute Cauchy bounds to obtain an interval containing the
             // roots of p(x). At this time the polynomial is monic.
@@ -213,11 +216,11 @@ namespace gte
             rCauchyBound += static_cast<Rational>(1);
 
             // Solve recursively in degree.
-            SolveRecursive(rP, -rCauchyBound, rCauchyBound, rRoots);
+            SolveRecursive(rP, -rCauchyBound, rCauchyBound, useThreading, rRoots);
         }
 
         static void SolveRecursive(std::vector<Rational> const& rP, Rational const& rXMin,
-            Rational const& rXMax, std::vector<Rational>& rRoots)
+            Rational const& rXMax, bool useThreading, std::vector<Rational>& rRoots)
         {
             // The base of the recursion.
             Rational const rZero = static_cast<Rational>(0);
@@ -241,7 +244,7 @@ namespace gte
 
             // Estimate the roots of the derivative polynomial.
             std::vector<Rational> rRootsDerivative{};
-            SolveRecursive(rPDerivative, rXMin, rXMax, rRootsDerivative);
+            SolveRecursive(rPDerivative, rXMin, rXMax, true, rRootsDerivative);
 
             // Round the coefficients of rP(x) to floating-point numbers. This
             // is used for fast performance by floating-point-based bisection.
@@ -258,29 +261,85 @@ namespace gte
             Rational rRoot{};
             if (rRootsDerivative.size() > 0)
             {
-                // Let rXUpper = rRootsDerivative.front(). Estimate a root, if
-                // any, on the interval [rXMin,rXUpper].
-                if (Bisect(tP, rP, rXMin, rRootsDerivative.front(), rRoot))
+                if (useThreading)
                 {
-                    rRoots.push_back(rRoot);
-                }
+                    std::vector<std::thread> process(rRootsDerivative.size() + 1);
+                    std::vector<std::pair<Rational, bool>> rootInfo(process.size(),
+                        std::make_pair(Rational(0), false));
 
-                // Let rXLower = rRootsDerivative[i] and let rXUpper =
-                // rRootsDerivative[i+1]. Estimate a root, if any, on
-                // [rXLower,rXUpper].
-                for (size_t i0 = 0, i1 = 1; i1 < rRootsDerivative.size(); i0 = i1++)
+                    // Let rXUpper = rRootsDerivative.front(). Estimate a
+                    // root, if any, on the interval [rXMin,rXUpper].
+                    process.front() = std::thread(
+                        [&tP, &rP, &rXMin, &rRootsDerivative, &rootInfo]()
+                        {
+                            rootInfo.front().second = Bisect(tP, rP,
+                            rXMin, rRootsDerivative.front(),
+                            rootInfo.front().first);
+                        });
+
+                    // Let rXLower = rRootsDerivative[i] and let rXUpper =
+                    // rRootsDerivative[i+1]. Estimate a root, if any, on
+                    // [rXLower,rXUpper].
+                    for (size_t i0 = 0, i1 = 1; i1 < rRootsDerivative.size(); i0 = i1++)
+                    {
+                        // The loop counters must be passed by value.
+                        // Otherwise, they will be modified for the next
+                        // process[] constructor but the previous process[] is
+                        // trying to use the older values.
+                        process[i1] = std::thread(
+                            [&tP, &rP, i0, i1, &rRootsDerivative, &rootInfo]()
+                            {
+                                rootInfo[i1].second = Bisect(tP, rP,
+                                rRootsDerivative[i0], rRootsDerivative[i1],
+                                rootInfo[i1].first);
+                            });
+                    }
+
+                    // Let rXLower = rRootsDerivative.back(). Estimate a root,
+                    // if any, on the interval [rXLower,rXMax].
+                    process.back() = std::thread(
+                        [&tP, &rP, &rRootsDerivative, &rXMax, &rootInfo]()
+                        {
+                            rootInfo.back().second = Bisect(tP, rP,
+                            rRootsDerivative.back(), rXMax,
+                            rootInfo.back().first);
+                        });
+
+                    for (size_t i = 0; i < process.size(); ++i)
+                    {
+                        process[i].join();
+                        if (rootInfo[i].second)
+                        {
+                            rRoots.push_back(rootInfo[i].first);
+                        }
+                    }
+                }
+                else
                 {
-                    if (Bisect(tP, rP, rRootsDerivative[i0], rRootsDerivative[i1], rRoot))
+                    // Let rXUpper = rRootsDerivative.front(). Estimate a root, if
+                    // any, on the interval [rXMin,rXUpper].
+                    if (Bisect(tP, rP, rXMin, rRootsDerivative.front(), rRoot))
                     {
                         rRoots.push_back(rRoot);
                     }
-                }
 
-                // Let rXLower = rRootsDerivative.back(). Estimate a root, if
-                // any, on the interval [rXLower,rXMax].
-                if (Bisect(tP, rP, rRootsDerivative.back(), rXMax, rRoot))
-                {
-                    rRoots.push_back(rRoot);
+                    // Let rXLower = rRootsDerivative[i] and let rXUpper =
+                    // rRootsDerivative[i+1]. Estimate a root, if any, on
+                    // [rXLower,rXUpper].
+                    for (size_t i0 = 0, i1 = 1; i1 < rRootsDerivative.size(); i0 = i1++)
+                    {
+                        if (Bisect(tP, rP, rRootsDerivative[i0], rRootsDerivative[i1], rRoot))
+                        {
+                            rRoots.push_back(rRoot);
+                        }
+                    }
+
+                    // Let rXLower = rRootsDerivative.back(). Estimate a root, if
+                    // any, on the interval [rXLower,rXMax].
+                    if (Bisect(tP, rP, rRootsDerivative.back(), rXMax, rRoot))
+                    {
+                        rRoots.push_back(rRoot);
+                    }
                 }
             }
             else
