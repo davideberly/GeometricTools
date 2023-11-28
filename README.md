@@ -6,13 +6,11 @@ The engine is written in C++ 14 and supports high-performance computing using
 CPU multithreading and general purpose GPU programming (GPGPU). Portions of
 the code are described in various books as well as in PDF documents available
 at the
-[Geometric Tools Website](https://www.geometrictools.com). GTE is
-licensed under the
+[Geometric Tools Website](https://www.geometrictools.com).
+GTE is licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 The update history for the current version of GTE is
-[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf).
-The update history for all versions of GTE is
-[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
+[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf). The update history for all versions of GTE is [Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
 
 I am in the process of writing The Geometric Tools Library (GTL),
 which is a major revision of GTE. A large portion of GTL development
@@ -57,45 +55,16 @@ everything in the repository. Please read the
 to understand what is expected of your development environment.
 
 ## Known 3rd Party Problems ##
-I have had several known problems with compilers I use for testing.
-* The "Intel C++ Compiler Classic" is version 19.2 of the compiler. This is
-  now marked as deprecated, so if you select this for the platform toolset to
-  use in Microsoft Visual Studio, you will see deprecation warnings. I had
-  problems with the integration of Intel C++ Compiler 2022 into Microsoft
-  Visual Studio 2022. You enable this compiler by selecting "Intel DPC++/C++
-  Compiler 2022" as the platform toolset. Warnings occur about macro
-  redefinition, and because I have "treat warnings as errors", the code does
-  not compile. The problem occurred using Intel oneAPI version 2022.3. This
-  has been fixed in Intel oneAPI version 2023.0 where the platform toolset
-  is now "Intel C++ Compiler 2023". It is possible to enable the DPC++
-  compiler, but not through the MSVS dialogs. I have a tool
-  GeometricTools/Tools/ChangePlatformToolset that will do a batch replacement
-  of the platform toolset in the vcxproj files. The command-line parameter
-  for the DPC++ platform toolset is "Intel(R) oneAPI DPC++ Compiler 2023".
-  However, this compiler does not support __stdcall, so on a Windows machine
-  you can compile only non-Windows-API code (no OpenGL/WGL and no Windows SDK).
-  You can compile the mathematics code you need in your application by
-  generating a library using DPC++ and then linking/loading this into an
-  application that has been compiled with the Intel C++ Compiler 2023.
 
-* The Microsoft Visual Studio 2022 Debugger was broken in versions 17.4.x
-  where x < 5. See the [Developer Community explanation](https://developercommunity.visualstudio.com/t/VC-174-has-a-problem-with-debugger-wa/10195269)
-  for details. The work-around is mentioned there, adding /Zc:nrvo- to the option
-  Configuration | C++ | Command Line. The problem has been fixed as of
-  version 17.4.5.
-
-* After installing NVIDIA GeForce driver version 531.18 on a Windows 11 machine with
-  Microsoft Visual Studio 17.5.1, all DirectX 11 samples throw 2 exceptions
-  in D3D11CreateDevice, both tagged as Poco::NotFoundException. If you continue
-  execution after these exceptions, the applications perform correctly. If
-  you then click the application Close icon, another Poco::NotFoundException
-  is generated. You can continue execution after this exception. I filed a report
-  with NVIDIA on 7 March 2023, providing a minimal-code reproduction. I also
-  posted a workaround, listed below, and asked for status on the exception. The
-  only response regarding status was posted on 14 June 2023 indicating that
-  "... there are people working on this, trying to find a fix." The exceptions
-  still occur through driver version 546.01 released on 31 October 2023. And they
-  also occur with the NVIDIA Studio driver version 546.01.
+* After installing NVIDIA GeForce driver version 531.18, all my DirectX 11 samples
+  throw 2 exceptions in D3D11CreateDevice, both tagged as Poco::NotFoundException.
+  If you continue execution after these exceptions, the applications perform
+  correctly. When the D3D11 device is released, another Poco::NotFoundException is
+  generated. You can continue execution after this exception. The exceptions still
+  occur through driver version 546.17 released on 14 November 2023. A moderator for
+  NVIDIA forums posted on 14 November 2023 that the issue has been addressed but
+  does not know when the fix will occur in a future driver release. See
+  [Bug status](https://forums.developer.nvidia.com/t/poco-notfoundexception-thrown-in-driver-version-531-18/245285/28).
     
   WORKAROUND: This assumes you have checked the box in the MSVS Exception Settings
   window that says "<All C++ Exceptions not in this list>". If you do not have this
