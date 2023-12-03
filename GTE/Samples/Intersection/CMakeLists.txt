@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 5)
+set(GTE_VERSION_MINOR 8)
 
 project(Intersection VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
@@ -17,6 +17,7 @@ add_subdirectory(IntersectConvexPolyhedra)
 add_subdirectory(IntersectCylinders)
 add_subdirectory(IntersectEllipses)
 add_subdirectory(IntersectInfiniteCylinders)
+add_subdirectory(IntersectLineRectangle)
 add_subdirectory(IntersectLineTorus)
 add_subdirectory(IntersectPlaneConvexPolyhedron)
 add_subdirectory(IntersectRayPolygon)
