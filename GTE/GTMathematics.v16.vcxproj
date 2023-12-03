@@ -317,6 +317,7 @@
     <ClInclude Include="Mathematics\IntrLine3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrLine3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrLine3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrLine3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrLine3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrLine3Torus3.h" />
     <ClInclude Include="Mathematics\IntrLine3Triangle3.h" />
