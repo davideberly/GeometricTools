@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.11.20
+// Version: 6.0.2023.12.04
 
 #pragma once
 
@@ -248,8 +248,19 @@ namespace gte
 
                     if (mThrowOnNonmanifoldInsertion)
                     {
-                        LogAssert(edge->V[0] == tri->V[i1] && edge->V[1] == tri->V[i0],
-                            "Attempt to create nonmanifold mesh.");
+                        // tri and edge->T[0] must have a shared edge
+                        // (tri->V[i0],tri->V[i1]). For tri, the directed
+                        // edge is <tri->V[i0],tri->V[i1]>. For edge->T[0],
+                        // the directed edge must be <tri->V[i1],tri->V[i0]>.
+                        for (size_t j = 0; j < 3; ++j)
+                        {
+                            if (edge->T[0]->V[j] == tri->V[i0])
+                            {
+                                LogAssert(
+                                    edge->T[0]->V[(j + 2) % 3] == tri->V[i1],
+                                    "Attempt to create nonmanifold mesh.");
+                            }
+                        }
                     }
 
                     // Update the edge.
