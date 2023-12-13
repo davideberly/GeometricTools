@@ -61,7 +61,7 @@ to understand what is expected of your development environment.
   If you continue execution after these exceptions, the applications perform
   correctly. When the D3D11 device is released, another Poco::NotFoundException is
   generated. You can continue execution after this exception. The exceptions still
-  occur through driver version 546.17 released on 14 November 2023. A moderator for
+  occur through driver version 546.33 released on 12 December 2023. A moderator for
   NVIDIA forums posted on 14 November 2023 that the issue has been addressed but
   does not know when the fix will occur in a future driver release. See
   [Bug status](https://forums.developer.nvidia.com/t/poco-notfoundexception-thrown-in-driver-version-531-18/245285/28).
