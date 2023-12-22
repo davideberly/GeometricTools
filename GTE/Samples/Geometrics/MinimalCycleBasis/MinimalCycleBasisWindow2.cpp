@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2023.12.22
 
 #include "MinimalCycleBasisWindow2.h"
 #include <Mathematics/IsPlanarGraph.h>
@@ -11,6 +11,12 @@
 MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     :
     Window2(parameters),
+    mPositions{},
+    mEdges{},
+    mFPositions{},
+    mSPositions{},
+    mForest{},
+    mFilaments{},
     mDrawRawData(false)
 {
     if (!SetEnvironment())
@@ -27,7 +33,7 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     input >> numPositions;
     mPositions.resize(numPositions);
     mFPositions.resize(numPositions);
-    std::array<float, 2> vmin, vmax;
+    std::array<float, 2> vmin{}, vmax{};
     vmin[0] = std::numeric_limits<float>::max();
     vmin[1] = std::numeric_limits<float>::max();
     vmax[0] = -std::numeric_limits<float>::max();
@@ -91,7 +97,8 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
         }
     }
 
-    MinimalCycleBasis<Rational> mcb(mPositions, mEdges, mForest);
+    MinimalCycleBasis<Rational, int32_t> mcb{};
+    mcb.Extract(mPositions, mEdges, mForest, mFilaments);
 }
 
 void MinimalCycleBasisWindow2::OnDisplay()
@@ -101,7 +108,7 @@ void MinimalCycleBasisWindow2::OnDisplay()
     // Draw the edges.
     if (mDrawRawData)
     {
-        for (auto edge : mEdges)
+        for (auto const& edge : mEdges)
         {
             int32_t x0 = mSPositions[edge[0]][0];
             int32_t y0 = mSPositions[edge[0]][1];
@@ -121,7 +128,7 @@ void MinimalCycleBasisWindow2::OnDisplay()
     if (mDrawRawData)
     {
         // Draw the input points.
-        for (auto p : mSPositions)
+        for (auto const& p : mSPositions)
         {
             int32_t x = p[0];
             int32_t y = p[1];
@@ -166,7 +173,7 @@ bool MinimalCycleBasisWindow2::SetEnvironment()
     }
 }
 
-void MinimalCycleBasisWindow2::DrawTree(std::shared_ptr<MinimalCycleBasis<Rational>::Tree> const& tree)
+void MinimalCycleBasisWindow2::DrawTree(std::shared_ptr<MCB::Tree> const& tree)
 {
     if (tree->cycle.size() > 0)
     {

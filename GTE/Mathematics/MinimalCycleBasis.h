@@ -3,25 +3,25 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.12.22
 
 #pragma once
 
-// Extract the minimal cycle basis for a planar graph.  The input vertices and
-// edges must form a graph for which edges intersect only at vertices; that is,
-// no two edges must intersect at an interior point of one of the edges.  The
-// algorithm is described in 
+// Extract the minimal cycle basis for a planar graph. The input vertices and
+// edges must form a graph for which edges intersect only at vertices; that
+// is, no two edges must intersect at an interior point of one of the edges.
+// The algorithm is described in 
 //   https://www.geometrictools.com/Documentation/MinimalCycleBasis.pdf
 // The graph might have filaments, which are polylines in the graph that are
-// not shared by a cycle.  These are also extracted by the implementation.
+// not shared by a cycle. These are also extracted by the implementation.
 // Because the inputs to the constructor are vertices and edges of the graph,
 // isolated vertices are ignored.
 //
 // The computations that determine which adjacent vertex to visit next during
 // a filament or cycle traversal do not require division, so the exact
 // arithmetic type BSNumber<UIntegerAP32> suffices for ComputeType when you
-// want to ensure a correct output.  (Floating-point rounding errors
-// potentially can lead to an incorrect output.)
+// want to ensure a correct output. Floating-point rounding errors
+// potentially can lead to an incorrect output.
 
 #include <Mathematics/MinHeap.h>
 #include <array>
@@ -31,30 +31,60 @@
 #include <memory>
 #include <set>
 #include <stack>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 namespace gte
 {
-    template <typename Real>
+    template <typename T, typename IndexType>
     class MinimalCycleBasis
     {
     public:
         struct Tree
         {
-            std::vector<int32_t> cycle;
+            Tree()
+                :
+                cycle{},
+                children{}
+            {
+            }
+
+            std::vector<IndexType> cycle;
             std::vector<std::shared_ptr<Tree>> children;
         };
+
+        using Position = std::array<T, 2>;
+        using Edge = std::array<IndexType, 2>;
+        using Forest = std::vector<std::shared_ptr<Tree>>;
+        using Filament = std::vector<IndexType>;
 
         // The input positions and edges must form a planar graph for which
         // edges intersect only at vertices; that is, no two edges must
         // intersect at an interior point of one of the edges.
-        MinimalCycleBasis(
-            std::vector<std::array<Real, 2>> const& positions,
-            std::vector<std::array<int32_t, 2>> const& edges,
-            std::vector<std::shared_ptr<Tree>>& forest)
+        MinimalCycleBasis()
+        {
+            static_assert(std::is_integral<IndexType>::value && sizeof(IndexType) >= 2,
+                "IndexType must be a signed or unsigned integer type of size at least 2 bytes.");
+        }
+
+        // Disallow copy semantics.
+        MinimalCycleBasis(MinimalCycleBasis const&) = delete;
+        MinimalCycleBasis& operator=(MinimalCycleBasis const&) = delete;
+
+        // Disallow move semantics.
+        MinimalCycleBasis(MinimalCycleBasis&&) = delete;
+        MinimalCycleBasis& operator=(MinimalCycleBasis&&) = delete;
+
+        // Extract the cycles and filaments.
+        static void Extract(
+            std::vector<Position> const& positions,
+            std::vector<Edge> const& edges,
+            Forest& forest,
+            std::vector<Filament>& filaments)
         {
             forest.clear();
+            filaments.clear();
             if (positions.size() == 0 || edges.size() == 0)
             {
                 // The graph is empty, so there are no filaments or cycles.
@@ -62,79 +92,99 @@ namespace gte
             }
 
             // Determine the unique positions referenced by the edges.
-            std::map<int32_t, std::shared_ptr<Vertex>> unique;
+            std::map<IndexType, std::shared_ptr<Vertex>> unique{};
             for (auto const& edge : edges)
             {
-                for (int32_t i = 0; i < 2; ++i)
+                for (size_t i = 0; i < 2; ++i)
                 {
-                    int32_t name = edge[i];
+                    IndexType name = edge[i];
                     if (unique.find(name) == unique.end())
                     {
                         auto vertex = std::make_shared<Vertex>(name, &positions[name]);
                         unique.insert(std::make_pair(name, vertex));
-
                     }
                 }
             }
 
-            // Assign responsibility for ownership of the Vertex objects.
-            std::vector<Vertex*> vertices;
-            mVertexStorage.reserve(unique.size());
+            // The vertexStorage[] array has ownership of the Vertex objects.
+            // The vertices[] store raw pointers to these objects.
+            std::vector<std::shared_ptr<Vertex>> vertexStorage{};
+            std::vector<Vertex*> vertices{};
+            vertexStorage.reserve(unique.size());
             vertices.reserve(unique.size());
             for (auto const& element : unique)
             {
-                mVertexStorage.push_back(element.second);
+                vertexStorage.push_back(element.second);
                 vertices.push_back(element.second.get());
             }
 
             // Determine the adjacencies from the edge information.
             for (auto const& edge : edges)
             {
+                // Both iter0 and iter1 cannot equal unique.end() because
+                // the edges were inserted in a previous block of this
+                // function.
                 auto iter0 = unique.find(edge[0]);
                 auto iter1 = unique.find(edge[1]);
                 iter0->second->adjacent.insert(iter1->second.get());
                 iter1->second->adjacent.insert(iter0->second.get());
             }
 
-            // Get the connected components of the graph.  The 'visited' flags
-            // are 0 (unvisited), 1 (discovered), 2 (finished).  The Vertex
-            // constructor sets all 'visited' flags to 0.
-            std::vector<std::vector<Vertex*>> components;
-            for (auto vInitial : mVertexStorage)
+            // Get the connected components of the graph. The 'visited' flags
+            // are 0 (unvisited), 1 (discovered), 2 (finished). The Vertex
+            // constructor sets 'visited' to 0.
+            std::vector<std::vector<Vertex*>> components{};
+            for (auto vInitial : vertices)
             {
                 if (vInitial->visited == 0)
                 {
-                    components.push_back(std::vector<Vertex*>());
-                    DepthFirstSearch(vInitial.get(), components.back());
+                    components.push_back(std::vector<Vertex*>{});
+                    DepthFirstSearch(vInitial, components.back());
                 }
             }
 
             // The depth-first search is used later for collecting vertices
             // for subgraphs that are detached from the main graph, so the
             // 'visited' flags must be reset to zero after component finding.
-            for (auto vertex : mVertexStorage)
+            for (auto vertex : vertices)
             {
                 vertex->visited = 0;
             }
 
-            // Get the primitives for the components.
+            // Get the primitives for the components. The filaments are not
+            // removed from the graph by the function GetFilaments(...)
+            // because ExtractBasis(...) relies on their existence. The
+            // ExtractBasis(...) function will remove the filaments from the
+            // graph and discard them.
             for (auto& component : components)
             {
-                forest.push_back(ExtractBasis(component));
+                GetFilaments(component, filaments);
+
+                auto tree = ExtractBasis(component, vertexStorage);
+                if (tree->children.size() > 0)
+                {
+                    forest.push_back(tree);
+                }
             }
         }
-
-        // No copy or assignment allowed.
-        MinimalCycleBasis(MinimalCycleBasis const&) = delete;
-        MinimalCycleBasis& operator=(MinimalCycleBasis const&) = delete;
 
     private:
         struct Vertex
         {
-            Vertex(int32_t inName, std::array<Real, 2> const* inPosition)
+            Vertex()
+                :
+                name(0),
+                position(nullptr),
+                adjacent{},
+                visited(0)
+            {
+            }
+
+            Vertex(IndexType inName, Position const* inPosition)
                 :
                 name(inName),
                 position(inPosition),
+                adjacent{},
                 visited(0)
             {
             }
@@ -145,31 +195,32 @@ namespace gte
             }
 
             // The index into the 'positions' input provided to the call to
-            // operator().  The index is used when reporting cycles to the
-            // caller of the constructor for MinimalCycleBasis.
-            int32_t name;
+            // Extract(...). The index is used when reporting cycles to the
+            // caller of Extract(...).
+            IndexType name;
 
             // Multiple vertices can share a position during processing of
             // graph components.
-            std::array<Real, 2> const* position;
+            Position const* position;
 
-            // The mVertexStorage member owns the Vertex objects and maintains
-            // the reference counts on those objects.  The adjacent pointers
-            // are considered to be weak pointers; neither object ownership
-            // nor reference counting is required by 'adjacent'.
+            // The vertexStorage local std::vector declared in Extract(...)
+            // owns the Vertex objects and maintains the reference counts on
+            // those objects. The adjacent pointers are considered to be weak
+            // pointers, but neither object ownership nor reference counting
+            // are required by 'adjacent'.
             std::set<Vertex*> adjacent;
 
             // Support for depth-first traversal of a graph.
-            int32_t visited;
+            uint32_t visited;
         };
 
-        // The constructor uses GetComponents(...) and DepthFirstSearch(...)
-        // to get the connected components of the graph implied by the input
-        // 'edges'.  Recursive processing uses only DepthFirstSearch(...) to
+        // Extract(...) uses GetComponents(...) and DepthFirstSearch(...) to
+        // compute the connected components of the graph implied by the input
+        // 'edges'. Recursive processing uses only DepthFirstSearch(...) to
         // collect vertices of the subgraphs of the original graph.
         static void DepthFirstSearch(Vertex* vInitial, std::vector<Vertex*>& component)
         {
-            std::stack<Vertex*> vStack;
+            std::stack<Vertex*> vStack{};
             vStack.push(vInitial);
             while (vStack.size() > 0)
             {
@@ -196,17 +247,20 @@ namespace gte
         }
 
         // Support for traversing a simply connected component of the graph.
-        std::shared_ptr<Tree> ExtractBasis(std::vector<Vertex*>& component)
+        static std::shared_ptr<Tree> ExtractBasis(
+            std::vector<Vertex*>& component,
+            std::vector<std::shared_ptr<Vertex>>& vertexStorage)
         {
-            // The root will not have its 'cycle' member set.  The children
-            // are the cycle trees extracted from the component.
+            // The root will not have its 'cycle' member set. The children are
+            // the cycle trees extracted from the component.
             auto tree = std::make_shared<Tree>();
             while (component.size() > 0)
             {
                 RemoveFilaments(component);
                 if (component.size() > 0)
                 {
-                    tree->children.push_back(ExtractCycleFromComponent(component));
+                    tree->children.push_back(
+                        ExtractCycleFromComponent(component, vertexStorage));
                 }
             }
 
@@ -221,11 +275,12 @@ namespace gte
             return tree;
         }
 
-        void RemoveFilaments(std::vector<Vertex*>& component)
+        static void GetFilaments(std::vector<Vertex*>& component,
+            std::vector<Filament>& filaments)
         {
-            // Locate all filament endpoints, which are vertices, each having
-            // exactly one adjacent vertex.
-            std::vector<Vertex*> endpoints;
+            // Locate all filament endpoints, which are vertices with each
+            // having exactly one adjacent vertex.
+            std::vector<Vertex*> endpoints{};
             for (auto vertex : component)
             {
                 if (vertex->adjacent.size() == 1)
@@ -236,10 +291,81 @@ namespace gte
 
             if (endpoints.size() > 0)
             {
-                // Remove the filaments from the component.  If a filament has
+                Filament filament{};
+
+                // Traverse the filament starting at an endpoint. The other
+                // endpoint is marked as 'visited' if it has only one adjacent
+                // vertex; that is, it is not a branch point of the graph.
+                for (auto vertex : endpoints)
+                {
+                    if (!vertex->visited)
+                    {
+                        // The current vertex is guaranteed to have 1 adjacent
+                        // vertex because it is an endpoint.
+                        Vertex* current = vertex;
+                        filament.push_back(current->name);
+
+                        Vertex* next = *vertex->adjacent.begin();
+                        filament.push_back(next->name);
+                        while (next->adjacent.size() == 2)
+                        {
+                            // The next vertex has 2 adjacent vertices. One
+                            // of them is the current vertex. The traversal
+                            // should continue with the other adjacent vertex.
+                            auto iter = next->adjacent.begin();
+                            if (*iter == current)
+                            {
+                                ++iter;
+                            }
+                            current = next;
+                            next = *iter;
+                            filament.push_back(next->name);
+                        }
+
+                        // At this time, the next vertex is the other endpoint
+                        // of the filament. It has 3 or more adjacent vertices
+                        // (a branch point of the graph) or 1 adjacent vertex
+                        // (an endpoint). If an endpoint, mark it as visited
+                        // so that the filament is not traversed in the
+                        // opposite direction to form another (already
+                        // visited) filament.
+                        if (next->adjacent.size() == 1)
+                        {
+                            next->visited = 1;
+                        }
+                    }
+                }
+
+                // Restore the visited flags because they are used later by
+                // DepthFirstSearch(...).
+                for (auto vertex : endpoints)
+                {
+                    vertex->visited = 0;
+                }
+
+                filaments.emplace_back(filament);
+            }
+        }
+
+        static void RemoveFilaments(std::vector<Vertex*>& component)
+        {
+            // Locate all filament endpoints, which are vertices with each
+            // having exactly one adjacent vertex.
+            std::vector<Vertex*> endpoints{};
+            for (auto vertex : component)
+            {
+                if (vertex->adjacent.size() == 1)
+                {
+                    endpoints.push_back(vertex);
+                }
+            }
+
+            if (endpoints.size() > 0)
+            {
+                // Remove the filaments from the component. If a filament has
                 // two endpoints, each having one adjacent vertex, the
-                // adjacency set of the final visited vertex become empty.
-                // We must test for that condition before starting a new
+                // adjacency set of the final visited vertex becomes empty.
+                // This condition must be tested before starting a new
                 // filament removal.
                 for (auto vertex : endpoints)
                 {
@@ -259,11 +385,11 @@ namespace gte
                     }
                 }
 
-                // At this time the component is either empty (it was a union
-                // of polylines) or it has no filaments and at least one
-                // cycle.  Remove the isolated vertices generated by filament
+                // At this time the component is either empty because it was
+                // an open polyline or it has no filaments and at least one
+                // cycle. Remove the isolated vertices generated by filament
                 // extraction.
-                std::vector<Vertex*> remaining;
+                std::vector<Vertex*> remaining{};
                 remaining.reserve(component.size());
                 for (auto vertex : component)
                 {
@@ -276,9 +402,11 @@ namespace gte
             }
         }
 
-        std::shared_ptr<Tree> ExtractCycleFromComponent(std::vector<Vertex*>& component)
+        static std::shared_ptr<Tree> ExtractCycleFromComponent(
+            std::vector<Vertex*>& component,
+            std::vector<std::shared_ptr<Vertex>>& vertexStorage)
         {
-            // Search for the left-most vertex of the component.  If two or
+            // Search for the left-most vertex of the component. If two or
             // more vertices attain minimum x-value, select the one that has
             // minimum y-value.
             Vertex* minVertex = component[0];
@@ -292,7 +420,7 @@ namespace gte
 
             // Traverse the closed walk, duplicating the starting vertex as
             // the last vertex.
-            std::vector<Vertex*> closedWalk;
+            std::vector<Vertex*> closedWalk{};
             Vertex* vCurr = minVertex;
             Vertex* vStart = vCurr;
             closedWalk.push_back(vStart);
@@ -307,11 +435,11 @@ namespace gte
             closedWalk.push_back(vStart);
 
             // Recursively process the closed walk to extract cycles.
-            auto tree = ExtractCycleFromClosedWalk(closedWalk);
+            auto tree = ExtractCycleFromClosedWalk(closedWalk, vertexStorage);
 
             // The isolated vertices generated by cycle removal are also
             // removed from the component.
-            std::vector<Vertex*> remaining;
+            std::vector<Vertex*> remaining{};
             remaining.reserve(component.size());
             for (auto vertex : component)
             {
@@ -325,14 +453,16 @@ namespace gte
             return tree;
         }
 
-        std::shared_ptr<Tree> ExtractCycleFromClosedWalk(std::vector<Vertex*>& closedWalk)
+        static std::shared_ptr<Tree> ExtractCycleFromClosedWalk(
+            std::vector<Vertex*>& closedWalk,
+            std::vector<std::shared_ptr<Vertex>>& vertexStorage)
         {
             auto tree = std::make_shared<Tree>();
 
-            std::map<Vertex*, int32_t> duplicates;
-            std::set<int32_t> detachments;
-            int32_t numClosedWalk = static_cast<int32_t>(closedWalk.size());
-            for (int32_t i = 1; i < numClosedWalk - 1; ++i)
+            std::map<Vertex*, size_t> duplicates{};
+            std::set<size_t> detachments{};
+            size_t numClosedWalk = closedWalk.size();
+            for (size_t i = 1; i + 1 < numClosedWalk; ++i)
             {
                 auto diter = duplicates.find(closedWalk[i]);
                 if (diter == duplicates.end())
@@ -342,56 +472,53 @@ namespace gte
                     continue;
                 }
 
-                // The vertex has been visited previously.  Collapse the
-                // closed walk by removing the subwalk sharing this vertex.
-                // Note that the vertex is pointed to by
-                // closedWalk[diter->second] and closedWalk[i].
-                int32_t iMin = diter->second, iMax = i;
+                // The vertex has been visited previously. Collapse the closed
+                // walk by removing the subwalk sharing this vertex. Note that
+                // the vertex is pointed to by closedWalk[diter->second] and
+                // closedWalk[i].
+                size_t iMin = diter->second;
+                size_t iMax = i;
                 detachments.insert(iMin);
-                for (int32_t j = iMin + 1; j < iMax; ++j)
+                for (size_t j = iMin + 1; j < iMax; ++j)
                 {
                     Vertex* vertex = closedWalk[j];
                     duplicates.erase(vertex);
                     detachments.erase(j);
                 }
                 closedWalk.erase(closedWalk.begin() + iMin + 1, closedWalk.begin() + iMax + 1);
-                numClosedWalk = static_cast<int32_t>(closedWalk.size());
+                numClosedWalk = closedWalk.size();
                 i = iMin;
             }
 
             if (numClosedWalk > 3)
             {
-                // We do not know whether closedWalk[0] is a detachment point.
-                // To determine this, we must test for any edges strictly
-                // contained by the wedge formed by the edges
+                // It is not known whether closedWalk[0] is a detachment
+                // point. To determine this, test for any edges strictly
+                // contained in the wedge formed by the edges
                 // <closedWalk[0],closedWalk[N-1]> and
-                // <closedWalk[0],closedWalk[1]>.  However, we must execute
-                // this test even for the known detachment points.  The
-                // ensuing logic is designed to handle this and reduce the
-                // amount of code, so we insert closedWalk[0] into the
-                // detachment set and will ignore it later if it actually
-                // is not.
+                // <closedWalk[0],closedWalk[1]>. However, this test must be
+                // executed even for the known detachment points. The ensuing
+                // logic is designed to handle this and reduce the amount of
+                // code, so insert closedWalk[0] into the detachment set and
+                // ignore it later if it actually is not.
                 detachments.insert(0);
 
                 // Detach subgraphs from the vertices of the cycle.
                 for (auto i : detachments)
                 {
                     Vertex* original = closedWalk[i];
-                    Vertex* maxVertex = closedWalk[static_cast<size_t>(i) + 1];
-                    Vertex* minVertex = (i > 0 ? closedWalk[static_cast<size_t>(i) - 1] : closedWalk[static_cast<size_t>(numClosedWalk) - 2]);
+                    Vertex* maxVertex = closedWalk[i + 1];
+                    Vertex* minVertex = (i > 0 ? closedWalk[i - 1] : closedWalk[numClosedWalk - 2]);
 
-                    std::array<Real, 2> dMin, dMax;
-                    for (int32_t j = 0; j < 2; ++j)
+                    Position dMin{}, dMax{};
+                    for (size_t j = 0; j < 2; ++j)
                     {
                         dMin[j] = (*minVertex->position)[j] - (*original->position)[j];
                         dMax[j] = (*maxVertex->position)[j] - (*original->position)[j];
                     }
 
-                    // For debugging.
                     bool isConvex = (dMax[0] * dMin[1] >= dMax[1] * dMin[0]);
-                    (void)isConvex;
-
-                    std::set<Vertex*> inWedge;
+                    std::set<Vertex*> inWedge{};
                     std::set<Vertex*> adjacent = original->adjacent;
                     for (auto vertex : adjacent)
                     {
@@ -400,13 +527,13 @@ namespace gte
                             continue;
                         }
 
-                        std::array<Real, 2> dVer;
-                        for (int32_t j = 0; j < 2; ++j)
+                        Position dVer{};
+                        for (size_t j = 0; j < 2; ++j)
                         {
                             dVer[j] = (*vertex->position)[j] - (*original->position)[j];
                         }
 
-                        bool containsVertex;
+                        bool containsVertex{};
                         if (isConvex)
                         {
                             containsVertex =
@@ -419,6 +546,7 @@ namespace gte
                                 (dVer[0] * dMin[1] > dVer[1] * dMin[0]) ||
                                 (dVer[0] * dMax[1] < dVer[1] * dMax[0]);
                         }
+
                         if (containsVertex)
                         {
                             inWedge.insert(vertex);
@@ -432,7 +560,7 @@ namespace gte
                         // last edges of the subgraph rooted at 'original'.
                         // The sorting is in the clockwise direction.
                         auto clone = std::make_shared<Vertex>(original->name, original->position);
-                        mVertexStorage.push_back(clone);
+                        vertexStorage.push_back(clone);
 
                         // Detach the edges inside the wedge.
                         for (auto vertex : inWedge)
@@ -445,11 +573,11 @@ namespace gte
 
                         // Get the subgraph (it is a single connected
                         // component).
-                        std::vector<Vertex*> component;
+                        std::vector<Vertex*> component{};
                         DepthFirstSearch(clone.get(), component);
 
                         // Extract the cycles of the subgraph.
-                        tree->children.push_back(ExtractBasis(component));
+                        tree->children.push_back(ExtractBasis(component, vertexStorage));
                     }
                     // else the candidate was closedWalk[0] and it has no
                     // subgraph to detach.
@@ -465,7 +593,7 @@ namespace gte
                 Vertex* adjacent = closedWalk[1];
 
                 auto clone = std::make_shared<Vertex>(original->name, original->position);
-                mVertexStorage.push_back(clone);
+                vertexStorage.push_back(clone);
 
                 original->adjacent.erase(adjacent);
                 adjacent->adjacent.erase(original);
@@ -473,11 +601,11 @@ namespace gte
                 adjacent->adjacent.insert(clone.get());
 
                 // Get the subgraph (it is a single connected component).
-                std::vector<Vertex*> component;
+                std::vector<Vertex*> component{};
                 DepthFirstSearch(clone.get(), component);
 
                 // Extract the cycles of the subgraph.
-                tree->children.push_back(ExtractBasis(component));
+                tree->children.push_back(ExtractBasis(component, vertexStorage));
                 if (tree->cycle.size() == 0 && tree->children.size() == 1)
                 {
                     // Replace the parent by the child to avoid having two
@@ -491,16 +619,17 @@ namespace gte
             return tree;
         }
 
-        std::vector<int32_t> ExtractCycle(std::vector<Vertex*>& closedWalk)
+        static std::vector<IndexType> ExtractCycle(std::vector<Vertex*>& closedWalk)
         {
-            // TODO:  This logic was designed not to remove filaments after
-            // the cycle deletion is complete.  Modify this to allow filament
-            // removal.
+            // The logic of this function was designed not to remove filaments
+            // after the cycle deletion is complete. This is an iterative
+            // process that removes polylines that occur *after* a cycle has
+            // been removed, causing part or all of a cycle boundary to appear
+            // to be a filament for the *modified* graph.
 
             // The closed walk is a cycle.
-            int32_t const numVertices = static_cast<int32_t>(closedWalk.size());
-            std::vector<int32_t> cycle(numVertices);
-            for (int32_t i = 0; i < numVertices; ++i)
+            std::vector<IndexType> cycle(closedWalk.size());
+            for (size_t i = 0; i < closedWalk.size(); ++i)
             {
                 cycle[i] = closedWalk[i]->name;
             }
@@ -523,13 +652,13 @@ namespace gte
 
             if (v1 != v0)
             {
-                // If v1 had exactly 3 adjacent vertices, removal of the CCW
-                // edge that shared v1 leads to v1 having 2 adjacent vertices.
-                // When the CW removal occurs and we reach v1, the edge
-                // deletion will lead to v1 having 1 adjacent vertex, making
-                // it a filament endpoint.  We must ensure we do not delete v1
-                // in this case, allowing the recursive algorithm to handle
-                // the filament later.
+                // If v1 had exactly 3 adjacent vertices, removal of the
+                // counterclockwise edge that shared v1 leads to v1 having 2
+                // adjacent vertices. When the clockwise removal occurs and
+                // v1 is reached, the edge deletion will lead to v1 having 1
+                // adjacent vertex, making it a filament endpoint. Ensure that
+                // v1 is not deleted in this case, allowing the recursive
+                // algorithm to handle the filament later.
                 vBranch = v1;
 
                 // Remove edges while traversing clockwise.
@@ -546,11 +675,11 @@ namespace gte
             return cycle;
         }
 
-        Vertex* GetClockwiseMost(Vertex* vPrev, Vertex* vCurr) const
+        static Vertex* GetClockwiseMost(Vertex* vPrev, Vertex* vCurr)
         {
             Vertex* vNext = nullptr;
             bool vCurrConvex = false;
-            std::array<Real, 2> dCurr{}, dNext{};
+            Position dCurr{}, dNext{};
             if (vPrev)
             {
                 dCurr[0] = (*vCurr->position)[0] - (*vPrev->position)[0];
@@ -558,13 +687,13 @@ namespace gte
             }
             else
             {
-                dCurr[0] = static_cast<Real>(0);
-                dCurr[1] = static_cast<Real>(-1);
+                dCurr[0] = static_cast<T>(0);
+                dCurr[1] = static_cast<T>(-1);
             }
 
             for (auto vAdj : vCurr->adjacent)
             {
-                // vAdj is a vertex adjacent to vCurr.  No backtracking is
+                // vAdj is a vertex adjacent to vCurr. No backtracking is
                 // allowed.
                 if (vAdj == vPrev)
                 {
@@ -572,7 +701,7 @@ namespace gte
                 }
 
                 // Compute the potential direction to move in.
-                std::array<Real, 2> dAdj;
+                Position dAdj{};
                 dAdj[0] = (*vAdj->position)[0] - (*vCurr->position)[0];
                 dAdj[1] = (*vAdj->position)[1] - (*vCurr->position)[1];
 
@@ -589,8 +718,8 @@ namespace gte
                 // clockwise-most vertex.
                 if (vCurrConvex)
                 {
-                    if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0]
-                        || dNext[0] * dAdj[1] < dNext[1] * dAdj[0])
+                    if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0] ||
+                        dNext[0] * dAdj[1] < dNext[1] * dAdj[0])
                     {
                         vNext = vAdj;
                         dNext = dAdj;
@@ -599,8 +728,8 @@ namespace gte
                 }
                 else
                 {
-                    if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0]
-                        && dNext[0] * dAdj[1] < dNext[1] * dAdj[0])
+                    if (dCurr[0] * dAdj[1] < dCurr[1] * dAdj[0] &&
+                        dNext[0] * dAdj[1] < dNext[1] * dAdj[0])
                     {
                         vNext = vAdj;
                         dNext = dAdj;
@@ -612,11 +741,11 @@ namespace gte
             return vNext;
         }
 
-        Vertex* GetCounterclockwiseMost(Vertex* vPrev, Vertex* vCurr) const
+        static Vertex* GetCounterclockwiseMost(Vertex* vPrev, Vertex* vCurr)
         {
             Vertex* vNext = nullptr;
             bool vCurrConvex = false;
-            std::array<Real, 2> dCurr{}, dNext{};
+            Position dCurr{}, dNext{};
             if (vPrev)
             {
                 dCurr[0] = (*vCurr->position)[0] - (*vPrev->position)[0];
@@ -624,13 +753,13 @@ namespace gte
             }
             else
             {
-                dCurr[0] = static_cast<Real>(0);
-                dCurr[1] = static_cast<Real>(-1);
+                dCurr[0] = static_cast<T>(0);
+                dCurr[1] = static_cast<T>(-1);
             }
 
             for (auto vAdj : vCurr->adjacent)
             {
-                // vAdj is a vertex adjacent to vCurr.  No backtracking is
+                // vAdj is a vertex adjacent to vCurr. No backtracking is
                 // allowed.
                 if (vAdj == vPrev)
                 {
@@ -638,7 +767,7 @@ namespace gte
                 }
 
                 // Compute the potential direction to move in.
-                std::array<Real, 2> dAdj;
+                Position dAdj{};
                 dAdj[0] = (*vAdj->position)[0] - (*vCurr->position)[0];
                 dAdj[1] = (*vAdj->position)[1] - (*vCurr->position)[1];
 
@@ -655,8 +784,8 @@ namespace gte
                 // current counterclockwise-most vertex.
                 if (vCurrConvex)
                 {
-                    if (dCurr[0] * dAdj[1] > dCurr[1] * dAdj[0]
-                        && dNext[0] * dAdj[1] > dNext[1] * dAdj[0])
+                    if (dCurr[0] * dAdj[1] > dCurr[1] * dAdj[0] &&
+                        dNext[0] * dAdj[1] > dNext[1] * dAdj[0])
                     {
                         vNext = vAdj;
                         dNext = dAdj;
@@ -665,8 +794,8 @@ namespace gte
                 }
                 else
                 {
-                    if (dCurr[0] * dAdj[1] > dCurr[1] * dAdj[0]
-                        || dNext[0] * dAdj[1] > dNext[1] * dAdj[0])
+                    if (dCurr[0] * dAdj[1] > dCurr[1] * dAdj[0] ||
+                        dNext[0] * dAdj[1] > dNext[1] * dAdj[0])
                     {
                         vNext = vAdj;
                         dNext = dAdj;
@@ -677,9 +806,5 @@ namespace gte
 
             return vNext;
         }
-
-        // Storage for referenced vertices of the original graph and for new
-        // vertices added during graph traversal.
-        std::vector<std::shared_ptr<Vertex>> mVertexStorage;
     };
 }
