@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.12.22
+// Version: 6.0.2023.12.24
 
 #pragma once
 
@@ -161,7 +161,7 @@ namespace gte
                 GetFilaments(component, filaments);
 
                 auto tree = ExtractBasis(component, vertexStorage);
-                if (tree->children.size() > 0)
+                if (tree->children.size() > 0 || tree->cycle.size() > 0)
                 {
                     forest.push_back(tree);
                 }
