@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.12.16
+// Version: 6.0.2023.12.30
 
 #pragma once
 
@@ -166,7 +166,9 @@ namespace gte
                     // The outer polygon is a simple polygon that has no
                     // nested inner polygons. Triangulate the pseudosimple
                     // polygon using ear clipping.
-                    mVertexList.DoEarClipping(outer->polygon, mComputePoints, mQuery, mTriangles);
+                    std::vector<std::array<int32_t, 3>> combinedTriangles{};
+                    mVertexList.DoEarClipping(outer->polygon, mComputePoints, mQuery, combinedTriangles);
+                    mTriangles.insert(mTriangles.end(), combinedTriangles.begin(), combinedTriangles.end());
                 }
                 else
                 {
@@ -191,7 +193,9 @@ namespace gte
                     CombineMultiple(outer->polygon, inners, combined);
 
                     // Triangulate the pseudosimple polygon using ear clipping.
-                    mVertexList.DoEarClipping(combined, mComputePoints, mQuery, mTriangles);
+                    std::vector<std::array<int32_t, 3>> combinedTriangles{};
+                    mVertexList.DoEarClipping(combined, mComputePoints, mQuery, combinedTriangles);
+                    mTriangles.insert(mTriangles.end(), combinedTriangles.begin(), combinedTriangles.end());
                 }
             }
         }
@@ -739,6 +743,11 @@ namespace gte
                 triangles.clear();
 
                 // Initialize the vertex list for the incoming polygon.
+                // The lists must be cleared in case a single VertexList
+                // object is used two or more times in triangulation
+                // queries. This is the case for triangulating a polygon
+                // tree. It is also the case if you use a single
+                // TriangulateEC object for multiple triangulation queries.
                 mVertices.resize(polygon.size());
                 mCFirst = -1;
                 mCLast = -1;
@@ -757,6 +766,19 @@ namespace gte
                     vertex.index = indices[i];
                     vertex.vPrev = (i > 0 ? i - 1 : numVertices - 1);
                     vertex.vNext = (ip1 < numVertices ? ip1 : 0);
+
+                    // These members must be cleared in case a single
+                    // VertexList object is used two or more times in
+                    // triangulation queries. This is the case for
+                    // triangulating a polygon tree. It is also the case if
+                    // you use a single TriangulateEC object for multiple
+                    // triangulation queries.
+                    vertex.sPrev = -1;
+                    vertex.sNext = -1;
+                    vertex.ePrev = -1;
+                    vertex.eNext = -1;
+                    vertex.isConvex = false;
+                    vertex.isEar = false;
                 }
 
                 // Create a circular list of the polygon vertices for dynamic
