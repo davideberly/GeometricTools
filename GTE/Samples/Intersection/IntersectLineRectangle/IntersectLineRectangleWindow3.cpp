@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.9.2023.12.02
+// Version: 6.9.2023.01.04
 
 #include "IntersectLineRectangleWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -234,31 +234,25 @@ void IntersectLineRectangleWindow3::DoIntersectionQuery()
     mResult = mQuery(mLine, mRectangle);
     TIQuery<float, Line3<float>, Rectangle3<float>> tiQuery{};
     auto tiResult = tiQuery(mLine, mRectangle);
-    if (tiResult.intersect != mResult.intersect)
-    {
-        int stophere{};
-        stophere = 0;
-    }
+    LogAssert(
+        tiResult.intersect == mResult.intersect,
+        "Expecting TIQuery and FIQuery to have same 'intersect' value.");
 #endif
 #if defined(USE_RAY_RECTANGLE_QUERY)
     mResult = mQuery(mRay, mRectangle);
     TIQuery<float, Ray3<float>, Rectangle3<float>> tiQuery{};
     auto tiResult = tiQuery(mRay, mRectangle);
-    if (tiResult.intersect != mResult.intersect)
-    {
-        int stophere{};
-        stophere = 0;
-    }
+    LogAssert(
+        tiResult.intersect == mResult.intersect,
+        "Expecting TIQuery and FIQuery to have same 'intersect' value.");
 #endif
 #if defined(USE_SEGMENT_RECTANGLE_QUERY)
     mResult = mQuery(mSegment, mRectangle);
     TIQuery<float, Segment3<float>, Rectangle3<float>> tiQuery{};
     auto tiResult = tiQuery(mSegment, mRectangle);
-    if (tiResult.intersect != mResult.intersect)
-    {
-        int stophere{};
-        stophere = 0;
-    }
+    LogAssert(
+        tiResult.intersect == mResult.intersect,
+        "Expecting TIQuery and FIQuery to have same 'intersect' value.");
 #endif
 
     if (mResult.intersect)
