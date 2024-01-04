@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.01.01
+// Version: 6.0.2024.01.02
 
 #pragma once
 
@@ -130,7 +130,7 @@ namespace gte
             if (success && meanSquareError != nullptr)
             {
                 T totalError = static_cast<T>(0);
-                for (size_t i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector3<T> const& point = points[i];
                     T error = std::fabs(
@@ -169,7 +169,7 @@ namespace gte
             // Compute the mean of the points.
             T tNumPoints = static_cast<T>(numPoints);
             average = Vector3<T>::Zero();
-            for (size_t i = 0; i < numPoints; ++i)
+            for (int32_t i = 0; i < numPoints; ++i)
             {
                 average += points[i];
             }
@@ -257,7 +257,7 @@ namespace gte
             if (success && meanSquareError != nullptr)
             {
                 T totalError = static_cast<T>(0);
-                for (size_t i = 0; i < numPoints; ++i)
+                for (int32_t i = 0; i < numPoints; ++i)
                 {
                     Vector3<T> diff = points[i] - average;
                     T error = std::fabs(
