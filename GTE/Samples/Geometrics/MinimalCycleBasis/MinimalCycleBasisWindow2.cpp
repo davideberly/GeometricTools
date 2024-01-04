@@ -3,10 +3,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.12.22
+// Version: 6.0.2024.01.03
 
 #include "MinimalCycleBasisWindow2.h"
-#include <Mathematics/IsPlanarGraph.h>
 
 MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     :
@@ -15,8 +14,9 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     mEdges{},
     mFPositions{},
     mSPositions{},
-    mForest{},
+    mIsolatedVertices{},
     mFilaments{},
+    mForest{},
     mDrawRawData(false)
 {
     if (!SetEnvironment())
@@ -66,15 +66,6 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
     }
     input.close();
 
-    IsPlanarGraph<Rational> isPlanarGraph;
-    int32_t result;
-    result = isPlanarGraph(mPositions, mEdges);
-    if (result != IsPlanarGraph<Rational>::IPG_IS_PLANAR_GRAPH)
-    {
-        parameters.created = false;
-        return;
-    }
-
     // Compute coefficients for mapping the graph bounding box to screen
     // space while preserving the aspect ratio.
     float ratioW = static_cast<float>(mXSize) / (vmax[0] - vmin[0]);
@@ -97,8 +88,11 @@ MinimalCycleBasisWindow2::MinimalCycleBasisWindow2(Parameters& parameters)
         }
     }
 
-    MinimalCycleBasis<Rational, int32_t> mcb{};
-    mcb.Extract(mPositions, mEdges, mForest, mFilaments);
+    MCB mcb{};
+    mcb.Extract(mPositions, mEdges, true);
+    mIsolatedVertices = mcb.GetIsolatedVertices();
+    mFilaments = mcb.GetFilaments();
+    mForest = mcb.GetForest();
 }
 
 void MinimalCycleBasisWindow2::OnDisplay()

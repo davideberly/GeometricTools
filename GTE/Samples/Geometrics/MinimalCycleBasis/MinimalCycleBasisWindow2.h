@@ -3,12 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.12.22
+// Version: 6.0.2024.01.02
 
 #pragma once
 
 #include <Applications/Window2.h>
-#include <Mathematics/ArbitraryPrecision.h>
 #include <Mathematics/MinimalCycleBasis.h>
 using namespace gte;
 
@@ -21,8 +20,7 @@ public:
     virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
-    using Rational = BSNumber<UIntegerAP32>;
-    using MCB = MinimalCycleBasis<Rational, int32_t>;
+    using MCB = MinimalCycleBasis<double, int32_t>;
 
     bool SetEnvironment();
     void DrawTree(std::shared_ptr<MCB::Tree> const& tree);
@@ -32,7 +30,8 @@ private:
     std::vector<std::array<float, 2>> mFPositions;
     std::vector<std::array<int32_t, 2>> mSPositions;
 
-    std::vector<std::shared_ptr<MCB::Tree>> mForest;
+    std::vector<int32_t> mIsolatedVertices;
     std::vector<MCB::Filament> mFilaments;
+    std::vector<std::shared_ptr<MCB::Tree>> mForest;
     bool mDrawRawData;
 };
