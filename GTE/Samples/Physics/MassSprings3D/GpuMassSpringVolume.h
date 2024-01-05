@@ -3,12 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.01.05
 
 #pragma once
 
 #include <Applications/Environment.h>
 #include <Graphics/Graphics.h>
+#include <array>
 using namespace gte;
 
 class GpuMassSpringVolume
@@ -69,7 +70,20 @@ private:
 
     struct SimulationParameters
     {
-        int32_t dimensions[4];
+        SimulationParameters()
+            :
+            dimensions{ 0, 0, 0, 0 },
+            viscosity(0.0f),
+            time(0.0f),
+            delta(0.0f),
+            halfDelta(0.0f),
+            sixthDelta(0.0f),
+            halfTime(0.0f),
+            fullTime(0.0f)
+        {
+        }
+
+        std::array<int32_t, 4> dimensions;
         float viscosity;
         float time;
         float delta;
@@ -90,5 +104,5 @@ private:
     std::shared_ptr<StructuredBuffer> mVTmp, mVAllTmp;
 
     uint32_t mNumXGroups, mNumYGroups, mNumZGroups;
-    std::shared_ptr<ComputeProgram> mRK4Shader[8];
+    std::array<std::shared_ptr<ComputeProgram>, 8> mRK4Shader;
 };
