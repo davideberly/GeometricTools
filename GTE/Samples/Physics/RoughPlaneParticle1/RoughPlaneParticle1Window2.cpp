@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.10
+// Version: 6.1.2024.01.06
 
 #include "RoughPlaneParticle1Window2.h"
 
@@ -11,7 +11,17 @@
 
 RoughPlaneParticle1Window2::RoughPlaneParticle1Window2(Parameters& parameters)
     :
-    Window2(parameters)
+    Window2(parameters),
+    mModule{},
+    mSFPositions{},
+    mContinueSolving(true),
+    mR(0.0),
+    mA0(0.0),
+    mA1(0.0),
+    mB0(0.0),
+    mB1(0.0),
+    mB2(0.0),
+    mVFPositions{}
 {
     // Set up the physics module.
     mModule.gravity = 10.0;
@@ -138,7 +148,7 @@ bool RoughPlaneParticle1Window2::OnCharPress(uint8_t key, int32_t x, int32_t y)
                 return true;
             }
             mVFPositions.push_back(GetVFPosition(mModule.GetTime()));
-            mSFPositions.push_back(Vector2d(mModule.GetX(), mModule.GetW()));
+            mSFPositions.push_back(Vector2<double>{ mModule.GetX(), mModule.GetW() });
             OnDisplay();
         }
         return true;
