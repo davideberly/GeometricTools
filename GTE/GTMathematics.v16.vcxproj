@@ -353,6 +353,7 @@
     <ClInclude Include="Mathematics\IntrRay3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrRay3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrRay3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrRay3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrRay3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrRay3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrSegment2AlignedBox2.h" />
@@ -369,6 +370,7 @@
     <ClInclude Include="Mathematics\IntrSegment3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrSegment3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrSphere3Cone3.h" />

@@ -1,15 +1,17 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.01.07
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLX/GLXEngine.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 using namespace gte;
+
+extern void glXSwapInterval(Display*, unsigned long, int);
 
 GLXEngine::~GLXEngine()
 {
@@ -185,9 +187,7 @@ void GLXEngine::MakeActive()
 
 void GLXEngine::DisplayColorBuffer(uint32_t syncInterval)
 {
-    // TODO: Disable vertical sync if possible.
-    (void)syncInterval;
-
+    glXSwapInterval(mDisplay, mWindow, syncInterval);
     glXSwapBuffers(mDisplay, mWindow);
 }
 

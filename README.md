@@ -10,7 +10,8 @@ at the
 GTE is licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 The update history for the current version of GTE is
-[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf). The update history for all versions of GTE is [Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
+[Current Update History](https://www.geometrictools.com/Downloads/Gte7UpdateHistory.pdf).
+The update history for all versions of GTE is [Full Update History](https://www.geometrictools.com/Downloads/GteFullUpdateHistory.pdf).
 
 I am in the process of writing The Geometric Tools Library (GTL),
 which is a major revision of GTE. A large portion of GTL development
@@ -18,8 +19,8 @@ has been porting code from GTE, dealing with size_t versus signed
 integer compiler complaints, and adding new features. An equally
 large portion has been writing unit tests and end-to-end tests for
 the mathematics code. The project has taking a significant amount
-of time and effort, but the completion is drawing near. GTL is also
-licensed under the
+of time and effort. I do not yet have a reliable schedul to post.
+GTL is also licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 
 ## Supported Platforms ##
@@ -36,22 +37,21 @@ and X-Windows on Linux.
 
 On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
 Studio 2019/2022 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compiler 2023.
+Compiler 2024.
 
 On Ubuntu 22.04.1 LTS, the code is maintained using Visual Studio Code
-1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 11.3.0, 
+1.85.1 and CMake 3.28.1, NVIDIA graphics drivers, OpenGL 4.5 and
+gcc 11.4.0, 
 
-On Fedora 38, the code is maintained using Visual Studio Code 1.49.2
-and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 13.1.1.
+On Fedora 39, the code is maintained using Visual Studio Code 1.85.1
+and CMake 3.27.7, NVIDIA graphics drivers, OpenGL 4.5 and gcc 13.2.1.
 
 ## Getting Started ##
 
 The repository contains many sample applications to illustrate some
 features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the
-[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6p8InstallationRelease.pdf)
+[Installation and Release Notes](https://github.com/davideberly/GeometricTools/GTE/Gte7p0InstallationRelease.pdf)
 to understand what is expected of your development environment.
 
 ## Known 3rd Party Problems ##
@@ -83,20 +83,3 @@ to understand what is expected of your development environment.
   MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
   second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
   exceptions can be ignored.
- 
-## Links to GTE-Based Projects ##
-* Seb Wouter's improvement for my LCP-based test-intersection query between
-  a box and a finite cylinder. When using floating-point arithmetic, the LCP
-  solver had some significant rounding errors to produce incorrect results.
-  His approach clips the box by the cylinder enddisk planes to form a convex
-  polyhedron, projects that to a plane perpendicular to the cylinder axis to
-  obtain a polygon, and then tests for polygon-circle intersection. The code
-  uses a generic convex hull finder to create the convex polyhedron. My current
-  GTE code avoids the generic hull finder and takes advantage of the pairs of
-  parallel planes for the box to amortize the computational costs for a faster
-  algorithm. The repository link is
-  https://github.com/SebWouters/AabbCyl
-
-* CodeReclaimers example of incorporating Dear ImGui into a GTE sample
-  application (for Microsoft Windows). The repository link is
-  https://github.com/CodeReclaimers/GTEImGuiExample

@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -15,7 +15,7 @@ cbuffer ConstantColor
     float4 constantColor;
 };
 
-StructuredBuffer<float3> position;
+StructuredBuffer<float4> position;
 
 struct VS_INPUT
 {
@@ -31,11 +31,11 @@ struct VS_OUTPUT
 VS_OUTPUT VSMain(VS_INPUT input)
 {
     VS_OUTPUT output;
-    float3 modelPosition = position[input.id];
+    float4 modelPosition = position[input.id];
 #if GTE_USE_MAT_VEC
-    output.clipPosition = mul(pvwMatrix, float4(modelPosition, 1.0f));
+    output.clipPosition = mul(pvwMatrix, modelPosition);
 #else
-    output.clipPosition = mul(float4(modelPosition, 1.0f), pvwMatrix);
+    output.clipPosition = mul(modelPosition, pvwMatrix);
 #endif
     output.vertexColor = constantColor;
     return output;

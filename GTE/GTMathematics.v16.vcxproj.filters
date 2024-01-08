@@ -1674,5 +1674,11 @@
     <ClInclude Include="Mathematics\IntrLine3Rectangle3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrRay3Rectangle3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
