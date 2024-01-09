@@ -46,6 +46,9 @@ gcc 11.4.0,
 On Fedora 39, the code is maintained using Visual Studio Code 1.85.1
 and CMake 3.27.7, NVIDIA graphics drivers, OpenGL 4.5 and gcc 13.2.1.
 
+On openSUSE Leap 15.5, the code is maintained using Visual Studio Code 1.85.1
+and CMake 3.20.4, NVIDIA graphics drivers, OpenGL 4.5 and gcc 7.5.0.
+
 ## Getting Started ##
 
 The repository contains many sample applications to illustrate some
