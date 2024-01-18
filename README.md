@@ -60,27 +60,26 @@ to understand what is expected of your development environment.
 ## Known 3rd Party Problems ##
 
 * After installing NVIDIA GeForce driver version 531.18, all my DirectX 11 samples
-  throw 2 exceptions in D3D11CreateDevice, both tagged as Poco\:\:NotFoundException.
+  throw 2 exceptions in D3D11CreateDevice, both tagged as Poco::NotFoundException.
   If you continue execution after these exceptions, the applications perform
-  correctly. When the D3D11 device is released, another Poco\:\:NotFoundException is
+  correctly. When the D3D11 device is released, another Poco::NotFoundException is
   generated. You can continue execution after this exception. The exceptions still
-  occur through driver version 546.33 released on 12 December 2023. Version 546.65
-  of the driver has been released on 17 January 2024. The Poco\:\:NotFoundException-s
-  still appear in the Visual Studio output window, but the exceptions are not
-  propagated to D3D11CreateDevice.
-  
-  WORKAROUND: This applies for driver versions before 546.65. It assumes you have
-  checked the box in the MSVS Exception Settings window that says "<All C++
-  Exceptions not in this list>". If you do not have this checked, set a breakpoint
-  at a line of code before the call to D3D11CreateDevice and run to the breakpoint.
-  Then check the aforementioned box. Continue the execution and an exception dialog
-  is launched when the call is made to D3D11CreateDevice. That dialog has a box
-  checked "Break when this exception type is thrown". Uncheck the box. You will see
-  a new item in the Exception Settings window under the C++ Exceptions that says
-  Poco\:\:NotFoundException. It is unchecked, which means the debugger will not stop
-  execution for that particular exception. This information is stored in the *.user
-  files. If you delete the *.user file, you lose the exception settings, which
-  reapplying the workaround steps.
+  occur through driver version 546.65 released on 17 January 2024. A moderator for
+  NVIDIA forums posted on 14 November 2023 that the issue has been addressed but
+  does not know when the fix will occur in a future driver release. See
+  [Bug status](https://forums.developer.nvidia.com/t/poco-notfoundexception-thrown-in-driver-version-531-18/245285/28).
+    
+  WORKAROUND: This assumes you have checked the box in the MSVS Exception Settings
+  window that says "<All C++ Exceptions not in this list>". If you do not have this
+  checked, set a breakpoint at a line of code before the call to D3D11CreateDevice
+  and run to the breakpoint. Then check the aforementioned box. Continue the
+  execution and an exception dialog is launched when the call is made to
+  D3D11CreateDevice. That dialog has a box checked "Break when this exception type
+  is thrown". Uncheck the box. You will see a new item in the Exception Settings
+  window under the "C++ Exceptions" that says "Poco::NotFoundException". It is
+  unchecked, which means the debugger will not stop execution for that particular
+  exception. This information is stored in the *.user files. If you delete the *.user
+  file, you lose the exception settings, which reapplying the workaround steps.
 
 * On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
   driver version 31.0.101.4146 throws two C++ exceptions (in igc64.dll). The first is
