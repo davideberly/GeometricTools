@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.01.18
 
 #include "ExtractRidgesConsole.h"
 #include <Applications/WICFileIO.h>
@@ -107,8 +107,8 @@ void ExtractRidgesConsole::Execute()
             pImage(x, y) = Dot(u, gradient);
             qImage(x, y) = Dot(v, gradient);
 
-	    uImage(x,y)=u;
-	    vImage(x,y)=v;
+            uImage(x,y) = u;
+            vImage(x,y) = v;
         }
     }
     SaveImage("a.png", aImage);
@@ -125,13 +125,13 @@ void ExtractRidgesConsole::Execute()
         {
             uint32_t gray = static_cast<uint32_t>(255.0 * image(x, y));
 
-            Vector2<double> u=uImage(x,y);
+            Vector2<double> u = uImage(x, y);
             double pValue = pImage(x, y);
             bool isRidge = false;
-            if (pValue*pImage(x - 1, y)*Dot(u,uImage(x - 1, y)) < 0.0
-                || pValue*pImage(x + 1, y)*Dot(u,uImage(x + 1, y)) < 0.0
-                || pValue*pImage(x, y - 1)*Dot(u,uImage(x, y-1)) < 0.0
-                || pValue*pImage(x, y + 1)*Dot(u,uImage(x, y+1)) < 0.0)
+            if (pValue * pImage(x - 1, y) * Dot(u, uImage(x - 1, y)) < 0.0 ||
+                pValue * pImage(x + 1, y) * Dot(u, uImage(x + 1, y)) < 0.0 ||
+                pValue * pImage(x, y - 1) * Dot(u, uImage(x, y - 1)) < 0.0 ||
+                pValue * pImage(x, y + 1) * Dot(u, uImage(x, y + 1)) < 0.0)
             {
                 if (aImage(x, y) < 0.0)
                 {
@@ -139,13 +139,13 @@ void ExtractRidgesConsole::Execute()
                 }
             }
 
-            Vector2<double> v=vImage(x,y);
+            Vector2<double> v = vImage(x, y);
             double qValue = qImage(x, y);
             bool isValley = false;
-            if (qValue*qImage(x - 1, y)*Dot(v,vImage(x - 1, y))  < 0.0
-                || qValue*qImage(x + 1, y)*Dot(v,vImage(x + 1, y)) < 0.0
-                || qValue*qImage(x, y - 1)*Dot(v,vImage(x, y-1)) < 0.0
-                || qValue*qImage(x, y + 1)*Dot(v,vImage(x, y+1)) < 0.0)
+            if (qValue * qImage(x - 1, y) * Dot(v, vImage(x - 1, y)) < 0.0 ||
+                qValue * qImage(x + 1, y) * Dot(v, vImage(x + 1, y)) < 0.0 ||
+                qValue * qImage(x, y - 1) * Dot(v, vImage(x, y - 1)) < 0.0 ||
+                qValue * qImage(x, y + 1) * Dot(v, vImage(x, y + 1)) < 0.0)
             {
                 if (bImage(x, y) > 0.0)
                 {
