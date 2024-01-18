@@ -65,7 +65,7 @@ void ExtractRidgesConsole::Execute()
             dxx(x, y) = image(x + 1, y) - 2.0 * image(x, y) + image(x - 1, y);
             dxy(x, y) = 0.25 * (image(x + 1, y + 1) + image(x - 1, y - 1)
                 - image(x + 1, y - 1) - image(x - 1, y + 1));
-            dyy(x, y) = image(x, y + 1) - 2.0 * image(x, y) + image(x, y + 1);
+            dyy(x, y) = image(x, y + 1) - 2.0 * image(x, y) + image(x, y - 1);
         }
     }
     SaveImage("dx.png", dx);
