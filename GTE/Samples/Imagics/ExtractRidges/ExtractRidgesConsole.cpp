@@ -84,6 +84,10 @@ void ExtractRidgesConsole::Execute()
     Image2<double> bImage(xBound, yBound);
     Image2<double> pImage(xBound, yBound);
     Image2<double> qImage(xBound, yBound);
+
+    Image2<Vector2<double>> uImage(xBound, yBound);
+    Image2<Vector2<double>> vImage(xBound, yBound);
+
     for (int32_t y = 1; y < yBoundM1; ++y)
     {
         for (int32_t x = 1; x < xBoundM1; ++x)
@@ -102,6 +106,9 @@ void ExtractRidgesConsole::Execute()
             Vector2<double> v{ evec[1][0], evec[1][1] };
             pImage(x, y) = Dot(u, gradient);
             qImage(x, y) = Dot(v, gradient);
+
+	    uImage(x,y)=u;
+	    vImage(x,y)=v;
         }
     }
     SaveImage("a.png", aImage);
@@ -118,12 +125,13 @@ void ExtractRidgesConsole::Execute()
         {
             uint32_t gray = static_cast<uint32_t>(255.0 * image(x, y));
 
+            Vector2<double> u=uImage(x,y);
             double pValue = pImage(x, y);
             bool isRidge = false;
-            if (pValue*pImage(x - 1, y) < 0.0
-                || pValue*pImage(x + 1, y) < 0.0
-                || pValue*pImage(x, y - 1) < 0.0
-                || pValue*pImage(x, y + 1) < 0.0)
+            if (pValue*pImage(x - 1, y)*Dot(u,uImage(x - 1, y)) < 0.0
+                || pValue*pImage(x + 1, y)*Dot(u,uImage(x + 1, y)) < 0.0
+                || pValue*pImage(x, y - 1)*Dot(u,uImage(x, y-1)) < 0.0
+                || pValue*pImage(x, y + 1)*Dot(u,uImage(x, y+1)) < 0.0)
             {
                 if (aImage(x, y) < 0.0)
                 {
@@ -131,12 +139,13 @@ void ExtractRidgesConsole::Execute()
                 }
             }
 
+            Vector2<double> v=vImage(x,y);
             double qValue = qImage(x, y);
             bool isValley = false;
-            if (qValue*qImage(x - 1, y) < 0.0
-                || qValue*qImage(x + 1, y) < 0.0
-                || qValue*qImage(x, y - 1) < 0.0
-                || qValue*qImage(x, y + 1) < 0.0)
+            if (qValue*qImage(x - 1, y)*Dot(v,vImage(x - 1, y))  < 0.0
+                || qValue*qImage(x + 1, y)*Dot(v,vImage(x + 1, y)) < 0.0
+                || qValue*qImage(x, y - 1)*Dot(v,vImage(x, y-1)) < 0.0
+                || qValue*qImage(x, y + 1)*Dot(v,vImage(x, y+1)) < 0.0)
             {
                 if (bImage(x, y) > 0.0)
                 {
