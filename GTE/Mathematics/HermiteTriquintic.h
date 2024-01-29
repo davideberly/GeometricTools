@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.9.2023.11.20
+// Version: 6.9.2024.01.29
 
 #pragma once
 
@@ -58,14 +58,14 @@ namespace gte
         //   Gzz(x, y, z) = hermite(0, 0, 2, x, y, z)
         T operator()(size_t xOrder, size_t yOrder, size_t zOrder, T const& x, T const& y, T const& z) const
         {
-            if (xOrder <= 5 && yOrder <= 5)
+            if (xOrder <= 5 && yOrder <= 5 && zOrder <= 5)
             {
                 T result = static_cast<T>(0);
                 for (size_t i = 0; i < 6; ++i)
                 {
                     for (size_t j = 0; j < 6; ++j)
                     {
-                        for (size_t k = 0; k < 4; ++k)
+                        for (size_t k = 0; k < 6; ++k)
                         {
                             result += c[i][j][k] *
                                 HermiteQuintic<T>::P(i, xOrder, x) *
