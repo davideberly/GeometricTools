@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.01.31
 
 #pragma once
 
@@ -474,7 +474,7 @@ namespace gte
     template <int32_t NumRows, int32_t NumCols, typename Real>
     Real LInfinityNorm(Matrix<NumRows, NumCols, Real> const& M)
     {
-        Real maxAbsElement = M[0];
+        Real maxAbsElement = std::fabs(M[0]);
         for (int32_t i = 1; i < NumRows * NumCols; ++i)
         {
             Real absElement = std::fabs(M[i]);
