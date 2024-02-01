@@ -1680,5 +1680,14 @@
     <ClInclude Include="Mathematics\IntrRay3Rectangle3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\BVTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

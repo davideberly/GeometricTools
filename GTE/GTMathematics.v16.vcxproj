@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\AdaptiveSkeletonClimbing2.h" />
     <ClInclude Include="Mathematics\AdaptiveSkeletonClimbing3.h" />
     <ClInclude Include="Mathematics\APConversion.h" />
@@ -75,6 +76,8 @@
     <ClInclude Include="Mathematics\BSPPolygon2.h" />
     <ClInclude Include="Mathematics\BSPrecision.h" />
     <ClInclude Include="Mathematics\BSRational.h" />
+    <ClInclude Include="Mathematics\BVTree.h" />
+    <ClInclude Include="Mathematics\BVTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\CanonicalBox.h" />
     <ClInclude Include="Mathematics\ChebyshevRatioEstimate.h" />
     <ClInclude Include="Mathematics\CholeskyDecomposition.h" />
