@@ -107,8 +107,8 @@ namespace gte
             //   d1 = Dot(N1,L) = c0*Dot(N0,N1) + c1*Dot(N1,N1) = c0*d + c1
             // where d = Dot(N0,N1).  These are two equations in two unknowns.
             // The solution is
-            //   c0 = (d0 - d*d1)/det
-            //   c1 = (d1 - d*d0)/det
+            //   c0 = -(d0 - d*d1)/det
+            //   c1 = -(d1 - d*d0)/det
             // where det = 1 - d^2.
 
             Result result{};
@@ -145,8 +145,8 @@ namespace gte
             }
 
             T invDet = (T)1 / ((T)1 - dot * dot);
-            T c0 = (plane0.constant - dot * plane1.constant) * invDet;
-            T c1 = (plane1.constant - dot * plane0.constant) * invDet;
+            T c0 = -(plane0.constant - dot * plane1.constant) * invDet;
+            T c1 = -(plane1.constant - dot * plane0.constant) * invDet;
             result.intersect = true;
             result.isLine = true;
             result.line.origin = c0 * plane0.normal + c1 * plane1.normal;
