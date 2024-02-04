@@ -103,8 +103,8 @@ namespace gte
             //   L(t) = t*Cross(N0,N1)/|Cross(N0,N1)| + c0*N0 + c1*N1
             // for some coefficients c0 and c1 and for t any real number (the
             // line parameter).  Taking dot products with the normals,
-            //   d0 = Dot(N0,L) = c0*Dot(N0,N0) + c1*Dot(N0,N1) = c0 + c1*d
-            //   d1 = Dot(N1,L) = c0*Dot(N0,N1) + c1*Dot(N1,N1) = c0*d + c1
+            //   -d0 = Dot(N0,L) = c0*Dot(N0,N0) + c1*Dot(N0,N1) = c0 + c1*d
+            //   -d1 = Dot(N1,L) = c0*Dot(N0,N1) + c1*Dot(N1,N1) = c0*d + c1
             // where d = Dot(N0,N1).  These are two equations in two unknowns.
             // The solution is
             //   c0 = -(d0 - d*d1)/det
