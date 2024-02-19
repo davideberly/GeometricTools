@@ -3,7 +3,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.01.18
+// Version: 6.0.2024.02.19
+
+// The original code was modified by Lev A. Melnikovsky based on his analysis
+// https://github.com/melnikovsky/GeometricTools/blob/algoridge/algoridge.pdf
 
 #include "ExtractRidgesConsole.h"
 #include <Applications/WICFileIO.h>
@@ -44,6 +47,7 @@ void ExtractRidgesConsole::Execute()
     {
         image[i] = static_cast<double>(original[i]) / maxDValue;
     }
+
     SaveImage("head.png", image);
 
     // Use first-order centered finite differences to estimate the image
@@ -56,16 +60,43 @@ void ExtractRidgesConsole::Execute()
     Image2<double> dxx(xBound, yBound);
     Image2<double> dxy(xBound, yBound);
     Image2<double> dyy(xBound, yBound);
+    Image2<double> hvx(xBound, yBound);
+    Image2<double> hvy(xBound, yBound);
+    Image2<double> cross(xBound, yBound);
+    Image2<double> lambda(xBound, yBound);
+
     for (int32_t y = 1; y < yBoundM1; ++y)
     {
         for (int32_t x = 1; x < xBoundM1; ++x)
         {
             dx(x, y) = 0.5 * (image(x + 1, y) - image(x - 1, y));
             dy(x, y) = 0.5 * (image(x, y + 1) - image(x, y - 1));
+
             dxx(x, y) = image(x + 1, y) - 2.0 * image(x, y) + image(x - 1, y);
             dxy(x, y) = 0.25 * (image(x + 1, y + 1) + image(x - 1, y - 1)
                 - image(x + 1, y - 1) - image(x - 1, y + 1));
             dyy(x, y) = image(x, y + 1) - 2.0 * image(x, y) + image(x, y - 1);
+
+            hvx(x, y) = dxx(x, y) * dx(x, y) + dxy(x, y) * dy(x, y);
+            hvy(x, y) = dxy(x, y) * dx(x, y) + dyy(x, y) * dy(x, y);
+
+            lambda(x, y) = hvx(x, y) * dx(x, y) + hvy(x, y) * dy(x, y);
+            cross(x, y) = hvx(x, y) * dy(x, y) - hvy(x, y) * dx(x, y);
+
+            if ((std::fabs(lambda(x, y)) > 2.0 * std::fabs(hvx(x, y) * dxx(x, y) + hvy(x, y) * dxy(x, y))) &&
+                (std::fabs(lambda(x, y)) > 2.0 * std::fabs(hvx(x, y) * dxy(x, y) + hvy(x, y) * dyy(x, y))))
+            {
+                lambda(x, y) /= dx(x, y) * dx(x, y) + dy(x, y) * dy(x, y);
+            }
+            else
+            {
+                lambda(x, y) = 0.0;
+                if ((std::fabs(cross(x, y)) < 2.0 * std::fabs(hvx(x, y) * dxy(x, y) - hvy(x, y) * dxx(x, y))) ||
+                    (std::fabs(cross(x, y)) < 2.0 * std::fabs(hvx(x, y) * dyy(x, y) - hvy(x, y) * dxy(x, y))))
+                {
+                    cross(x, y) = 0.0;
+                }
+            }
         }
     }
     SaveImage("dx.png", dx);
@@ -73,48 +104,10 @@ void ExtractRidgesConsole::Execute()
     SaveImage("dxx.png", dxx);
     SaveImage("dxy.png", dxy);
     SaveImage("dyy.png", dyy);
-
-
-    // The eigensolver produces eigenvalues a and b and corresponding
-    // eigenvectors U and V:  D^2F*U = a*U, D^2F*V = b*V.  Define
-    // P = Dot(U,DF) and Q = Dot(V,DF).  The classification is as follows.
-    //   ridge:   P = 0 with a < 0
-    //   valley:  Q = 0 with b > 0
-    Image2<double> aImage(xBound, yBound);
-    Image2<double> bImage(xBound, yBound);
-    Image2<double> pImage(xBound, yBound);
-    Image2<double> qImage(xBound, yBound);
-
-    Image2<Vector2<double>> uImage(xBound, yBound);
-    Image2<Vector2<double>> vImage(xBound, yBound);
-
-    for (int32_t y = 1; y < yBoundM1; ++y)
-    {
-        for (int32_t x = 1; x < xBoundM1; ++x)
-        {
-            Vector2<double> gradient{ dx(x, y), dy(x, y) };
-
-            double hessian00 = dxx(x, y), hessian01 = dxy(x, y), hessian11 = dyy(x, y);
-            SymmetricEigensolver2x2<double> solver;
-            std::array<double, 2> eval;
-            std::array<std::array<double, 2>, 2> evec;
-            solver(hessian00, hessian01, hessian11, +1, eval, evec);
-
-            aImage(x, y) = eval[0];
-            bImage(x, y) = eval[1];
-            Vector2<double> u{ evec[0][0], evec[0][1] };
-            Vector2<double> v{ evec[1][0], evec[1][1] };
-            pImage(x, y) = Dot(u, gradient);
-            qImage(x, y) = Dot(v, gradient);
-
-            uImage(x,y) = u;
-            vImage(x,y) = v;
-        }
-    }
-    SaveImage("a.png", aImage);
-    SaveImage("b.png", bImage);
-    SaveImage("p.png", pImage);
-    SaveImage("q.png", qImage);
+    SaveImage("hvx.png", hvx);
+    SaveImage("hvy.png", hvy);
+    SaveImage("cross.png", cross);
+    SaveImage("lambda.png", lambda);
 
     // Use a cheap classification of the pixels by testing for sign changes
     // between neighboring pixels.
@@ -124,32 +117,36 @@ void ExtractRidgesConsole::Execute()
         for (int32_t x = 1; x < xBoundM1; ++x)
         {
             uint32_t gray = static_cast<uint32_t>(255.0 * image(x, y));
-
-            Vector2<double> u = uImage(x, y);
-            double pValue = pImage(x, y);
             bool isRidge = false;
-            if (pValue * pImage(x - 1, y) * Dot(u, uImage(x - 1, y)) < 0.0 ||
-                pValue * pImage(x + 1, y) * Dot(u, uImage(x + 1, y)) < 0.0 ||
-                pValue * pImage(x, y - 1) * Dot(u, uImage(x, y - 1)) < 0.0 ||
-                pValue * pImage(x, y + 1) * Dot(u, uImage(x, y + 1)) < 0.0)
-            {
-                if (aImage(x, y) < 0.0)
-                {
-                    isRidge = true;
-                }
-            }
-
-            Vector2<double> v = vImage(x, y);
-            double qValue = qImage(x, y);
             bool isValley = false;
-            if (qValue * qImage(x - 1, y) * Dot(v, vImage(x - 1, y)) < 0.0 ||
-                qValue * qImage(x + 1, y) * Dot(v, vImage(x + 1, y)) < 0.0 ||
-                qValue * qImage(x, y - 1) * Dot(v, vImage(x, y - 1)) < 0.0 ||
-                qValue * qImage(x, y + 1) * Dot(v, vImage(x, y + 1)) < 0.0)
+
+            if ((cross(x, y) == 0.0) ||
+                ((cross(x - 1, y) * cross(x + 1, y)) < 0.0) ||
+                ((cross(x, y - 1) * cross(x, y + 1)) < 0.0))
             {
-                if (bImage(x, y) > 0.0)
+                double traceH = dxx(x, y) + dyy(x, y);
+
+                if (lambda(x, y) < 0.0)
                 {
-                    isValley = true;
+                    if ((traceH - 2.0 * lambda(x, y)) <= 0.0)
+                    {
+                        isRidge = true;
+                    }
+                    else if ((traceH - lambda(x, y)) >= 0.0)
+                    {
+                        isValley = true;
+                    }
+                }
+                else
+                {
+                    if ((traceH - lambda(x, y)) <= 0.0)
+                    {
+                        isRidge = true;
+                    }
+                    else if ((traceH - 2.0 * lambda(x, y)) >= 0.0)
+                    {
+                        isValley = true;
+                    }
                 }
             }
 
