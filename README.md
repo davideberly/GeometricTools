@@ -64,24 +64,10 @@ to understand what is expected of your development environment.
   If you continue execution after these exceptions, the applications perform
   correctly. When the D3D11 device is released, another Poco::NotFoundException is
   generated. You can continue execution after this exception. The exceptions still
-  occur through driver version 546.65 released on 17 January 2024. A moderator for
-  NVIDIA forums posted on 14 November 2023 that the issue has been addressed but
-  does not know when the fix will occur in a future driver release. See
-  [Bug status](https://forums.developer.nvidia.com/t/poco-notfoundexception-thrown-in-driver-version-531-18/245285/28).
+  occur through driver version 546.65 released on 17 January 2024. Driver version
+  551.52 has been released on 13 February 2024; the exceptions no longer occur.
     
-  WORKAROUND: This assumes you have checked the box in the MSVS Exception Settings
-  window that says "<All C++ Exceptions not in this list>". If you do not have this
-  checked, set a breakpoint at a line of code before the call to D3D11CreateDevice
-  and run to the breakpoint. Then check the aforementioned box. Continue the
-  execution and an exception dialog is launched when the call is made to
-  D3D11CreateDevice. That dialog has a box checked "Break when this exception type
-  is thrown". Uncheck the box. You will see a new item in the Exception Settings
-  window under the "C++ Exceptions" that says "Poco::NotFoundException". It is
-  unchecked, which means the debugger will not stop execution for that particular
-  exception. This information is stored in the *.user files. If you delete the *.user
-  file, you lose the exception settings, which reapplying the workaround steps.
-
-* On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
+ * On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
   driver version 31.0.101.4146 throws two C++ exceptions (in igc64.dll). The first is
   MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
   second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
