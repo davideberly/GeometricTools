@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.1.2024.02.24
+// Version: 7.1.2024.02.25
 
 #pragma once
 
@@ -93,9 +93,6 @@ namespace gte
                     // rect[3] = (u, v) + (0, w / r)
                     constraints[i].first[2] = normals[i][1] / aspectRatio;
                 }
-
-                int stophere{};
-                stophere = 0;
             }
 
             // Solve the linear programming problem.
@@ -138,7 +135,7 @@ namespace gte
                     rectHeight = rectWidth / aspectRatio;
                 }
 
-                isUnique = false;
+                isUnique = (solution0[2] != solution1[2]);
             }
             else if (iiResult.type == IIResult::isPoint)
             {
@@ -190,7 +187,7 @@ namespace gte
                         rectHeight = rectWidth / aspectRatio;
                     }
 
-                    isUnique = false;
+                    isUnique = (solution0[2] != solution1[2]);
                 }
                 else if (iiResult.type == IIResult::isPoint)
                 {
