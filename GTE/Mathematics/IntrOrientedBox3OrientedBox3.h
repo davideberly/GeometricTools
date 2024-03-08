@@ -13,7 +13,7 @@
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The set of potential separating directions includes the 3 face normals of
 // box0, the 3 face normals of box1, and 9 directions, each of which is the
-// cross product of an edge of box0 and and an edge of box1.
+// cross product of an edge of box0 and an edge of box1.
 //
 // The separating axes involving cross products of edges has numerical
 // robustness problems when the two edges are nearly parallel. The cross
