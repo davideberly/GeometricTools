@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.26
 
 #pragma once
 
@@ -92,6 +92,34 @@ namespace gte
         }
 
         return (Real)0;
+    }
+
+    // Compute a right-handed orthonormal basis {v0,v1,v2} for the orthogonal
+    // complement of a unit-length vector v2. See
+    // https://www.geometrictools.com/Documentation/FastOrthogonalComplement.pdf
+    //
+    template <typename Real>
+    void FastComputeOrthogonalComplement(Vector3<Real> const& v2, Vector3<Real>& v0, Vector3<Real>& v1)
+    {
+        Real const zero = static_cast<Real>(0);
+        Real const one = static_cast<Real>(1);
+        Real temp0{}, temp1{}, temp2{};
+        if (v2[2] >= zero)
+        {
+            temp0 = one + v2[2];
+            temp1 = -v2[0] * v2[1] / temp0;
+            temp2 = v2[1] * v2[1] / temp0;
+            v0 = { v2[2] + temp2, temp1, -v2[0] };
+            v1 = { temp1, one - temp2, -v2[1] };
+        }
+        else
+        {
+            temp0 = one - v2[2];
+            temp1 = v2[0] * v2[1] / temp0;
+            temp2 = v2[1] * v2[1] / temp0;
+            v0 = { -v2[2] + temp2, -temp1, v2[0] };
+            v1 = { temp1, -one + temp2, -v2[1] };
+        }
     }
 
     // Compute the barycentric coordinates of the point P with respect to the

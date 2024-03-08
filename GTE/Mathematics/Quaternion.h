@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -16,8 +16,16 @@
 // I assume that you are familiar with the arithmetic and algebraic properties
 // of quaternions.  See
 // https://www.geometrictools.com/Documentation/Quaternions.pdf
+//
+// The Rotate(...) functions require fewer arithmetic operations than those
+// of the original implementations using rotatedU = q * (0,u) * Conjugate(q)
+// (for GTE_USE_MAT_VEC) and rotatedU = Conjugate(q) * (0, u) * q (for
+// GTE_USE_VEC_MAT). The new implementations are based on Robert Eisele's
+// the derivation at
+// https://raw.org/proof/vector-rotation-using-quaternions/
 
 #include <Mathematics/Vector.h>
+#include <Mathematics/Vector3.h>
 #include <Mathematics/Matrix.h>
 #include <Mathematics/ChebyshevRatio.h>
 #include <array>
@@ -318,41 +326,41 @@ namespace gte
         return Quaternion<Real>(-q[0], -q[1], -q[2], +q[3]);
     }
 
-    // Rotate a 3D vector v = (v0,v1,v2) using quaternion multiplication. The
+    // Rotate a 3D vector u = (u0,u1,u2) using quaternion multiplication. The
     // input quaternion must be unit length. If R is the rotation matrix
-    // corresponding to the quaternion q, the rotated vector u corresponding
-    // to v is u = R*v when GTE_USE_MAT_VEC is defined (the default for
-    // projects) or u = v*R when GTE_USE_MAT_VEC is not defined.
+    // corresponding to the quaternion q, the rotated vector v corresponding
+    // to u is v = R*u when GTE_USE_MAT_VEC is defined (the default for
+    // projects) or v = u*R when GTE_USE_MAT_VEC is not defined.
     template <typename Real>
-    Vector<3, Real> Rotate(Quaternion<Real> const& q, Vector<3, Real> const& v)
+    Vector<3, Real> Rotate(Quaternion<Real> const& q, Vector<3, Real> const& u)
     {
-        Quaternion<Real> input(v[0], v[1], v[2], (Real)0);
 #if defined(GTE_USE_MAT_VEC)
-        Quaternion<Real> output = q * input * Conjugate(q);
+        Vector<3, Real> v{ q[0], q[1], q[2] };
 #else
-        Quaternion<Real> output = Conjugate(q) * input * q;
+        Vector<3, Real> v{ -q[0], -q[1], -q[2] };
 #endif
-        Vector<3, Real> u{ output[0], output[1], output[2] };
-        return u;
+        Vector<3, Real> t = static_cast<Real>(2) * Cross(v, u);
+        Vector<3, Real> rotatedU = u + q[3] * t + Cross(v, t);
+        return rotatedU;
     }
 
     // Rotate a 3D vector, represented as a homogeneous 4D vector
-    // v = (v0,v1,v2,0), using quaternion multiplication. The input quaternion
+    // u = (u0,u1,u2,0), using quaternion multiplication. The input quaternion
     // must be unit length. If R is the rotation matrix corresponding to the
-    // quaternion q, the rotated vector u corresponding to v is u = R*v when
-    // GTE_USE_MAT_VEC is defined (the default for projects) or u = v*R when
+    // quaternion q, the rotated vector v corresponding to u is v = R*u when
+    // GTE_USE_MAT_VEC is defined (the default for projects) or v = u*R when
     // GTE_USE_MAT_VEC is not defined.
     template <typename Real>
-    Vector<4, Real> Rotate(Quaternion<Real> const& q, Vector<4, Real> const& v)
+    Vector<4, Real> Rotate(Quaternion<Real> const& q, Vector<4, Real> const& u)
     {
-        Quaternion<Real> input(v[0], v[1], v[2], (Real)0);
 #if defined(GTE_USE_MAT_VEC)
-        Quaternion<Real> output = q * input * Conjugate(q);
+        Vector<4, Real> v{ q[0], q[1], q[2], static_cast<Real>(0) };
 #else
-        Quaternion<Real> output = Conjugate(q) * input * q;
+        Vector<4, Real> v{ -q[0], -q[1], -q[2], static_cast<Real>(0) };
 #endif
-        Vector<4, Real> u{ output[0], output[1], output[2], (Real)0 };
-        return u;
+        Vector<4, Real> t = static_cast<Real>(2) * Cross(v, u);
+        Vector<4, Real> rotatedU = u + q[3] * t + Cross(v, t);
+        return rotatedU;
     }
 
     // The spherical linear interpolation (slerp) of unit-length quaternions

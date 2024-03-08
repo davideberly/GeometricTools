@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -541,7 +541,6 @@ namespace gte
             T u = Dot(NxD, M);
             T v = Dot(M, D);
             T discr = r * r - u * u;
-            Vector3<T> delta{};
             if (discr > zero)  // u^2 < r^2
             {
                 T rootDiscr = std::sqrt(discr);
@@ -569,7 +568,6 @@ namespace gte
             T const zero = static_cast<T>(0);
             T MdD = Dot(M, D);
             T rLenCrossMN = r * Length(NxM);
-            Vector3<T> delta{};
             if (MdD > zero)
             {
                 result.numClosestPairs = 1;

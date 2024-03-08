@@ -6,13 +6,12 @@ The engine is written in C++ 14 and supports high-performance computing using
 CPU multithreading and general purpose GPU programming (GPGPU). Portions of
 the code are described in various books as well as in PDF documents available
 at the
-[Geometric Tools Website](https://www.geometrictools.com). GTE is
-licensed under the
+[Geometric Tools Website](https://www.geometrictools.com).
+GTE is licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 The update history for the current version of GTE is
-[Current Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6UpdateHistory.pdf).
-The update history for all versions of GTE is
-[Full Update History](https://github.com/davideberly/GeometricTools/blob/master/GTE/GteFullUpdateHistory.pdf).
+[Current Update History](https://www.geometrictools.com/Downloads/Gte7UpdateHistory.pdf).
+The update history for all versions of GTE is [Full Update History](https://www.geometrictools.com/Downloads/GteFullUpdateHistory.pdf).
 
 I am in the process of writing The Geometric Tools Library (GTL),
 which is a major revision of GTE. A large portion of GTL development
@@ -20,14 +19,14 @@ has been porting code from GTE, dealing with size_t versus signed
 integer compiler complaints, and adding new features. An equally
 large portion has been writing unit tests and end-to-end tests for
 the mathematics code. The project has taking a significant amount
-of time and effort, but the completion is drawing near. GTL is also
-licensed under the
+of time and effort. I do not yet have a reliable schedul to post.
+GTL is also licensed under the
 [Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 
 ## Supported Platforms ##
 
 The mathematics code is in a header-only library, GTMathematics. A
-mathematics library with GPU-based implementations is provided,
+mathematics library with GPU-based implementations is provided,s
 GTMathematicsGPU. The CPU-based common graphics engine code is in its
 own library, GTGraphics. DirectX 11 wrappers are provided for graphics
 and applications, GTGraphicsDX11 and GTApplicationsDX11, on Microsoft
@@ -38,98 +37,38 @@ and X-Windows on Linux.
 
 On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
 Studio 2019/2022 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compiler 2023.
+Compiler 2024.
 
 On Ubuntu 22.04.1 LTS, the code is maintained using Visual Studio Code
-1.49.2 and CMake 3.15.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 11.3.0, 
+1.85.1 and CMake 3.28.1, NVIDIA graphics drivers, OpenGL 4.5 and
+gcc 11.4.0, 
 
-On Fedora 38, the code is maintained using Visual Studio Code 1.49.2
-and CMake 3.22.2, NVIDIA graphics drivers, OpenGL 4.5 and
-gcc 13.1.1.
+On Fedora 39, the code is maintained using Visual Studio Code 1.85.1
+and CMake 3.27.7, NVIDIA graphics drivers, OpenGL 4.5 and gcc 13.2.1.
+
+On openSUSE Leap 15.5, the code is maintained using Visual Studio Code 1.85.1
+and CMake 3.20.4, NVIDIA graphics drivers, OpenGL 4.5 and gcc 7.5.0.
 
 ## Getting Started ##
 
 The repository contains many sample applications to illustrate some
 features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the
-[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte6p8InstallationRelease.pdf)
+[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte7p0InstallationRelease.pdf)
 to understand what is expected of your development environment.
 
 ## Known 3rd Party Problems ##
-I have had several known problems with compilers I use for testing.
-* The "Intel C++ Compiler Classic" is version 19.2 of the compiler. This is
-  now marked as deprecated, so if you select this for the platform toolset to
-  use in Microsoft Visual Studio, you will see deprecation warnings. I had
-  problems with the integration of Intel C++ Compiler 2022 into Microsoft
-  Visual Studio 2022. You enable this compiler by selecting "Intel DPC++/C++
-  Compiler 2022" as the platform toolset. Warnings occur about macro
-  redefinition, and because I have "treat warnings as errors", the code does
-  not compile. The problem occurred using Intel oneAPI version 2022.3. This
-  has been fixed in Intel oneAPI version 2023.0 where the platform toolset
-  is now "Intel C++ Compiler 2023". It is possible to enable the DPC++
-  compiler, but not through the MSVS dialogs. I have a tool
-  GeometricTools/Tools/ChangePlatformToolset that will do a batch replacement
-  of the platform toolset in the vcxproj files. The command-line parameter
-  for the DPC++ platform toolset is "Intel(R) oneAPI DPC++ Compiler 2023".
-  However, this compiler does not support __stdcall, so on a Windows machine
-  you can compile only non-Windows-API code (no OpenGL/WGL and no Windows SDK).
-  You can compile the mathematics code you need in your application by
-  generating a library using DPC++ and then linking/loading this into an
-  application that has been compiled with the Intel C++ Compiler 2023.
 
-* The Microsoft Visual Studio 2022 Debugger was broken in versions 17.4.x
-  where x < 5. See the [Developer Community explanation](https://developercommunity.visualstudio.com/t/VC-174-has-a-problem-with-debugger-wa/10195269)
-  for details. The work-around is mentioned there, adding /Zc:nrvo- to the option
-  Configuration | C++ | Command Line. The problem has been fixed as of
-  version 17.4.5.
-
-* After installing NVIDIA GeForce driver version 531.18 on a Windows 11 machine with
-  Microsoft Visual Studio 17.5.1, all DirectX 11 samples throw 2 exceptions
-  in D3D11CreateDevice, both tagged as Poco::NotFoundException. If you continue
-  execution after these exceptions, the applications perform correctly. If
-  you then click the application Close icon, another Poco::NotFoundException
-  is generated. You can continue execution after this exception. I have filed
-  a report with NVIDIA, providing a minimal-code reproduction. I recently
-  posted the workaround (listed below) and asked for status on the exception.
-  No response in that forum thread, so I suspect this is low priority for NVIDIA.
-
-  NOTE: Versions 531.29, 531.41, 531.61, 531.68, 531.79, 532.03, 535.98,
-  536.40, 536.99, and 537.13 of the driver were released and have the same problem. The
-  NVIDIA Studio drivers do not generate these exceptions.
-  
-  WORKAROUND: This assumes you have checked the box
-  in MSVS Exception Settings window that says "<All C++ Exceptions not in this list>".
-  If you do not have this checked, set a breakpoint at a line of code before the
-  call to D3D11CreateDevice and run to the breakpoint. Then check the aforementioned
-  box. Continue the execution and an exception dialog is launched when the call is
-  made to D3D11CreateDevice. That dialog has a box checked "Break when this
-  exception type is thrown". Uncheck the box. You will see a new item in the
-  Exception Settings window under the "C++ Exceptions" that says "Poco::NotFoundException".
-  It is unchecked, which means the debugger will not stop execution for that
-  particular exception. NOTE: This information is stored in the *.user files.
-  If you delete such a file, you lose the exception settings, which means going
-  through the aforementioned process again.
-
-* On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
+* After installing NVIDIA GeForce driver version 531.18, all my DirectX 11 samples
+  throw 2 exceptions in D3D11CreateDevice, both tagged as Poco::NotFoundException.
+  If you continue execution after these exceptions, the applications perform
+  correctly. When the D3D11 device is released, another Poco::NotFoundException is
+  generated. You can continue execution after this exception. The exceptions still
+  occur through driver version 546.65 released on 17 January 2024. Driver version
+  551.52 has been released on 13 February 2024; the exceptions no longer occur.
+    
+ * On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
   driver version 31.0.101.4146 throws two C++ exceptions (in igc64.dll). The first is
   MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
   second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
   exceptions can be ignored.
- 
-## Links to GTE-Based Projects ##
-* Seb Wouter's improvement for my LCP-based test-intersection query between
-  a box and a finite cylinder. When using floating-point arithmetic, the LCP
-  solver had some significant rounding errors to produce incorrect results.
-  His approach clips the box by the cylinder enddisk planes to form a convex
-  polyhedron, projects that to a plane perpendicular to the cylinder axis to
-  obtain a polygon, and then tests for polygon-circle intersection. The code
-  uses a generic convex hull finder to create the convex polyhedron. My current
-  GTE code avoids the generic hull finder and takes advantage of the pairs of
-  parallel planes for the box to amortize the computational costs for a faster
-  algorithm. The repository link is
-  https://github.com/SebWouters/AabbCyl
-
-* CodeReclaimers example of incorporating Dear ImGui into a GTE sample
-  application (for Microsoft Windows). The repository link is
-  https://github.com/CodeReclaimers/GTEImGuiExample

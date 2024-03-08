@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.02.28
 
 #pragma once
 
@@ -77,10 +77,7 @@ namespace gte
         }
 
         // This function assumes P is on the circle containing the arc (with
-        // possibly a small amount of floating-point rounding error). NOTE:
-        // I have kept this code so that clients within the GTE library are
-        // not broken if instead I had removed this function. It will be
-        // deprecated for GTL.
+        // possibly a small amount of floating-point rounding error).
         bool Contains(Vector2<T> const& P) const
         {
             Vector2<T> diffPE0 = P - end[0];

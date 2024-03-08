@@ -3,16 +3,18 @@
 // Copyright (c) 2022 David Eberly
 // Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// File Version: 2022.04.06
-
+// File Version: 2023.09.17
 #pragma once
 
 // Documentation for this class is
 // https://www.geometrictools.com/Documentation/GTLUtility.pdf#Multiarray
 
 #include <GTL/Utility/Lattice.h>
+#include <algorithm>
 #include <array>
+#include <cstddef>
 #include <initializer_list>
+#include <utility>
 #include <vector>
 
 // Implementation for multiarrays whose sizes are known at compile time.
@@ -157,6 +159,9 @@ namespace gtl
 
     private:
         std::array<T, Lattice<OrderLtoR, Sizes...>::NumElements> mContainer;
+
+    private:
+        friend class UnitTestMultiarray;
     };
 }
 
@@ -324,7 +329,7 @@ namespace gtl
             {
                 return true;
             }
-            if (Lattice<OrderLtoR>::operator<(other))
+            if (Lattice<OrderLtoR>::operator>(other))
             {
                 return false;
             }
@@ -348,5 +353,8 @@ namespace gtl
 
     private:
         std::vector<T> mContainer;
+
+    private:
+        friend class UnitTestMultiarray;
     };
 }

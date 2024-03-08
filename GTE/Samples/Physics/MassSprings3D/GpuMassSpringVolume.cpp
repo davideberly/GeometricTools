@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.01.05
 
 #include "GpuMassSpringVolume.h"
 
@@ -11,8 +11,27 @@ GpuMassSpringVolume::GpuMassSpringVolume(std::shared_ptr<GraphicsEngine> const& 
     std::shared_ptr<ProgramFactory> const& factory, int32_t numColumns, int32_t numRows,
     int32_t numSlices, float step, float viscosity, Environment& environment, bool& created)
     :
+    mParameters{},
     mNumColumns(numColumns),
-    mNumRows(numRows)
+    mNumRows(numRows),
+    mMass{},
+    mInvMass{},
+    mPosition{},
+    mVelocity{},
+    mConstantC{},
+    mLengthC{},
+    mConstantR{},
+    mLengthR{},
+    mConstantS{},
+    mLengthS{},
+    mPTmp{},
+    mPAllTmp{},
+    mVTmp{},
+    mVAllTmp{},
+    mNumXGroups(0),
+    mNumYGroups(0),
+    mNumZGroups(0),
+    mRK4Shader{}
 {
     created = false;
 

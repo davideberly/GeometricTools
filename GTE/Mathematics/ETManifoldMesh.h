@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.12.04
 
 #pragma once
 
@@ -27,6 +27,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <set>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -244,6 +245,23 @@ namespace gte
                     // This is the second time the edge is encountered.
                     edge = eiter->second.get();
                     LogAssert(edge != nullptr, "Unexpected condition.");
+
+                    if (mThrowOnNonmanifoldInsertion)
+                    {
+                        // tri and edge->T[0] must have a shared edge
+                        // (tri->V[i0],tri->V[i1]). For tri, the directed
+                        // edge is <tri->V[i0],tri->V[i1]>. For edge->T[0],
+                        // the directed edge must be <tri->V[i1],tri->V[i0]>.
+                        for (size_t j = 0; j < 3; ++j)
+                        {
+                            if (edge->T[0]->V[j] == tri->V[i0])
+                            {
+                                LogAssert(
+                                    edge->T[0]->V[(j + 2) % 3] == tri->V[i1],
+                                    "Attempt to create nonmanifold mesh.");
+                            }
+                        }
+                    }
 
                     // Update the edge.
                     if (edge->T[1])
@@ -873,9 +891,19 @@ namespace gte
                 // the last triangle is encountered. The final edge of the
                 // last triangle is the next boundary edge and starts at
                 // vEdge[1].
+                std::set<Triangle const*> visited{};
+                visited.insert(tri);
                 while (tri->T[i1] != nullptr)
                 {
                     tri = tri->T[i1];
+                    auto result = visited.insert(tri);
+
+                    // It this assertion is trigerred, try calling
+                    // <mesh>.IsOriented() before calling GetBoundaryPolygons.
+                    // If <mesh>.IsOriented() returns 'false', the call to
+                    // GetBoundaryPolygons() will fail.
+                    LogAssert(result.second, "Triangle already visited. Is the mesh orientable?");
+
                     size_t j{};
                     for (j = 0; j < 3; ++j)
                     {

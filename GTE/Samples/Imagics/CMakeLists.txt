@@ -3,12 +3,13 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-set(GTE_VERSION_MAJOR 6)
-set(GTE_VERSION_MINOR 5)
+cmake_minimum_required(VERSION 3.8)
+
+set(GTE_VERSION_MAJOR 7)
+set(GTE_VERSION_MINOR 0)
 
 project(Imagics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
-cmake_minimum_required(VERSION 3.8)
 add_subdirectory(AdaptiveSkeletonClimbing2)
 add_subdirectory(AdaptiveSkeletonClimbing3)
 add_subdirectory(BSplineInterpolation)

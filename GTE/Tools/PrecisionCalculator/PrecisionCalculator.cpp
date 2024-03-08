@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -13,6 +13,7 @@ using namespace gte;
 // FusedMultiplyAdd
 // SumOfTwoSquares
 // RotatingCalipersAngle
+// DeterminantSubInputs (x0 - y0) * (u0 - v0) - (x1 - y1) * (u1 - v1)
 //
 // PrimalQuery2Determinant2
 // PrimalQuery2Determinant3
@@ -86,6 +87,16 @@ int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
     BSPrecision dot = diff * diff + diff * diff;
     BSPrecision sqrSinAngle = dot * dot * dot;
     return (forBSNumber ? sqrSinAngle.bsn.maxWords : sqrSinAngle.bsr.maxWords);
+}
+
+int DeterminantSubInputs(BSPrecision::Type type, bool forBSNumber)
+{
+    // Real det2 = a00 * a11 - a01 * a10
+    BSPrecision input(type);
+    BSPrecision diff = input - input;
+    BSPrecision prod = diff * diff;
+    BSPrecision det2 = prod - prod;
+    return (forBSNumber ? det2.bsn.maxWords : det2.bsr.maxWords);
 }
 
 int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
@@ -608,6 +619,11 @@ int main()
     bsNumberDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, true);  // 394
     bsRationalFloatWords = RotatingCalipersAngle(BSPrecision::Type::IS_FLOAT, false);  // 209
     bsRationalDoubleWords = RotatingCalipersAngle(BSPrecision::Type::IS_DOUBLE, false);  // 1574
+
+    bsNumberFloatWords = DeterminantSubInputs(BSPrecision::Type::IS_FLOAT, true);  // 18
+    bsNumberDoubleWords = DeterminantSubInputs(BSPrecision::Type::IS_DOUBLE, true);  // 132
+    bsRationalFloatWords = DeterminantSubInputs(BSPrecision::Type::IS_FLOAT, false);  // 70
+    bsRationalDoubleWords = DeterminantSubInputs(BSPrecision::Type::IS_DOUBLE, false);  // 525
 
     bsNumberFloatWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_FLOAT, true);  // 18
     bsNumberDoubleWords = PrimalQuery2Determinant2(BSPrecision::Type::IS_DOUBLE, true);  // 132

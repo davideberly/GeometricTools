@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.12.03
 
 #pragma once
 
@@ -60,7 +60,7 @@ namespace gte
             T const zero = static_cast<T>(0);
             Vector3<T> origin = plane.constant * plane.normal;
             Vector3<T> normal = plane.normal;
-            std::array<bool, 3> reflect{ false, false };
+            std::array<bool, 3> reflect{ false, false, false };
             for (int32_t i = 0; i < 3; ++i)
             {
                 if (normal[i] < zero)

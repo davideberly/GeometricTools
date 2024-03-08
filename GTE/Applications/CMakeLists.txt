@@ -1,6 +1,7 @@
-﻿project(gtapplications VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
+﻿cmake_minimum_required(VERSION 3.8)
 
-cmake_minimum_required(VERSION 3.8)
+project(gtapplications VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
+
 option(BUILD_RELEASE_LIB "Build release library" OFF)
 option(BUILD_SHARED_LIB "Build shared library" OFF)
 set(CMAKE_CXX_STANDARD 14)

@@ -1,11 +1,13 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.10
+// Version: 6.1.2024.01.06
 
 #include "RoughPlaneThinRod2Window2.h"
+
+//#define SINGLE_STEP
 
 RoughPlaneThinRod2Window2::RoughPlaneThinRod2Window2(Parameters& parameters)
     :

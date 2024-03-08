@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -854,8 +854,6 @@ namespace gte
             ConstrainedDelaunay2<T> cdt;
             cdt(points);
 
-            size_t counter = 0;
-
             std::vector<int32_t> outEdge;
             std::queue<size_t> queue;
             queue.push(0);
@@ -873,7 +871,6 @@ namespace gte
                     std::array<int32_t, 2> edge = { node.polygon[i0], node.polygon[i1] };
                     outEdge.clear();
                     (void)cdt.Insert(edge, outEdge);
-                    ++counter;
                     if (outEdge.size() > 2)
                     {
                         // The polygon edge intersects additional vertices in

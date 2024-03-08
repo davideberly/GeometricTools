@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -47,7 +47,7 @@ private:
     std::shared_ptr<RasterizerState> mNoCullWireState;
 
     // Resources shared by direct and indirect drawing of voxels.
-    MarchingCubes mMarchingCubes;
+    MarchingCubes<int32_t> mMarchingCubes;
     std::shared_ptr<StructuredBuffer> mLookup;
     std::shared_ptr<StructuredBuffer> mImage;
     std::shared_ptr<ConstantBuffer> mParametersBuffer;

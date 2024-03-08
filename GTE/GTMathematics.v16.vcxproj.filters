@@ -1629,5 +1629,65 @@
     <ClInclude Include="Mathematics\DistLine2Circle2.h">
       <Filter>Distance\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\ReparameterizeByArclength.h">
+      <Filter>CurvesSurfacesVolumes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteQuintic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteCubic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteBicubic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteBiquintic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteTriquintic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\HermiteTricubic.h">
+      <Filter>Interpolation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine2Arc2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment2Circle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment2Arc2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistRay2Arc2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistCircle2Circle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\STLBinaryFile.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\RootsGeneralPolynomial.h">
+      <Filter>NumericalMethods</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrLine3Rectangle3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrRay3Rectangle3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

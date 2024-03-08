@@ -121,7 +121,9 @@
     <ClInclude Include="Mathematics\DisjointIntervals.h" />
     <ClInclude Include="Mathematics\DisjointRectangles.h" />
     <ClInclude Include="Mathematics\DistAlignedBox3OrientedBox3.h" />
+    <ClInclude Include="Mathematics\DistCircle2Circle2.h" />
     <ClInclude Include="Mathematics\DistLine2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistLine2Arc2.h" />
     <ClInclude Include="Mathematics\DistLine2Circle2.h" />
     <ClInclude Include="Mathematics\DistLine2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistLine3CanonicalBox3.h" />
@@ -135,11 +137,14 @@
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />
     <ClInclude Include="Mathematics\DistRay2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistRay2Arc2.h" />
     <ClInclude Include="Mathematics\DistRay2Circle2.h" />
     <ClInclude Include="Mathematics\DistRay2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h" />
+    <ClInclude Include="Mathematics\DistSegment2Arc2.h" />
+    <ClInclude Include="Mathematics\DistSegment2Circle2.h" />
     <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h" />
@@ -231,6 +236,12 @@
     <ClInclude Include="Mathematics\GradientAnisotropic3.h" />
     <ClInclude Include="Mathematics\Halfspace.h" />
     <ClInclude Include="Mathematics\HashCombine.h" />
+    <ClInclude Include="Mathematics\HermiteBicubic.h" />
+    <ClInclude Include="Mathematics\HermiteBiquintic.h" />
+    <ClInclude Include="Mathematics\HermiteCubic.h" />
+    <ClInclude Include="Mathematics\HermiteQuintic.h" />
+    <ClInclude Include="Mathematics\HermiteTricubic.h" />
+    <ClInclude Include="Mathematics\HermiteTriquintic.h" />
     <ClInclude Include="Mathematics\Histogram.h" />
     <ClInclude Include="Mathematics\Hyperellipsoid.h" />
     <ClInclude Include="Mathematics\Hyperplane.h" />
@@ -307,6 +318,7 @@
     <ClInclude Include="Mathematics\IntrLine3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrLine3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrLine3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrLine3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrLine3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrLine3Torus3.h" />
     <ClInclude Include="Mathematics\IntrLine3Triangle3.h" />
@@ -342,6 +354,7 @@
     <ClInclude Include="Mathematics\IntrRay3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrRay3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrRay3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrRay3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrRay3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrRay3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrSegment2AlignedBox2.h" />
@@ -358,6 +371,7 @@
     <ClInclude Include="Mathematics\IntrSegment3Ellipsoid3.h" />
     <ClInclude Include="Mathematics\IntrSegment3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Plane3.h" />
+    <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Sphere3.h" />
     <ClInclude Include="Mathematics\IntrSegment3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrSphere3Cone3.h" />
@@ -425,6 +439,7 @@
     <ClInclude Include="Mathematics\RectangleMesh.h" />
     <ClInclude Include="Mathematics\RectanglePatchMesh.h" />
     <ClInclude Include="Mathematics\RemezAlgorithm.h" />
+    <ClInclude Include="Mathematics\ReparameterizeByArclength.h" />
     <ClInclude Include="Mathematics\RevolutionMesh.h" />
     <ClInclude Include="Mathematics\RigidBody.h" />
     <ClInclude Include="Mathematics\RootsBisection.h" />
@@ -432,6 +447,7 @@
     <ClInclude Include="Mathematics\RootsBisection2.h" />
     <ClInclude Include="Mathematics\RootsBrentsMethod.h" />
     <ClInclude Include="Mathematics\RootsCubic.h" />
+    <ClInclude Include="Mathematics\RootsGeneralPolynomial.h" />
     <ClInclude Include="Mathematics\RootsLinear.h" />
     <ClInclude Include="Mathematics\RootsPolynomial.h" />
     <ClInclude Include="Mathematics\RootsQuadratic.h" />
@@ -449,6 +465,7 @@
     <ClInclude Include="Mathematics\SqrtEstimate.h" />
     <ClInclude Include="Mathematics\StaticVETManifoldMesh2.h" />
     <ClInclude Include="Mathematics\StaticVTSManifoldMesh3.h" />
+    <ClInclude Include="Mathematics\STLBinaryFile.h" />
     <ClInclude Include="Mathematics\StringUtility.h" />
     <ClInclude Include="Mathematics\SurfaceExtractor.h" />
     <ClInclude Include="Mathematics\SurfaceExtractorCubes.h" />

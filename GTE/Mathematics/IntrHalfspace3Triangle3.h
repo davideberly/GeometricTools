@@ -1,9 +1,9 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2023
+// Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.11.20
 
 #pragma once
 
@@ -102,7 +102,7 @@ namespace gte
             //   3 0 0  none
 
             std::array<T, 3> s{};
-            int32_t numPositive = 0, numNegative = 0, numZero = 0;
+            int32_t numPositive = 0, numNegative = 0;
             for (int32_t i = 0; i < 3; ++i)
             {
                 s[i] = Dot(halfspace.normal, triangle.v[i]) - halfspace.constant;
@@ -113,10 +113,6 @@ namespace gte
                 else if (s[i] < (T)0)
                 {
                     ++numNegative;
-                }
-                else
-                {
-                    ++numZero;
                 }
             }
 
