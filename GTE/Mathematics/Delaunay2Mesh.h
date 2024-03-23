@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.03.12
 
 #pragma once
 
@@ -26,7 +26,7 @@ namespace gte
     // BSRational<*>.
 
     template <typename InputType, typename ComputeType, typename RationalType>
-    class // [[deprecated("Use Delaunay2Mesh<InputType> instead.")]]
+    class // [[deprecated("Use Delaunay2Mesh<T> instead.")]]
         Delaunay2Mesh<InputType, ComputeType, RationalType>
     {
     public:
@@ -172,6 +172,9 @@ namespace gte
             :
             mDelaunay(&delaunay)
         {
+            static_assert(std::is_floating_point<T>::value,
+                "The input type must be 'float' or 'double'.");
+
             LogAssert(
                 mDelaunay->GetDimension() == 2,
                 "Invalid Delaunay dimension.");
@@ -188,19 +191,19 @@ namespace gte
             return mDelaunay->GetNumTriangles();
         }
 
-        inline std::vector<Vector2<T>> const* GetVertices() const
+        inline Vector2<T> const* GetVertices() const
         {
             return mDelaunay->GetVertices();
         }
 
-        inline std::vector<int32_t> const& GetIndices() const
+        inline int32_t const* GetIndices() const
         {
-            return mDelaunay->GetIndices();
+            return mDelaunay->GetIndices().data();
         }
 
-        inline std::vector<int32_t> const& GetAdjacencies() const
+        inline int32_t const* GetAdjacencies() const
         {
-            return mDelaunay->GetAdjacencies();
+            return mDelaunay->GetAdjacencies().data();
         }
 
         // Containment queries.
@@ -223,7 +226,7 @@ namespace gte
             std::array<int32_t, 3> indices = { 0, 0, 0 };
             if (mDelaunay->GetIndices(t, indices))
             {
-                auto const& delaunayVertices = *mDelaunay->GetVertices();
+                auto const* delaunayVertices = mDelaunay->GetVertices();
                 for (size_t i = 0; i < 3; ++i)
                 {
                     vertices[i] = delaunayVertices[indices[i]];
@@ -255,13 +258,12 @@ namespace gte
             std::array<int32_t, 3> indices = { 0, 0, 0 };
             if (mDelaunay->GetIndices(t, indices))
             {
-                auto const& delaunayVertices = *mDelaunay->GetVertices();
-
-                std::array<Vector2<Rational>, 3> rtV;
+                auto const* delaunayVertices = mDelaunay->GetVertices();
+                std::array<Vector2<Rational>, 3> rtV{};
                 for (size_t i = 0; i < 3; ++i)
                 {
                     auto const& V = delaunayVertices[indices[i]];
-                    for (size_t j = 0; j < 2; ++j)
+                    for (int32_t j = 0; j < 2; ++j)
                     {
                         rtV[i][j] = static_cast<Rational>(V[j]);
                     }
@@ -281,7 +283,7 @@ namespace gte
 
             for (auto& b : bary)
             {
-                b = (T)0;
+                b = static_cast<T>(0);
             }
             return false;
         }
