@@ -41,6 +41,7 @@
     <ClInclude Include="Mathematics\ApprOrthogonalLine2.h" />
     <ClInclude Include="Mathematics\ApprOrthogonalLine3.h" />
     <ClInclude Include="Mathematics\ApprOrthogonalPlane3.h" />
+    <ClInclude Include="Mathematics\ApprParabola2.h" />
     <ClInclude Include="Mathematics\ApprParaboloid3.h" />
     <ClInclude Include="Mathematics\ApprParallelLines2.h" />
     <ClInclude Include="Mathematics\ApprPolynomial2.h" />
@@ -258,6 +259,7 @@
     <ClInclude Include="Mathematics\ImplicitSurface3.h" />
     <ClInclude Include="Mathematics\IncrementalDelaunay2.h" />
     <ClInclude Include="Mathematics\IndexAttribute.h" />
+    <ClInclude Include="Mathematics\InscribedFixedAspectRectInQuad.h" />
     <ClInclude Include="Mathematics\Integration.h" />
     <ClInclude Include="Mathematics\IntpAkima1.h" />
     <ClInclude Include="Mathematics\IntpAkimaNonuniform1.h" />
@@ -390,6 +392,7 @@
     <ClInclude Include="Mathematics\LCPSolver.h" />
     <ClInclude Include="Mathematics\LDLTDecomposition.h" />
     <ClInclude Include="Mathematics\LevenbergMarquardtMinimizer.h" />
+    <ClInclude Include="Mathematics\LieGroupsAlgebras.h" />
     <ClInclude Include="Mathematics\Line.h" />
     <ClInclude Include="Mathematics\LinearSystem.h" />
     <ClInclude Include="Mathematics\Log2Estimate.h" />
