@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.03.12
 
 #pragma once
 
@@ -42,7 +42,7 @@ namespace gte
         // which case the interpolation is valid.
         bool operator()(Vector3<Real> const& P, Real& F) const
         {
-            int32_t t = mMesh->GetContainingTetrahedron(P);
+            int32_t t = static_cast<int32_t>(mMesh->GetContainingTetrahedron(P));
             if (t == -1)
             {
                 // The point is outside the tetrahedralization.

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.03.12
 
 #pragma once
 
@@ -33,7 +33,7 @@ namespace gte
     // BSRational<*>.
 
     template <typename InputType, typename ComputeType, typename RationalType>
-    class // [[deprecated("Use IntpSphere2<InputType> instead.")]]
+    class // [[deprecated("Use IntpSphere2<T> instead.")]]
         IntpSphere2<InputType, ComputeType, RationalType>
     {
     public:
@@ -47,6 +47,9 @@ namespace gte
             :
             mMesh(mDelaunay)
         {
+            static_assert(std::is_floating_point<InputType>::value,
+                "The input type must be 'float' or 'double'.");
+
             // Copy the input data.  The larger arrays are used to support
             // wrap-around in the Delaunay triangulation for the interpolator.
             int32_t totalPoints = 3 * numPoints;
@@ -149,6 +152,9 @@ namespace gte
             :
             mMesh(mDelaunay)
         {
+            static_assert(std::is_floating_point<T>::value,
+                "The input type must be 'float' or 'double'.");
+
             // Copy the input data.  The larger arrays are used to support
             // wrap-around in the Delaunay triangulation for the interpolator.
             int32_t totalPoints = 3 * numPoints;

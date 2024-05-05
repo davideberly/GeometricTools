@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.08
+// Version: 6.0.2024.03.24
 
 #include "Interpolation2DWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -176,15 +176,13 @@ void Interpolation2DWindow3::CreateCommonObjects()
         }
     }
 
-    mF[0] = 0.0f;   mDFDX[0] = -0.125f;     mDFDY[0] = -0.125f;
-    mF[1] = 1.0f;   mDFDX[1] = 0.0f;        mDFDY[1] = -0.25f;
-    mF[2] = 0.5f;   mDFDX[2] = 0.25f;       mDFDY[2] = 0.0f;
-    mF[3] = 1.0f;   mDFDX[3] = -0.0625f;    mDFDY[3] = 0.0625f;
-    mF[4] = 1.0f;   mDFDX[4] = 0.0625f;     mDFDY[4] = -0.0625f;
-    mF[5] = 0.25f;  mDFDX[5] = 0.0f;        mDFDY[5] = -0.25f;
-
-    std::fill(mDFDX.begin(), mDFDX.end(), 0.0f);
-    std::fill(mDFDY.begin(), mDFDY.end(), 0.0f);
+    std::uniform_real_distribution<float> urd(-1.0f, 1.0f);
+    for (size_t i = 0; i < 6; ++i)
+    {
+        mF[i] = urd(mte);
+        mDFDX[i] = urd(mte);
+        mDFDY[i] = urd(mte);
+    }
 }
 
 void Interpolation2DWindow3::OnPrecreateMesh()
@@ -491,7 +489,7 @@ Interpolation2DWindow3::SimpleMesh::SimpleMesh()
     mAdjacencies[0] = -1;  mAdjacencies[1] = 3;  mAdjacencies[2] = -1;
     mAdjacencies[3] = -1;  mAdjacencies[4] = -1;  mAdjacencies[5] = 3;
     mAdjacencies[6] = 3;  mAdjacencies[7] = -1;  mAdjacencies[8] = -1;
-    mAdjacencies[9] = 0;  mAdjacencies[10] = 1;  mAdjacencies[11] = 2;
+    mAdjacencies[9] = 1;  mAdjacencies[10] = 2;  mAdjacencies[11] = 0;
 }
 
 int32_t Interpolation2DWindow3::SimpleMesh::GetNumVertices() const

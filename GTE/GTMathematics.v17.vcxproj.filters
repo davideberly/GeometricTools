@@ -1683,5 +1683,23 @@
     <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTree.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ApprParabola2.h">
+      <Filter>Approximation</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\InscribedFixedAspectRectInQuad.h">
+      <Filter>Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\LieGroupsAlgebras.h">
+      <Filter>Algebra</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

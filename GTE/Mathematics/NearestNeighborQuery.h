@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.03.25
 
 #pragma once
 
@@ -15,11 +15,11 @@
 // a point in a space of the specified dimension N. The split order is always
 // 0,1,2,...,N-1. The number of sites at a leaf node is controlled by
 // 'maxLeafSize' and the maximum level of the tree is controlled by
-// 'maxLevels'. The points are of type Vector<N,Real>. The 'Site' is a
-// structure of information that minimally implements the function
-// 'Vector<N,Real> GetPosition () const'. The Site template parameter
-// allows the query to be applied even when it has more local information
-// than just point location.
+// 'maxLevels'. The points are of type Vector<N,T>. The 'Site' is a structure
+// of information that minimally implements the function
+// 'Vector<N,T> GetPosition() const'. The Site template parameter allows the
+// query to be applied even when it has more local information than just point
+// location.
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/Vector.h>
@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <queue>
 #include <utility>
 #include <vector>
 
@@ -38,6 +39,13 @@ namespace gte
     struct PositionSite
     {
         Vector<N, T> position;
+
+        PositionSite()
+            :
+            position{}
+        {
+            position.MakeZero();
+        }
 
         PositionSite(Vector<N, T> const& p)
             :
@@ -58,6 +66,15 @@ namespace gte
         Vector<N, T> position;
         Vector<N, T> direction;
 
+        PositionDirectionSite()
+            :
+            position{},
+            direction{}
+        {
+            position.MakeZero();
+            direction.MakeZero();
+        }
+
         PositionDirectionSite(Vector<N, T> const& p, Vector<N, T> const& d)
             :
             position(p),
@@ -71,16 +88,16 @@ namespace gte
         }
     };
 
-    template <int32_t N, typename Real, typename Site>
+    template <int32_t N, typename T, typename Site>
     class NearestNeighborQuery
     {
     public:
         // Supporting data structures.
-        typedef std::pair<Vector<N, Real>, int32_t> SortedPoint;
+        using SortedPoint = std::pair<Vector<N, T>, int32_t>;
 
         struct Node
         {
-            Real split;
+            T split;
             int32_t axis;
             int32_t numSites;
             int32_t siteOffset;
@@ -130,7 +147,7 @@ namespace gte
             return mLargestNodeSize;
         }
 
-        int32_t GetNumNodes() const
+        inline int32_t GetNumNodes() const
         {
             return static_cast<int32_t>(mNodes.size());
         }
@@ -143,19 +160,17 @@ namespace gte
         // Compute up to MaxNeighbors nearest neighbors within the specified
         // radius of the point. The returned integer is the number of
         // neighbors found, possibly zero. The neighbors array stores indices
-        // into the array passed to the constructor.
+        // into the array passed to the constructor. When MaxNeighbors is
+        // large and the number of queries is large, performance is better
+        // when using a std::priority_queue.
         template <int32_t MaxNeighbors>
-        int32_t FindNeighbors(Vector<N, Real> const& point, Real radius, std::array<int32_t, MaxNeighbors>& neighbors) const
+        int32_t FindNeighbors(Vector<N, T> const& point, T const& radius,
+            std::array<int32_t, MaxNeighbors>& neighbors) const
         {
-            Real sqrRadius = radius * radius;
-            int32_t numNeighbors = 0;
-            std::array<int32_t, MaxNeighbors + 1> localNeighbors;
-            std::array<Real, MaxNeighbors + 1> neighborSqrLength;
-            for (int32_t i = 0; i <= MaxNeighbors; ++i)
-            {
-                localNeighbors[i] = -1;
-                neighborSqrLength[i] = std::numeric_limits<Real>::max();
-            }
+            static_assert(MaxNeighbors >= 1, "Invalid maximum number of neighbors.");
+
+            T sqrRadius = radius * radius;
+            NNPriorityQueue maxHeap{};
 
             // The kd-tree construction is recursive, simulated here by using
             // a stack. The maximum depth is limited to 32, because the number
@@ -165,113 +180,84 @@ namespace gte
             int32_t top = 0;
             stack[0] = 0;
 
-            int32_t maxNeighbors = MaxNeighbors;
-            if (maxNeighbors == 1)
+            while (top >= 0)
             {
-                while (top >= 0)
-                {
-                    Node node = mNodes[stack[top--]];
+                Node node = mNodes[stack[top--]];
 
-                    if (node.siteOffset != -1)
+                if (node.siteOffset != -1)
+                {
+                    for (int32_t i = 0, j = node.siteOffset; i < node.numSites; ++i, ++j)
                     {
-                        for (int32_t i = 0, j = node.siteOffset; i < node.numSites; ++i, ++j)
+                        Vector<N, T> diff = mSortedPoints[j].first - point;
+                        T sqrLength = Dot(diff, diff);
+                        if (sqrLength <= sqrRadius)
                         {
-                            auto diff = mSortedPoints[j].first - point;
-                            auto sqrLength = Dot(diff, diff);
-                            if (sqrLength <= sqrRadius)
+                            // Keep track of the nearest neighbors.
+                            if (maxHeap.size() < MaxNeighbors)
                             {
-                                // Maintain the nearest neighbors.
-                                if (sqrLength <= neighborSqrLength[0])
-                                {
-                                    localNeighbors[0] = mSortedPoints[j].second;
-                                    neighborSqrLength[0] = sqrLength;
-                                    numNeighbors = 1;
-                                }
+                                maxHeap.push(std::make_pair(sqrLength, mSortedPoints[j].second));
+                            }
+                            else if (sqrLength < maxHeap.top().first)
+                            {
+                                maxHeap.pop();
+                                maxHeap.push(std::make_pair(sqrLength, mSortedPoints[j].second));
                             }
                         }
                     }
-
-                    if (node.left != -1 && point[node.axis] - radius <= node.split)
-                    {
-                        stack[++top] = node.left;
-                    }
-
-                    if (node.right != -1 && point[node.axis] + radius >= node.split)
-                    {
-#if defined(GTE_USE_MSWINDOWS)
-#pragma warning(disable : 28020)
-#endif
-                        stack[++top] = node.right;
-#if defined(GTE_USE_MSWINDOWS)
-#pragma warning(default : 28020)
-#endif
-                    }
                 }
-            }
-            else
-            {
-                while (top >= 0)
+
+                if (node.left != -1 && point[node.axis] - radius <= node.split)
                 {
-                    Node node = mNodes[stack[top--]];
+                    stack[++top] = node.left;
+                }
 
-                    if (node.siteOffset != -1)
-                    {
-                        for (int32_t i = 0, j = node.siteOffset; i < node.numSites; ++i, ++j)
-                        {
-                            Vector<N, Real> diff = mSortedPoints[j].first - point;
-                            Real sqrLength = Dot(diff, diff);
-                            if (sqrLength <= sqrRadius)
-                            {
-                                // Maintain the nearest neighbors.
-                                int32_t k;
-                                for (k = 0; k < numNeighbors; ++k)
-                                {
-                                    if (sqrLength <= neighborSqrLength[k])
-                                    {
-                                        for (int32_t n = numNeighbors; n > k; --n)
-                                        {
-                                            localNeighbors[n] = localNeighbors[static_cast<size_t>(n) - 1];
-                                            neighborSqrLength[n] = neighborSqrLength[static_cast<size_t>(n) - 1];
-                                        }
-                                        break;
-                                    }
-                                }
-                                if (k < MaxNeighbors)
-                                {
-                                    localNeighbors[k] = mSortedPoints[j].second;
-                                    neighborSqrLength[k] = sqrLength;
-                                }
-                                if (numNeighbors < MaxNeighbors)
-                                {
-                                    ++numNeighbors;
-                                }
-                            }
-                        }
-                    }
-
-                    if (node.left != -1 && point[node.axis] - radius <= node.split)
-                    {
-                        stack[++top] = node.left;
-                    }
-
-                    if (node.right != -1 && point[node.axis] + radius >= node.split)
-                    {
+                if (node.right != -1 && point[node.axis] + radius >= node.split)
+                {
 #if defined(GTE_USE_MSWINDOWS)
 #pragma warning(disable : 28020)
+// Microsoft Visual Studio 2022 (17.9.4) generates warning C28020 for the next
+// line of code. The warning is
+// "The expression '0<=_Param(1)&&_Param(1)<=32-1' is not true at this call."
+// I believe the analyzer decides that the stack[] can overflow. However,
+// the constructor for this class has a LogAssert that mMaxLevel <= 32. This
+// condition ensures that the stack cannot have more than 32 elements, but
+// the analyzer is not able to infer this.
 #endif
-                        stack[++top] = node.right;
+                    stack[++top] = node.right;
 #if defined(GTE_USE_MSWINDOWS)
 #pragma warning(default : 28020)
 #endif
-                    }
                 }
             }
 
-
-            for (int32_t i = 0; i < numNeighbors; ++i)
+            size_t nidx = 0;
+            int32_t numNeighbors = static_cast<int32_t>(maxHeap.size());
+            while (!maxHeap.empty())
             {
-                neighbors[i] = localNeighbors[i];
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+// Microsoft Visual Studio 2022 (17.9.4) generates warning C28020 for the next
+// line of code. The warning is
+// "The expression '0<=_Param(1)&&_Param(1)<=1-1' is not true at this call."
+// It is not clear what the analyzer is complaining about.
+#endif
+                neighbors[nidx++] = maxHeap.top().second;
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
+                maxHeap.pop();
             }
+
+            // TODO: Removing the final set of items from the heap can be a
+            // major bottleneck when the number of neighbors is large, say
+            // 256 or larger. Evaluate using this method of copying instead.
+            // 
+            //   int32_t numNeighbors = static_cast<int32_t>(maxHeap.size());
+            //   std::vector<VIPair> const& container = maxHeap.GetContainer();
+            //   for (size_t i = 0; i < maxHeap.size(); ++i)
+            //   {
+            //       neighbors[i] = container[i].second;
+            //   }
 
             return numNeighbors;
         }
@@ -282,6 +268,21 @@ namespace gte
         }
 
     private:
+        using VIPair = std::pair<T, int32_t>;
+
+        // See the comments in FindNeighbors about an alternative to copying
+        // the std::priority_queue elements to the neighbors[] array. The
+        // underlying container of std::priority_queue is protected, so for
+        // portability, a derived class must be used to expose that container.
+        class NNPriorityQueue : public std::priority_queue<VIPair>
+        {
+        public:
+            std::vector<VIPair> const& GetContainer() const
+            {
+                return this->c;
+            }
+        };
+
         // Populate the node so that it contains the points split along the
         // coordinate axes.
         void Build(int32_t numSites, int32_t siteOffset, int32_t nodeIndex, int32_t level)
@@ -315,12 +316,14 @@ namespace gte
                 std::nth_element(begin, mid, end, sorter);
 
                 // Get the median position.
-                node.split = mSortedPoints[static_cast<size_t>(siteOffset) + static_cast<size_t>(halfNumSites)].first[axis];
+                size_t index = static_cast<size_t>(siteOffset) + static_cast<size_t>(halfNumSites);
+                node.split = mSortedPoints[index].first[axis];
                 node.axis = axis;
                 node.siteOffset = -1;
 
                 // Apply a divide-and-conquer step.
-                int32_t left = (int32_t)mNodes.size(), right = left + 1;
+                int32_t left = static_cast<int32_t>(mNodes.size());
+                int32_t right = left + 1;
                 node.left = left;
                 node.right = right;
                 mNodes.push_back(Node());
@@ -334,7 +337,7 @@ namespace gte
             {
                 // The number of points is small enough or we have run out of
                 // depth, so make this node a leaf.
-                node.split = std::numeric_limits<Real>::max();
+                node.split = std::numeric_limits<T>::max();
                 node.axis = -1;
                 node.siteOffset = siteOffset;
                 node.left = -1;

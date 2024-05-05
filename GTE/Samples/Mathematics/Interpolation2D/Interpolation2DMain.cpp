@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.03.24
 
 #include "Interpolation2DWindow3.h"
 #include <iostream>
@@ -12,7 +12,7 @@ int32_t main()
 {
     try
     {
-        Window::Parameters parameters(L"Interpolation2DWindow3", 0, 0, 512, 512);
+        Window::Parameters parameters(L"Interpolation2DWindow3", 0, 0, 768, 768);
         auto window = TheWindowSystem.Create<Interpolation2DWindow3>(parameters);
         TheWindowSystem.MessagePump(window, TheWindowSystem.DEFAULT_ACTION);
         TheWindowSystem.Destroy(window);

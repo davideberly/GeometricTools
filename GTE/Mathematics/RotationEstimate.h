@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.08.08
+// Version: 6.7.2024.04.26
 
 #pragma once
 
 // Rotation matrices can be constructed using estimates of the coefficients
 // that involve trigonometric and polynomial terms. See
-// https://www.geometrictools.com/Documentation/RotationEstimation.pdf
+// https://www.geometrictools.com/Documentation/ApproximateRotationMatrix.pdf
 // for the length details.
 
 #include <Mathematics/Matrix3x3.h>
@@ -306,6 +306,78 @@ namespace gte
         3.2078506517763e-14,    // degree 14
         4.7774284528401e-14     // degree 16
     };
+
+    // Constants for rotc4(t) = (t - sin(t))/t^3.
+    std::array<std::array<double, 9>, 7> constexpr C_ROTC4_EST_COEFF =
+    { {
+        {   // degree 4
+            +1.666661813592689343e-01,
+            -8.328498974646202896e-03,
+            +1.911744425053129385e-04
+        },
+        {   // degree 6
+            +1.666666647041342428e-01,
+            -8.333298484927197715e-03,
+            +1.983151947669098215e-04,
+            -2.667880597988307407e-06
+        },
+        {   // degree 8
+            +1.666666666610747703e-01,
+            -8.333333177830641014e-03,
+            +1.984120026488328388e-04,
+            -2.754638167851095519e-06,
+            +2.434739842192313304e-08
+        },
+        {   // degree 10
+            +1.666666666666548375e-01,
+            -8.333333332858779118e-03,
+            +1.984126953155111963e-04,
+            -2.755724509529648579e-06,
+            +2.504406966203295571e-08,
+            -1.565598362112428459e-10
+        },
+        {   // degree 12
+            +1.666666666666666474e-01,
+            -8.333333333332277341e-03,
+            +1.984126984032422657e-04,
+            -2.755731890577082639e-06,
+            +2.505205730565559701e-08,
+            -1.605482763895217150e-10,
+            +7.474149667203868085e-13
+        },
+        {   // degree 14
+            +1.666666666666666667e-01,
+            -8.333333333333331542e-03,
+            +1.984126984126773376e-04,
+            -2.755731922304019196e-06,
+            +2.505210817677023291e-08,
+            -1.605901880350512037e-10,
+            +7.645497840414198876e-13,
+            -2.753603733509153125e-14
+        },
+        {   // degree 16
+            +1.666666666666666667e-01,
+            -8.333333333333333331e-03,
+            +1.984126984126983769e-04,
+            -2.755731922398382640e-06,
+            +2.505210838484547384e-08
+            -1.605904373998917420e-10,
+            +7.647154485773692262e-13,
+            -2.810942149025141692e-15,
+            +8.065584188855569398e-18
+        }
+    } };
+
+    std::array<double, 7> constexpr C_ROTC4_EST_MAX_ERROR =
+    {
+        2.9118443863947e-06,    // degree 4
+        1.1775194543557e-08,    // degree 6
+        3.3551378409470e-11,    // degree 8
+        7.0975185732742e-14,    // degree 10
+        1.1586733901401e-16,    // degree 12
+        1.5038700542518e-19,    // degree 14
+        1.5889884416916e-22     // degree 16
+    };
 }
 
 namespace gte
@@ -402,6 +474,29 @@ namespace gte
         return poly;
     }
 
+    // Estimate rotc4(t) = (t - sin(t))/t^3 for t in
+    // [0,pi]. For example, a degree-6 estimate is
+    //   float t;  // in [0,pi]
+    //   float result = RotC4Estimate<float, 6>(t);
+    template <typename T, size_t Degree>
+    inline T RotC4Estimate(T t)
+    {
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        size_t constexpr select = (Degree - 4) / 2;
+        auto constexpr& coeff = C_ROTC4_EST_COEFF[select];
+        size_t constexpr last = Degree / 2;
+        T tsqr = t * t;
+        T poly = static_cast<T>(coeff[last]);
+        for (size_t i = 0, index = last - 1; i < last; ++i, --index)
+        {
+            poly = static_cast<T>(coeff[index]) + poly * tsqr;
+        }
+        return poly;
+    }
+
     template <typename T, size_t Degree>
     T constexpr GetRotC0EstimateMaxError()
     {
@@ -440,6 +535,16 @@ namespace gte
             "Invalid degree.");
 
         return static_cast<T>(C_ROTC3_EST_MAX_ERROR[(Degree - 4) / 2]);
+    }
+
+    template <typename T, size_t Degree>
+    T constexpr GetRotC4EstimateMaxError()
+    {
+        static_assert(
+            (Degree & 1) == 0 && 4 <= Degree && Degree <= 16,
+            "Invalid degree.");
+
+        return static_cast<T>(C_ROTC4_EST_MAX_ERROR[(Degree - 4) / 2]);
     }
 
     // Construct the estimate for the rotation matrix
