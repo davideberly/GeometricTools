@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.06.24
 
 #pragma once
 
@@ -19,20 +19,6 @@ namespace gte
         // is [-1,1].  For DirectX, set isDepthRangeZeroToOne to true.  For
         // OpenGL, set isDepthRangeZeroOne to false.
         Camera(bool isPerspective, bool isDepthRangeZeroOne);
-
-        // Support for parallax projection. You specify a convex quadrilateral
-        // viewport.  The points must be in camera coordinates and are ordered
-        // counterclockwise as viewed from the eyepoint.  The plane of the
-        // quadrilateral is the view plane and has an "extrude" value of 1.
-        // The nearExtrude value is in (0,infinity); this specifies the
-        // fraction from the eyepoint to the view plane containing the
-        // near-face of the cuboidal view volume.  The farExtrude value is in
-        // (nearExtrude,infinity); this specifies the fraction from the
-        // eyepoint at which to place the far-face of the cuboidal view
-        // volume.
-        void SetParallaxProjectionMatrix(Vector4<float> const& p00,
-            Vector4<float> const& p10, Vector4<float> const& p11,
-            Vector4<float> const& p01, float nearExtrude, float farExtrude);
 
         // The preview matrix is applied after the model-to-world but before
         // the view matrix.  It is used for transformations such as
