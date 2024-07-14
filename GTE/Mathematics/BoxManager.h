@@ -168,7 +168,7 @@ namespace gte
         }
 
         // If (i,j) is in the overlap set, then box i and box j are
-        // overlapping.  The indices are those for the the input array.  The
+        // overlapping.  The indices are those for the input array.  The
         // set elements (i,j) are stored so that i < j.
         inline std::set<EdgeKey<false>> const& GetOverlap() const
         {
