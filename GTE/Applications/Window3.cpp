@@ -53,6 +53,8 @@ bool Window3::OnResize(int32_t xSize, int32_t ySize)
         float upFovDegrees, aspectRatio, dMin, dMax;
         mCamera->GetFrustum(upFovDegrees, aspectRatio, dMin, dMax);
         mCamera->SetFrustum(upFovDegrees, GetAspectRatio(), dMin, dMax);
+        mTrackBall.SetXSize(xSize);
+        mTrackBall.SetYSize(ySize);
         mPVWMatrices.Update();
         return true;
     }

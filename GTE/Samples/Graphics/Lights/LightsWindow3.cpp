@@ -264,7 +264,7 @@ void LightsWindow3::CreateScene()
 
     // Create the effects.  Note that the material, lighting and geometry
     // constant buffers are shared by the vertex and pixel shaders.  This
-    // is important to remember when processing keystroked; see the comments
+    // is important to remember when processing keystrokes; see the comments
     // in OnCharPress.
     for (int32_t gt = 0; gt < GNUM; ++gt)
     {

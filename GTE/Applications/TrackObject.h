@@ -34,6 +34,16 @@ namespace gte
             return mYSize;
         }
 
+        inline void SetXSize(int32_t size) 
+        {
+            mXSize = size;
+        }
+
+        inline void SetYSize(int32_t size) 
+        {
+            mYSize = size;
+        }
+
         inline std::shared_ptr<Camera> const& GetCamera() const
         {
             return mCamera;

@@ -153,7 +153,7 @@ namespace gte
     protected:
         // The derived classes must override ComputeInteriorBox, calling the
         // base class function first. They must then compute the box extents
-        // to ensure the box contains the primitives represented by the ndoe.
+        // to ensure the box contains the primitives represented by the node.
         virtual void ComputeInteriorBox(size_t i0, size_t i1, OrientedBox3<T>& box)
         {
             // Compute the mean of the centroids.

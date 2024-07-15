@@ -1,3 +1,4 @@
+#pragma once
 // David Eberly, Geometric Tools, Redmond WA 98052
 // Copyright (c) 1998-2024
 // Distributed under the Boost Software License, Version 1.0.
