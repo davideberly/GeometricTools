@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.07.17
 
 #pragma once
 
@@ -1009,6 +1009,9 @@ namespace gte
             target.SetSign(source.GetSign());
             target.SetBiasedExponent(source.GetBiasedExponent());
             target.GetUInteger().CopyFrom(source.GetUInteger());
+#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+            target.mValue = (double)target;
+#endif
             return target;
         }
 

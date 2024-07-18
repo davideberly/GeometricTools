@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.07.17
 
 #pragma once
 
@@ -321,12 +321,44 @@ namespace gte
         }
 
         // Member access.
+
+        // A block of calls involving SetSign, SetBiasedExponent, and
+        // GetUInteger().CopyFrom imply a deferred creation of a rational
+        // number. When GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE is enabled, the
+        // update of mValue can fail if it were attempted in each set/copy
+        // call. The update of mValue must itself be deferred until the
+        // end of the block, as illustrated next.
+        //   target.SetSign(source.GetSign());
+        //   target.SetBiasedExponent(source.GetBiasedExponent());
+        //   target.GetUInteger().CopyFrom(source.GetUInteger());
+        //   #if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
+        //   target.mValue = static_cast<double>(target);
+        //   #endif
+        // The macro call is a no-op if GTL_BINARY_SCIENTIFIC_SHOW_DOUBLE is
+        // disabled, in which case mValue does not exist.
+        //
+        // If you are negating the sign of a rational number, use Negate()
+        // which can update mValue successfully. Alternatively, if r is a
+        // rational number, you can use "r = -r;" which is inefficient
+        // because all member data is copied, whereas Negate() just modifies
+        // mSign.
         inline void SetSign(int32_t sign)
         {
+            // WARNING: It is possible that SetSign produces an invalid
+            // rational representation.
+            //   (sign == mSign), SetSign is a no-op which is valid
+            //   (sign != 0 && sign = -mSign), the sign change is valid
+            //   ((sign == 0 && mSign != 0) || (sign != 0 && mSign == 0),
+            //     which are invalid
+            // Because of the need to create rational numbers sequentially
+            // using SetSign, SetBiasedExponent, and copy of integer bits,
+            // the invalid representation is temporary but should become
+            // valid at the end of the block of calls. Therefore, no
+            // exceptions are thrown by this function. At the end of the
+            // block of calls, if the representation is invalid, an
+            // exception most likely will occur in UIntegerALU32::GetPrefix.
+
             mSign = sign;
-#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
-            mValue = (double)*this;
-#endif
         }
 
         inline int32_t GetSign() const
@@ -345,9 +377,6 @@ namespace gte
         inline void SetBiasedExponent(int32_t biasedExponent)
         {
             mBiasedExponent = biasedExponent;
-#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
-            mValue = (double)*this;
-#endif
         }
 
         inline int32_t GetBiasedExponent() const
@@ -358,9 +387,6 @@ namespace gte
         inline void SetExponent(int32_t exponent)
         {
             mBiasedExponent = exponent - mUInteger.GetNumBits() + 1;
-#if defined(GTE_BINARY_SCIENTIFIC_SHOW_DOUBLE)
-            mValue = (double)*this;
-#endif
         }
 
         inline int32_t GetExponent() const
