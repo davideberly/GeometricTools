@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.07.24
 
 #pragma once
 
@@ -627,35 +627,34 @@ namespace gte
 
         size_t GetExtreme(VCompute3 const& direction, ComputeType& dMax)
         {
+            std::vector<uint32_t> visited(mNumVertices, 0);
             size_t vMax = 0;
             dMax = Dot(direction, mVertices[vMax]);
             for (size_t i = 0; i < mNumVertices; ++i)
             {
-                size_t vLocalMax = vMax;
-                ComputeType dLocalMax = dMax;
+                bool updatedDMax = false;
                 size_t const* adjacent = &mAdjacentPool[mVertexAdjacent[vMax]];
                 size_t numAdjacent = *adjacent++;
                 for (size_t j = 1; j <= numAdjacent; ++j)
                 {
                     size_t vCandidate = *adjacent++;
-                    ComputeType dCandidate = Dot(direction, mVertices[vCandidate]);
-                    if (dCandidate > dLocalMax)
+                    if (visited[vCandidate] == 0)
                     {
-                        vLocalMax = vCandidate;
-                        dLocalMax = dCandidate;
+                        ComputeType dCandidate = Dot(direction, mVertices[vCandidate]);
+                        if (dCandidate >= dMax)
+                        {
+                            vMax = vCandidate;
+                            dMax = dCandidate;
+                            updatedDMax = true;
+                        }
+                        visited[vCandidate] = 1;
                     }
                 }
-                if (vMax != vLocalMax)
-                {
-                    vMax = vLocalMax;
-                    dMax = dLocalMax;
-                }
-                else
+                if (!updatedDMax)
                 {
                     break;
                 }
             }
-
             return vMax;
         }
 
