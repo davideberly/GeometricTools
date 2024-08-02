@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.08.02
+// Version: 6.0.2024.08.03
 
 #pragma once
 
@@ -19,104 +19,97 @@
 #include <Mathematics/Vector2.h>
 #include <algorithm>
 #include <cstdint>
+#include <numeric>
 #include <type_traits>
 #include <vector>
 
-// Uncomment this to assert when an infinite loop is encountered in
-// ConvexHull2::GetTangent.
-//#define GTE_THROW_ON_CONVEXHULL2_INFINITE_LOOP
-
 namespace gte
 {
-    // The Real must be 'float' or 'double'.
-    template <typename Real>
+    // The T must be 'float' or 'double'.
+    template <typename T>
     class ConvexHull2
     {
     public:
-        // Supporting constants and types for rational arithmetic used in
-        // the exact predicate for sign computations.
-        static int32_t constexpr NumWords = std::is_same<Real, float>::value ? 18 : 132;
+        // Supporting constants and types for rational arithmetic used in the
+        // exact predicate for sign computations.
+        static int32_t constexpr NumWords = std::is_same<T, float>::value ? 18 : 132;
         using Rational = BSNumber<UIntegerFP32<NumWords>>;
-        using Interval = SWInterval<Real>;
+        using Interval = SWInterval<T>;
 
         // The class is a functor to support computing the convex hull of
         // multiple data sets using the same class object.
         ConvexHull2()
             :
-            mEpsilon(static_cast<Real>(0)),
             mDimension(0),
-            mLine(Vector2<Real>::Zero(), Vector2<Real>::Zero()),
+            mLine(Vector2<T>::Zero(), Vector2<T>::Zero()),
             mRationalPoints{},
             mConverted{},
             mNumPoints(0),
             mNumUniquePoints(0),
             mPoints(nullptr)
         {
-            static_assert(std::is_floating_point<Real>::value,
+            static_assert(std::is_floating_point<T>::value,
                 "The input type must be 'float' or 'double'.");
         }
 
         // The input is the array of points whose convex hull is required. The
-        // epsilon value is used to determine the intrinsic dimensionality of
-        // the vertices (d = 0, 1, or 2).  When epsilon is positive, the
-        // determination is fuzzy: points approximately the same point,
-        // approximately on a line, or planar.  The return value is 'true' if
-        // and only if the hull construction is successful.
-        bool operator()(int32_t numPoints, Vector2<Real> const* points, Real epsilon)
+        // return value is 'true' if the hull is 2-dimensional. It is 'false'
+        // if the hull is 0-dimensional or 1-dimensional. The first operator()
+        // must have at least 1 element. The second operator() throws an
+        // exception when numPoints <= 0 or points != nullptr. The points[]
+        // array must have at least numPoints elements.
+        bool operator()(std::vector<Vector2<T>> const& points)
+        {
+            return operator()(static_cast<int32_t>(points.size()), points.data());
+        }
+
+        bool operator()(int32_t numPoints, Vector2<T> const* points)
         {
             LogAssert(
                 numPoints > 0 && points != nullptr,
                 "Invalid input to ConvexHull2 operator().");
 
-            mEpsilon = std::max(epsilon, static_cast<Real>(0));
             mDimension = 0;
-            mLine.origin = Vector2<Real>::Zero();
-            mLine.direction = Vector2<Real>::Zero();
+            mLine.origin = Vector2<T>::Zero();
+            mLine.direction = Vector2<T>::Zero();
             mNumPoints = numPoints;
             mNumUniquePoints = 0;
             mPoints = points;
             mMerged.clear();
             mHull.clear();
 
-            // Allocate storage for any rational points that must be
-            // computed in the exact predicate.
+            // Allocate storage for any rational points that must be computed
+            // in the exact predicate.
             mRationalPoints.resize(mNumPoints);
             mConverted.resize(mNumPoints);
-            std::fill(mConverted.begin(), mConverted.end(), 0u);
+            std::fill(mConverted.begin(), mConverted.end(), 0);
 
-            // Sort the points.
-            mHull.resize(mNumPoints);
-            for (int32_t i = 0; i < mNumPoints; ++i)
+            // Sort the points indirectly. The mHull array is used to store
+            // the unique indices.
+            auto lessThanPoints = [this](std::size_t s0, std::size_t s1)
             {
-                mHull[i] = i;
-            }
-            std::sort(mHull.begin(), mHull.end(),
-                [points](int32_t i0, int32_t i1)
-                {
-                    if (points[i0][0] < points[i1][0])
-                    {
-                        return true;
-                    }
-                    if (points[i0][0] > points[i1][0])
-                    {
-                        return false;
-                    }
-                    return points[i0][1] < points[i1][1];
-                }
-            );
+                return mPoints[s0] < mPoints[s1];
+            };
 
-            // Remove duplicates.
-            auto newEnd = std::unique(mHull.begin(), mHull.end(),
-                [points](int32_t i0, int32_t i1)
-                {
-                    return points[i0] == points[i1];
-                }
-            );
+            auto equalPoints = [this](std::size_t s0, std::size_t s1)
+            {
+                return mPoints[s0] == mPoints[s1];
+            };
+
+            mHull.resize(mNumPoints);
+            std::iota(mHull.begin(), mHull.end(), 0);
+            std::sort(mHull.begin(), mHull.end(), lessThanPoints);
+            auto newEnd = std::unique(mHull.begin(), mHull.end(), equalPoints);
             mHull.erase(newEnd, mHull.end());
             mNumUniquePoints = static_cast<int32_t>(mHull.size());
 
             // Use a divide-and-conquer algorithm. The merge step computes
-            // the convex hull of two convex polygons.
+            // the convex hull of two convex polygons. The merge storage is
+            // allocated once to avoid reallocations during the recursive
+            // chain of the GetHull and Merge member functions. NOTE: If
+            // ConvexHull2 is re-implemented to use multithreading, the
+            // merge storage must be allocated per thread (one thread per
+            // subhull).
             mMerged.resize(mNumUniquePoints);
             int32_t i0 = 0, i1 = mNumUniquePoints - 1;
             GetHull(i0, i1);
@@ -144,26 +137,24 @@ namespace gte
             }
         }
 
-        // Dimensional information. If GetDimension() returns 1, the points
-        // lie on a line P+t*D (fuzzy comparison when epsilon > 0). You can
-        // sort these if you need a polyline output by projecting onto the
-        // line each vertex X = P+t*D, where t = Dot(D,X-P).
-        inline Real GetEpsilon() const
-        {
-            return mEpsilon;
-        }
-
+        // The dimension is 0 (hull is a single point), 1 (hull is a line
+        // segment) or 2 (hull is a convex polygon).
         inline int32_t GetDimension() const
         {
             return mDimension;
         }
 
-        inline Line2<Real> const& GetLine() const
+        // When dimension is 1, mLine is a floating-point approximation to the
+        // line containing the hull points.
+        inline Line2<T> const& GetLine() const
         {
             return mLine;
         }
 
-        // Member access.
+        // Member access. GetNumPoints() return the number of elements of the
+        // points[] array passed to the operator() functions. GetPoints()
+        // returns the points pointer. GetNumUniquePoints returns the number
+        // of unique points in the points[] array.
         inline int32_t GetNumPoints() const
         {
             return mNumPoints;
@@ -174,13 +165,21 @@ namespace gte
             return mNumUniquePoints;
         }
 
-        inline Vector2<Real> const* GetPoints() const
+        inline Vector2<T> const* GetPoints() const
         {
             return mPoints;
         }
 
-        // The convex hull is a convex polygon whose vertices are listed in
-        // counterclockwise order.
+        // Get the indices into the input 'points[]' that correspond to hull
+        // vertices. The returned array is organized according to the hull
+        // dimension.
+        //   0: The hull is a single point. The returned array has size 1 with
+        //      index corresponding to that point.
+        //   1: The hull is a line segment. The returned array has size 2 with
+        //      indices corresponding to the segment endpoints.
+        //   2: The hull is a convex polygon. The returned array has size N
+        //      with indices corresponding to the polygon vertices. The
+        //      vertices are counterclockwise ordered.
         inline std::vector<int32_t> const& GetHull() const
         {
             return mHull;
@@ -213,14 +212,14 @@ namespace gte
             // sorting of the points by x-components. We need to find two
             // mutually visible points, one on the left subhull and one on
             // the right subhull.
-            int32_t size0 = j1 - j0 + 1;
-            int32_t size1 = j3 - j2 + 1;
+            int32_t const size0 = j1 - j0 + 1;
+            int32_t const size1 = j3 - j2 + 1;
 
-            int32_t i;
-            Vector2<Real> p;
+            int32_t i{};
+            Vector2<T> p{};
 
             // Find the right-most point of the left subhull.
-            Vector2<Real> pmax0 = mPoints[mHull[j0]];
+            Vector2<T> pmax0 = mPoints[mHull[j0]];
             int32_t imax0 = j0;
             for (i = j0 + 1; i <= j1; ++i)
             {
@@ -233,7 +232,7 @@ namespace gte
             }
 
             // Find the left-most point of the right subhull.
-            Vector2<Real> pmin1 = mPoints[mHull[j2]];
+            Vector2<T> pmin1 = mPoints[mHull[j2]];
             int32_t imin1 = j2;
             for (i = j2 + 1; i <= j3; ++i)
             {
@@ -256,8 +255,8 @@ namespace gte
             GetTangent(j2, j3, j0, j1, iUR, iUL);
 
             // Construct the counterclockwise-ordered merged-hull vertices.
-            int32_t k;
             int32_t numMerged = 0;
+            int32_t k{};
 
             i = iUL;
             for (k = 0; k < size0; ++k)
@@ -269,7 +268,9 @@ namespace gte
                 }
                 i = (i < j1 ? i + 1 : j0);
             }
-            LogAssert(k < size0, "Unexpected condition.");
+            LogAssert(
+                k < size0,
+                "Unexpected condition.");
 
             i = iLR;
             for (k = 0; k < size1; ++k)
@@ -281,7 +282,9 @@ namespace gte
                 }
                 i = (i < j3 ? i + 1 : j2);
             }
-            LogAssert(k < size1, "Unexpected condition.");
+            LogAssert(
+                k < size1,
+                "Unexpected condition.");
 
             int32_t next = j0;
             for (k = 0; k < numMerged; ++k)
@@ -294,20 +297,18 @@ namespace gte
             i1 = next - 1;
         }
 
-        void GetTangent(int32_t j0, int32_t j1, int32_t j2, int32_t j3, int32_t& i0, int32_t& i1)
+        void GetTangent(int32_t j0, int32_t j1, int32_t j2, int32_t j3, int32_t& i0, int32_t& i1) const
         {
-            // In theory the loop terminates in a finite number of steps,
-            // but the upper bound for the loop variable is used to trap
-            // problems caused by floating-point roundoff errors that might
-            // lead to an infinite loop.
-
-            int32_t size0 = j1 - j0 + 1;
-            int32_t size1 = j3 - j2 + 1;
+            // The loop terminates in a finite number of steps, but the upper
+            // bound for the loop variable is used as a guard against an
+            // infinite loop. The infinite loop should not occur because
+            // rational arithmetic is used in ToLineExtended.
+            int32_t const size0 = j1 - j0 + 1;
+            int32_t const size1 = j3 - j2 + 1;
             int32_t const imax = size0 + size1;
-            int32_t i, iLm1, iRp1;
-            int32_t L0index, L1index, R0index, R1index;
+            int32_t L0index{}, L1index{}, R0index{}, R1index{};
 
-            for (i = 0; i < imax; i++)
+            for (int32_t i = 0; i < imax; ++i)
             {
                 // Get the endpoints of the potential tangent.
                 L1index = mHull[i0];
@@ -316,7 +317,7 @@ namespace gte
                 // Walk along the left hull to find the point of tangency.
                 if (size0 > 1)
                 {
-                    iLm1 = (i0 > j0 ? i0 - 1 : j1);
+                    int32_t iLm1 = (i0 > j0 ? i0 - 1 : j1);
                     L0index = mHull[iLm1];
                     auto order = ToLineExtended(R0index, L0index, L1index);
                     if (order == Order::NEGATIVE || order == Order::COLLINEAR_RIGHT)
@@ -329,7 +330,7 @@ namespace gte
                 // Walk along right hull to find the point of tangency.
                 if (size1 > 1)
                 {
-                    iRp1 = (i1 < j3 ? i1 + 1 : j2);
+                    int32_t iRp1 = (i1 < j3 ? i1 + 1 : j2);
                     R1index = mHull[iRp1];
                     auto order = ToLineExtended(L1index, R0index, R1index);
                     if (order == Order::NEGATIVE || order == Order::COLLINEAR_LEFT)
@@ -342,12 +343,6 @@ namespace gte
                 // The tangent segment has been found.
                 break;
             }
-
-            // Detect an "infinite loop" caused by floating point round-off
-            // errors.
-#if defined(GTE_THROW_ON_CONVEXHULL2_INFINITE_LOOP)
-            LogAssert(i < imax, "Unexpected condition.");
-#endif
         }
 
         // Memoized access to the rational representation of the points.
@@ -365,10 +360,10 @@ namespace gte
         }
 
         // An extended classification of the relationship of a point to a line
-        // segment.  For noncollinear points, the return value is
+        // segment. For noncollinear points, the return value is
         //   POSITIVE when <P,Q0,Q1> is a counterclockwise triangle
         //   NEGATIVE when <P,Q0,Q1> is a clockwise triangle
-        // For collinear points, the line direction is Q1-Q0.  The return
+        // For collinear points, the line direction is Q1-Q0. The return
         // value is
         //   COLLINEAR_LEFT when the line ordering is <P,Q0,Q1>
         //   COLLINEAR_RIGHT when the line ordering is <Q0,Q1,P>
@@ -387,9 +382,9 @@ namespace gte
 
         Order ToLineExtended(int32_t pIndex, int32_t q0Index, int32_t q1Index) const
         {
-            Vector2<Real> const& P = mPoints[pIndex];
-            Vector2<Real> const& Q0 = mPoints[q0Index];
-            Vector2<Real> const& Q1 = mPoints[q1Index];
+            Vector2<T> const& P = mPoints[pIndex];
+            Vector2<T> const& Q0 = mPoints[q0Index];
+            Vector2<T> const& Q1 = mPoints[q1Index];
 
             if (Q1[0] == Q0[0] && Q1[1] == Q0[1])
             {
@@ -407,9 +402,9 @@ namespace gte
             }
 
             // The theoretical classification relies on computing exactly the
-            // sign of the determinant.  Numerical roundoff errors can cause
+            // sign of the determinant. Numerical roundoff errors can cause
             // misclassification.
-            Real const zero(0);
+            T const zero = static_cast<T>(0);
             Interval ip0(P[0]), ip1(P[1]);
             Interval iq00(Q0[0]), iq01(Q0[1]), iq10(Q1[0]), iq11(Q1[1]);
             Interval ix0 = iq10 - iq00, iy0 = iq11 - iq01;
@@ -417,10 +412,10 @@ namespace gte
             Interval ix0y1 = ix0 * iy1;
             Interval ix1y0 = ix1 * iy0;
             Interval iDet = ix0y1 - ix1y0;
-            int32_t sign;
+            int32_t sign{};
 
-            Vector2<Rational> rDiff0, rDiff1;
-            Rational rDot;
+            Vector2<Rational> rDiff0{}, rDiff1{};
+            Rational rDot{};
             bool rDiff0Computed = false;
             bool rDiff1Computed = false;
             bool rDotComputed = false;
@@ -543,17 +538,14 @@ namespace gte
             }
         }
 
-        // The epsilon value is used for fuzzy determination of intrinsic
-        // dimensionality. If the dimension is 0 or 1, the constructor returns
-        // early. The caller is responsible for retrieving the dimension and
-        // taking an alternate path should the dimension be smaller than 2.
-        // If the dimension is 0, the caller may as well treat all points[]
-        // as a single point, say, points[0]. If the dimension is 1, the
-        // caller can query for the approximating line and project points[]
-        // onto it for further processing.
-        Real mEpsilon;
+        // If the dimension is 0 or 1, the operator() returns false. The
+        // caller is responsible for retrieving the dimension and taking an
+        // alternate path should the dimension be smaller than 2. If the
+        // dimension is 0, the points[] are all the same point. If the
+        // dimension is 1, the caller can query for the approximating line
+        // and project points[] onto it for further processing.
         int32_t mDimension;
-        Line2<Real> mLine;
+        Line2<T> mLine;
 
         // The array of rational points used for the exact predicate. The
         // mConverted array is used to store 0 or 1, where initially the
@@ -567,7 +559,7 @@ namespace gte
 
         int32_t mNumPoints;
         int32_t mNumUniquePoints;
-        Vector2<Real> const* mPoints;
+        Vector2<T> const* mPoints;
         std::vector<int32_t> mMerged, mHull;
     };
 }

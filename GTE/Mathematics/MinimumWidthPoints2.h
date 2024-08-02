@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2023.08.08
+// Version: 6.2.2024.08.03
 
 #pragma once
 
@@ -52,7 +52,7 @@ namespace gte
             // Get the convex hull of the points.
             T const zero = static_cast<T>(0);
             ConvexHull2<T> ch2{};
-            ch2(numPoints, points, zero);
+            ch2(numPoints, points);
             int32_t dimension = ch2.GetDimension();
 
             if (dimension == 0)
