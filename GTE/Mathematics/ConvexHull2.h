@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.08.02
 
 #pragma once
 
@@ -64,6 +64,10 @@ namespace gte
         // and only if the hull construction is successful.
         bool operator()(int32_t numPoints, Vector2<Real> const* points, Real epsilon)
         {
+            LogAssert(
+                numPoints > 0 && points != nullptr,
+                "Invalid input to ConvexHull2 operator().");
+
             mEpsilon = std::max(epsilon, static_cast<Real>(0));
             mDimension = 0;
             mLine.origin = Vector2<Real>::Zero();
@@ -73,29 +77,6 @@ namespace gte
             mPoints = points;
             mMerged.clear();
             mHull.clear();
-
-            if (mNumPoints < 3)
-            {
-                // ConvexHull2 should be called with at least three points.
-                return false;
-            }
-
-            IntrinsicsVector2<Real> info(mNumPoints, mPoints, mEpsilon);
-            if (info.dimension == 0)
-            {
-                // mDimension is 0
-                return false;
-            }
-
-            if (info.dimension == 1)
-            {
-                // The set is (nearly) collinear.
-                mDimension = 1;
-                mLine = Line2<Real>(info.origin, info.direction[0]);
-                return false;
-            }
-
-            mDimension = 2;
 
             // Allocate storage for any rational points that must be
             // computed in the exact predicate.
@@ -141,7 +122,26 @@ namespace gte
             GetHull(i0, i1);
             int32_t hullSize = i1 - i0 + 1;
             mHull.resize(hullSize);
-            return true;
+            if (hullSize == 1)
+            {
+                // The input points are all the same point.
+                mDimension = 0;
+                return false;
+            }
+            else if (hullSize == 2)
+            {
+                // The input points are collinear.
+                mDimension = 1;
+                mLine.origin = mPoints[mHull[0]];
+                mLine.direction = mPoints[mHull[1]] - mPoints[mHull[0]];
+                Normalize(mLine.direction);
+                return false;
+            }
+            else  // hullSize > 2
+            {
+                mDimension = 2;
+                return true;
+            }
         }
 
         // Dimensional information. If GetDimension() returns 1, the points
