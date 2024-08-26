@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.08.26
 
 #pragma once
 
@@ -52,10 +52,6 @@ private:
     static int32_t constexpr SAMPLE_BOUNDSQR = SAMPLE_BOUND * SAMPLE_BOUND;
 
     std::vector<float> mFSample;
-    typedef BSNumber<UIntegerAP32> Numeric;
-    typedef BSRational<UIntegerAP32> Rational;
-    typedef Delaunay2Mesh<float, Numeric, Rational> TriangleMesh;
-    Delaunay2<float, Numeric> mDelaunay;
 
     // For use by LinearNonuniform, QuadraticNonuniform.
     class SimpleMesh
