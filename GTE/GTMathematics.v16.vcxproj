@@ -145,12 +145,14 @@
     <ClInclude Include="Mathematics\DistRay2Circle2.h" />
     <ClInclude Include="Mathematics\DistRay2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistRay3Circle3.h" />
     <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment2Arc2.h" />
     <ClInclude Include="Mathematics\DistSegment2Circle2.h" />
     <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistSegment3Circle3.h" />
     <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\EllipsoidGeodesic.h" />

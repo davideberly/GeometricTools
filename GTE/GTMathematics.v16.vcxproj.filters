@@ -1698,5 +1698,11 @@
     <ClInclude Include="Mathematics\LieGroupsAlgebras.h">
       <Filter>Algebra</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\DistRay3Circle3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment3Circle3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
