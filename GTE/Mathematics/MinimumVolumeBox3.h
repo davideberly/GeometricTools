@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.07.24
+// Version: 6.0.2024.08.31
 
 #pragma once
 
@@ -630,6 +630,7 @@ namespace gte
             std::vector<uint32_t> visited(mNumVertices, 0);
             size_t vMax = 0;
             dMax = Dot(direction, mVertices[vMax]);
+            visited[vMax] = 1;
             for (size_t i = 0; i < mNumVertices; ++i)
             {
                 bool updatedDMax = false;
