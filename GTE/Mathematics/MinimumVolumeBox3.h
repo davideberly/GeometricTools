@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.08.31
+// Version: 6.0.2024.09.05
 
 #pragma once
 
@@ -627,33 +627,16 @@ namespace gte
 
         size_t GetExtreme(VCompute3 const& direction, ComputeType& dMax)
         {
-            std::vector<uint32_t> visited(mNumVertices, 0);
+            // By design, mVertices[0] is the zero-valued vector.
             size_t vMax = 0;
-            dMax = Dot(direction, mVertices[vMax]);
-            visited[vMax] = 1;
+            dMax = static_cast<ComputeType>(0);
             for (size_t i = 0; i < mNumVertices; ++i)
             {
-                bool updatedDMax = false;
-                size_t const* adjacent = &mAdjacentPool[mVertexAdjacent[vMax]];
-                size_t numAdjacent = *adjacent++;
-                for (size_t j = 1; j <= numAdjacent; ++j)
+                ComputeType dCandidate = Dot(direction, mVertices[i]);
+                if (dCandidate > dMax)
                 {
-                    size_t vCandidate = *adjacent++;
-                    if (visited[vCandidate] == 0)
-                    {
-                        ComputeType dCandidate = Dot(direction, mVertices[vCandidate]);
-                        if (dCandidate >= dMax)
-                        {
-                            vMax = vCandidate;
-                            dMax = dCandidate;
-                            updatedDMax = true;
-                        }
-                        visited[vCandidate] = 1;
-                    }
-                }
-                if (!updatedDMax)
-                {
-                    break;
+                    vMax = i;
+                    dMax = dCandidate;
                 }
             }
             return vMax;
