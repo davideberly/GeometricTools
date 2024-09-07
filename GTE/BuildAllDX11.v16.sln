@@ -361,6 +361,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectEllipsesDX11.v16",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntersectLineRectangleDX11.v16", "Samples\Intersection\IntersectLineRectangle\IntersectLineRectangleDX11.v16.vcxproj", "{69DC4B67-5796-4B2F-8474-DBCE37632CF9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproximateEllipse2DX11.v16", "Samples\Mathematics\ApproximateEllipse2\ApproximateEllipse2DX11.v16.vcxproj", "{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproximateEllipsoid3DX11.v16", "Samples\Mathematics\ApproximateEllipsoid3\ApproximateEllipsoid3DX11.v16.vcxproj", "{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1721,6 +1725,22 @@ Global
 		{69DC4B67-5796-4B2F-8474-DBCE37632CF9}.Release|x64.Build.0 = Release|x64
 		{69DC4B67-5796-4B2F-8474-DBCE37632CF9}.Release|x86.ActiveCfg = Release|Win32
 		{69DC4B67-5796-4B2F-8474-DBCE37632CF9}.Release|x86.Build.0 = Release|Win32
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Debug|x64.ActiveCfg = Debug|x64
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Debug|x64.Build.0 = Debug|x64
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Debug|x86.ActiveCfg = Debug|Win32
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Debug|x86.Build.0 = Debug|Win32
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Release|x64.ActiveCfg = Release|x64
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Release|x64.Build.0 = Release|x64
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Release|x86.ActiveCfg = Release|Win32
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9}.Release|x86.Build.0 = Release|Win32
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Debug|x64.ActiveCfg = Debug|x64
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Debug|x64.Build.0 = Debug|x64
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Debug|x86.ActiveCfg = Debug|Win32
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Debug|x86.Build.0 = Debug|Win32
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Release|x64.ActiveCfg = Release|x64
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Release|x64.Build.0 = Release|x64
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Release|x86.ActiveCfg = Release|Win32
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1903,6 +1923,8 @@ Global
 		{7EF0718A-C6CC-457F-93AD-9DCFBCEBB4FF} = {386F684F-7F28-49BD-B427-71E12899A64E}
 		{E17E7C17-A5E6-4C54-B45E-ED945F1AE652} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
 		{69DC4B67-5796-4B2F-8474-DBCE37632CF9} = {F84119C4-DF25-4BA2-BBB2-4B05A3854AA8}
+		{C74D6A3C-BB79-4349-99BE-038C34EFE7A9} = {386F684F-7F28-49BD-B427-71E12899A64E}
+		{68AFF926-E31E-4DCB-A8F0-DBDD4D23A504} = {386F684F-7F28-49BD-B427-71E12899A64E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5586B06E-6A73-4B04-94D8-A1AC264A9C83}
