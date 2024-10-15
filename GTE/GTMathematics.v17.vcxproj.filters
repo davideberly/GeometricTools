@@ -1710,5 +1710,11 @@
     <ClInclude Include="Mathematics\MinimumSpanningTree.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\Parallelogram2.h">
+      <Filter>Primitives\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint2Parallelogram2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -137,6 +137,7 @@
     <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistPoint2Arc2.h" />
     <ClInclude Include="Mathematics\DistPoint2Circle2.h" />
+    <ClInclude Include="Mathematics\DistPoint2Parallelogram2.h" />
     <ClInclude Include="Mathematics\DistPointCanonicalBox.h" />
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />
@@ -427,6 +428,7 @@
     <ClInclude Include="Mathematics\OdeRungeKutta4.h" />
     <ClInclude Include="Mathematics\OdeSolver.h" />
     <ClInclude Include="Mathematics\OrientedBox.h" />
+    <ClInclude Include="Mathematics\Parallelogram2.h" />
     <ClInclude Include="Mathematics\ParticleSystem.h" />
     <ClInclude Include="Mathematics\PdeFilter.h" />
     <ClInclude Include="Mathematics\PdeFilter1.h" />
