@@ -3,12 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.2.2024.10.15
+// Version: 7.2.2024.10.21
 
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
-#include "Parallelogram2.h"
+#include <Mathematics/Parallelogram2.h>
+#include <array>
+#include <cmath>
 
 namespace gte
 {
