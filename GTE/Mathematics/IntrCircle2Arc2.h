@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.10.25
 
 #pragma once
 
@@ -70,9 +70,9 @@ namespace gte
             }
 
             // Test whether circle-circle intersection points are on the arc.
+            result.numIntersections = 0;
             for (int32_t i = 0; i < ccResult.numIntersections; ++i)
             {
-                result.numIntersections = 0;
                 if (arc.Contains(ccResult.point[i]))
                 {
                     result.point[result.numIntersections++] = ccResult.point[i];
