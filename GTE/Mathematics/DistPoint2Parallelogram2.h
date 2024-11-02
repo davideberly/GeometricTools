@@ -8,6 +8,7 @@
 #pragma once
 
 #include <Mathematics/DCPQuery.h>
+#include <Mathematics/Matrix2x2.h>
 #include <Mathematics/Parallelogram2.h>
 #include <array>
 #include <cmath>
@@ -43,28 +44,34 @@ namespace gte
             // For a parallelogram point X, let Y = {Dot(V0,X-C),Dot(V1,X-C)}.
             // Compute the quadratic function q(Y) = (Y-Z)^T * A * (Y-Z) / 2
             // where A = B^T * B is a symmetric matrix.
-            T b00 = pgm.axis[0][0];
-            T b10 = pgm.axis[0][1];
-            T b01 = pgm.axis[1][0];
-            T b11 = pgm.axis[1][1];
-            T detB = b00 * b11 - b01 * b10;
-            T a00 = b00 * b00 + b10 * b10;
-            T a01 = b00 * b01 + b10 * b11;
-            T a11 = b01 * b01 + b11 * b11;
+            Matrix2x2<T> B{};
+            B.SetCol(0, pgm.axis[0]);
+            B.SetCol(1, pgm.axis[1]);
+            Matrix2x2<T> A = MultiplyATB(B, B);
 
             // Transform the query point to parallelogram coordinates,
             // Z = Inverse(B) * (P - C).
             Vector2<T> diff = point - pgm.center;
-            Vector2<T> Z
-            {
-                (b11 * diff[0] - b01 * diff[1]) / detB,
-                (b00 * diff[1] - b10 * diff[0]) / detB
-            };
+            Vector2<T> Z = Inverse(B) * diff;
 
-            // Determine the region containing Z. The point K is the closest
-            // point to Z relative to the metric tensor A.
+            // Get the minimizer for q(Y).
+            Vector2<T> K = GetMinimizer(A, Z);
+
+            result.closest[0] = point;
+            result.closest[1] = pgm.center + K[0] * pgm.axis[0] + K[1] * pgm.axis[1];
+            diff = result.closest[0] - result.closest[1];
+            result.sqrDistance = diff[0] * diff[0] + diff[1] * diff[1];
+            result.distance = std::sqrt(result.sqrDistance);
+            return result;
+        }
+
+        Vector2<T> GetMinimizer(Matrix2x2<T> const& A, Vector2<T> const& Z)
+        {
             T const negOne = static_cast<T>(-1);
             T const posOne = static_cast<T>(+1);
+            T const& a00 = A(0, 0);
+            T const& a01 = A(0, 1);
+            T const& a11 = A(1, 1);
             T root{};
             Vector2<T> K{};
 
@@ -147,12 +154,7 @@ namespace gte
                 }
             }
 
-            result.closest[0] = point;
-            result.closest[1] = pgm.center + K[0] * pgm.axis[0] + K[1] * pgm.axis[1];
-            diff = result.closest[0] - result.closest[1];
-            result.sqrDistance = diff[0] * diff[0] + diff[1] * diff[1];
-            result.distance = std::sqrt(result.sqrDistance);
-            return result;
+            return K;
         }
 
     private:

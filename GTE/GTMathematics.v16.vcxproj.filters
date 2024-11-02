@@ -1713,5 +1713,11 @@
     <ClInclude Include="Mathematics\DistPoint2Parallelogram2.h">
       <Filter>Distance\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\Parallelepiped3.h">
+      <Filter>Primitives\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistPoint3Parallelepiped3.h">
+      <Filter>Distance\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
