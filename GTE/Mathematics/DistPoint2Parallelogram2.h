@@ -3,9 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.2.2024.10.21
+// Version: 7.2.2024.11.04
 
 #pragma once
+
+// Implementation of a point-parallelogram distance and closest-point query.
+// The details are described in
+//   https://www.geometrictools.com/Documentation/DistancePointParallelogram.pdf
 
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Matrix2x2.h>
