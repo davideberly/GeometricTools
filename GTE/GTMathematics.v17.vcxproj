@@ -244,6 +244,7 @@
     <ClInclude Include="Mathematics\GradientAnisotropic3.h" />
     <ClInclude Include="Mathematics\Halfspace.h" />
     <ClInclude Include="Mathematics\HashCombine.h" />
+    <ClInclude Include="Mathematics\HelmertTransformation7.h" />
     <ClInclude Include="Mathematics\HermiteBicubic.h" />
     <ClInclude Include="Mathematics\HermiteBiquintic.h" />
     <ClInclude Include="Mathematics\HermiteCubic.h" />
