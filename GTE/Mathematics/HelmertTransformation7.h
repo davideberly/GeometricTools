@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.2.2024.11.09
+// Version: 7.2.2024.11.11
 
 #pragma once
 
@@ -99,7 +99,7 @@ namespace gte
             mRotate2.MakeIdentity();
 
             // The translation does not vary during the iterations.
-            mTranslate = pAverage;
+            mTranslate = pAverage - qAverage;
 
             T F = UpdateF(mRotate);
             std::size_t iteration{};
@@ -116,7 +116,7 @@ namespace gte
 
             rotate = mRotate;
             scale = UpdateScale(mRotate);
-            translate = mTranslate + qAverage;
+            translate = mTranslate + qAverage - scale * (rotate * qAverage);
             function = F;
             return iteration;
         }
