@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.09.05
+// Version: 6.0.2024.11.13
 
 #pragma once
 
@@ -56,6 +56,14 @@ namespace gte
     class UIntegerFP32 : public UIntegerALU32<UIntegerFP32<N>>
     {
     public:
+#if defined(GTE_USE_MSWINDOWS)
+// Disable the warning:
+//   warning C26495: Variable 'gte::UIntegerFP32<2561>::mBits' is
+//   uninitialized. Always initialize a member variable (type.6).
+// See the NOTE above about performance problems when mBits is
+// initialized in the constructors.
+#pragma warning(disable : 26495)
+#endif
         // Construction.
         UIntegerFP32()
             :
@@ -131,6 +139,10 @@ namespace gte
             AtomicMax(gsUIntegerFP32MaxSize, mSize);
 #endif
         }
+
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
 
         // Assignment.  Only mSize elements are copied.
         UIntegerFP32& operator=(UIntegerFP32 const& number)
