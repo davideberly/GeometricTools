@@ -50,8 +50,13 @@ void DX11::Log(HRESULT hr, char const* file, char const* function, int32_t line)
 {
     if (FAILED(hr))
     {
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> convl;
-        std::string message = convl.to_bytes(_com_error(hr).ErrorMessage());
+        auto const* errorMessage = _com_error(hr).ErrorMessage();
+        std::wstring input(errorMessage);
+        std::int32_t numInput = static_cast<std::int32_t>(input.size());
+        std::vector<char> output(numInput + 1, 0);
+        WideCharToMultiByte(CP_ACP, 0, input.data(), numInput, output.data(), numInput + 1, NULL, NULL);
+        output.back() = 0;
+        std::string message = output.data();
         throw std::runtime_error(std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n");
     }
 }
