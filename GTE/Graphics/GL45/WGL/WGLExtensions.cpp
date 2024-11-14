@@ -3,21 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.11.14
 
 #include <Graphics/GL45/GL45.h>
 #include <Graphics/GL45/GL/wglext.h>
 #include <cassert>
+#include <cstdint>
 
 void* GetOpenGLFunctionPointer(char const* name)
 {
-    return (void*)wglGetProcAddress(name);
-}
-
-template <typename PWGLFunction>
-static void GetWGLFunction(char const* name, PWGLFunction& function)
-{
-    function = (PWGLFunction)wglGetProcAddress(name);
+    return reinterpret_cast<void*>(wglGetProcAddress(name));
 }
 
 static PFNWGLSWAPINTERVALEXTPROC swglSwapIntervalEXT = nullptr;
@@ -53,6 +48,9 @@ int __stdcall wglGetSwapIntervalEXT(void)
 
 void InitializeWGL()
 {
-    GetWGLFunction("wglSwapIntervalEXT", swglSwapIntervalEXT);
-    GetWGLFunction("wglGetSwapIntervalEXT", swglGetSwapIntervalEXT);
+    swglSwapIntervalEXT = reinterpret_cast<PFNWGLSWAPINTERVALEXTPROC>(
+        GetOpenGLFunctionPointer("wglSwapIntervalEXT"));
+
+    swglGetSwapIntervalEXT = reinterpret_cast<PFNWGLGETSWAPINTERVALEXTPROC>(
+        GetOpenGLFunctionPointer("wglGetSwapIntervalEXT"));
 }
