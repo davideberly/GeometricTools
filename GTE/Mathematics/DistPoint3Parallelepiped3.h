@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.2.2024.11.04
+// Version: 7.2.2024.11.17
 
 #pragma once
 
@@ -14,7 +14,7 @@
 #include <Mathematics/DistPoint2Parallelogram2.h>
 #include <Mathematics/Matrix2x2.h>
 #include <Mathematics/Matrix3x3.h>
-#include "Parallelepiped3.h"
+#include <Mathematics/Parallelepiped3.h>
 #include <array>
 #include <cmath>
 
