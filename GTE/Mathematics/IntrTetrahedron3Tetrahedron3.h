@@ -13,7 +13,7 @@
 // https://www.geometrictools.com/Documentation/MethodOfSeparatingAxes.pdf
 // The set of potential separating directions includes the 4 face normals of
 // tetra0, the 4 face normals of tetra1, and 36 directions, each of which is
-// the cross product of an edge of tetra0 and and an edge of tetra1.
+// the cross product of an edge of tetra0 and an edge of tetra1.
 //
 // The separating axes involving cross products of edges has numerical
 // robustness problems when the two edges are nearly parallel. The cross
