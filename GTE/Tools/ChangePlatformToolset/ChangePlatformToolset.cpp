@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// Version: 6.0.2024.11.13
 
 #include <Windows.h>
 #include <cstdio>
@@ -14,7 +14,7 @@
 #include <direct.h>
 #include <io.h>
 
-bool Modify(std::string const& filename, std::string const& toolset)
+static bool Modify(std::string const& filename, std::string const& toolset)
 {
     std::ifstream input(filename);
     if (!input)
@@ -58,7 +58,7 @@ bool Modify(std::string const& filename, std::string const& toolset)
     return true;
 }
 
-void FindSource(std::string const& toolset)
+static void FindSource(std::string const& toolset)
 {
     bool foundFirstSamples = true;
     bool foundFirstTools = true;
@@ -106,10 +106,8 @@ void FindSource(std::string const& toolset)
             char ext[_MAX_EXT];
             _splitpath_s(fileInfo.name, drive, dir, fname, ext);
 
-            std::string name(fileInfo.name);
-            std::string suffix(ext);
-            auto projectV16Ext = name.find(".v17.vcxproj");
-            if (projectV16Ext != std::string::npos && suffix == ".vcxproj")
+            std::string name(fileInfo.name), suffix(ext);
+            if (suffix == ".vcxproj" && name.find(".v17.vcxproj") != std::string::npos)
             {
                 if (name != "ChangePlatformToolset.v17.vcxproj")
                 {

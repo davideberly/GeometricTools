@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.08.03
 
 #include "ConvexHull2DWindow2.h"
 #include <random>
@@ -38,7 +38,7 @@ ConvexHull2DWindow2::ConvexHull2DWindow2(Parameters& parameters)
     mVertices[8] = Vector2<float>(448.0f, 448.0f);
 #endif
 
-    if (!mConvexHull(static_cast<int32_t>(mVertices.size()), mVertices.data(), 0.001f))
+    if (!mConvexHull(mVertices))
     {
         LogError("Degenerate point set.");
     }

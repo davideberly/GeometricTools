@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.02.17
 
 #include <Mathematics/ArbitraryPrecision.h>
 using namespace gte;
@@ -22,14 +22,15 @@ using namespace gte;
 // PrimalQuery2ToCircumcircle
 // PrimalQuery2ConstrainedDelaunayComputePSD
 // PrimalQuery2Delaunay2Plane
-// PrimalQuery2BarycentricCoordinates (rational only)
+// BarycentricCoordinates2 (BSRational only, divisions required)
 //
 // PrimalQuery3ToPlane
 // PrimalQuery3ToCircumsphere
 // PrimalQuery3Colinear
 // PrimalQuery3Coplanar
+// BarycentricCoordinates3 (BSRational only, divisions required)
 
-int FusedMultiplyAdd(BSPrecision::Type type, bool forBSNumber)
+static int FusedMultiplyAdd(BSPrecision::Type type, bool forBSNumber)
 {
     // w = x * y + z
     BSPrecision u(type);
@@ -38,7 +39,7 @@ int FusedMultiplyAdd(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
 }
 
-int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
+static int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
 {
     // z = x * x + y * y
     BSPrecision u(type);
@@ -47,7 +48,7 @@ int SumOfTwoSquares(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? sum.bsn.maxWords : sum.bsr.maxWords);
 }
 
-int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
+static int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
 {
     //Rational const zero = static_cast<Rational>(0);
     //Rational dot0 = Dot(D0[0], D0[1]);
@@ -89,7 +90,7 @@ int RotatingCalipersAngle(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? sqrSinAngle.bsn.maxWords : sqrSinAngle.bsr.maxWords);
 }
 
-int DeterminantSubInputs(BSPrecision::Type type, bool forBSNumber)
+static int DeterminantSubInputs(BSPrecision::Type type, bool forBSNumber)
 {
     // Real det2 = a00 * a11 - a01 * a10
     BSPrecision input(type);
@@ -99,7 +100,7 @@ int DeterminantSubInputs(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det2.bsn.maxWords : det2.bsr.maxWords);
 }
 
-int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
 {
     // Real det2 = a00 * a11 - a01 * a10
     BSPrecision input(type);
@@ -108,7 +109,7 @@ int PrimalQuery2Determinant2(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det2.bsn.maxWords : det2.bsr.maxWords);
 }
 
-int PrimalQuery2Determinant3(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2Determinant3(BSPrecision::Type type, bool forBSNumber)
 {
     // Real c0 = a11 * a22 - a12 * a21;
     // Real c1 = a10 * a22 - a12 * a20;
@@ -123,7 +124,7 @@ int PrimalQuery2Determinant3(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
 }
 
-int PrimalQuery2Determinant4(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2Determinant4(BSPrecision::Type type, bool forBSNumber)
 {
     // Real u0 = a00 * a11 - a01 * a10, v0 = a20 * a31 - a21 * a30;
     // Real u1 = a00 * a12 - a02 * a10, v1 = a20 * a32 - a22 * a30;
@@ -141,7 +142,7 @@ int PrimalQuery2Determinant4(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? det4.bsn.maxWords : det4.bsr.maxWords);
 }
 
-int PrimalQuery2ToLine(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2ToLine(BSPrecision::Type type, bool forBSNumber)
 {
     // ToLine (no order parameter):
     //Real x0 = test[0] - vec0[0];
@@ -195,7 +196,7 @@ int PrimalQuery2ToLine(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
 }
 
-int PrimalQuery2ToCircumcircle(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2ToCircumcircle(BSPrecision::Type type, bool forBSNumber)
 {
     //Real x0 = vec0[0] - test[0];
     //Real y0 = vec0[1] - test[1];
@@ -257,7 +258,7 @@ int PrimalQuery2ToCircumcircle(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add4.bsn.maxWords : add4.bsr.maxWords);
 }
 
-int PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type type, bool forBSNumber)
 {
     // Precompute some common values that are used in all calls
     // to ComputePSD.
@@ -304,7 +305,7 @@ int PrimalQuery2ToConstrainedDelaunayComputePSD(BSPrecision::Type type, bool for
     return (forBSNumber ? psd.bsn.maxWords : psd.bsr.maxWords);
 }
 
-int PrimalQuery2DelaunayToPlane(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery2DelaunayToPlane(BSPrecision::Type type, bool forBSNumber)
 {
     // Real x0 = P[0] - V0[0];
     // Real y0 = P[1] - V0[1];
@@ -361,7 +362,7 @@ int PrimalQuery2DelaunayToPlane(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add1.bsn.maxWords : add1.bsr.maxWords);
 }
 
-int PrimalQuery2BarycentricCoordinates(BSPrecision::Type type)
+static int BarycentricCoordinates2(BSPrecision::Type type)
 {
     // bool ComputeBarycentric(Vector2<T> const& p, Vector2<T> const& v0,
     //     Vector2<T> const& v1, Vector2<T> const& v2, std::array<T, 3>& bary);
@@ -372,7 +373,7 @@ int PrimalQuery2BarycentricCoordinates(BSPrecision::Type type)
     // {
     //     bary[0] = DotPerp(diff[2], diff[1]) / det;
     //     bary[1] = DotPerp(diff[0], diff[2]) / det;
-    //     bary[2] = 1 - bary[0] - bary[1];
+    //     bary[2] = 1 - bary[0] - bary[1];  // = (det - DotPerp(diff[2],diff[1]) - DotPerp(diff[0],diff[2])) / det
     //     return true;
     // }
     // bary.fill(0);
@@ -380,19 +381,14 @@ int PrimalQuery2BarycentricCoordinates(BSPrecision::Type type)
 
     // compute diff[] components
     BSPrecision u(type);
-    BSPrecision sub0 = u - u;
-    // DotPerp(diff[i], diff[j]), [det when i = 0, j = 1]
-    BSPrecision dotperp0 = sub0 * sub0 - sub0 * sub0;
-    // det - DotPerp(diff[0], diff[2])
-    BSPrecision sub1 = dotperp0 - dotperp0;
-    // (det - DotPerp(diff[2], diff[1])) - DotPerp(diff[0], diff[2])
-    BSPrecision sub2 = sub1 - dotperp0;
-    // bary = (sub/det, sub/det, sub/det)
-    BSPrecision bary = sub2 / dotperp0;
+    BSPrecision sub = u - u;
+    // dotperp = DotPerp(diff[j], diff[k), [= det when j = 0, k = 0]
+    BSPrecision dotperp = sub * sub - sub * sub;
+    BSPrecision bary = (dotperp - dotperp - dotperp) / dotperp;
     return bary.bsr.maxWords;
 }
 
-int PrimalQuery3ToPlane(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery3ToPlane(BSPrecision::Type type, bool forBSNumber)
 {
     //Real x0 = test[0] - vec0[0];
     //Real y0 = test[1] - vec0[1];
@@ -435,7 +431,7 @@ int PrimalQuery3ToPlane(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add3.bsn.maxWords : add3.bsr.maxWords);
 }
 
-int PrimalQuery3ToCircumsphere(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery3ToCircumsphere(BSPrecision::Type type, bool forBSNumber)
 {
     //Real x0 = vec0[0] - test[0];
     //Real y0 = vec0[1] - test[1];
@@ -570,7 +566,7 @@ int PrimalQuery3ToCircumsphere(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? add9.bsn.maxWords : add9.bsr.maxWords);
 }
 
-int PrimalQuery3Colinear(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery3Colinear(BSPrecision::Type type, bool forBSNumber)
 {
     // delta1 = v1 - v0
     // delta2 = v2 - v0
@@ -584,7 +580,7 @@ int PrimalQuery3Colinear(BSPrecision::Type type, bool forBSNumber)
     return (forBSNumber ? ddiff.bsn.maxWords : ddiff.bsr.maxWords);
 }
 
-int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
+static int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
 {
     // delta1 = v1 - v0
     // delta2 = v2 - v0
@@ -599,6 +595,42 @@ int PrimalQuery3Coplanar(BSPrecision::Type type, bool forBSNumber)
     BSPrecision det3 = term + term + term;
     return (forBSNumber ? det3.bsn.maxWords : det3.bsr.maxWords);
 }
+
+#if 1
+static int BarycentricCoordinates3(BSPrecision::Type type)
+{
+    // bool ComputeBarycentrics(Vector3<T> const& p, Vector3<T> const& v0,
+    //     Vector3<T> const& v1, Vector3<T> const& v2, Vector3<T> const& v3,
+    //     std::array<T, 4>& bary)
+    // 
+    // std::array<Vector3<T>, 4> diff = { v0 - v3, v1 - v3, v2 - v3, p - v3 };
+    // T det = DotCross(diff[0], diff[1], diff[2]);
+    // if (det != 0)
+    // {
+    //     bary[0] = DotCross(diff[3], diff[1], diff[2]) / det;
+    //     bary[1] = DotCross(diff[3], diff[2], diff[0]) / det;
+    //     bary[2] = DotCross(diff[3], diff[0], diff[1]) / det;
+    //     bary[3] = 1 - bary[0] - bary[1] - bary[2];
+    //          // = (det - DotCross(diff[3], diff[1], diff[2]) - DotCross(diff[3], diff[2], diff[0])
+    //          //   - DotCross(diff[3], diff[0], diff[1])) / det
+    //     return true;
+    // }
+    // bary.fill(0);
+    // return false;
+
+    // compute diff[] components
+    BSPrecision u(type);
+    BSPrecision sub = u - u;
+    // Cross(diff[j], diff[k])
+    BSPrecision cross = sub * sub - sub * sub;
+    // DotCross(diff[i], diff[j], diff[k]), [det when i = 0, j = 1, k = 2]
+    BSPrecision prod = sub * cross;
+    BSPrecision dotcross = prod + prod + prod;
+    // det - DotPerp(diff[0], diff[2])
+    BSPrecision bary = (dotcross - dotcross - dotcross - dotcross) / dotcross;
+    return bary.bsr.maxWords;
+}
+#endif
 
 int main()
 {
@@ -660,8 +692,8 @@ int main()
     bsRationalFloatWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_FLOAT, false);  // 417
     bsRationalDoubleWords = PrimalQuery2DelaunayToPlane(BSPrecision::Type::IS_DOUBLE, false);  // 3148
 
-    bsRationalFloatWords = PrimalQuery2BarycentricCoordinates(BSPrecision::Type::IS_FLOAT);  // 278
-    bsRationalDoubleWords = PrimalQuery2BarycentricCoordinates(BSPrecision::Type::IS_DOUBLE);  // 2099
+    bsRationalFloatWords = BarycentricCoordinates2(BSPrecision::Type::IS_FLOAT);  // 278
+    bsRationalDoubleWords = BarycentricCoordinates2(BSPrecision::Type::IS_DOUBLE);  // 2099
 
     bsNumberFloatWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_FLOAT, true);  // 27
     bsNumberDoubleWords = PrimalQuery3ToPlane(BSPrecision::Type::IS_DOUBLE, true);  // 197
@@ -682,6 +714,9 @@ int main()
     bsNumberDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, true);  // 197
     bsRationalFloatWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_FLOAT, false);  // 361
     bsRationalDoubleWords = PrimalQuery3Coplanar(BSPrecision::Type::IS_DOUBLE, false);  // 1968
+
+    bsRationalFloatWords = BarycentricCoordinates3(BSPrecision::Type::IS_FLOAT);  // 1302
+    bsRationalDoubleWords = BarycentricCoordinates3(BSPrecision::Type::IS_DOUBLE);  // 9838
 
     return 0;
 }

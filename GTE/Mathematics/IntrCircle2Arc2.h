@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.11.12
 
 #pragma once
 
@@ -69,16 +69,33 @@ namespace gte
                 return result;
             }
 
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(disable : 28020)
+            // The code analysis tool complained:
+            // warning C28020: The expression '0<=_Param_(1)&&_Param_(1)<=2-1'
+            // is not true at this call.: Lines: 51, 53, 54, 55, 56, 63, 73,
+            // 74, 76, 78, 79, 74, 76, 78. Before inserting this comment, line
+            // 74 is the for-loop below. The code analysis tool seems to
+            // believe that result.numIntersections is 2 and that this number
+            // is out-of-range. It is not because ccResult sets the value of
+            // numIntersections to 0, 1, 2 or maxInt. The test for maxInt
+            // occurs in the if-statement above. Inferring that the number of
+            // intersections at this point being 0, 1, or 2 is probably
+            // difficult for a code analysis tool.
+#endif
             // Test whether circle-circle intersection points are on the arc.
+            result.numIntersections = 0;
             for (int32_t i = 0; i < ccResult.numIntersections; ++i)
             {
-                result.numIntersections = 0;
                 if (arc.Contains(ccResult.point[i]))
                 {
                     result.point[result.numIntersections++] = ccResult.point[i];
                     result.intersect = true;
                 }
             }
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
             return result;
         }
     };

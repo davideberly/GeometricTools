@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.07.15
 
 #pragma once
 
@@ -52,9 +52,9 @@ namespace gte
             LogAssert(mXBound >= 3 && mYBound >= 3 && mZBound >= 3 && mF != nullptr, "Invalid input.");
             LogAssert(mXSpacing > (Real)0 && mYSpacing > (Real)0 && mZSpacing > (Real)0, "Invalid input.");
 
-            mXMax = mXMin + mXSpacing * static_cast<Real>(mXBound) - static_cast<Real>(1);
-            mYMax = mYMin + mYSpacing * static_cast<Real>(mYBound) - static_cast<Real>(1);
-            mZMax = mZMin + mZSpacing * static_cast<Real>(mZBound) - static_cast<Real>(1);
+            mXMax = mXMin + mXSpacing * (static_cast<Real>(mXBound) - static_cast<Real>(1));
+            mYMax = mYMin + mYSpacing * (static_cast<Real>(mYBound) - static_cast<Real>(1));
+            mZMax = mZMin + mZSpacing * (static_cast<Real>(mZBound) - static_cast<Real>(1));
 
             // Create a 3D wrapper for the 1D samples.
             Array3<Real> Fmap(mXBound, mYBound, mZBound, const_cast<Real*>(mF));
@@ -64,16 +64,16 @@ namespace gte
             Array3<Real> FY(mXBound, mYBound, mZBound);
             Array3<Real> FZ(mXBound, mYBound, mZBound);
             GetFX(Fmap, FX);
-            GetFX(Fmap, FY);
-            GetFX(Fmap, FZ);
+            GetFY(Fmap, FY);
+            GetFZ(Fmap, FZ);
 
             // Construct second-order derivatives.
             Array3<Real> FXY(mXBound, mYBound, mZBound);
             Array3<Real> FXZ(mXBound, mYBound, mZBound);
             Array3<Real> FYZ(mXBound, mYBound, mZBound);
-            GetFX(Fmap, FXY);
-            GetFX(Fmap, FXZ);
-            GetFX(Fmap, FYZ);
+            GetFXY(Fmap, FXY);
+            GetFXZ(Fmap, FXZ);
+            GetFYZ(Fmap, FYZ);
 
             // Construct third-order derivatives.
             Array3<Real> FXYZ(mXBound, mYBound, mZBound);

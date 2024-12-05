@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.08.03
 
 #pragma once
 
@@ -148,7 +148,7 @@ namespace gte
                         process[2 * i + 1].join();
 
                         inNumSorted[i] = 0;
-                        auto begin = target;
+                        std::vector<size_t>::iterator begin = target;
                         for (size_t j = 0; j < 2; ++j, ++k)
                         {
                             size_t numVertices = outVertices[k].size();
@@ -408,8 +408,8 @@ namespace gte
                     projections[i][1] = mPoints[h][c.second];
                 }
 
-                ConvexHull2<Real> ch2;
-                ch2((int32_t)projections.size(), projections.data(), static_cast<Real>(0));
+                ConvexHull2<Real> ch2{};
+                ch2(projections);
                 auto const& hull2 = ch2.GetHull();
 
                 std::vector<size_t> tempHull(hull2.size());

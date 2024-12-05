@@ -137,6 +137,8 @@
     <ClInclude Include="Mathematics\DistPlane3OrientedBox3.h" />
     <ClInclude Include="Mathematics\DistPoint2Arc2.h" />
     <ClInclude Include="Mathematics\DistPoint2Circle2.h" />
+    <ClInclude Include="Mathematics\DistPoint2Parallelogram2.h" />
+    <ClInclude Include="Mathematics\DistPoint3Parallelepiped3.h" />
     <ClInclude Include="Mathematics\DistPointCanonicalBox.h" />
     <ClInclude Include="Mathematics\DistPointHyperplane.h" />
     <ClInclude Include="Mathematics\DistPointRectangle.h" />
@@ -145,12 +147,14 @@
     <ClInclude Include="Mathematics\DistRay2Circle2.h" />
     <ClInclude Include="Mathematics\DistRay2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistRay3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistRay3Circle3.h" />
     <ClInclude Include="Mathematics\DistRectangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\DistSegment2AlignedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment2Arc2.h" />
     <ClInclude Include="Mathematics\DistSegment2Circle2.h" />
     <ClInclude Include="Mathematics\DistSegment2OrientedBox2.h" />
     <ClInclude Include="Mathematics\DistSegment3CanonicalBox3.h" />
+    <ClInclude Include="Mathematics\DistSegment3Circle3.h" />
     <ClInclude Include="Mathematics\DistTetrahedron3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\DistTriangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\EllipsoidGeodesic.h" />
@@ -240,6 +244,7 @@
     <ClInclude Include="Mathematics\GradientAnisotropic3.h" />
     <ClInclude Include="Mathematics\Halfspace.h" />
     <ClInclude Include="Mathematics\HashCombine.h" />
+    <ClInclude Include="Mathematics\HelmertTransformation7.h" />
     <ClInclude Include="Mathematics\HermiteBicubic.h" />
     <ClInclude Include="Mathematics\HermiteBiquintic.h" />
     <ClInclude Include="Mathematics\HermiteCubic.h" />
@@ -411,6 +416,7 @@
     <ClInclude Include="Mathematics\MeshStaticManifold3.h" />
     <ClInclude Include="Mathematics\Minimize1.h" />
     <ClInclude Include="Mathematics\MinimizeN.h" />
+    <ClInclude Include="Mathematics\MinimumSpanningTree.h" />
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
     <ClInclude Include="Mathematics\NaturalCubicSpline.h" />
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h" />
@@ -423,6 +429,8 @@
     <ClInclude Include="Mathematics\OdeRungeKutta4.h" />
     <ClInclude Include="Mathematics\OdeSolver.h" />
     <ClInclude Include="Mathematics\OrientedBox.h" />
+    <ClInclude Include="Mathematics\Parallelepiped3.h" />
+    <ClInclude Include="Mathematics\Parallelogram2.h" />
     <ClInclude Include="Mathematics\ParticleSystem.h" />
     <ClInclude Include="Mathematics\PdeFilter.h" />
     <ClInclude Include="Mathematics\PdeFilter1.h" />

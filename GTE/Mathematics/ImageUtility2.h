@@ -3,21 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.07.27
 
 #pragma once
 
-// Image utilities for Image2<int32_t> objects.  TODO: Extend this to a template
-// class to allow the pixel type to be int32_t*_t and uint*_t for * in
-// {8,16,32,64}.
+// Image utilities for Image2<int32_t> objects. TODO: Extend this to
+// a template class to allow the pixel type to be int*_t and uint*_t
+// for * in {8,16,32,64}.
 //
-// All but the Draw* functions are operations on binary images.  Let the image
-// have d0 columns and d1 rows.  The input image must have zeros on its
-// boundaries x = 0, x = d0-1, y = 0 and y = d1-1.  The 0-valued pixels are
-// considered to be background.  The 1-valued pixels are considered to be
+// All but the Draw* functions are operations on binary images. Let the image
+// have d0 columns and d1 rows. The input image must have zeros on its
+// boundaries x = 0, x = d0-1, y = 0 and y = d1-1. The 0-valued pixels are
+// considered to be background. The 1-valued pixels are considered to be
 // foreground.  In some of the operations, to save memory and time the input
-// image is modified by the algorithms.  If you need to preserve the input
-// image, make a copy of it before calling these functions.  Dilation and
+// image is modified by the algorithms. If you need to preserve the input
+// image, make a copy of it before calling these functions. Dilation and
 // erosion functions do not have the requirement that the boundary pixels of
 // the binary image inputs be zero.
 
@@ -980,39 +980,36 @@ namespace gte
         static void DrawCircle(int32_t xCenter, int32_t yCenter, int32_t radius, bool solid,
             std::function<void(int32_t, int32_t)> const& callback)
         {
-            int32_t x, y, dec;
-
             if (solid)
             {
-                int32_t xValue, yMin, yMax, i;
-                for (x = 0, y = radius, dec = 3 - 2 * radius; x <= y; ++x)
+                for (int32_t x = 0, y = radius, dec = 3 - 2 * radius; x <= y; ++x)
                 {
-                    xValue = xCenter + x;
-                    yMin = yCenter - y;
-                    yMax = yCenter + y;
-                    for (i = yMin; i <= yMax; ++i)
+                    int32_t xMin = xCenter - x;
+                    int32_t xMax = xCenter + x;
+                    int32_t yValue = yCenter - y;
+                    for (int32_t xValue = xMin; xValue <= xMax; ++xValue)
                     {
-                        callback(xValue, i);
+                        callback(xValue, yValue);
                     }
 
-                    xValue = xCenter - x;
-                    for (i = yMin; i <= yMax; ++i)
+                    yValue = yCenter + y;
+                    for (int32_t xValue = xMin; xValue <= xMax; ++xValue)
                     {
-                        callback(xValue, i);
+                        callback(xValue, yValue);
                     }
 
-                    xValue = xCenter + y;
-                    yMin = yCenter - x;
-                    yMax = yCenter + x;
-                    for (i = yMin; i <= yMax; ++i)
+                    xMin = xCenter - y;
+                    xMax = xCenter + y;
+                    yValue = yCenter - x;
+                    for (int32_t xValue = xMin; xValue <= xMax; ++xValue)
                     {
-                        callback(xValue, i);
+                        callback(xValue, yValue);
                     }
 
-                    xValue = xCenter - y;
-                    for (i = yMin; i <= yMax; ++i)
+                    yValue = yCenter + x;
+                    for (int32_t xValue = xMin; xValue <= xMax; ++xValue)
                     {
-                        callback(xValue, i);
+                        callback(xValue, yValue);
                     }
 
                     if (dec >= 0)
@@ -1024,7 +1021,7 @@ namespace gte
             }
             else
             {
-                for (x = 0, y = radius, dec = 3 - 2 * radius; x <= y; ++x)
+                for (int32_t x = 0, y = radius, dec = 3 - 2 * radius; x <= y; ++x)
                 {
                     callback(xCenter + x, yCenter + y);
                     callback(xCenter + x, yCenter - y);

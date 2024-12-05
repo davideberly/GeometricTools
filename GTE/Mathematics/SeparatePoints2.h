@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.08.25
 
 #pragma once
 
@@ -30,16 +30,16 @@ namespace gte
             Line2<Real>& separatingLine) const
         {
             // Construct convex hull of point set 0.
-            ConvexHull2<Real> ch0;
-            ch0(numPoints0, points0, (Real)0);
+            ConvexHull2<Real> ch0{};
+            ch0(numPoints0, points0);
             if (ch0.GetDimension() != 2)
             {
                 return false;
             }
 
             // Construct convex hull of point set 1.
-            ConvexHull2<Real> ch1;
-            ch1(numPoints1, points1, (Real)0);
+            ConvexHull2<Real> ch1{};
+            ch1(numPoints1, points1);
             if (ch1.GetDimension() != 2)
             {
                 return false;

@@ -6,12 +6,14 @@ endif()
 cmake_minimum_required(VERSION 3.8)
 
 set(GTE_VERSION_MAJOR 7)
-set(GTE_VERSION_MINOR 0)
+set(GTE_VERSION_MINOR 1)
 
 project(Mathematics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 
 add_subdirectory(ApproximateBezierCurveByArcs)
+add_subdirectory(ApproximateEllipse2)
 add_subdirectory(ApproximateEllipsesByArcs)
+add_subdirectory(ApproximateEllipsoid3)
 add_subdirectory(BSplineCurveFitter)
 add_subdirectory(BSplineCurveReduction)
 add_subdirectory(BSplineSurfaceFitter)

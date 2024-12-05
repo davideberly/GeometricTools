@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.6.2023.05.06
+// Version: 6.6.2024.11.13
 
 #pragma once
 
@@ -19,8 +19,8 @@ public:
     ApproximateBezierCurveByArcsWindow2(Parameters& parameters);
 
     virtual void OnDisplay() override;
-    virtual void DrawScreenOverlay();
-    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y);
+    virtual void DrawScreenOverlay() override;
+    virtual bool OnCharPress(uint8_t key, int32_t x, int32_t y) override;
 
 private:
     // The client window is [0,512]x[0,512], mXSize = mYSize = 512.

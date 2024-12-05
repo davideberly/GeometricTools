@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.11.13
 
 #pragma once
 
@@ -12,6 +12,20 @@
 // arithmetic of unsigned integers.  The template parameter N is the
 // number of 32-bit words required to store the precision for the desired
 // computations (maximum number of bits is 32*N).
+//
+// NOTE: I had been initializing mBits{} in the constructor initializer
+// lists to avoid Microsoft compiler complaints about uninitialized
+// variables. The elements of mBits are set to zero because of the
+// initialization. This turns out to be a massive performance hit in
+// MinimumVolumeBox3. I performed an experiment with 44 rational vertices
+// and executed it single threaded in a Release build. Using Intel oneAPI
+// VTune profiler, the execution used approximately 53.5 seconds. The
+// mBits{} initialization consumed 40.5 seconds of that time. I removed
+// the initializations, which should be safe because mNumBits tells you
+// how many bits are used (0 at default constructor time). VTune showed
+// that the execution used approximately 10.8 seconds. MinimumVolumeBox3
+// has a significant number of BSNumber/BSRational default constructor
+// calls, so the time savings is worth omitting the initialization.
 
 // Uncomment this to collect statistics on how large the UIntegerFP32 storage
 // becomes when using it for the UInteger of BSNumber.  If you use this
@@ -42,12 +56,19 @@ namespace gte
     class UIntegerFP32 : public UIntegerALU32<UIntegerFP32<N>>
     {
     public:
+#if defined(GTE_USE_MSWINDOWS)
+// Disable the warning:
+//   warning C26495: Variable 'gte::UIntegerFP32<2561>::mBits' is
+//   uninitialized. Always initialize a member variable (type.6).
+// See the NOTE above about performance problems when mBits is
+// initialized in the constructors.
+#pragma warning(disable : 26495)
+#endif
         // Construction.
         UIntegerFP32()
             :
             mNumBits(0),
-            mSize(0),
-            mBits{}
+            mSize(0)
         {
             static_assert(N >= 1, "Invalid size N.");
         }
@@ -55,8 +76,7 @@ namespace gte
         UIntegerFP32(UIntegerFP32 const& number)
             :
             mNumBits(0),
-            mSize(0),
-            mBits{}
+            mSize(0)
         {
             static_assert(N >= 1, "Invalid size N.");
 
@@ -66,8 +86,7 @@ namespace gte
         UIntegerFP32(uint32_t number)
             :
             mNumBits(0),
-            mSize(0),
-            mBits{}
+            mSize(0)
         {
             static_assert(N >= 1, "Invalid size N.");
 
@@ -93,8 +112,7 @@ namespace gte
         UIntegerFP32(uint64_t number)
             :
             mNumBits(0),
-            mSize(0),
-            mBits{}
+            mSize(0)
         {
             static_assert(N >= 2, "N not large enough to store 64-bit integers.");
 
@@ -121,6 +139,10 @@ namespace gte
             AtomicMax(gsUIntegerFP32MaxSize, mSize);
 #endif
         }
+
+#if defined(GTE_USE_MSWINDOWS)
+#pragma warning(default : 28020)
+#endif
 
         // Assignment.  Only mSize elements are copied.
         UIntegerFP32& operator=(UIntegerFP32 const& number)

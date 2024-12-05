@@ -3,12 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.08.26
 
 #pragma once
 
 // Quadratic interpolation of a network of triangles whose vertices are of
-// the form (x,y,f(x,y)).  This code is an implementation of the algorithm
+// the form (x,y,f(x,y)). This code is an implementation of the algorithm
 // found in
 //
 //   Zoltan J. Cendes and Steven H. Wong,
@@ -19,14 +19,13 @@
 // The TriangleMesh interface must support the following:
 //   int32_t GetNumVertices() const;
 //   int32_t GetNumTriangles() const;
-//   Vector2<Real> const* GetVertices() const;
+//   Vector2<T> const* GetVertices() const;
 //   int32_t const* GetIndices() const;
-//   bool GetVertices(int32_t, std::array<Vector2<Real>, 3>&) const;
+//   bool GetVertices(int32_t, std::array<Vector2<T>, 3>&) const;
 //   bool GetIndices(int32_t, std::array<int32_t, 3>&) const;
 //   bool GetAdjacencies(int32_t, std::array<int32_t, 3>&) const;
-//   bool GetBarycentrics(int32_t, Vector2<Real> const&,
-//      std::array<Real, 3>&) const;
-//   int32_t GetContainingTriangle(Vector2<Real> const&) const;
+//   bool GetBarycentrics(int32_t, Vector2<T> const&, std::array<T, 3>&) const;
+//   int32_t GetContainingTriangle(Vector2<T> const&) const;
 
 #include <Mathematics/Delaunay2.h>
 #include <Mathematics/ContScribeCircle2.h>
@@ -39,37 +38,41 @@
 
 namespace gte
 {
-    template <typename Real, typename TriangleMesh>
+    template <typename T, typename TriangleMesh>
     class IntpQuadraticNonuniform2
     {
     public:
-        // Construction.
-        //
         // The first constructor requires only F and a measure of the rate of
         // change of the function values relative to changes in the spatial
-        // variables.  The df/dx and df/dy values are estimated at the sample
+        // variables. The df/dx and df/dy values are estimated at the sample
         // points using mesh normals and spatialDelta.
         //
         // The second constructor requires you to specify function values F
         // and first-order partial derivative values df/dx and df/dy.
 
-        IntpQuadraticNonuniform2(TriangleMesh const& mesh, Real const* F, Real spatialDelta)
+        IntpQuadraticNonuniform2(TriangleMesh const& mesh, T const* F, T spatialDelta)
             :
             mMesh(&mesh),
             mF(F),
             mFX(nullptr),
-            mFY(nullptr)
+            mFY(nullptr),
+            mFXStorage{},
+            mFYStorage{},
+            mTData{}
         {
             EstimateDerivatives(spatialDelta);
             ProcessTriangles();
         }
 
-        IntpQuadraticNonuniform2(TriangleMesh const& mesh, Real const* F, Real const* FX, Real const* FY)
+        IntpQuadraticNonuniform2(TriangleMesh const& mesh, T const* F, T const* FX, T const* FY)
             :
             mMesh(&mesh),
             mF(F),
             mFX(FX),
-            mFY(FY)
+            mFY(FY),
+            mFXStorage{},
+            mFYStorage{},
+            mTData{}
         {
             ProcessTriangles();
         }
@@ -77,17 +80,17 @@ namespace gte
         // Quadratic interpolation.  The return value is 'true' if and only if
         // the input point is in the convex hull of the input vertices, in
         // which case the interpolation is valid.
-        bool operator()(Vector2<Real> const& P, Real& F, Real& FX, Real& FY) const
+        bool operator()(Vector2<T> const& P, T& F, T& FX, T& FY) const
         {
-            auto t = mMesh->GetContainingTriangle(P);
-            if (t == mMesh->GetInvalidIndex())
+            std::int32_t t = static_cast<std::int32_t>(mMesh->GetContainingTriangle(P));
+            if (t == static_cast<std::int32_t>(mMesh->GetInvalidIndex()))
             {
                 // The point is outside the triangulation.
                 return false;
             }
 
             // Get the vertices of the triangle.
-            std::array<Vector2<Real>, 3> V;
+            std::array<Vector2<T>, 3> V{};
             mMesh->GetVertices(t, V);
 
             // Get the additional information for the triangle.
@@ -95,21 +98,22 @@ namespace gte
 
             // Determine which of the six subtriangles contains the target
             // point.  Theoretically, P must be in one of these subtriangles.
-            Vector2<Real> sub0 = tData.center;
-            Vector2<Real> sub1;
-            Vector2<Real> sub2 = tData.intersect[2];
-            Vector3<Real> bary;
-            int32_t index;
+            Vector2<T> sub0 = tData.center;
+            Vector2<T> sub1{};
+            Vector2<T> sub2 = tData.intersect[2];
+            Vector3<T> bary{};
+            int32_t index{};
 
-            Real const zero = (Real)0, one = (Real)1;
-            AlignedBox3<Real> barybox({ zero, zero, zero }, { one, one, one });
-            DCPQuery<Real, Vector3<Real>, AlignedBox3<Real>> pbQuery;
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            AlignedBox3<T> barybox({ zero, zero, zero }, { one, one, one });
+            DCPQuery<T, Vector3<T>, AlignedBox3<T>> pbQuery;
             int32_t minIndex = 0;
-            Real minDistance = (Real)-1;
-            Vector3<Real> minBary{ (Real)0, (Real)0, (Real)0 };
-            Vector2<Real> minSub0{ (Real)0, (Real)0 };
-            Vector2<Real> minSub1{ (Real)0, (Real)0 };
-            Vector2<Real> minSub2{ (Real)0, (Real)0 };
+            T minDistance = -one;
+            Vector3<T> minBary{ zero, zero, zero };
+            Vector2<T> minSub0{ zero, zero };
+            Vector2<T> minSub1{ zero, zero };
+            Vector2<T> minSub2{ zero, zero };
 
             for (index = 1; index <= 6; ++index)
             {
@@ -125,7 +129,7 @@ namespace gte
                     sub2 = tData.intersect[lookup];
                 }
 
-                std::array<Real, 3> localBary{};
+                std::array<T, 3> localBary{};
                 bool valid = ComputeBarycentrics(P, sub0, sub1, sub2, localBary);
                 for (int32_t k = 0; k < 3; ++k)
                 {
@@ -146,7 +150,7 @@ namespace gte
                 // (b0,b1,b2) that is closest to the barycentric cube [0,1]^3
                 // and choose the triangle corresponding to it when all 6
                 // tests previously fail.
-                Real distance = pbQuery(bary, barybox).distance;
+                T distance = pbQuery(bary, barybox).distance;
                 if (minIndex == 0 || distance < minDistance)
                 {
                     minDistance = distance;
@@ -170,7 +174,7 @@ namespace gte
             }
 
             // Fetch Bezier control points.
-            Real bez[6] =
+            std::array<T, 6> bez =
             {
                 tData.coeff[0],
                 tData.coeff[12 + static_cast<size_t>(index)],
@@ -186,21 +190,19 @@ namespace gte
                 bary[2] * (bez[2] * bary[0] + bez[4] * bary[1] + bez[5] * bary[2]);
 
             // Evaluate barycentric derivatives of F.
-            Real FU = ((Real)2) * (bez[0] * bary[0] + bez[1] * bary[1] +
-                bez[2] * bary[2]);
-            Real FV = ((Real)2) * (bez[1] * bary[0] + bez[3] * bary[1] +
-                bez[4] * bary[2]);
-            Real FW = ((Real)2) * (bez[2] * bary[0] + bez[4] * bary[1] +
-                bez[5] * bary[2]);
-            Real duw = FU - FW;
-            Real dvw = FV - FW;
+            T const two = static_cast<T>(2);
+            T FU = two * (bez[0] * bary[0] + bez[1] * bary[1] + bez[2] * bary[2]);
+            T FV = two * (bez[1] * bary[0] + bez[3] * bary[1] + bez[4] * bary[2]);
+            T FW = two * (bez[2] * bary[0] + bez[4] * bary[1] + bez[5] * bary[2]);
+            T duw = FU - FW;
+            T dvw = FV - FW;
 
             // Convert back to (x,y) coordinates.
-            Real m00 = sub0[0] - sub2[0];
-            Real m10 = sub0[1] - sub2[1];
-            Real m01 = sub1[0] - sub2[0];
-            Real m11 = sub1[1] - sub2[1];
-            Real inv = ((Real)1) / (m00 * m11 - m10 * m01);
+            T m00 = sub0[0] - sub2[0];
+            T m10 = sub0[1] - sub2[1];
+            T m01 = sub1[0] - sub2[0];
+            T m11 = sub1[1] - sub2[1];
+            T inv = static_cast<T>(1) / (m00 * m11 - m10 * m01);
 
             FX = inv * (m11 * duw - m10 * dvw);
             FY = inv * (m00 * dvw - m01 * duw);
@@ -208,25 +210,27 @@ namespace gte
         }
 
     private:
-        void EstimateDerivatives(Real spatialDelta)
+        void EstimateDerivatives(T spatialDelta)
         {
-            auto numVertices = mMesh->GetNumVertices();
-            Vector2<Real> const* vertices = mMesh->GetVertices();
-            auto numTriangles = mMesh->GetNumTriangles();
+            T const zero = static_cast<T>(0);
+
+            std::int32_t numVertices = static_cast<std::int32_t>(mMesh->GetNumVertices());
+            Vector2<T> const* vertices = mMesh->GetVertices();
+            std::int32_t numTriangles = static_cast<std::int32_t>(mMesh->GetNumTriangles());
             int32_t const* indices = mMesh->GetIndices();
 
             mFXStorage.resize(numVertices);
             mFYStorage.resize(numVertices);
-            std::vector<Real> FZ(numVertices);
-            std::fill(mFXStorage.begin(), mFXStorage.end(), (Real)0);
-            std::fill(mFYStorage.begin(), mFYStorage.end(), (Real)0);
-            std::fill(FZ.begin(), FZ.end(), (Real)0);
+            std::vector<T> FZ(numVertices);
+            std::fill(mFXStorage.begin(), mFXStorage.end(), zero);
+            std::fill(mFYStorage.begin(), mFYStorage.end(), zero);
+            std::fill(FZ.begin(), FZ.end(), zero);
 
-            mFX = &mFXStorage[0];
-            mFY = &mFYStorage[0];
+            mFX = mFXStorage.data();
+            mFY = mFYStorage.data();
 
             // Accumulate normals at spatial locations (averaging process).
-            for (auto t = 0; t < numTriangles; ++t)
+            for (std::int32_t t = 0; t < numTriangles; ++t)
             {
                 // Get three vertices of triangle.
                 int32_t v0 = *indices++;
@@ -235,16 +239,16 @@ namespace gte
 
                 // Compute normal vector of triangle (with positive
                 // z-component).
-                Real dx1 = vertices[v1][0] - vertices[v0][0];
-                Real dy1 = vertices[v1][1] - vertices[v0][1];
-                Real dz1 = mF[v1] - mF[v0];
-                Real dx2 = vertices[v2][0] - vertices[v0][0];
-                Real dy2 = vertices[v2][1] - vertices[v0][1];
-                Real dz2 = mF[v2] - mF[v0];
-                Real nx = dy1 * dz2 - dy2 * dz1;
-                Real ny = dz1 * dx2 - dz2 * dx1;
-                Real nz = dx1 * dy2 - dx2 * dy1;
-                if (nz < (Real)0)
+                T dx1 = vertices[v1][0] - vertices[v0][0];
+                T dy1 = vertices[v1][1] - vertices[v0][1];
+                T dz1 = mF[v1] - mF[v0];
+                T dx2 = vertices[v2][0] - vertices[v0][0];
+                T dy2 = vertices[v2][1] - vertices[v0][1];
+                T dz2 = mF[v2] - mF[v0];
+                T nx = dy1 * dz2 - dy2 * dz1;
+                T ny = dz1 * dx2 - dz2 * dx1;
+                T nz = dx1 * dy2 - dx2 * dy1;
+                if (nz < zero)
                 {
                     nx = -nx;
                     ny = -ny;
@@ -257,18 +261,18 @@ namespace gte
             }
 
             // Scale the normals to form (x,y,-1).
-            for (auto i = 0; i < numVertices; ++i)
+            for (std::int32_t i = 0; i < numVertices; ++i)
             {
-                if (FZ[i] != (Real)0)
+                if (FZ[i] != zero)
                 {
-                    Real inv = -spatialDelta / FZ[i];
+                    T inv = -spatialDelta / FZ[i];
                     mFXStorage[i] *= inv;
                     mFYStorage[i] *= inv;
                 }
                 else
                 {
-                    mFXStorage[i] = (Real)0;
-                    mFYStorage[i] = (Real)0;
+                    mFXStorage[i] = (T)0;
+                    mFYStorage[i] = (T)0;
                 }
             }
         }
@@ -280,28 +284,28 @@ namespace gte
             // as interpolation in the interior.
 
             // Compute centers of inscribed circles for triangles.
-            Vector2<Real> const* vertices = mMesh->GetVertices();
-            auto numTriangles = mMesh->GetNumTriangles();
+            Vector2<T> const* vertices = mMesh->GetVertices();
+            std::int32_t numTriangles = static_cast<std::int32_t>(mMesh->GetNumTriangles());
             int32_t const* indices = mMesh->GetIndices();
             mTData.resize(numTriangles);
-            for (auto t = 0; t < numTriangles; ++t)
+            for (std::int32_t t = 0; t < numTriangles; ++t)
             {
                 int32_t v0 = *indices++;
                 int32_t v1 = *indices++;
                 int32_t v2 = *indices++;
-                Circle2<Real> circle;
+                Circle2<T> circle{};
                 Inscribe(vertices[v0], vertices[v1], vertices[v2], circle);
                 mTData[t].center = circle.center;
             }
 
             // Compute cross-edge intersections.
-            for (auto t = 0; t < numTriangles; ++t)
+            for (std::int32_t t = 0; t < numTriangles; ++t)
             {
                 ComputeCrossEdgeIntersections(t);
             }
 
             // Compute Bezier coefficients.
-            for (auto t = 0; t < numTriangles; ++t)
+            for (std::int32_t t = 0; t < numTriangles; ++t)
             {
                 ComputeCoefficients(t);
             }
@@ -310,10 +314,12 @@ namespace gte
         void ComputeCrossEdgeIntersections(int32_t t)
         {
             // Get the vertices of the triangle.
-            std::array<Vector2<Real>, 3> V;
+            std::array<Vector2<T>, 3> V{};
             mMesh->GetVertices(t, V);
 
             // Get the centers of adjacent triangles.
+            T const one = static_cast<T>(1);
+            T const half = static_cast<T>(0.5);
             TriangleData& tData = mTData[t];
             std::array<int32_t, 3> adjacencies = { 0, 0, 0 };
             mMesh->GetAdjacencies(t, adjacencies);
@@ -323,29 +329,33 @@ namespace gte
                 if (a >= 0)
                 {
                     // Get center of adjacent triangle's inscribing circle.
-                    Vector2<Real> U = mTData[a].center;
-                    Real m00 = V[j0][1] - V[j1][1];
-                    Real m01 = V[j1][0] - V[j0][0];
-                    Real m10 = tData.center[1] - U[1];
-                    Real m11 = U[0] - tData.center[0];
-                    Real r0 = m00 * V[j0][0] + m01 * V[j0][1];
-                    Real r1 = m10 * tData.center[0] + m11 * tData.center[1];
-                    Real invDet = ((Real)1) / (m00 * m11 - m01 * m10);
+                    Vector2<T> U = mTData[a].center;
+                    T m00 = V[j0][1] - V[j1][1];
+                    T m01 = V[j1][0] - V[j0][0];
+                    T m10 = tData.center[1] - U[1];
+                    T m11 = U[0] - tData.center[0];
+                    T r0 = m00 * V[j0][0] + m01 * V[j0][1];
+                    T r1 = m10 * tData.center[0] + m11 * tData.center[1];
+                    T invDet = one / (m00 * m11 - m01 * m10);
                     tData.intersect[j0][0] = (m11 * r0 - m01 * r1) * invDet;
                     tData.intersect[j0][1] = (m00 * r1 - m10 * r0) * invDet;
                 }
                 else
                 {
                     // No adjacent triangle, use center of edge.
-                    tData.intersect[j0] = (Real)0.5 * (V[j0] + V[j1]);
+                    tData.intersect[j0] = half * (V[j0] + V[j1]);
                 }
             }
         }
 
         void ComputeCoefficients(int32_t t)
         {
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            T const half = static_cast<T>(0.5);
+
             // Get the vertices of the triangle.
-            std::array<Vector2<Real>, 3> V;
+            std::array<Vector2<T>, 3> V{};
             mMesh->GetVertices(t, V);
 
             // Get the additional information for the triangle.
@@ -354,8 +364,8 @@ namespace gte
             // Get the sample data at main triangle vertices.
             std::array<int32_t, 3> indices = { 0, 0, 0 };
             mMesh->GetIndices(t, indices);
-            std::array<Jet, 3> jet;
-            for (int32_t j = 0; j < 3; ++j)
+            std::array<Jet, 3> jet{};
+            for (std::size_t j = 0; j < 3; ++j)
             {
                 int32_t k = indices[j];
                 jet[j].F = mF[k];
@@ -366,8 +376,8 @@ namespace gte
             // Get centers of adjacent triangles.
             std::array<int32_t, 3> adjacencies = { 0, 0, 0 };
             mMesh->GetAdjacencies(t, adjacencies);
-            Vector2<Real> U[3];
-            for (int32_t j0 = 2, j1 = 0; j1 < 3; j0 = j1++)
+            std::array<Vector2<T>, 3> U{};
+            for (std::size_t j0 = 2, j1 = 0; j1 < 3; j0 = j1++)
             {
                 int32_t a = adjacencies[j0];
                 if (a >= 0)
@@ -379,49 +389,50 @@ namespace gte
                 else
                 {
                     // No adjacent triangle, use center of edge.
-                    U[j0] = ((Real)0.5) * (V[j0] + V[j1]);
+                    U[j0] = half * (V[j0] + V[j1]);
                 }
             }
 
             // Compute intermediate terms.
-            std::array<Real, 3> cenT, cen0, cen1, cen2;
+            std::array<T, 3> cenT{}, cen0{}, cen1{}, cen2{};
             mMesh->GetBarycentrics(t, tData.center, cenT);
             mMesh->GetBarycentrics(t, U[0], cen0);
             mMesh->GetBarycentrics(t, U[1], cen1);
             mMesh->GetBarycentrics(t, U[2], cen2);
 
-            Real alpha = (cenT[1] * cen1[0] - cenT[0] * cen1[1]) / (cen1[0] - cenT[0]);
-            Real beta = (cenT[2] * cen2[1] - cenT[1] * cen2[2]) / (cen2[1] - cenT[1]);
-            Real gamma = (cenT[0] * cen0[2] - cenT[2] * cen0[0]) / (cen0[2] - cenT[2]);
-            Real oneMinusAlpha = (Real)1 - alpha;
-            Real oneMinusBeta = (Real)1 - beta;
-            Real oneMinusGamma = (Real)1 - gamma;
+            T alpha = (cenT[1] * cen1[0] - cenT[0] * cen1[1]) / (cen1[0] - cenT[0]);
+            T beta = (cenT[2] * cen2[1] - cenT[1] * cen2[2]) / (cen2[1] - cenT[1]);
+            T gamma = (cenT[0] * cen0[2] - cenT[2] * cen0[0]) / (cen0[2] - cenT[2]);
+            T oneMinusAlpha = one - alpha;
+            T oneMinusBeta = one - beta;
+            T oneMinusGamma = one - gamma;
 
-            Real const zero = static_cast<Real>(0);
-            std::array<Real, 9> A = { zero, zero, zero, zero, zero, zero, zero, zero, zero };
-            std::array<Real, 9> B = { zero, zero, zero, zero, zero, zero, zero, zero, zero };
+            std::array<T, 9> A{};
+            std::array<T, 9> B{};
+            A.fill(zero);
+            B.fill(zero);
 
-            Real tmp = cenT[0] * V[0][0] + cenT[1] * V[1][0] + cenT[2] * V[2][0];
-            A[0] = (Real)0.5 * (tmp - V[0][0]);
-            A[1] = (Real)0.5 * (tmp - V[1][0]);
-            A[2] = (Real)0.5 * (tmp - V[2][0]);
-            A[3] = (Real)0.5 * beta * (V[2][0] - V[0][0]);
-            A[4] = (Real)0.5 * oneMinusGamma * (V[1][0] - V[0][0]);
-            A[5] = (Real)0.5 * gamma * (V[0][0] - V[1][0]);
-            A[6] = (Real)0.5 * oneMinusAlpha * (V[2][0] - V[1][0]);
-            A[7] = (Real)0.5 * alpha * (V[1][0] - V[2][0]);
-            A[8] = (Real)0.5 * oneMinusBeta * (V[0][0] - V[2][0]);
+            T tmp = cenT[0] * V[0][0] + cenT[1] * V[1][0] + cenT[2] * V[2][0];
+            A[0] = half * (tmp - V[0][0]);
+            A[1] = half * (tmp - V[1][0]);
+            A[2] = half * (tmp - V[2][0]);
+            A[3] = half * beta * (V[2][0] - V[0][0]);
+            A[4] = half * oneMinusGamma * (V[1][0] - V[0][0]);
+            A[5] = half * gamma * (V[0][0] - V[1][0]);
+            A[6] = half * oneMinusAlpha * (V[2][0] - V[1][0]);
+            A[7] = half * alpha * (V[1][0] - V[2][0]);
+            A[8] = half * oneMinusBeta * (V[0][0] - V[2][0]);
 
             tmp = cenT[0] * V[0][1] + cenT[1] * V[1][1] + cenT[2] * V[2][1];
-            B[0] = (Real)0.5 * (tmp - V[0][1]);
-            B[1] = (Real)0.5 * (tmp - V[1][1]);
-            B[2] = (Real)0.5 * (tmp - V[2][1]);
-            B[3] = (Real)0.5 * beta * (V[2][1] - V[0][1]);
-            B[4] = (Real)0.5 * oneMinusGamma * (V[1][1] - V[0][1]);
-            B[5] = (Real)0.5 * gamma * (V[0][1] - V[1][1]);
-            B[6] = (Real)0.5 * oneMinusAlpha * (V[2][1] - V[1][1]);
-            B[7] = (Real)0.5 * alpha * (V[1][1] - V[2][1]);
-            B[8] = (Real)0.5 * oneMinusBeta * (V[0][1] - V[2][1]);
+            B[0] = half * (tmp - V[0][1]);
+            B[1] = half * (tmp - V[1][1]);
+            B[2] = half * (tmp - V[2][1]);
+            B[3] = half * beta * (V[2][1] - V[0][1]);
+            B[4] = half * oneMinusGamma * (V[1][1] - V[0][1]);
+            B[5] = half * gamma * (V[0][1] - V[1][1]);
+            B[6] = half * oneMinusAlpha * (V[2][1] - V[1][1]);
+            B[7] = half * alpha * (V[1][1] - V[2][1]);
+            B[8] = half * oneMinusBeta * (V[0][1] - V[2][1]);
 
             // Compute Bezier coefficients.
             tData.coeff[2] = jet[0].F;
@@ -450,9 +461,22 @@ namespace gte
         class TriangleData
         {
         public:
-            Vector2<Real> center;
-            std::array<Vector2<Real>, 3> intersect;
-            std::array<Real, 19> coeff;
+            TriangleData()
+                :
+                center{},
+                intersect{},
+                coeff{}
+            {
+                T const zero = static_cast<T>(0);
+                Vector2<T> const vzero{ zero, zero };
+                center = vzero;
+                intersect.fill(vzero);
+                coeff.fill(zero);
+            }
+
+            Vector2<T> center;
+            std::array<Vector2<T>, 3> intersect;
+            std::array<T, 19> coeff;
         };
 
         class Jet
@@ -460,21 +484,21 @@ namespace gte
         public:
             Jet()
                 :
-                F(static_cast<Real>(0)),
-                FX(static_cast<Real>(0)),
-                FY(static_cast<Real>(0))
+                F(static_cast<T>(0)),
+                FX(static_cast<T>(0)),
+                FY(static_cast<T>(0))
             {
             }
 
-            Real F, FX, FY;
+            T F, FX, FY;
         };
 
         TriangleMesh const* mMesh;
-        Real const* mF;
-        Real const* mFX;
-        Real const* mFY;
-        std::vector<Real> mFXStorage;
-        std::vector<Real> mFYStorage;
+        T const* mF;
+        T const* mFX;
+        T const* mFY;
+        std::vector<T> mFXStorage;
+        std::vector<T> mFYStorage;
         std::vector<TriangleData> mTData;
     };
 }

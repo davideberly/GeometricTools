@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.09.06
 
 #pragma once
 
@@ -56,7 +56,7 @@ namespace gte
     {
     public:
         // If you want this function to compute the initial guess for the
-        // ellipsoid, set 'useEllipseForInitialGuess' to true. An oriented
+        // ellipsoid, set 'useEllipseForInitialGuess' to false. An oriented
         // bounding box containing the points is used to start the minimizer.
         // Set 'useEllipseForInitialGuess' to true if you want the initial
         // guess to be the input ellipse. This is useful if you want to
