@@ -7,11 +7,11 @@
 
 #pragma once
 
-// BVTree is an abstract class for computing a bounding volue tree of a
+// BVTree is an abstract class for computing a bounding volume tree of a
 // collection of primitives. The derived classes are BVTreeOfPoints (point
 // primitives), BVTreeOfSegments (line segment primitives) and
 // BVTreeOfTriangles (triangle primitives). In turn, derived classes of these
-// classes create a boundng volume for each tree node.
+// classes create a bounding volume for each tree node.
 //
 // The depth of a node in a nonempty tree is the distance from the node to the
 // root of the tree. The height is the maximum depth. A tree with a single
