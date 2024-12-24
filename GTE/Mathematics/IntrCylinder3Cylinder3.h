@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.12.23
+// Version: 6.0.2024.12.24
 
 #pragma once
 
@@ -195,7 +195,7 @@ namespace gte
             Vector3<T> const& N = basis[0];
 
             // Sample the hemisphere for potential separating directions.
-            T phiMultiplier = static_cast<T>(GTE_C_PI) / static_cast<T>(mNumPhi);
+            T phiMultiplier = static_cast<T>(GTE_C_HALF_PI) / static_cast<T>(mNumPhi);
             T thetaMultiplier = static_cast<T>(GTE_C_TWO_PI) / static_cast<T>(mNumTheta);
             for (std::size_t j = 1; j < mNumPhi; ++j)
             {
@@ -239,7 +239,7 @@ namespace gte
 
             // Sample the hemisphere for potential separating directions.
             // Distribute the computing across multiple threads.
-            T phiMultiplier = static_cast<T>(GTE_C_PI) / static_cast<T>(mNumPhi);
+            T phiMultiplier = static_cast<T>(GTE_C_HALF_PI) / static_cast<T>(mNumPhi);
             T thetaMultiplier = static_cast<T>(GTE_C_TWO_PI) / static_cast<T>(mNumTheta);
             std::vector<std::size_t> jmin(mNumThreads), jsup(mNumThreads);
             size_t numPhiPerThread = mNumPhi / mNumThreads;
@@ -248,6 +248,7 @@ namespace gte
                 jmin[t] = numPhiPerThread * t;
                 jsup[t] = numPhiPerThread * (t + 1);
             }
+            jmin.front() = 1;
             jsup.back() = mNumPhi;
 
             std::vector<Result> localResult(mNumThreads);
