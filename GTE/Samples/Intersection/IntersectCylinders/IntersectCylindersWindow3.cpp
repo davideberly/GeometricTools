@@ -14,7 +14,7 @@ IntersectCylindersWindow3::IntersectCylindersWindow3(Parameters& parameters)
     Window3(parameters),
     mNumLines(2048),
     mCylinder{},
-    mQuery(mNumLines),
+    mQuery(8, 512, 256),  // Modify 0 to a positive number for multithreading.
     mMotionObject(0),
     mCylinderBasis{}
 {
@@ -26,7 +26,7 @@ IntersectCylindersWindow3::IntersectCylindersWindow3(Parameters& parameters)
     mEngine->SetRasterizerState(mNoCullState);
 
     InitializeCamera(60.0f, GetAspectRatio(), 1.0f, 1000.0f, 0.001f, 0.001f,
-        { 6.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
+        { 0.0f, 15.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f });
 
     CreateScene();
 
@@ -136,6 +136,17 @@ void IntersectCylindersWindow3::CreateScene()
     mCyanEffect = std::make_shared<ConstantColorEffect>(mProgramFactory,
         Vector4<float>{ 0.0f, 1.0f, 1.0f, 1.0f });
 
+    // Create the cylinders.
+    mCylinder[0].axis.origin = { 0.0f, 0.0f, 0.0f };
+    mCylinder[0].axis.direction = { 0.0f, 0.0f, 1.0f };
+    mCylinder[0].radius = 1.0f;
+    mCylinder[0].height = 2.0f;
+
+    mCylinder[1].axis.origin = { 4.0f, 0.0f, 0.0f };
+    mCylinder[1].axis.direction = { 0.0f, 0.0f, 1.0f };
+    mCylinder[1].radius = 1.4142136f;
+    mCylinder[1].height = 7.0f;
+
     // Create the cylinder meshes.
     MeshFactory mf;
     mf.SetVertexFormat(vformat);
@@ -150,19 +161,6 @@ void IntersectCylindersWindow3::CreateScene()
     mCylinderMesh[1]->SetEffect(mBlueEffect);
     mPVWMatrices.Subscribe(mCylinderMesh[1]);
     mTrackBall.Attach(mCylinderMesh[1]);
-
-    // Create the cylinders.
-    mCylinder[0].axis.origin = { 0.0f, 0.0f, 0.0f };
-    mCylinder[0].axis.direction = { 1.0f, 1.0f, 1.0f };
-    Normalize(mCylinder[0].axis.direction);
-    mCylinder[0].radius = 1.0f;
-    mCylinder[0].height = 2.0f;
-
-    mCylinder[1].axis.origin = { 0.0, 0.0, 1.5 };
-    mCylinder[1].axis.direction = { 3.0, 2.0, 1.0 };
-    Normalize(mCylinder[1].axis.direction);
-    mCylinder[1].radius = 0.125;
-    mCylinder[1].height = 1.0;
 
     // Create bases for use by Translate(...) and Rotate(...).
     std::array<Vector3<float>, 3> basis{};
