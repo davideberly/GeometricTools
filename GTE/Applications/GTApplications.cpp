@@ -3,53 +3,52 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Applications/GTApplicationsPCH.h>
 
-// The preprocessor symbol GTE_USE_MSWINDOWS is added to all Visual Studio project
-// configurations.
+// On Microsoft Windows 10/11, the preprocessor symbol GTE_USE_MSWINDOWS is
+// added to the Visual Studio project configurations. If a project uses
+// DirectX 11 (or later), the symbol GTE_USE_DIRECTX is added to the Visual
+// Studio projects. If a project uses OpenGL, the symbol GTE_USE_OPENGL is
+// added to the Visual Studio projects.
+//
+// On Linux, the make system has the defines GTE_USE_LINUX and GTE_USE_OPENGL.
+//
+// By default, GTE uses row-major order for storing matrices. Previously
+// you had to add to the project settings the preprocessor symbol
+// GTE_USE_ROW_MAJOR. The source code has been modified so that you no
+// longer need to define GTE_USE_ROW_MAJOR. If you want column-major order
+// instead, add to the project settings the preprocessor symbol
+// GTE_USE_COL_MAJOR.
+//
+// By default, GTE multiplies a matrix M and a vector V using M*V, which is
+// the vector-on-the-right convention. Previously you had to add to the
+// project settings the preprocessor symbol GTE_USE_MAT_VEC. The source code
+// has been modified so that you no longer need to define GTE_USE_MAT_VEC.
+// If you want the multiplication to represent V*M instead, which is the
+// vector-on-the-left convention, add to the project settings the preprocessor
+// symbol GTE_USE_VEC_MAT.
+
 #if defined(GTE_USE_MSWINDOWS)
 
+// The _MSC_VER macro has integer values as described at the webpage
+// https://learn.microsoft.com/en-us/cpp/overview/compiler-versions?view=msvc-170
+//  Currently, projects are provided only for Visual Studio 2019/2022, but the
+// macro allows you to compile with Visual Studio 2015 or later.
 #if !defined(_MSC_VER)
 #error Microsoft Visual Studio 2015 or later is required.
 #endif
-
-//  MSVC  6   is version 12.0
-//  MSVC  7.0 is version 13.0 (MSVS 2002)
-//  MSVC  7.1 is version 13.1 (MSVS 2003)
-//  MSVC  8.0 is version 14.0 (MSVS 2005)
-//  MSVC  9.0 is version 15.0 (MSVS 2008)
-//  MSVC 10.0 is version 16.0 (MSVS 2010)
-//  MSVC 11.0 is version 17.0 (MSVS 2012)
-//  MSVC 12.0 is version 18.0 (MSVS 2013)
-//  MSVC 14.0 is version 19.0 (MSVS 2015)
-//  MSVC 15.0 is version 19.1 (MSVS 2017) [latest is 19.16 for 15.9.1]
-//  MSVC 16.0 is version 19.2 (MSVS 2019)
-//  Currently, projects are provided only for MSVS 2013, 2015, 2017, 2019
 #if _MSC_VER < 1900
 #error Microsoft Visual Studio 2015 or later is required.
 #endif
 
-// You can enable iterator debugging by adding to the preprocessor
-// symbols:
-//   _ITERATOR_DEBUG_LEVEL=value
-//
-// Debug build values (choose_your_value is 0, 1, or 2)
-// 0:  Disables checked iterators and disables iterator debugging.
-// 1:  Enables checked iterators and disables iterator debugging.
-// 2:  (default) Enables iterator debugging; checked iterators are not relevant.
-//
-// Release build values (choose_your_value is 0 or 1)
-// 0:  (default) Disables checked iterators.
-// 1:  Enables checked iterators; iterator debugging is not relevant.
+#if !defined(GTE_USE_DIRECTX) && !defined(GTE_USE_OPENGL)
+#error At least one of GTE_USE_DIRECTX or GTE_USE_OPENGL must be defined.
+#endif
 
-// The preprocessor symbols include GTE_USE_ROW_MAJOR; matrices are stored
-// in row-major order.  If you want column-major-order matrices, remove this
-// preprocessor symbol.
-
-// The preprocessor symbols include GTE_USE_MAT_VEC; the action of a matrix M
-// on a vector V is M*V.  If you want the action to be V*M, remove this
-// preprocessor symbol.
+#if defined(GTE_USE_DIRECTX) && defined(GTE_USE_OPENGL)
+#error Only one of GTE_USE_DIRECTX or GTE_USE_OPENGL must be defined.
+#endif
 
 #endif

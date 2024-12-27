@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "ProjectedTexturesWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -111,19 +111,19 @@ void ProjectedTexturesWindow3::CreateScene()
     Vector4<float> prjPosition{ 0.0f, 0.0f, -200.0f, 1.0f };
     mProjector->SetFrame(prjPosition, prjDVector, prjUVector, prjRVector);
 
-#if defined(GTE_USE_MAT_VEC)
-    Matrix4x4<float> postProjectionMatrix{
-        0.5f, 0.0f, 0.0f, 0.5f,
-        0.0f, 0.5f, 0.0f, 0.5f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
-#else
+#if defined(GTE_USE_VEC_MAT)
     Matrix4x4<float> postProjectionMatrix{
         0.5f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.5f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f
+    };
+#else
+    Matrix4x4<float> postProjectionMatrix{
+        0.5f, 0.0f, 0.0f, 0.5f,
+        0.0f, 0.5f, 0.0f, 0.5f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
     };
 #endif
     mProjector->SetPostProjectionMatrix(postProjectionMatrix);

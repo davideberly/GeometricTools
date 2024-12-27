@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Terrain.h>
@@ -125,10 +125,10 @@ void Terrain::OnCameraMotion()
 {
     // Get the camera location/direction in the model space of the terrain.
     Vector4<float> worldEye = mCamera->GetPosition();
-#if defined(GTE_USE_MAT_VEC)
-    Vector4<float> modelEye = worldTransform.Inverse() * worldEye;
-#else
+#if defined(GTE_USE_VEC_MAT)
     Vector4<float> modelEye = worldEye * worldTransform.Inverse();
+#else
+    Vector4<float> modelEye = worldTransform.Inverse() * worldEye;
 #endif
 
     // Update the model-space origins of the terrain pages.  Start the

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/SkinController.h>
@@ -81,14 +81,14 @@ bool SkinController::Update(double applicationTime)
                 {
                     float const* M = reinterpret_cast<float const*>(worldTransform);
                     float const* P = reinterpret_cast<float const*>(offsets);
-#if defined (GTE_USE_MAT_VEC)
-                    position[0] += weight * (M[0] * P[0] + M[1] * P[1] + M[2] * P[2] + M[3]);
-                    position[1] += weight * (M[4] * P[0] + M[5] * P[1] + M[6] * P[2] + M[7]);
-                    position[2] += weight * (M[8] * P[0] + M[9] * P[1] + M[10] * P[2] + M[11]);
-#else
+#if defined (GTE_USE_VEC_MAT)
                     position[0] += weight * (M[0] * P[0] + M[4] * P[1] + M[8] * P[2] + M[12]);
                     position[1] += weight * (M[1] * P[0] + M[5] * P[1] + M[9] * P[2] + M[13]);
                     position[2] += weight * (M[2] * P[0] + M[6] * P[1] + M[10] * P[2] + M[14]);
+#else
+                    position[0] += weight * (M[0] * P[0] + M[1] * P[1] + M[2] * P[2] + M[3]);
+                    position[1] += weight * (M[4] * P[0] + M[5] * P[1] + M[6] * P[2] + M[7]);
+                    position[2] += weight * (M[8] * P[0] + M[9] * P[1] + M[10] * P[2] + M[11]);
 #endif
                 }
             }

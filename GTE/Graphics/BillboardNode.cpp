@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BillboardNode.h>
@@ -29,10 +29,10 @@ void BillboardNode::UpdateWorldData(double applicationTime)
     {
         // Inverse-transform the camera to the model space of the billboard.
         Matrix4x4<float> const& inverse = worldTransform.GetHInverse();
-#if defined(GTE_USE_MAT_VEC)
-        Vector4<float> modelPos = inverse * mCamera->GetPosition();
-#else
+#if defined(GTE_USE_VEC_MAT)
         Vector4<float> modelPos = mCamera->GetPosition() * inverse;
+#else
+        Vector4<float> modelPos = inverse * mCamera->GetPosition();
 #endif
 
         // To align the billboard, the projection of the camera to the
@@ -44,10 +44,10 @@ void BillboardNode::UpdateWorldData(double applicationTime)
         float angle = std::atan2(modelPos[0], modelPos[2]);
         Matrix4x4<float> orient =
             Rotation<4, float>(AxisAngle<4, float>(Vector4<float>::Unit(1), angle));
-#if defined(GTE_USE_MAT_VEC)
-        worldTransform.SetRotation(worldTransform.GetRotation() * orient);
-#else
+#if defined(GTE_USE_VEC_MAT)
         worldTransform.SetRotation(orient * worldTransform.GetRotation());
+#else
+        worldTransform.SetRotation(worldTransform.GetRotation() * orient);
 #endif
     }
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.01.31
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -268,20 +268,20 @@ namespace gte
                 :
                 mStorage{}
             {
-#if defined(GTE_USE_ROW_MAJOR)
-                for (size_t r = 0; r < NumRows; ++r)
-                {
-                    for (size_t c = 0; c < NumCols; ++c)
-                    {
-                        mStorage[r][c] = (Real)0;
-                    }
-                }
-#else
+#if defined(GTE_USE_COL_MAJOR)
                 for (size_t c = 0; c < NumCols; ++c)
                 {
                     for (size_t r = 0; r < NumRows; ++r)
                     {
                         mStorage[c][r] = (Real)0;
+                    }
+                }
+#else
+                for (size_t r = 0; r < NumRows; ++r)
+                {
+                    for (size_t c = 0; c < NumCols; ++c)
+                    {
+                        mStorage[r][c] = (Real)0;
                     }
                 }
 #endif
@@ -290,19 +290,19 @@ namespace gte
             // Storage-order-independent element access as 2D array.
             inline Real const& operator()(int32_t r, int32_t c) const
             {
-#if defined(GTE_USE_ROW_MAJOR)
-                return mStorage[r][c];
-#else
+#if defined(GTE_USE_COL_MAJOR)
                 return mStorage[c][r];
+#else
+                return mStorage[r][c];
 #endif
             }
 
             inline Real& operator()(int32_t r, int32_t c)
             {
-#if defined(GTE_USE_ROW_MAJOR)
-                return mStorage[r][c];
-#else
+#if defined(GTE_USE_COL_MAJOR)
                 return mStorage[c][r];
+#else
+                return mStorage[r][c];
 #endif
             }
 
@@ -320,10 +320,10 @@ namespace gte
                 return elements[i];
             }
 
-#if defined(GTE_USE_ROW_MAJOR)
-            std::array<std::array<Real, NumCols>, NumRows> mStorage;
-#else
+#if defined(GTE_USE_COL_MAJOR)
             std::array<std::array<Real, NumRows>, NumCols> mStorage;
+#else
+            std::array<std::array<Real, NumCols>, NumRows> mStorage;
 #endif
         };
 

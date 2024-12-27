@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -106,10 +106,10 @@ namespace gte
         {
             if (0 <= r && r < GetNumRows() && 0 <= c && c < GetNumCols())
             {
-#if defined(GTE_USE_ROW_MAJOR)
-                return mElements[c + static_cast<size_t>(mNumCols) * r];
-#else
+#if defined(GTE_USE_COL_MAJOR)
                 return mElements[r + static_cast<size_t>(mNumRows) * c];
+#else
+                return mElements[c + static_cast<size_t>(mNumCols) * r];
 #endif
             }
             LogError("Invalid index.");
@@ -119,10 +119,10 @@ namespace gte
         {
             if (0 <= r && r < GetNumRows() && 0 <= c && c < GetNumCols())
             {
-#if defined(GTE_USE_ROW_MAJOR)
-                return mElements[c + static_cast<size_t>(mNumCols) * r];
-#else
+#if defined(GTE_USE_COL_MAJOR)
                 return mElements[r + static_cast<size_t>(mNumRows) * c];
+#else
+                return mElements[c + static_cast<size_t>(mNumCols) * r];
 #endif
             }
             LogError("Invalid index.");

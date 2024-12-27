@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "CastleWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -861,14 +861,14 @@ void CastleWindow3::UpdateCameraLightModelPositions(Spatial* object)
         {
             Matrix4x4<float> invWMatrix = visual->worldTransform.GetHInverse();
             auto const& geometry = ltEffect->GetGeometry();
-#if defined(GTE_USE_MAT_VEC)
-            geometry->lightModelPosition = invWMatrix * mDLight->GetPosition();
-            geometry->lightModelDirection = invWMatrix * mDLight->GetDVector();
-            geometry->cameraModelPosition = invWMatrix * mCamera->GetPosition();
-#else
+#if defined(GTE_USE_VEC_MAT)
             geometry->lightModelPosition = mDLight->GetPosition() * invWMatrix;
             geometry->lightModelDirection = mDLight->GetDVector() * invWMatrix;
             geometry->cameraModelPosition = mCamera->GetPosition() * invWMatrix;
+#else
+            geometry->lightModelPosition = invWMatrix * mDLight->GetPosition();
+            geometry->lightModelDirection = invWMatrix * mDLight->GetDVector();
+            geometry->cameraModelPosition = invWMatrix * mCamera->GetPosition();
 #endif
             Normalize(geometry->lightModelDirection);
             ltEffect->UpdateGeometryConstant();

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BspNode.h>
@@ -120,10 +120,10 @@ void BspNode::UpdateWorldData(double applicationTime)
 {
     Node::UpdateWorldData(applicationTime);
 
-#if defined(GTE_USE_MAT_VEC)
-    mWorldPlane = mModelPlane * worldTransform.GetHInverse();
-#else
+#if defined(GTE_USE_VEC_MAT)
     mWorldPlane = worldTransform.GetHInverse() * mModelPlane;
+#else
+    mWorldPlane = mModelPlane * worldTransform.GetHInverse();
 #endif
     NormalizePlane(mWorldPlane);
 }

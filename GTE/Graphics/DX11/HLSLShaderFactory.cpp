@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
@@ -106,10 +106,10 @@ ID3DBlob* HLSLShaderFactory::CompileShader(std::string const& name,
     std::vector<D3D_SHADER_MACRO> localDefinitions(definitions.size() + 2);
     std::string umvName = "GTE_USE_MAT_VEC";
     std::string umvValue;
-#if defined(GTE_USE_MAT_VEC)
-    umvValue = "1";
-#else
+#if defined(GTE_USE_VEC_MAT)
     umvValue = "0";
+#else
+    umvValue = "1";
 #endif
     localDefinitions.front().Name = umvName.c_str();
     localDefinitions.front().Definition = umvValue.c_str();
@@ -126,10 +126,10 @@ ID3DBlob* HLSLShaderFactory::CompileShader(std::string const& name,
     {
         // The matrix storage was not explicitly set.  Use the storage
         // consistent with the CPU storage.
-#if defined(GTE_USE_ROW_MAJOR)
-        compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
-#else
+#if defined(GTE_USE_COL_MAJOR)
         compileFlags |= D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
+#else
+        compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #endif
     }
 

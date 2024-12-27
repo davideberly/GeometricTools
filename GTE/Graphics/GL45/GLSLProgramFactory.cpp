@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GL45/GTGraphicsGL45PCH.h>
 #include <Graphics/GL45/GLSLComputeProgram.h>
@@ -164,17 +164,17 @@ GLuint GLSLProgramFactory::Compile(GLenum shaderType, std::string const& source)
         std::vector<std::string> glslDefines;
         glslDefines.reserve(definitions.size() + 5);
         glslDefines.push_back(version + "\n");
-#if defined(GTE_USE_MAT_VEC)
-        glslDefines.push_back("#define GTE_USE_MAT_VEC 1\n");
-#else
+#if defined(GTE_USE_VEC_MAT)
         glslDefines.push_back("#define GTE_USE_MAT_VEC 0\n");
-#endif
-#if defined(GTE_USE_ROW_MAJOR)
-        glslDefines.push_back("layout(std140, row_major) uniform;\n");
-        glslDefines.push_back("layout(std430, row_major) buffer;\n");
 #else
+        glslDefines.push_back("#define GTE_USE_MAT_VEC 1\n");
+#endif
+#if defined(GTE_USE_COL_MAJOR)
         glslDefines.push_back("layout(std140, column_major) uniform;\n");
         glslDefines.push_back("layout(std430, column_major) buffer;\n");
+#else
+        glslDefines.push_back("layout(std140, row_major) uniform;\n");
+        glslDefines.push_back("layout(std430, row_major) buffer;\n");
 #endif
         for (auto const& d : definitions)
         {

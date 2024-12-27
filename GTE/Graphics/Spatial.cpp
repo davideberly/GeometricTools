@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Spatial.h>
@@ -66,10 +66,10 @@ void Spatial::UpdateWorldData(double applicationTime)
     {
         if (mParent)
         {
-#if defined(GTE_USE_MAT_VEC)
-            worldTransform = mParent->worldTransform*localTransform;
+#if defined(GTE_USE_VEC_MAT)
+            worldTransform = localTransform * mParent->worldTransform;
 #else
-            worldTransform = localTransform*mParent->worldTransform;
+            worldTransform = mParent->worldTransform * localTransform;
 #endif
         }
         else

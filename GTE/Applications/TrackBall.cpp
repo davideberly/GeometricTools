@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/TrackBall.h>
@@ -132,18 +132,18 @@ void TrackBall::OnSetFinalPoint()
     {
         Matrix4x4<float> parWRotate = parent->worldTransform.GetRotation();
         Matrix4x4<float> trnParWRotate = Transpose(parWRotate);
-#if defined(GTE_USE_MAT_VEC)
-        rotate = trnParWRotate * incrRotate * parWRotate * mInitialOrientation;
-#else
+#if defined(GTE_USE_VEC_MAT)
         rotate = mInitialOrientation * parWRotate * incrRotate * trnParWRotate;
+#else
+        rotate = trnParWRotate * incrRotate * parWRotate * mInitialOrientation;
 #endif
     }
     else
     {
-#if defined(GTE_USE_MAT_VEC)
-        rotate = incrRotate * mInitialOrientation;
-#else
+#if defined(GTE_USE_VEC_MAT)
         rotate = mInitialOrientation * incrRotate;
+#else
+        rotate = incrRotate * mInitialOrientation;
 #endif
     }
 

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.06.24
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Camera.h>
@@ -73,16 +73,7 @@ void Camera::UpdatePVMatrix()
 
     Matrix4x4<float>& pvMatrix = mProjectionViewMatrix;
 
-#if defined(GTE_USE_MAT_VEC)
-    if (!mPostProjectionIsIdentity)
-    {
-        pvMatrix = mPostProjectionMatrix * pvMatrix;
-    }
-    if (!mPreViewIsIdentity)
-    {
-        pvMatrix = pvMatrix * mPreViewMatrix;
-    }
-#else
+#if defined(GTE_USE_VEC_MAT)
     if (!mPostProjectionIsIdentity)
     {
         pvMatrix = pvMatrix * mPostProjectionMatrix;
@@ -90,6 +81,15 @@ void Camera::UpdatePVMatrix()
     if (!mPreViewIsIdentity)
     {
         pvMatrix = mPreViewMatrix * pvMatrix;
+    }
+#else
+    if (!mPostProjectionIsIdentity)
+    {
+        pvMatrix = mPostProjectionMatrix * pvMatrix;
+    }
+    if (!mPreViewIsIdentity)
+    {
+        pvMatrix = pvMatrix * mPreViewMatrix;
     }
 #endif
 }

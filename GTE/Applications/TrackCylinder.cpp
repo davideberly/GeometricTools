@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/TrackCylinder.h>
@@ -62,18 +62,18 @@ void TrackCylinder::OnSetFinalPoint()
     mPitch = gte::clamp(mPitch, -halfPi, halfPi);
 
     // The angle order depends on camera {D=0, U=1, R=2}.
-#if defined(GTE_USE_MAT_VEC)
-    AxisAngle<4, float> yawAxisAngle(Vector4<float>::Unit(2), mYaw);
-    Matrix4x4<float> yawRotate = Rotation<4, float>(yawAxisAngle);
-    AxisAngle<4, float> pitchAxisAngle(Vector4<float>::Unit(1), mPitch);
-    Matrix4x4<float> pitchRotate = Rotation<4, float>(pitchAxisAngle);
-    Matrix4x4<float> rotate = pitchRotate * yawRotate;
-#else
+#if defined(GTE_USE_VEC_MAT)
     AxisAngle<4, float> yawAxisAngle(Vector4<float>::Unit(2), -mYaw);
     Matrix4x4<float> yawRotate = Rotation<4, float>(yawAxisAngle);
     AxisAngle<4, float> pitchAxisAngle(Vector4<float>::Unit(1), -mPitch);
     Matrix4x4<float> pitchRotate = Rotation<4, float>(pitchAxisAngle);
     Matrix4x4<float> rotate = yawRotate * pitchRotate;
+#else
+    AxisAngle<4, float> yawAxisAngle(Vector4<float>::Unit(2), mYaw);
+    Matrix4x4<float> yawRotate = Rotation<4, float>(yawAxisAngle);
+    AxisAngle<4, float> pitchAxisAngle(Vector4<float>::Unit(1), mPitch);
+    Matrix4x4<float> pitchRotate = Rotation<4, float>(pitchAxisAngle);
+    Matrix4x4<float> rotate = pitchRotate * yawRotate;
 #endif
 
     NormalizeAndUpdateRoot(rotate);

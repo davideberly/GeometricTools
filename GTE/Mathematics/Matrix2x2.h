@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -30,15 +30,15 @@ namespace gte
     {
         Real cs = std::cos(angle);
         Real sn = std::sin(angle);
-#if defined(GTE_USE_MAT_VEC)
-        rotation(0, 0) = cs;
-        rotation(0, 1) = -sn;
-        rotation(1, 0) = sn;
-        rotation(1, 1) = cs;
-#else
+#if defined(GTE_USE_VEC_MAT)
         rotation(0, 0) = cs;
         rotation(0, 1) = sn;
         rotation(1, 0) = -sn;
+        rotation(1, 1) = cs;
+#else
+        rotation(0, 0) = cs;
+        rotation(0, 1) = -sn;
+        rotation(1, 0) = sn;
         rotation(1, 1) = cs;
 #endif
     }
@@ -48,10 +48,10 @@ namespace gte
     template <typename Real>
     Real GetRotationAngle(Matrix2x2<Real> const& rotation)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return std::atan2(rotation(1, 0), rotation(0, 0));
-#else
+#if defined(GTE_USE_VEC_MAT)
         return std::atan2(rotation(0, 1), rotation(0, 0));
+#else
+        return std::atan2(rotation(1, 0), rotation(0, 0));
 #endif
     }
 
@@ -116,20 +116,20 @@ namespace gte
     template <typename Real>
     Vector2<Real> DoTransform(Matrix2x2<Real> const& M, Vector2<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M * V;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return V * M;
+#else
+        return M * V;
 #endif
     }
 
     template <typename Real>
     Matrix2x2<Real> DoTransform(Matrix2x2<Real> const& A, Matrix2x2<Real> const& B)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return A * B;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return B * A;
+#else
+        return A * B;
 #endif
     }
 
@@ -142,20 +142,20 @@ namespace gte
     template <typename Real>
     void SetBasis(Matrix2x2<Real>& M, int32_t i, Vector2<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.SetCol(i, V);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.SetRow(i, V);
+#else
+        return M.SetCol(i, V);
 #endif
     }
 
     template <typename Real>
     Vector2<Real> GetBasis(Matrix2x2<Real> const& M, int32_t i)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.GetCol(i);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.GetRow(i);
+#else
+        return M.GetCol(i);
 #endif
     }
 }

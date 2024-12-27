@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/ViewVolume.h>
@@ -168,41 +168,7 @@ bool ViewVolume::GetFrustum(float& upFovDegrees, float& aspectRatio, float& dMin
 void ViewVolume::OnFrameChange()
 {
     // This leads to left-handed coordinates for the camera frame.
-#if defined(GTE_USE_MAT_VEC)
-    mViewMatrix(0, 0) = mRVector[0];
-    mViewMatrix(0, 1) = mRVector[1];
-    mViewMatrix(0, 2) = mRVector[2];
-    mViewMatrix(0, 3) = -Dot(mPosition, mRVector);
-    mViewMatrix(1, 0) = mUVector[0];
-    mViewMatrix(1, 1) = mUVector[1];
-    mViewMatrix(1, 2) = mUVector[2];
-    mViewMatrix(1, 3) = -Dot(mPosition, mUVector);
-    mViewMatrix(2, 0) = mDVector[0];
-    mViewMatrix(2, 1) = mDVector[1];
-    mViewMatrix(2, 2) = mDVector[2];
-    mViewMatrix(2, 3) = -Dot(mPosition, mDVector);
-    mViewMatrix(3, 0) = 0.0f;
-    mViewMatrix(3, 1) = 0.0f;
-    mViewMatrix(3, 2) = 0.0f;
-    mViewMatrix(3, 3) = 1.0f;
-
-    mInverseViewMatrix(0, 0) = mRVector[0];
-    mInverseViewMatrix(0, 1) = mUVector[0];
-    mInverseViewMatrix(0, 2) = mDVector[0];
-    mInverseViewMatrix(0, 3) = mPosition[0];
-    mInverseViewMatrix(1, 0) = mRVector[1];
-    mInverseViewMatrix(1, 1) = mUVector[1];
-    mInverseViewMatrix(1, 2) = mDVector[1];
-    mInverseViewMatrix(1, 3) = mPosition[1];
-    mInverseViewMatrix(2, 0) = mRVector[2];
-    mInverseViewMatrix(2, 1) = mUVector[2];
-    mInverseViewMatrix(2, 2) = mDVector[2];
-    mInverseViewMatrix(2, 3) = mPosition[2];
-    mInverseViewMatrix(3, 0) = 0.0f;
-    mInverseViewMatrix(3, 1) = 0.0f;
-    mInverseViewMatrix(3, 2) = 0.0f;
-    mInverseViewMatrix(3, 3) = 1.0f;
-#else
+#if defined(GTE_USE_VEC_MAT)
     mViewMatrix(0, 0) = mRVector[0];
     mViewMatrix(1, 0) = mRVector[1];
     mViewMatrix(2, 0) = mRVector[2];
@@ -236,6 +202,40 @@ void ViewVolume::OnFrameChange()
     mInverseViewMatrix(1, 3) = 0.0f;
     mInverseViewMatrix(2, 3) = 0.0f;
     mInverseViewMatrix(3, 3) = 1.0f;
+#else
+    mViewMatrix(0, 0) = mRVector[0];
+    mViewMatrix(0, 1) = mRVector[1];
+    mViewMatrix(0, 2) = mRVector[2];
+    mViewMatrix(0, 3) = -Dot(mPosition, mRVector);
+    mViewMatrix(1, 0) = mUVector[0];
+    mViewMatrix(1, 1) = mUVector[1];
+    mViewMatrix(1, 2) = mUVector[2];
+    mViewMatrix(1, 3) = -Dot(mPosition, mUVector);
+    mViewMatrix(2, 0) = mDVector[0];
+    mViewMatrix(2, 1) = mDVector[1];
+    mViewMatrix(2, 2) = mDVector[2];
+    mViewMatrix(2, 3) = -Dot(mPosition, mDVector);
+    mViewMatrix(3, 0) = 0.0f;
+    mViewMatrix(3, 1) = 0.0f;
+    mViewMatrix(3, 2) = 0.0f;
+    mViewMatrix(3, 3) = 1.0f;
+
+    mInverseViewMatrix(0, 0) = mRVector[0];
+    mInverseViewMatrix(0, 1) = mUVector[0];
+    mInverseViewMatrix(0, 2) = mDVector[0];
+    mInverseViewMatrix(0, 3) = mPosition[0];
+    mInverseViewMatrix(1, 0) = mRVector[1];
+    mInverseViewMatrix(1, 1) = mUVector[1];
+    mInverseViewMatrix(1, 2) = mDVector[1];
+    mInverseViewMatrix(1, 3) = mPosition[1];
+    mInverseViewMatrix(2, 0) = mRVector[2];
+    mInverseViewMatrix(2, 1) = mUVector[2];
+    mInverseViewMatrix(2, 2) = mDVector[2];
+    mInverseViewMatrix(2, 3) = mPosition[2];
+    mInverseViewMatrix(3, 0) = 0.0f;
+    mInverseViewMatrix(3, 1) = 0.0f;
+    mInverseViewMatrix(3, 2) = 0.0f;
+    mInverseViewMatrix(3, 3) = 1.0f;
 #endif
 
     UpdatePVMatrix();
@@ -257,46 +257,7 @@ void ViewVolume::OnFrustumChange()
 
     if (mIsPerspective)
     {
-#if defined(GTE_USE_MAT_VEC)
-        if (mIsDepthRangeZeroOne)
-        {
-            mProjectionMatrix(0, 0) = 2.0f * dMin * invRDiff;
-            mProjectionMatrix(0, 1) = 0.0f;
-            mProjectionMatrix(0, 2) = -(rMin + rMax) * invRDiff;
-            mProjectionMatrix(0, 3) = 0.0f;
-            mProjectionMatrix(1, 0) = 0.0f;
-            mProjectionMatrix(1, 1) = 2.0f * dMin * invUDiff;
-            mProjectionMatrix(1, 2) = -(uMin + uMax) * invUDiff;
-            mProjectionMatrix(1, 3) = 0.0f;
-            mProjectionMatrix(2, 0) = 0.0f;
-            mProjectionMatrix(2, 1) = 0.0f;
-            mProjectionMatrix(2, 2) = dMax * invDDiff;
-            mProjectionMatrix(2, 3) = -dMin * dMax * invDDiff;
-            mProjectionMatrix(3, 0) = 0.0f;
-            mProjectionMatrix(3, 1) = 0.0f;
-            mProjectionMatrix(3, 2) = 1.0f;
-            mProjectionMatrix(3, 3) = 0.0f;
-        }
-        else
-        {
-            mProjectionMatrix(0, 0) = 2.0f * dMin * invRDiff;
-            mProjectionMatrix(0, 1) = 0.0f;
-            mProjectionMatrix(0, 2) = -(rMin + rMax) * invRDiff;
-            mProjectionMatrix(0, 3) = 0.0f;
-            mProjectionMatrix(1, 0) = 0.0f;
-            mProjectionMatrix(1, 1) = 2.0f * dMin * invUDiff;
-            mProjectionMatrix(1, 2) = -(uMin + uMax) * invUDiff;
-            mProjectionMatrix(1, 3) = 0.0f;
-            mProjectionMatrix(2, 0) = 0.0f;
-            mProjectionMatrix(2, 1) = 0.0f;
-            mProjectionMatrix(2, 2) = (dMin + dMax) * invDDiff;
-            mProjectionMatrix(2, 3) = -2.0f * dMin * dMax * invDDiff;
-            mProjectionMatrix(3, 0) = 0.0f;
-            mProjectionMatrix(3, 1) = 0.0f;
-            mProjectionMatrix(3, 2) = 1.0f;
-            mProjectionMatrix(3, 3) = 0.0f;
-        }
-#else
+#if defined(GTE_USE_VEC_MAT)
         if (mIsDepthRangeZeroOne)
         {
             mProjectionMatrix(0, 0) = 2.0f * dMin * invRDiff;
@@ -333,6 +294,45 @@ void ViewVolume::OnFrustumChange()
             mProjectionMatrix(0, 3) = 0.0f;
             mProjectionMatrix(1, 3) = 0.0f;
             mProjectionMatrix(2, 3) = 1.0f;
+            mProjectionMatrix(3, 3) = 0.0f;
+        }
+#else
+        if (mIsDepthRangeZeroOne)
+        {
+            mProjectionMatrix(0, 0) = 2.0f * dMin * invRDiff;
+            mProjectionMatrix(0, 1) = 0.0f;
+            mProjectionMatrix(0, 2) = -(rMin + rMax) * invRDiff;
+            mProjectionMatrix(0, 3) = 0.0f;
+            mProjectionMatrix(1, 0) = 0.0f;
+            mProjectionMatrix(1, 1) = 2.0f * dMin * invUDiff;
+            mProjectionMatrix(1, 2) = -(uMin + uMax) * invUDiff;
+            mProjectionMatrix(1, 3) = 0.0f;
+            mProjectionMatrix(2, 0) = 0.0f;
+            mProjectionMatrix(2, 1) = 0.0f;
+            mProjectionMatrix(2, 2) = dMax * invDDiff;
+            mProjectionMatrix(2, 3) = -dMin * dMax * invDDiff;
+            mProjectionMatrix(3, 0) = 0.0f;
+            mProjectionMatrix(3, 1) = 0.0f;
+            mProjectionMatrix(3, 2) = 1.0f;
+            mProjectionMatrix(3, 3) = 0.0f;
+        }
+        else
+        {
+            mProjectionMatrix(0, 0) = 2.0f * dMin * invRDiff;
+            mProjectionMatrix(0, 1) = 0.0f;
+            mProjectionMatrix(0, 2) = -(rMin + rMax) * invRDiff;
+            mProjectionMatrix(0, 3) = 0.0f;
+            mProjectionMatrix(1, 0) = 0.0f;
+            mProjectionMatrix(1, 1) = 2.0f * dMin * invUDiff;
+            mProjectionMatrix(1, 2) = -(uMin + uMax) * invUDiff;
+            mProjectionMatrix(1, 3) = 0.0f;
+            mProjectionMatrix(2, 0) = 0.0f;
+            mProjectionMatrix(2, 1) = 0.0f;
+            mProjectionMatrix(2, 2) = (dMin + dMax) * invDDiff;
+            mProjectionMatrix(2, 3) = -2.0f * dMin * dMax * invDDiff;
+            mProjectionMatrix(3, 0) = 0.0f;
+            mProjectionMatrix(3, 1) = 0.0f;
+            mProjectionMatrix(3, 2) = 1.0f;
             mProjectionMatrix(3, 3) = 0.0f;
         }
 #endif
@@ -428,9 +428,9 @@ void ViewVolume::UpdatePVMatrix()
     Matrix4x4<float>& pMatrix = mProjectionMatrix;
     Matrix4x4<float>& pvMatrix = mProjectionViewMatrix;
 
-#if defined(GTE_USE_MAT_VEC)
-    pvMatrix = pMatrix * mViewMatrix;
-#else
+#if defined(GTE_USE_VEC_MAT)
     pvMatrix = mViewMatrix * pMatrix;
+#else
+    pvMatrix = pMatrix * mViewMatrix;
 #endif
 }

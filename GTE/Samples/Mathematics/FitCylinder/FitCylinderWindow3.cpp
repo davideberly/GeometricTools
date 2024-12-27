@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "FitCylinderWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -201,20 +201,20 @@ void FitCylinderWindow3::CreateScene()
         basis[0][j] = static_cast<float>(cylinder.axis.direction[j]);
     }
     ComputeOrthogonalComplement(1, basis.data());
-#if defined(GTE_USE_MAT_VEC)
-    Matrix4x4<float> rotate
-    {
-        basis[1][0], basis[2][0], basis[0][0], 0.0f,
-        basis[1][1], basis[2][1], basis[0][1], 0.0f,
-        basis[1][2], basis[2][2], basis[0][2], 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
-#else
+#if defined(GTE_USE_VEC_MAT)
     Matrix4x4<float> rotate
     {
         basis[1][0], basis[1][1], basis[1][2], 0.0f,
         basis[2][0], basis[2][1], basis[2][2], 0.0f,
         basis[0][0], basis[0][1], basis[0][2], 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+#else
+    Matrix4x4<float> rotate
+    {
+        basis[1][0], basis[2][0], basis[0][0], 0.0f,
+        basis[1][1], basis[2][1], basis[0][1], 0.0f,
+        basis[1][2], basis[2][2], basis[0][2], 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f
     };
 #endif

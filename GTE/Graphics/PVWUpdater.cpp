@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.02.20
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PVWUpdater.h>
@@ -92,10 +92,10 @@ void PVWUpdater::Update()
             // *element.first is the model-to-world matrix for the associated
             // object.
             auto const& wMatrix = *element.first;
-#if defined(GTE_USE_MAT_VEC)
-            Matrix4x4<float> pvwMatrix = pvMatrix * wMatrix;
-#else
+#if defined(GTE_USE_VEC_MAT)
             Matrix4x4<float> pvwMatrix = wMatrix * pvMatrix;
+#else
+            Matrix4x4<float> pvwMatrix = pvMatrix * wMatrix;
 #endif
             // Copy the source matrix into the CPU memory of the constant
             // buffer.
@@ -125,10 +125,10 @@ void PVWUpdater::Update(std::vector<Visual*> const& updateSet)
                     auto const& cbuffer = effect->GetPVWMatrixConstant();
 
                     // Compute the new projection-view-world matrix.
-#if defined(GTE_USE_MAT_VEC)
-                    Matrix4x4<float> pvwMatrix = pvMatrix * wMatrix;
-#else
+#if defined(GTE_USE_VEC_MAT)
                     Matrix4x4<float> pvwMatrix = wMatrix * pvMatrix;
+#else
+                    Matrix4x4<float> pvwMatrix = pvMatrix * wMatrix;
 #endif
                     // Copy the source matrix into the CPU memory of the
                     // constant buffer.

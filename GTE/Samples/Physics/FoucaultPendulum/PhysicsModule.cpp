@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "PhysicsModule.h"
 
@@ -77,27 +77,10 @@ Matrix4x4<float> PhysicsModule::GetOrientation() const
     float oneMinusCosPhi = 1.0f - cosPhi;
 
     Matrix4x4<float> rot;
-#if defined(GTE_USE_MAT_VEC)
-    rot(0, 0) = 1.0f - oneMinusCosPhi * cosTheta * cosTheta;
-    rot(0, 1) = -oneMinusCosPhi * sinTheta * cosTheta;
-    rot(0, 2) = -sinPhi*cosTheta;
-    rot(0, 3) = 0.0f;
-    rot(1, 0) = rot(0, 1);
-    rot(1, 1) = 1.0f - oneMinusCosPhi * sinTheta * sinTheta;
-    rot(1, 2) = -sinPhi * sinTheta;
-    rot(1, 3) = 0.0f;
-    rot(2, 0) = -rot(0, 2);
-    rot(2, 1) = -rot(1, 2);
-    rot(2, 2) = cosPhi;
-    rot(2, 3) = 0.0f;
-    rot(3, 0) = 0.0f;
-    rot(3, 1) = 0.0f;
-    rot(3, 2) = 0.0f;
-    rot(3, 3) = 1.0f;
-#else
+#if defined(GTE_USE_VEC_MAT)
     rot(0, 0) = 1.0f - oneMinusCosPhi * cosTheta * cosTheta;
     rot(1, 0) = -oneMinusCosPhi * sinTheta * cosTheta;
-    rot(2, 0) = -sinPhi*cosTheta;
+    rot(2, 0) = -sinPhi * cosTheta;
     rot(3, 0) = 0.0f;
     rot(0, 1) = rot(1, 0);
     rot(1, 1) = 1.0f - oneMinusCosPhi * sinTheta * sinTheta;
@@ -110,6 +93,23 @@ Matrix4x4<float> PhysicsModule::GetOrientation() const
     rot(0, 3) = 0.0f;
     rot(1, 3) = 0.0f;
     rot(2, 3) = 0.0f;
+    rot(3, 3) = 1.0f;
+#else
+    rot(0, 0) = 1.0f - oneMinusCosPhi * cosTheta * cosTheta;
+    rot(0, 1) = -oneMinusCosPhi * sinTheta * cosTheta;
+    rot(0, 2) = -sinPhi * cosTheta;
+    rot(0, 3) = 0.0f;
+    rot(1, 0) = rot(0, 1);
+    rot(1, 1) = 1.0f - oneMinusCosPhi * sinTheta * sinTheta;
+    rot(1, 2) = -sinPhi * sinTheta;
+    rot(1, 3) = 0.0f;
+    rot(2, 0) = -rot(0, 2);
+    rot(2, 1) = -rot(1, 2);
+    rot(2, 2) = cosPhi;
+    rot(2, 3) = 0.0f;
+    rot(3, 0) = 0.0f;
+    rot(3, 1) = 0.0f;
+    rot(3, 2) = 0.0f;
     rot(3, 3) = 1.0f;
 #endif
     return rot;

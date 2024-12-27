@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -143,20 +143,20 @@ namespace gte
     template <typename Real>
     Vector4<Real> DoTransform(Matrix4x4<Real> const& M, Vector4<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M * V;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return V * M;
+#else
+        return M * V;
 #endif
     }
 
     template <typename Real>
     Matrix4x4<Real> DoTransform(Matrix4x4<Real> const& A, Matrix4x4<Real> const& B)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return A * B;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return B * A;
+#else
+        return A * B;
 #endif
     }
 
@@ -169,20 +169,20 @@ namespace gte
     template <typename Real>
     void SetBasis(Matrix4x4<Real>& M, int32_t i, Vector4<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.SetCol(i, V);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.SetRow(i, V);
+#else
+        return M.SetCol(i, V);
 #endif
     }
 
     template <typename Real>
     Vector4<Real> GetBasis(Matrix4x4<Real> const& M, int32_t i)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.GetCol(i);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.GetRow(i);
+#else
+        return M.GetCol(i);
 #endif
     }
 
@@ -218,24 +218,7 @@ namespace gte
         Real dotND = Dot(normal, direction);
         Real dotNO = Dot(origin, normal);
 
-#if defined(GTE_USE_MAT_VEC)
-        M(0, 0) = direction[0] * normal[0] - dotND;
-        M(0, 1) = direction[0] * normal[1];
-        M(0, 2) = direction[0] * normal[2];
-        M(0, 3) = -dotNO * direction[0];
-        M(1, 0) = direction[1] * normal[0];
-        M(1, 1) = direction[1] * normal[1] - dotND;
-        M(1, 2) = direction[1] * normal[2];
-        M(1, 3) = -dotNO * direction[1];
-        M(2, 0) = direction[2] * normal[0];
-        M(2, 1) = direction[2] * normal[1];
-        M(2, 2) = direction[2] * normal[2] - dotND;
-        M(2, 3) = -dotNO * direction[2];
-        M(3, 0) = zero;
-        M(3, 1) = zero;
-        M(3, 2) = zero;
-        M(3, 3) = -dotND;
-#else
+#if defined(GTE_USE_VEC_MAT)
         M(0, 0) = direction[0] * normal[0] - dotND;
         M(1, 0) = direction[0] * normal[1];
         M(2, 0) = direction[0] * normal[2];
@@ -251,6 +234,23 @@ namespace gte
         M(0, 2) = zero;
         M(1, 3) = zero;
         M(2, 3) = zero;
+        M(3, 3) = -dotND;
+#else
+        M(0, 0) = direction[0] * normal[0] - dotND;
+        M(0, 1) = direction[0] * normal[1];
+        M(0, 2) = direction[0] * normal[2];
+        M(0, 3) = -dotNO * direction[0];
+        M(1, 0) = direction[1] * normal[0];
+        M(1, 1) = direction[1] * normal[1] - dotND;
+        M(1, 2) = direction[1] * normal[2];
+        M(1, 3) = -dotNO * direction[1];
+        M(2, 0) = direction[2] * normal[0];
+        M(2, 1) = direction[2] * normal[1];
+        M(2, 2) = direction[2] * normal[2] - dotND;
+        M(2, 3) = -dotNO * direction[2];
+        M(3, 0) = zero;
+        M(3, 1) = zero;
+        M(3, 2) = zero;
         M(3, 3) = -dotND;
 #endif
 
@@ -274,24 +274,7 @@ namespace gte
 
         Real dotND = Dot(normal, eye - origin);
 
-#if defined(GTE_USE_MAT_VEC)
-        M(0, 0) = dotND - eye[0] * normal[0];
-        M(0, 1) = -eye[0] * normal[1];
-        M(0, 2) = -eye[0] * normal[2];
-        M(0, 3) = -(M(0, 0) * eye[0] + M(0, 1) * eye[1] + M(0, 2) * eye[2]);
-        M(1, 0) = -eye[1] * normal[0];
-        M(1, 1) = dotND - eye[1] * normal[1];
-        M(1, 2) = -eye[1] * normal[2];
-        M(1, 3) = -(M(1, 0) * eye[0] + M(1, 1) * eye[1] + M(1, 2) * eye[2]);
-        M(2, 0) = -eye[2] * normal[0];
-        M(2, 1) = -eye[2] * normal[1];
-        M(2, 2) = dotND - eye[2] * normal[2];
-        M(2, 3) = -(M(2, 0) * eye[0] + M(2, 1) * eye[1] + M(2, 2) * eye[2]);
-        M(3, 0) = -normal[0];
-        M(3, 1) = -normal[1];
-        M(3, 2) = -normal[2];
-        M(3, 3) = Dot(eye, normal);
-#else
+#if defined(GTE_USE_VEC_MAT)
         M(0, 0) = dotND - eye[0] * normal[0];
         M(1, 0) = -eye[0] * normal[1];
         M(2, 0) = -eye[0] * normal[2];
@@ -307,6 +290,23 @@ namespace gte
         M(0, 3) = -normal[0];
         M(1, 3) = -normal[1];
         M(2, 3) = -normal[2];
+        M(3, 3) = Dot(eye, normal);
+#else
+        M(0, 0) = dotND - eye[0] * normal[0];
+        M(0, 1) = -eye[0] * normal[1];
+        M(0, 2) = -eye[0] * normal[2];
+        M(0, 3) = -(M(0, 0) * eye[0] + M(0, 1) * eye[1] + M(0, 2) * eye[2]);
+        M(1, 0) = -eye[1] * normal[0];
+        M(1, 1) = dotND - eye[1] * normal[1];
+        M(1, 2) = -eye[1] * normal[2];
+        M(1, 3) = -(M(1, 0) * eye[0] + M(1, 1) * eye[1] + M(1, 2) * eye[2]);
+        M(2, 0) = -eye[2] * normal[0];
+        M(2, 1) = -eye[2] * normal[1];
+        M(2, 2) = dotND - eye[2] * normal[2];
+        M(2, 3) = -(M(2, 0) * eye[0] + M(2, 1) * eye[1] + M(2, 2) * eye[2]);
+        M(3, 0) = -normal[0];
+        M(3, 1) = -normal[1];
+        M(3, 2) = -normal[2];
         M(3, 3) = Dot(eye, normal);
 #endif
 
@@ -329,24 +329,7 @@ namespace gte
         Real const zero = (Real)0, one = (Real)1, two = (Real)2;
         Real twoDotNO = two * Dot(origin, normal);
 
-#if defined(GTE_USE_MAT_VEC)
-        M(0, 0) = one - two * normal[0] * normal[0];
-        M(0, 1) = -two * normal[0] * normal[1];
-        M(0, 2) = -two * normal[0] * normal[2];
-        M(0, 3) = twoDotNO * normal[0];
-        M(1, 0) = M(0, 1);
-        M(1, 1) = one - two * normal[1] * normal[1];
-        M(1, 2) = -two * normal[1] * normal[2];
-        M(1, 3) = twoDotNO * normal[1];
-        M(2, 0) = M(0, 2);
-        M(2, 1) = M(1, 2);
-        M(2, 2) = one - two * normal[2] * normal[2];
-        M(2, 3) = twoDotNO * normal[2];
-        M(3, 0) = zero;
-        M(3, 1) = zero;
-        M(3, 2) = zero;
-        M(3, 3) = one;
-#else
+#if defined(GTE_USE_VEC_MAT)
         M(0, 0) = one - two * normal[0] * normal[0];
         M(1, 0) = -two * normal[0] * normal[1];
         M(2, 0) = -two * normal[0] * normal[2];
@@ -362,6 +345,23 @@ namespace gte
         M(0, 3) = zero;
         M(1, 3) = zero;
         M(2, 3) = zero;
+        M(3, 3) = one;
+#else
+        M(0, 0) = one - two * normal[0] * normal[0];
+        M(0, 1) = -two * normal[0] * normal[1];
+        M(0, 2) = -two * normal[0] * normal[2];
+        M(0, 3) = twoDotNO * normal[0];
+        M(1, 0) = M(0, 1);
+        M(1, 1) = one - two * normal[1] * normal[1];
+        M(1, 2) = -two * normal[1] * normal[2];
+        M(1, 3) = twoDotNO * normal[1];
+        M(2, 0) = M(0, 2);
+        M(2, 1) = M(1, 2);
+        M(2, 2) = one - two * normal[2] * normal[2];
+        M(2, 3) = twoDotNO * normal[2];
+        M(3, 0) = zero;
+        M(3, 1) = zero;
+        M(3, 2) = zero;
         M(3, 3) = one;
 #endif
 

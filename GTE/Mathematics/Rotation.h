@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -229,10 +229,10 @@ namespace gte
                     q[0] = fourXSqr * inv4x;
                     q[1] = (r(0, 1) + r(1, 0)) * inv4x;
                     q[2] = (r(0, 2) + r(2, 0)) * inv4x;
-#if defined(GTE_USE_MAT_VEC)
-                    q[3] = (r(2, 1) - r(1, 2)) * inv4x;
-#else
+#if defined(GTE_USE_VEC_MAT)
                     q[3] = (r(1, 2) - r(2, 1)) * inv4x;
+#else
+                    q[3] = (r(2, 1) - r(1, 2)) * inv4x;
 #endif
                 }
                 else  // y^2 >= x^2
@@ -242,10 +242,10 @@ namespace gte
                     q[0] = (r(0, 1) + r(1, 0)) * inv4y;
                     q[1] = fourYSqr * inv4y;
                     q[2] = (r(1, 2) + r(2, 1)) * inv4y;
-#if defined(GTE_USE_MAT_VEC)
-                    q[3] = (r(0, 2) - r(2, 0)) * inv4y;
-#else
+#if defined(GTE_USE_VEC_MAT)
                     q[3] = (r(2, 0) - r(0, 2)) * inv4y;
+#else
+                    q[3] = (r(0, 2) - r(2, 0)) * inv4y;
 #endif
                 }
             }
@@ -260,24 +260,24 @@ namespace gte
                     q[0] = (r(0, 2) + r(2, 0)) * inv4z;
                     q[1] = (r(1, 2) + r(2, 1)) * inv4z;
                     q[2] = fourZSqr * inv4z;
-#if defined(GTE_USE_MAT_VEC)
-                    q[3] = (r(1, 0) - r(0, 1)) * inv4z;
-#else
+#if defined(GTE_USE_VEC_MAT)
                     q[3] = (r(0, 1) - r(1, 0)) * inv4z;
+#else
+                    q[3] = (r(1, 0) - r(0, 1)) * inv4z;
 #endif
                 }
                 else  // w^2 >= z^2
                 {
                     Real fourWSqr = opr22 + sum10;
                     Real inv4w = ((Real)0.5) / std::sqrt(fourWSqr);
-#if defined(GTE_USE_MAT_VEC)
-                    q[0] = (r(2, 1) - r(1, 2)) * inv4w;
-                    q[1] = (r(0, 2) - r(2, 0)) * inv4w;
-                    q[2] = (r(1, 0) - r(0, 1)) * inv4w;
-#else
+#if defined(GTE_USE_VEC_MAT)
                     q[0] = (r(1, 2) - r(2, 1)) * inv4w;
                     q[1] = (r(2, 0) - r(0, 2)) * inv4w;
                     q[2] = (r(0, 1) - r(1, 0)) * inv4w;
+#else
+                    q[0] = (r(2, 1) - r(1, 2)) * inv4w;
+                    q[1] = (r(0, 2) - r(2, 0)) * inv4w;
+                    q[2] = (r(1, 0) - r(0, 1)) * inv4w;
 #endif
                     q[3] = fourWSqr * inv4w;
                 }
@@ -316,17 +316,7 @@ namespace gte
             Real twoZZ = twoZ * q[2];
             Real twoZW = twoZ * q[3];
 
-#if defined(GTE_USE_MAT_VEC)
-            r(0, 0) = (Real)1 - twoYY - twoZZ;
-            r(0, 1) = twoXY - twoZW;
-            r(0, 2) = twoXZ + twoYW;
-            r(1, 0) = twoXY + twoZW;
-            r(1, 1) = (Real)1 - twoXX - twoZZ;
-            r(1, 2) = twoYZ - twoXW;
-            r(2, 0) = twoXZ - twoYW;
-            r(2, 1) = twoYZ + twoXW;
-            r(2, 2) = (Real)1 - twoXX - twoYY;
-#else
+#if defined(GTE_USE_VEC_MAT)
             r(0, 0) = (Real)1 - twoYY - twoZZ;
             r(1, 0) = twoXY - twoZW;
             r(2, 0) = twoXZ + twoYW;
@@ -335,6 +325,16 @@ namespace gte
             r(2, 1) = twoYZ - twoXW;
             r(0, 2) = twoXZ - twoYW;
             r(1, 2) = twoYZ + twoXW;
+            r(2, 2) = (Real)1 - twoXX - twoYY;
+#else
+            r(0, 0) = (Real)1 - twoYY - twoZZ;
+            r(0, 1) = twoXY - twoZW;
+            r(0, 2) = twoXZ + twoYW;
+            r(1, 0) = twoXY + twoZW;
+            r(1, 1) = (Real)1 - twoXX - twoZZ;
+            r(1, 2) = twoYZ - twoXW;
+            r(2, 0) = twoXZ - twoYW;
+            r(2, 1) = twoYZ + twoXW;
             r(2, 2) = (Real)1 - twoXX - twoYY;
 #endif
         }
@@ -374,15 +374,15 @@ namespace gte
                 if (a.angle < (Real)GTE_C_PI)
                 {
                     // The angle is in (0,pi).
-#if defined(GTE_USE_MAT_VEC)
-                    a.axis[0] = r(2, 1) - r(1, 2);
-                    a.axis[1] = r(0, 2) - r(2, 0);
-                    a.axis[2] = r(1, 0) - r(0, 1);
-                    Normalize(a.axis);
-#else
+#if defined(GTE_USE_VEC_MAT)
                     a.axis[0] = r(1, 2) - r(2, 1);
                     a.axis[1] = r(2, 0) - r(0, 2);
                     a.axis[2] = r(0, 1) - r(1, 0);
+                    Normalize(a.axis);
+#else
+                    a.axis[0] = r(2, 1) - r(1, 2);
+                    a.axis[1] = r(0, 2) - r(2, 0);
+                    a.axis[2] = r(1, 0) - r(0, 1);
                     Normalize(a.axis);
 #endif
                 }
@@ -491,17 +491,7 @@ namespace gte
             Real x1Sin = a.axis[1] * sn;
             Real x2Sin = a.axis[2] * sn;
 
-#if defined(GTE_USE_MAT_VEC)
-            r(0, 0) = x0sqr * oneMinusCos + cs;
-            r(0, 1) = x0x1m - x2Sin;
-            r(0, 2) = x0x2m + x1Sin;
-            r(1, 0) = x0x1m + x2Sin;
-            r(1, 1) = x1sqr * oneMinusCos + cs;
-            r(1, 2) = x1x2m - x0Sin;
-            r(2, 0) = x0x2m - x1Sin;
-            r(2, 1) = x1x2m + x0Sin;
-            r(2, 2) = x2sqr * oneMinusCos + cs;
-#else
+#if defined(GTE_USE_VEC_MAT)
             r(0, 0) = x0sqr * oneMinusCos + cs;
             r(1, 0) = x0x1m - x2Sin;
             r(2, 0) = x0x2m + x1Sin;
@@ -510,6 +500,16 @@ namespace gte
             r(2, 1) = x1x2m - x0Sin;
             r(0, 2) = x0x2m - x1Sin;
             r(1, 2) = x1x2m + x0Sin;
+            r(2, 2) = x2sqr * oneMinusCos + cs;
+#else
+            r(0, 0) = x0sqr * oneMinusCos + cs;
+            r(0, 1) = x0x1m - x2Sin;
+            r(0, 2) = x0x2m + x1Sin;
+            r(1, 0) = x0x1m + x2Sin;
+            r(1, 1) = x1sqr * oneMinusCos + cs;
+            r(1, 2) = x1x2m - x0Sin;
+            r(2, 0) = x0x2m - x1Sin;
+            r(2, 1) = x1x2m + x0Sin;
             r(2, 2) = x2sqr * oneMinusCos + cs;
 #endif
         }
@@ -533,41 +533,7 @@ namespace gte
             {
                 if (e.axis[0] != e.axis[2])
                 {
-#if defined(GTE_USE_MAT_VEC)
-                    // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
-                    // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
-                    int32_t parity = (((e.axis[2] | (e.axis[1] << 2)) >> e.axis[0]) & 1);
-                    Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
-
-                    if (r(e.axis[2], e.axis[0]) < (Real)1)
-                    {
-                        if (r(e.axis[2], e.axis[0]) > (Real)-1)
-                        {
-                            e.angle[2] = std::atan2(sgn * r(e.axis[1], e.axis[0]),
-                                r(e.axis[0], e.axis[0]));
-                            e.angle[1] = std::asin(-sgn * r(e.axis[2], e.axis[0]));
-                            e.angle[0] = std::atan2(sgn * r(e.axis[2], e.axis[1]),
-                                r(e.axis[2], e.axis[2]));
-                            e.result = EulerResult::UNIQUE;
-                        }
-                        else
-                        {
-                            e.angle[2] = (Real)0;
-                            e.angle[1] = sgn * (Real)GTE_C_HALF_PI;
-                            e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
-                                r(e.axis[1], e.axis[1]));
-                            e.result = EulerResult::NOT_UNIQUE_DIF;
-                        }
-                    }
-                    else
-                    {
-                        e.angle[2] = (Real)0;
-                        e.angle[1] = -sgn * (Real)GTE_C_HALF_PI;
-                        e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
-                            r(e.axis[1], e.axis[1]));
-                        e.result = EulerResult::NOT_UNIQUE_SUM;
-                    }
-#else
+#if defined(GTE_USE_VEC_MAT)
                     // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
                     // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
                     int32_t parity = (((e.axis[0] | (e.axis[1] << 2)) >> e.axis[2]) & 1);
@@ -601,33 +567,28 @@ namespace gte
                             r(e.axis[1], e.axis[1]));
                         e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
-#endif
-                }
-                else
-                {
-#if defined(GTE_USE_MAT_VEC)
-                    // Map (0,2,0), (1,0,1), and (2,1,2) to +1.
-                    // Map (0,1,0), (1,2,1), and (2,0,2) to -1.
-                    int32_t b0 = 3 - e.axis[1] - e.axis[2];
-                    int32_t parity = (((b0 | (e.axis[1] << 2)) >> e.axis[2]) & 1);
-                    Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
+#else
+                    // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
+                    // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
+                    int32_t parity = (((e.axis[2] | (e.axis[1] << 2)) >> e.axis[0]) & 1);
+                    Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
 
-                    if (r(e.axis[2], e.axis[2]) < (Real)1)
+                    if (r(e.axis[2], e.axis[0]) < (Real)1)
                     {
-                        if (r(e.axis[2], e.axis[2]) > (Real)-1)
+                        if (r(e.axis[2], e.axis[0]) > (Real)-1)
                         {
-                            e.angle[2] = std::atan2(r(e.axis[1], e.axis[2]),
-                                sgn * r(b0, e.axis[2]));
-                            e.angle[1] = std::acos(r(e.axis[2], e.axis[2]));
-                            e.angle[0] = std::atan2(r(e.axis[2], e.axis[1]),
-                                -sgn * r(e.axis[2], b0));
+                            e.angle[2] = std::atan2(sgn * r(e.axis[1], e.axis[0]),
+                                r(e.axis[0], e.axis[0]));
+                            e.angle[1] = std::asin(-sgn * r(e.axis[2], e.axis[0]));
+                            e.angle[0] = std::atan2(sgn * r(e.axis[2], e.axis[1]),
+                                r(e.axis[2], e.axis[2]));
                             e.result = EulerResult::UNIQUE;
                         }
                         else
                         {
                             e.angle[2] = (Real)0;
-                            e.angle[1] = (Real)GTE_C_PI;
-                            e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
+                            e.angle[1] = sgn * (Real)GTE_C_HALF_PI;
+                            e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
                                 r(e.axis[1], e.axis[1]));
                             e.result = EulerResult::NOT_UNIQUE_DIF;
                         }
@@ -635,12 +596,16 @@ namespace gte
                     else
                     {
                         e.angle[2] = (Real)0;
-                        e.angle[1] = (Real)0;
-                        e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
+                        e.angle[1] = -sgn * (Real)GTE_C_HALF_PI;
+                        e.angle[0] = std::atan2(-sgn * r(e.axis[1], e.axis[2]),
                             r(e.axis[1], e.axis[1]));
                         e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
-#else
+#endif
+                }
+                else
+                {
+#if defined(GTE_USE_VEC_MAT)
                     // Map (0,2,0), (1,0,1), and (2,1,2) to -1.
                     // Map (0,1,0), (1,2,1), and (2,0,2) to +1.
                     int32_t b2 = 3 - e.axis[0] - e.axis[1];
@@ -672,6 +637,41 @@ namespace gte
                         e.angle[0] = (Real)0;
                         e.angle[1] = (Real)0;
                         e.angle[2] = std::atan2(sgn * r(e.axis[1], b2),
+                            r(e.axis[1], e.axis[1]));
+                        e.result = EulerResult::NOT_UNIQUE_SUM;
+                    }
+#else
+                    // Map (0,2,0), (1,0,1), and (2,1,2) to +1.
+                    // Map (0,1,0), (1,2,1), and (2,0,2) to -1.
+                    int32_t b0 = 3 - e.axis[1] - e.axis[2];
+                    int32_t parity = (((b0 | (e.axis[1] << 2)) >> e.axis[2]) & 1);
+                    Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
+
+                    if (r(e.axis[2], e.axis[2]) < (Real)1)
+                    {
+                        if (r(e.axis[2], e.axis[2]) > (Real)-1)
+                        {
+                            e.angle[2] = std::atan2(r(e.axis[1], e.axis[2]),
+                                sgn * r(b0, e.axis[2]));
+                            e.angle[1] = std::acos(r(e.axis[2], e.axis[2]));
+                            e.angle[0] = std::atan2(r(e.axis[2], e.axis[1]),
+                                -sgn * r(e.axis[2], b0));
+                            e.result = EulerResult::UNIQUE;
+                        }
+                        else
+                        {
+                            e.angle[2] = (Real)0;
+                            e.angle[1] = (Real)GTE_C_PI;
+                            e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
+                                r(e.axis[1], e.axis[1]));
+                            e.result = EulerResult::NOT_UNIQUE_DIF;
+                        }
+                    }
+                    else
+                    {
+                        e.angle[2] = (Real)0;
+                        e.angle[1] = (Real)0;
+                        e.angle[0] = std::atan2(sgn * r(e.axis[1], b0),
                             r(e.axis[1], e.axis[1]));
                         e.result = EulerResult::NOT_UNIQUE_SUM;
                     }
@@ -733,10 +733,10 @@ namespace gte
                     e.angle[1]), r1);
                 Convert(AxisAngle<N, Real>(Vector<N, Real>::Unit(e.axis[2]),
                     e.angle[2]), r2);
-#if defined(GTE_USE_MAT_VEC)
-                r = r2 * r1 * r0;
-#else
+#if defined(GTE_USE_VEC_MAT)
                 r = r0 * r1 * r2;
+#else
+                r = r2 * r1 * r0;
 #endif
             }
             else
@@ -757,10 +757,10 @@ namespace gte
             Real axisSqrLen = q[0] * q[0] + q[1] * q[1] + q[2] * q[2];
             if (axisSqrLen > (Real)0)
             {
-#if defined(GTE_USE_MAT_VEC)
-                Real adjust = ((Real)1) / std::sqrt(axisSqrLen);
-#else
+#if defined(GTE_USE_VEC_MAT)
                 Real adjust = ((Real)-1) / std::sqrt(axisSqrLen);
+#else
+                Real adjust = ((Real)1) / std::sqrt(axisSqrLen);
 #endif
                 a.axis[0] = q[0] * adjust;
                 a.axis[1] = q[1] * adjust;
@@ -783,10 +783,10 @@ namespace gte
         {
             static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
 
-#if defined(GTE_USE_MAT_VEC)
-            Real halfAngle = (Real)0.5 * a.angle;
-#else
+#if defined(GTE_USE_VEC_MAT)
             Real halfAngle = (Real)-0.5 * a.angle;
+#else
+            Real halfAngle = (Real)0.5 * a.angle;
 #endif
             Real sn = std::sin(halfAngle);
             q[0] = sn * a.axis[0];

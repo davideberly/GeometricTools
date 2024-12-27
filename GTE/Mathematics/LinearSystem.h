@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2023.12.26
 
 #pragma once
 
@@ -288,10 +288,10 @@ namespace gte
 
         static void Mul(int32_t N, Real const* A, Real const* X, Real* P)
         {
-#if defined(GTE_USE_ROW_MAJOR)
-            LexicoArray2<true, Real> matA(N, N, const_cast<Real*>(A));
-#else
+#if defined(GTE_USE_COL_MAJOR)
             LexicoArray2<false, Real> matA(N, N, const_cast<Real*>(A));
+#else
+            LexicoArray2<true, Real> matA(N, N, const_cast<Real*>(A));
 #endif
 
             std::memset(P, 0, N * sizeof(Real));

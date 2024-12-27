@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -147,16 +147,7 @@ namespace gte
             // The spectral norm (maximum absolute value of the eigenvalues)
             // is smaller or equal to max-row-sum and max-col-sum norm.
             // Therefore, 'norm' is an approximation to the maximum scale.
-#if defined (GTE_USE_MAT_VEC)
-            Vector4<Real> hcenter = hmatrix * HLift(GetCenter(), (Real)1);
-            sphere.SetCenter(HProject(hcenter));
-
-            // Use the max-row-sum matrix norm.
-            Real r0 = std::fabs(hmatrix(0, 0)) + std::fabs(hmatrix(0, 1)) + std::fabs(hmatrix(0, 2));
-            Real r1 = std::fabs(hmatrix(1, 0)) + std::fabs(hmatrix(1, 1)) + std::fabs(hmatrix(1, 2));
-            Real r2 = std::fabs(hmatrix(2, 0)) + std::fabs(hmatrix(2, 1)) + std::fabs(hmatrix(2, 2));
-            Real norm = std::max(std::max(r0, r1), r2);
-#else
+#if defined (GTE_USE_VEC_MAT)
             Vector4<Real> hcenter = HLift(GetCenter(), (Real)1) * hmatrix;
             sphere.SetCenter(HProject(hcenter));
 
@@ -164,6 +155,15 @@ namespace gte
             Real r0 = std::fabs(hmatrix(0, 0)) + std::fabs(hmatrix(1, 0)) + std::fabs(hmatrix(2, 0));
             Real r1 = std::fabs(hmatrix(0, 1)) + std::fabs(hmatrix(1, 1)) + std::fabs(hmatrix(2, 1));
             Real r2 = std::fabs(hmatrix(0, 2)) + std::fabs(hmatrix(1, 2)) + std::fabs(hmatrix(2, 2));
+            Real norm = std::max(std::max(r0, r1), r2);
+#else
+            Vector4<Real> hcenter = hmatrix * HLift(GetCenter(), (Real)1);
+            sphere.SetCenter(HProject(hcenter));
+
+            // Use the max-row-sum matrix norm.
+            Real r0 = std::fabs(hmatrix(0, 0)) + std::fabs(hmatrix(0, 1)) + std::fabs(hmatrix(0, 2));
+            Real r1 = std::fabs(hmatrix(1, 0)) + std::fabs(hmatrix(1, 1)) + std::fabs(hmatrix(1, 2));
+            Real r2 = std::fabs(hmatrix(2, 0)) + std::fabs(hmatrix(2, 1)) + std::fabs(hmatrix(2, 2));
             Real norm = std::max(std::max(r0, r1), r2);
 #endif
             sphere.SetRadius(norm * GetRadius());

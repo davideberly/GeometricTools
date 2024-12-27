@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "PhysicsModule.h"
 
@@ -75,16 +75,16 @@ Matrix4x4<float> PhysicsModule::GetBodyAxes() const
     Vector3<float> axis2 = cosPsi * axis3xN - sinPsi * N;
 
     Matrix4x4<float> rotate;
-#if defined(GTE_USE_MAT_VEC)
-    rotate.SetCol(0, HLift(axis1, 0.0f));
-    rotate.SetCol(1, HLift(axis2, 0.0f));
-    rotate.SetCol(2, HLift(axis3, 0.0f));
-    rotate.SetCol(3, Vector4<float>::Unit(3));
-#else
+#if defined(GTE_USE_VEC_MAT)
     rotate.SetRow(0, HLift(axis1, 0.0f));
     rotate.SetRow(1, HLift(axis2, 0.0f));
     rotate.SetRow(2, HLift(axis3, 0.0f));
     rotate.SetRow(3, Vector4<float>::Unit(3));
+#else
+    rotate.SetCol(0, HLift(axis1, 0.0f));
+    rotate.SetCol(1, HLift(axis2, 0.0f));
+    rotate.SetCol(2, HLift(axis3, 0.0f));
+    rotate.SetCol(3, Vector4<float>::Unit(3));
 #endif
     return rotate;
 }

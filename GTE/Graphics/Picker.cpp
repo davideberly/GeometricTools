@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Picker.h>
@@ -183,15 +183,15 @@ void Picker::ExecuteRecursive(std::shared_ptr<Spatial> const& object)
             Matrix4x4<float> const& invWorldMatrix = visual->worldTransform.GetHInverse();
             Line3<float> line;
             Vector4<float> temp;
-#if defined (GTE_USE_MAT_VEC)
-            temp = invWorldMatrix * mOrigin;
-            line.origin = { temp[0], temp[1], temp[2] };
-            temp = invWorldMatrix * mDirection;
-            line.direction = { temp[0], temp[1], temp[2] };
-#else
+#if defined (GTE_USE_VEC_MAT)
             temp = mOrigin * invWorldMatrix;
             line.origin = { temp[0], temp[1], temp[2] };
             temp = mDirection * invWorldMatrix;
+            line.direction = { temp[0], temp[1], temp[2] };
+#else
+            temp = invWorldMatrix * mOrigin;
+            line.origin = { temp[0], temp[1], temp[2] };
+            temp = invWorldMatrix * mDirection;
             line.direction = { temp[0], temp[1], temp[2] };
 #endif
             // The world transformation might have non-unit scales, in which case the
@@ -354,10 +354,10 @@ void Picker::PickTriangles(std::shared_ptr<Visual> const& visual, char const* po
             record.bary[2] = result.triangleBary[2];
             record.linePoint = HLift(result.point, 1.0f);
 
-#if defined (GTE_USE_MAT_VEC)
-            record.linePoint = visual->worldTransform * record.linePoint;
-#else
+#if defined (GTE_USE_VEC_MAT)
             record.linePoint = record.linePoint * visual->worldTransform;
+#else
+            record.linePoint = visual->worldTransform * record.linePoint;
 #endif
             record.primitivePoint = record.linePoint;
 
@@ -426,12 +426,12 @@ void Picker::PickSegments(std::shared_ptr<Visual> const& visual, char const* pos
             record.linePoint = HLift(result.closest[0], 1.0f);
             record.primitivePoint = HLift(result.closest[1], 1.0f);
 
-#if defined (GTE_USE_MAT_VEC)
-            record.linePoint = visual->worldTransform * record.linePoint;
-            record.primitivePoint = visual->worldTransform * record.primitivePoint;
-#else
+#if defined (GTE_USE_VEC_MAT)
             record.linePoint = record.linePoint * visual->worldTransform;
             record.primitivePoint = record.primitivePoint * visual->worldTransform;
+#else
+            record.linePoint = visual->worldTransform * record.linePoint;
+            record.primitivePoint = visual->worldTransform * record.primitivePoint;
 #endif
             record.distanceToLinePoint = Length(record.linePoint - mOrigin);
             record.distanceToPrimitivePoint = Length(record.primitivePoint - mOrigin);
@@ -484,12 +484,12 @@ void Picker::PickPoints(std::shared_ptr<Visual> const& visual, char const* posit
             record.linePoint = HLift(result.closest[1], 1.0f);
             record.primitivePoint = HLift(p, 1.0f);
 
-#if defined (GTE_USE_MAT_VEC)
-            record.linePoint = visual->worldTransform * record.linePoint;
-            record.primitivePoint = visual->worldTransform * record.primitivePoint;
-#else
+#if defined (GTE_USE_VEC_MAT)
             record.linePoint = record.linePoint * visual->worldTransform;
             record.primitivePoint = record.primitivePoint * visual->worldTransform;
+#else
+            record.linePoint = visual->worldTransform * record.linePoint;
+            record.primitivePoint = visual->worldTransform * record.primitivePoint;
 #endif
             record.distanceToLinePoint = Length(record.linePoint - mOrigin);
             record.distanceToPrimitivePoint = Length(record.primitivePoint - mOrigin);

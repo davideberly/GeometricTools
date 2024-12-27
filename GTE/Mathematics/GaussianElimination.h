@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -65,12 +65,12 @@ namespace gte
                 Set(numRows * numCols, C, Y);
             }
 
-#if defined(GTE_USE_ROW_MAJOR)
-            LexicoArray2<true, Real> matInvM(numRows, numRows, inverseM);
-            LexicoArray2<true, Real> matY(numRows, numCols, Y);
-#else
+#if defined(GTE_USE_COL_MAJOR)
             LexicoArray2<false, Real> matInvM(numRows, numRows, inverseM);
             LexicoArray2<false, Real> matY(numRows, numCols, Y);
+#else
+            LexicoArray2<true, Real> matInvM(numRows, numRows, inverseM);
+            LexicoArray2<true, Real> matY(numRows, numCols, Y);
 #endif
 
             std::vector<int32_t> colIndex(numRows), rowIndex(numRows), pivoted(numRows);

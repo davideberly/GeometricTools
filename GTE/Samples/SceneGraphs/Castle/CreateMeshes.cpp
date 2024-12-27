@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include "CastleWindow3.h"
 
@@ -184,10 +184,10 @@ void CastleWindow3::CreateFrontRamp()
         AxisAngle<4, float>(Vector4<float>::Unit(2), angle));
     Matrix4x4<float> rotate1 = Rotation<4, float>(
         AxisAngle<4, float>(Vector4<float>::Unit(0), -angle));
-#if defined(GTE_USE_MAT_VEC)
-    local.SetRotation(rotate0 * rotate1);
-#else
+#if defined(GTE_USE_VEC_MAT)
     local.SetRotation(rotate1 * rotate0);
+#else
+    local.SetRotation(rotate0 * rotate1);
 #endif
 
     std::shared_ptr<Material> materials[7] =

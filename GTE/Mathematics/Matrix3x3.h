@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -98,20 +98,20 @@ namespace gte
     template <typename Real>
     Vector3<Real> DoTransform(Matrix3x3<Real> const& M, Vector3<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M * V;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return V * M;
+#else
+        return M * V;
 #endif
     }
 
     template <typename Real>
     Matrix3x3<Real> DoTransform(Matrix3x3<Real> const& A, Matrix3x3<Real> const& B)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return A * B;
-#else
+#if defined(GTE_USE_VEC_MAT)
         return B * A;
+#else
+        return A * B;
 #endif
     }
 
@@ -124,20 +124,20 @@ namespace gte
     template <typename Real>
     void SetBasis(Matrix3x3<Real>& M, int32_t i, Vector3<Real> const& V)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.SetCol(i, V);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.SetRow(i, V);
+#else
+        return M.SetCol(i, V);
 #endif
     }
 
     template <typename Real>
     Vector3<Real> GetBasis(Matrix3x3<Real> const& M, int32_t i)
     {
-#if defined(GTE_USE_MAT_VEC)
-        return M.GetCol(i);
-#else
+#if defined(GTE_USE_VEC_MAT)
         return M.GetRow(i);
+#else
+        return M.GetCol(i);
 #endif
     }
 }

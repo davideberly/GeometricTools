@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.11.20
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -334,10 +334,10 @@ namespace gte
     template <typename Real>
     Vector<3, Real> Rotate(Quaternion<Real> const& q, Vector<3, Real> const& u)
     {
-#if defined(GTE_USE_MAT_VEC)
-        Vector<3, Real> v{ q[0], q[1], q[2] };
-#else
+#if defined(GTE_USE_VEC_MAT)
         Vector<3, Real> v{ -q[0], -q[1], -q[2] };
+#else
+        Vector<3, Real> v{ q[0], q[1], q[2] };
 #endif
         Vector<3, Real> t = static_cast<Real>(2) * Cross(v, u);
         Vector<3, Real> rotatedU = u + q[3] * t + Cross(v, t);
@@ -353,10 +353,10 @@ namespace gte
     template <typename Real>
     Vector<4, Real> Rotate(Quaternion<Real> const& q, Vector<4, Real> const& u)
     {
-#if defined(GTE_USE_MAT_VEC)
-        Vector<4, Real> v{ q[0], q[1], q[2], static_cast<Real>(0) };
-#else
+#if defined(GTE_USE_VEC_MAT)
         Vector<4, Real> v{ -q[0], -q[1], -q[2], static_cast<Real>(0) };
+#else
+        Vector<4, Real> v{ q[0], q[1], q[2], static_cast<Real>(0) };
 #endif
         Vector<4, Real> t = static_cast<Real>(2) * Cross(v, u);
         Vector<4, Real> rotatedU = u + q[3] * t + Cross(v, t);

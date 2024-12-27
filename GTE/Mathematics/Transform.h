@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -380,16 +380,16 @@ namespace gte
                 // this function returns an approximation to the maximum
                 // scale.
 
-#if defined(GTE_USE_MAT_VEC)
-                // Use the max-row-sum matrix norm.
-                sum0 = std::fabs(mMatrix(0, 0)) + std::fabs(mMatrix(0, 1)) + std::fabs(mMatrix(0, 2));
-                sum1 = std::fabs(mMatrix(1, 0)) + std::fabs(mMatrix(1, 1)) + std::fabs(mMatrix(1, 2));
-                sum2 = std::fabs(mMatrix(2, 0)) + std::fabs(mMatrix(2, 1)) + std::fabs(mMatrix(2, 2));
-#else
+#if defined(GTE_USE_VEC_MAT)
                 // Use the max-col-sum matrix norm.
                 sum0 = std::fabs(mMatrix(0, 0)) + std::fabs(mMatrix(1, 0)) + std::fabs(mMatrix(2, 0));
                 sum1 = std::fabs(mMatrix(0, 1)) + std::fabs(mMatrix(1, 1)) + std::fabs(mMatrix(2, 1));
                 sum2 = std::fabs(mMatrix(0, 2)) + std::fabs(mMatrix(1, 2)) + std::fabs(mMatrix(2, 2));
+#else
+                // Use the max-row-sum matrix norm.
+                sum0 = std::fabs(mMatrix(0, 0)) + std::fabs(mMatrix(0, 1)) + std::fabs(mMatrix(0, 2));
+                sum1 = std::fabs(mMatrix(1, 0)) + std::fabs(mMatrix(1, 1)) + std::fabs(mMatrix(1, 2));
+                sum2 = std::fabs(mMatrix(2, 0)) + std::fabs(mMatrix(2, 1)) + std::fabs(mMatrix(2, 2));
 #endif
             }
 
@@ -422,17 +422,7 @@ namespace gte
                         if (mIsUniformScale)
                         {
                             Real invScale = (Real)1 / mScale[0];
-#if defined(GTE_USE_MAT_VEC)
-                            mInvHMatrix(0, 0) = invScale * mMatrix(0, 0);
-                            mInvHMatrix(0, 1) = invScale * mMatrix(1, 0);
-                            mInvHMatrix(0, 2) = invScale * mMatrix(2, 0);
-                            mInvHMatrix(1, 0) = invScale * mMatrix(0, 1);
-                            mInvHMatrix(1, 1) = invScale * mMatrix(1, 1);
-                            mInvHMatrix(1, 2) = invScale * mMatrix(2, 1);
-                            mInvHMatrix(2, 0) = invScale * mMatrix(0, 2);
-                            mInvHMatrix(2, 1) = invScale * mMatrix(1, 2);
-                            mInvHMatrix(2, 2) = invScale * mMatrix(2, 2);
-#else
+#if defined(GTE_USE_VEC_MAT)
                             mInvHMatrix(0, 0) = mMatrix(0, 0) * invScale;
                             mInvHMatrix(0, 1) = mMatrix(1, 0) * invScale;
                             mInvHMatrix(0, 2) = mMatrix(2, 0) * invScale;
@@ -442,6 +432,16 @@ namespace gte
                             mInvHMatrix(2, 0) = mMatrix(0, 2) * invScale;
                             mInvHMatrix(2, 1) = mMatrix(1, 2) * invScale;
                             mInvHMatrix(2, 2) = mMatrix(2, 2) * invScale;
+#else
+                            mInvHMatrix(0, 0) = invScale * mMatrix(0, 0);
+                            mInvHMatrix(0, 1) = invScale * mMatrix(1, 0);
+                            mInvHMatrix(0, 2) = invScale * mMatrix(2, 0);
+                            mInvHMatrix(1, 0) = invScale * mMatrix(0, 1);
+                            mInvHMatrix(1, 1) = invScale * mMatrix(1, 1);
+                            mInvHMatrix(1, 2) = invScale * mMatrix(2, 1);
+                            mInvHMatrix(2, 0) = invScale * mMatrix(0, 2);
+                            mInvHMatrix(2, 1) = invScale * mMatrix(1, 2);
+                            mInvHMatrix(2, 2) = invScale * mMatrix(2, 2);
 #endif
                         }
                         else
@@ -455,17 +455,7 @@ namespace gte
                             Real invS0 = s12 * invs012;
                             Real invS1 = s02 * invs012;
                             Real invS2 = s01 * invs012;
-#if defined(GTE_USE_MAT_VEC)
-                            mInvHMatrix(0, 0) = invS0 * mMatrix(0, 0);
-                            mInvHMatrix(0, 1) = invS0 * mMatrix(1, 0);
-                            mInvHMatrix(0, 2) = invS0 * mMatrix(2, 0);
-                            mInvHMatrix(1, 0) = invS1 * mMatrix(0, 1);
-                            mInvHMatrix(1, 1) = invS1 * mMatrix(1, 1);
-                            mInvHMatrix(1, 2) = invS1 * mMatrix(2, 1);
-                            mInvHMatrix(2, 0) = invS2 * mMatrix(0, 2);
-                            mInvHMatrix(2, 1) = invS2 * mMatrix(1, 2);
-                            mInvHMatrix(2, 2) = invS2 * mMatrix(2, 2);
-#else
+#if defined(GTE_USE_VEC_MAT)
                             mInvHMatrix(0, 0) = mMatrix(0, 0) * invS0;
                             mInvHMatrix(0, 1) = mMatrix(1, 0) * invS1;
                             mInvHMatrix(0, 2) = mMatrix(2, 0) * invS2;
@@ -475,6 +465,16 @@ namespace gte
                             mInvHMatrix(2, 0) = mMatrix(0, 2) * invS0;
                             mInvHMatrix(2, 1) = mMatrix(1, 2) * invS1;
                             mInvHMatrix(2, 2) = mMatrix(2, 2) * invS2;
+#else
+                            mInvHMatrix(0, 0) = invS0 * mMatrix(0, 0);
+                            mInvHMatrix(0, 1) = invS0 * mMatrix(1, 0);
+                            mInvHMatrix(0, 2) = invS0 * mMatrix(2, 0);
+                            mInvHMatrix(1, 0) = invS1 * mMatrix(0, 1);
+                            mInvHMatrix(1, 1) = invS1 * mMatrix(1, 1);
+                            mInvHMatrix(1, 2) = invS1 * mMatrix(2, 1);
+                            mInvHMatrix(2, 0) = invS2 * mMatrix(0, 2);
+                            mInvHMatrix(2, 1) = invS2 * mMatrix(1, 2);
+                            mInvHMatrix(2, 2) = invS2 * mMatrix(2, 2);
 #endif
                         }
                     }
@@ -483,29 +483,7 @@ namespace gte
                         mInvHMatrix = gte::Inverse(mHMatrix);
                     }
 
-#if defined(GTE_USE_MAT_VEC)
-                    mInvHMatrix(0, 3) = -(
-                        mInvHMatrix(0, 0) * mTranslate[0] +
-                        mInvHMatrix(0, 1) * mTranslate[1] +
-                        mInvHMatrix(0, 2) * mTranslate[2]
-                        );
-
-                    mInvHMatrix(1, 3) = -(
-                        mInvHMatrix(1, 0) * mTranslate[0] +
-                        mInvHMatrix(1, 1) * mTranslate[1] +
-                        mInvHMatrix(1, 2) * mTranslate[2]
-                        );
-
-                    mInvHMatrix(2, 3) = -(
-                        mInvHMatrix(2, 0) * mTranslate[0] +
-                        mInvHMatrix(2, 1) * mTranslate[1] +
-                        mInvHMatrix(2, 2) * mTranslate[2]
-                        );
-
-                    // The last row of mHMatrix is always (0,0,0,1) for an
-                    // affine transformation, so it is set once in the
-                    // constructor.  It is not necessary to reset it here.
-#else
+#if defined(GTE_USE_VEC_MAT)
                     mInvHMatrix(3, 0) = -(
                         mInvHMatrix(0, 0) * mTranslate[0] +
                         mInvHMatrix(1, 0) * mTranslate[1] +
@@ -525,6 +503,28 @@ namespace gte
                         );
 
                     // The last column of mHMatrix is always (0,0,0,1) for an
+                    // affine transformation, so it is set once in the
+                    // constructor.  It is not necessary to reset it here.
+#else
+                    mInvHMatrix(0, 3) = -(
+                        mInvHMatrix(0, 0) * mTranslate[0] +
+                        mInvHMatrix(0, 1) * mTranslate[1] +
+                        mInvHMatrix(0, 2) * mTranslate[2]
+                        );
+
+                    mInvHMatrix(1, 3) = -(
+                        mInvHMatrix(1, 0) * mTranslate[0] +
+                        mInvHMatrix(1, 1) * mTranslate[1] +
+                        mInvHMatrix(1, 2) * mTranslate[2]
+                        );
+
+                    mInvHMatrix(2, 3) = -(
+                        mInvHMatrix(2, 0) * mTranslate[0] +
+                        mInvHMatrix(2, 1) * mTranslate[1] +
+                        mInvHMatrix(2, 2) * mTranslate[2]
+                        );
+
+                    // The last row of mHMatrix is always (0,0,0,1) for an
                     // affine transformation, so it is set once in the
                     // constructor.  It is not necessary to reset it here.
 #endif
@@ -588,17 +588,7 @@ namespace gte
             {
                 if (mIsRSMatrix)
                 {
-#if defined(GTE_USE_MAT_VEC)
-                    mHMatrix(0, 0) = mMatrix(0, 0) * mScale[0];
-                    mHMatrix(0, 1) = mMatrix(0, 1) * mScale[1];
-                    mHMatrix(0, 2) = mMatrix(0, 2) * mScale[2];
-                    mHMatrix(1, 0) = mMatrix(1, 0) * mScale[0];
-                    mHMatrix(1, 1) = mMatrix(1, 1) * mScale[1];
-                    mHMatrix(1, 2) = mMatrix(1, 2) * mScale[2];
-                    mHMatrix(2, 0) = mMatrix(2, 0) * mScale[0];
-                    mHMatrix(2, 1) = mMatrix(2, 1) * mScale[1];
-                    mHMatrix(2, 2) = mMatrix(2, 2) * mScale[2];
-#else
+#if defined(GTE_USE_VEC_MAT)
                     mHMatrix(0, 0) = mScale[0] * mMatrix(0, 0);
                     mHMatrix(0, 1) = mScale[0] * mMatrix(0, 1);
                     mHMatrix(0, 2) = mScale[0] * mMatrix(0, 2);
@@ -608,6 +598,16 @@ namespace gte
                     mHMatrix(2, 0) = mScale[2] * mMatrix(2, 0);
                     mHMatrix(2, 1) = mScale[2] * mMatrix(2, 1);
                     mHMatrix(2, 2) = mScale[2] * mMatrix(2, 2);
+#else
+                    mHMatrix(0, 0) = mMatrix(0, 0) * mScale[0];
+                    mHMatrix(0, 1) = mMatrix(0, 1) * mScale[1];
+                    mHMatrix(0, 2) = mMatrix(0, 2) * mScale[2];
+                    mHMatrix(1, 0) = mMatrix(1, 0) * mScale[0];
+                    mHMatrix(1, 1) = mMatrix(1, 1) * mScale[1];
+                    mHMatrix(1, 2) = mMatrix(1, 2) * mScale[2];
+                    mHMatrix(2, 0) = mMatrix(2, 0) * mScale[0];
+                    mHMatrix(2, 1) = mMatrix(2, 1) * mScale[1];
+                    mHMatrix(2, 2) = mMatrix(2, 2) * mScale[2];
 #endif
                 }
                 else
@@ -623,15 +623,7 @@ namespace gte
                     mHMatrix(2, 2) = mMatrix(2, 2);
                 }
 
-#if defined(GTE_USE_MAT_VEC)
-                mHMatrix(0, 3) = mTranslate[0];
-                mHMatrix(1, 3) = mTranslate[1];
-                mHMatrix(2, 3) = mTranslate[2];
-
-                // The last row of mHMatrix is always (0,0,0,1) for an affine
-                // transformation, so it is set once in the constructor.  It
-                // is not necessary to reset it here.
-#else
+#if defined(GTE_USE_VEC_MAT)
                 mHMatrix(3, 0) = mTranslate[0];
                 mHMatrix(3, 1) = mTranslate[1];
                 mHMatrix(3, 2) = mTranslate[2];
@@ -639,6 +631,14 @@ namespace gte
                 // The last column of mHMatrix is always (0,0,0,1) for an
                 // affine transformation, so it is set once in the
                 // constructor.  It is not necessary to reset it here.
+#else
+                mHMatrix(0, 3) = mTranslate[0];
+                mHMatrix(1, 3) = mTranslate[1];
+                mHMatrix(2, 3) = mTranslate[2];
+
+                // The last row of mHMatrix is always (0,0,0,1) for an affine
+                // transformation, so it is set once in the constructor.  It
+                // is not necessary to reset it here.
 #endif
             }
 
@@ -730,27 +730,7 @@ namespace gte
 
         if (A.IsRSMatrix() && B.IsRSMatrix())
         {
-#if defined(GTE_USE_MAT_VEC)
-            if (A.IsUniformScale())
-            {
-                product.SetRotation(A.GetRotation() * B.GetRotation());
-
-                product.SetTranslation(A.GetUniformScale() * (
-                    A.GetRotation() * B.GetTranslationW0()) +
-                    A.GetTranslationW1());
-
-                if (B.IsUniformScale())
-                {
-                    product.SetUniformScale(A.GetUniformScale() * B.GetUniformScale());
-                }
-                else
-                {
-                    product.SetScale(A.GetUniformScale() * B.GetScale());
-                }
-
-                return product;
-            }
-#else
+#if defined(GTE_USE_VEC_MAT)
             if (B.IsUniformScale())
             {
                 product.SetRotation(A.GetRotation() * B.GetRotation());
@@ -770,6 +750,26 @@ namespace gte
 
                 return product;
             }
+#else
+            if (A.IsUniformScale())
+            {
+                product.SetRotation(A.GetRotation() * B.GetRotation());
+
+                product.SetTranslation(A.GetUniformScale() * (
+                    A.GetRotation() * B.GetTranslationW0()) +
+                    A.GetTranslationW1());
+
+                if (B.IsUniformScale())
+                {
+                    product.SetUniformScale(A.GetUniformScale() * B.GetUniformScale());
+                }
+                else
+                {
+                    product.SetScale(A.GetUniformScale() * B.GetScale());
+                }
+
+                return product;
+            }
 #endif
         }
 
@@ -777,10 +777,10 @@ namespace gte
         Matrix4x4<Real> matMA;
         if (A.IsRSMatrix())
         {
-#if defined(GTE_USE_MAT_VEC)
-            matMA = MultiplyMD(A.GetRotation(), A.GetScaleW1());
-#else
+#if defined(GTE_USE_VEC_MAT)
             matMA = MultiplyDM(A.GetScaleW1(), A.GetRotation());
+#else
+            matMA = MultiplyMD(A.GetRotation(), A.GetScaleW1());
 #endif
         }
         else
@@ -791,10 +791,10 @@ namespace gte
         Matrix4x4<Real> matMB;
         if (B.IsRSMatrix())
         {
-#if defined(GTE_USE_MAT_VEC)
-            matMB = MultiplyMD(B.GetRotation(), B.GetScaleW1());
-#else
+#if defined(GTE_USE_VEC_MAT)
             matMB = MultiplyDM(B.GetScaleW1(), B.GetRotation());
+#else
+            matMB = MultiplyMD(B.GetRotation(), B.GetScaleW1());
 #endif
         }
         else
@@ -803,12 +803,12 @@ namespace gte
         }
 
         product.SetMatrix(matMA * matMB);
-#if defined(GTE_USE_MAT_VEC)
-        product.SetTranslation(matMA * B.GetTranslationW0() +
-            A.GetTranslationW1());
-#else
+#if defined(GTE_USE_VEC_MAT)
         product.SetTranslation(A.GetTranslationW0() * matMB +
             B.GetTranslationW1());
+#else
+        product.SetTranslation(matMA * B.GetTranslationW0() +
+            A.GetTranslationW1());
 #endif
         return product;
     }

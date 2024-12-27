@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2024.12.26
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/CameraRig.h>
@@ -151,20 +151,20 @@ void CameraRig::TurnRight()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[1], -mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mWorldAxis[0] = incremental * mWorldAxis[0];
-        mWorldAxis[2] = incremental * mWorldAxis[2];
-        mCamera->SetAxes(
-            incremental * mCamera->GetDVector(),
-            incremental * mCamera->GetUVector(),
-            incremental * mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mWorldAxis[0] = mWorldAxis[0] * incremental;
         mWorldAxis[2] = mWorldAxis[2] * incremental;
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mWorldAxis[0] = incremental * mWorldAxis[0];
+        mWorldAxis[2] = incremental * mWorldAxis[2];
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
@@ -176,20 +176,20 @@ void CameraRig::TurnLeft()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[1], +mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mWorldAxis[0] = incremental * mWorldAxis[0];
-        mWorldAxis[2] = incremental * mWorldAxis[2];
-        mCamera->SetAxes(
-            incremental*mCamera->GetDVector(),
-            incremental*mCamera->GetUVector(),
-            incremental*mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mWorldAxis[0] = mWorldAxis[0] * incremental;
         mWorldAxis[2] = mWorldAxis[2] * incremental;
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mWorldAxis[0] = incremental * mWorldAxis[0];
+        mWorldAxis[2] = incremental * mWorldAxis[2];
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
@@ -201,16 +201,16 @@ void CameraRig::LookUp()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[2], +mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mCamera->SetAxes(
-            incremental * mCamera->GetDVector(),
-            incremental * mCamera->GetUVector(),
-            incremental * mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
@@ -222,16 +222,16 @@ void CameraRig::LookDown()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[2], -mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mCamera->SetAxes(
-            incremental * mCamera->GetDVector(),
-            incremental * mCamera->GetUVector(),
-            incremental * mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
@@ -243,16 +243,16 @@ void CameraRig::RollClockwise()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[0], +mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mCamera->SetAxes(
-            incremental * mCamera->GetDVector(),
-            incremental * mCamera->GetUVector(),
-            incremental * mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
@@ -264,16 +264,16 @@ void CameraRig::RollCounterclockwise()
         Matrix4x4<float> incremental = Rotation<4, float>(
             AxisAngle<4, float>(mWorldAxis[0], -mRotationSpeed));
 
-#if defined(GTE_USE_MAT_VEC)
-        mCamera->SetAxes(
-            incremental * mCamera->GetDVector(),
-            incremental * mCamera->GetUVector(),
-            incremental * mCamera->GetRVector());
-#else
+#if defined(GTE_USE_VEC_MAT)
         mCamera->SetAxes(
             mCamera->GetDVector() * incremental,
             mCamera->GetUVector() * incremental,
             mCamera->GetRVector() * incremental);
+#else
+        mCamera->SetAxes(
+            incremental * mCamera->GetDVector(),
+            incremental * mCamera->GetUVector(),
+            incremental * mCamera->GetRVector());
 #endif
     }
 }
