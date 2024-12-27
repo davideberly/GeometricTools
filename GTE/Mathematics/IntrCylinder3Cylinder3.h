@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.12.24
+// Version: 6.0.2024.12.26
 
 #pragma once
 
@@ -14,11 +14,8 @@
 #include <Mathematics/Logger.h>
 #include <Mathematics/TIQuery.h>
 #include <Mathematics/Constants.h>
-#include <Mathematics/Functions.h>
 #include <Mathematics/Cylinder3.h>
 #include <Mathematics/Vector3.h>
-#include <Mathematics/RootsBisection.h>
-#include <Mathematics/Minimize1.h>
 #include <array>
 #include <atomic>
 #include <cmath>
