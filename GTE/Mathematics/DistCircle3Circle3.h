@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.11.27
+// Version: 6.0.2024.12.28
 
 #pragma once
 
@@ -70,7 +70,7 @@ namespace gte
             Matrix3x3<T> rotate{};
             Vector3<T> translate{};
             T scale{};
-            PrepareCircles(inCircle0, inCircle1, circle0, circle1,
+            bool swapped = PrepareCircles(inCircle0, inCircle1, circle0, circle1,
                 rotate, translate, scale);
 
             if (circle0.normal[2] < static_cast<T>(1))
@@ -260,8 +260,13 @@ namespace gte
             result.sqrDistance = result.distance * result.distance;
             for (size_t i = 0; i < result.numClosestPairs; ++i)
             {
-                auto& closest = result.circle0Closest[i];
-                closest = (closest * rotate) / scale - translate;
+                result.circle0Closest[i] = (result.circle0Closest[i] * rotate) / scale - translate;
+                result.circle1Closest[i] = (result.circle1Closest[i] * rotate) / scale - translate;
+            }
+
+            if (swapped)
+            {
+                std::swap(result.circle0Closest, result.circle1Closest);
             }
             return result;
         }
@@ -356,22 +361,23 @@ namespace gte
 
         // TODO: Return the transformation so we can invert it for distances
         // and closest points.
-        void PrepareCircles(
+        bool PrepareCircles(
             Circle3<T> const& inCircle0, Circle3<T> const& inCircle1,
             Circle3<T>& circle0, Circle3<T>& circle1,
             Matrix3x3<T>& rotate, Vector3<T>& translate, T& scale)
         {
             // Order the circles so that circle1.radius has the larger radius
             // of the two circles.
-            if (inCircle0.radius <= inCircle1.radius)
-            {
-                circle0 = inCircle0;
-                circle1 = inCircle1;
-            }
-            else
+            bool swapped = (inCircle0.radius > inCircle1.radius);
+            if (swapped)
             {
                 circle0 = inCircle1;
                 circle1 = inCircle0;
+            }
+            else
+            {
+                circle0 = inCircle0;
+                circle1 = inCircle1;
             }
 
             // Ensure both circles have normals with z-value in [0,1].
@@ -421,6 +427,8 @@ namespace gte
                 circle0.normal = rot1 * circle0.normal;
                 rotate = rot1 * rotate;
             }
+
+            return swapped;
         }
 
         // The two circles are in parallel planes where D = C1 - C0, the
