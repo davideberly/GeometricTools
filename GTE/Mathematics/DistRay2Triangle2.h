@@ -20,7 +20,7 @@
 // (b[0],b[1],b[2]). When there are infinitely many choices for the pair of
 // closest points, only one of them is returned.
 
-#include "DistLine2Triangle2.h"
+#include <Mathematics/DistLine2Triangle2.h>
 #include <Mathematics/DistPointTriangle.h>
 #include <Mathematics/Ray.h>
 
