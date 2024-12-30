@@ -21,7 +21,8 @@
 // closest points, only one of them is returned. TODO: Compute the entire set
 // of intersection when it is a line segment.
 
-#include <Mathematics/DistLineSegment.h>
+#include <Mathematics/DCPQuery.h>
+#include <Mathematics/Line.h>
 #include <Mathematics/Triangle.h>
 #include <Mathematics/Vector2.h>
 #include <array>
