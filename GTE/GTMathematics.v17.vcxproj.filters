@@ -1725,5 +1725,14 @@
     <ClInclude Include="Mathematics\HelmertTransformation7.h">
       <Filter>Approximation</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\DistRay2Triangle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistLine2Triangle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\DistSegment2Triangle2.h">
+      <Filter>Distance\2D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
