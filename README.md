@@ -72,3 +72,8 @@ to understand what is expected of your development environment.
   MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
   second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
   exceptions can be ignored.
+
+  ## Geometric Tools Library (GTL) ##
+  This is a major update of GTE. I am starting to push the initial distribution.
+  This will take some time.
+  
