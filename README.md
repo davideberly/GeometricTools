@@ -1,4 +1,4 @@
-## About ##
+## Geometric Tools Engine ##
 
 The Geometric Tools Engine (GTE) is a collection of source code for computing
 in the fields of mathematics, geometry, graphics, image analysis and physics.
@@ -12,16 +12,6 @@ GTE is licensed under the
 The update history for the current version of GTE is
 [Current Update History](https://www.geometrictools.com/Downloads/Gte7UpdateHistory.pdf).
 The update history for all versions of GTE is [Full Update History](https://www.geometrictools.com/Downloads/GteFullUpdateHistory.pdf).
-
-I am in the process of writing The Geometric Tools Library (GTL),
-which is a major revision of GTE. A large portion of GTL development
-has been porting code from GTE, dealing with size_t versus signed
-integer compiler complaints, and adding new features. An equally
-large portion has been writing unit tests and end-to-end tests for
-the mathematics code. The project has taking a significant amount
-of time and effort. I do not yet have a reliable schedul to post.
-GTL is also licensed under the
-[Boost Software License 1.0](https://www.boost.org/LICENSE_1_0.txt).
 
 ## Supported Platforms ##
 
@@ -56,24 +46,4 @@ features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the
 [Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte7p2InstallationRelease.pdf)
 to understand what is expected of your development environment.
-
-## Known 3rd Party Problems ##
-
-* After installing NVIDIA GeForce driver version 531.18, all my DirectX 11 samples
-  throw 2 exceptions in D3D11CreateDevice, both tagged as Poco::NotFoundException.
-  If you continue execution after these exceptions, the applications perform
-  correctly. When the D3D11 device is released, another Poco::NotFoundException is
-  generated. You can continue execution after this exception. The exceptions still
-  occur through driver version 546.65 released on 17 January 2024. Driver version
-  551.52 has been released on 13 February 2024; the exceptions no longer occur.
-    
- * On shutting down the DX11 graphics in application, Intel(R) Iris(R) Xe Graphics
-  driver version 31.0.101.4146 throws two C++ exceptions (in igc64.dll). The first is
-  MONZA\::DdiThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end and the
-  second is MONZA\::IgcThreadingContext&lt;MONZA::AdapterTraits_Gen12LP&gt;\::msg_end. These
-  exceptions can be ignored.
-
-  ## Geometric Tools Library (GTL) ##
-  This is a major update of GTE. I am starting to push the initial distribution.
-  This will take some time.
   
