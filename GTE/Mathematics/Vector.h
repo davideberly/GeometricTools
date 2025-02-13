@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2025.02.13
 
 #pragma once
 
@@ -29,29 +29,59 @@ namespace gte
         {
         }
 
-        // At most N elements are copied from the initializer list, setting
-        // any remaining elements to zero.  Create the zero vector using the
-        // syntax
-        //   Vector<N,Real> zero{(Real)0};
-        // WARNING:  The C++ 11 specification states that
-        //   Vector<N,Real> zero{};
-        // will lead to a call of the default constructor, not the initializer
-        // constructor!
-        Vector(std::initializer_list<Real> values)
+        // Set all components to the same value. Create the zero vector using
+        // the syntax:  Vector<N,Real> zero{static_cast<Real>(0)};
+        Vector(Real const& value)
+            :
+            mTuple{}
         {
-            int32_t const numValues = static_cast<int32_t>(values.size());
-            if (N == numValues)
+            mTuple.fill(value);
+        }
+
+        // Specializations for N = 2, 3, and 4.
+        template <int32_t Dummy = N>
+        Vector(Real const& x0, Real const& x1,
+            typename std::enable_if<Dummy == 2>::type* = nullptr)
+            :
+            mTuple{ x0, x1 }
+        {
+        }
+
+        template <int32_t Dummy = N>
+        Vector(Real const& x0, Real const& x1, Real const& x2,
+            typename std::enable_if<Dummy == 3>::type* = nullptr)
+            :
+            mTuple{ x0, x1, x2 }
+        {
+        }
+
+        template <int32_t Dummy = N>
+        Vector(Real const& x0, Real const& x1, Real const& x2, Real const& x3,
+            typename std::enable_if<Dummy == 4>::type* = nullptr)
+            :
+            mTuple{ x0, x1, x2, x3 }
+        {
+        }
+
+        // At most N elements are copied from the initializer list, setting
+        // any remaining elements to zero. WARNING: The C++ 11 specification
+        // states that Vector<N,Real> zero{} will lead to a call of the
+        // default constructor, not the initializer constructor!
+        template <int32_t Dummy = N>
+        Vector(std::initializer_list<Real> values,
+            typename std::enable_if<Dummy >= 5>::type* = nullptr)
+        {
+            std::int32_t const numValues = static_cast<int32_t>(values.size());
+            int32_t const imax = std::min(numValues, N);
+            auto iter = values.begin();
+            int32_t i = 0;
+            for (; i < imax; ++i, ++iter)
             {
-                std::copy(values.begin(), values.end(), mTuple.begin());
+                mTuple[i] = *iter;
             }
-            else if (N > numValues)
+            for (; i < numValues; ++i)
             {
-                std::copy(values.begin(), values.end(), mTuple.begin());
-                std::fill(mTuple.begin() + numValues, mTuple.end(), (Real)0);
-            }
-            else // N < numValues
-            {
-                std::copy(values.begin(), values.begin() + N, mTuple.begin());
+                mTuple[i] = static_cast<Real>(0);
             }
         }
 

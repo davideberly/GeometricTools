@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2025.02.13
 
 #include "TerrainWindow3.h"
 #include "TerrainEffect.h"
@@ -28,7 +28,7 @@ TerrainWindow3::TerrainWindow3(Parameters& parameters)
     mCamera->SetFrustum(60.0f, GetAspectRatio(), 1.0f, 1500.0f);
     Vector4<float> camPosition{ 64.0f, 64.0f, heightAboveTerrain, 1.0f };
     Vector4<float> camDVector{ (float)GTE_C_INV_SQRT_2, (float)GTE_C_INV_SQRT_2, 0.0f, 0.0f };
-    Vector4<float> camUVector{ 0.0f, 0.0f, 1.0f };
+    Vector4<float> camUVector{ 0.0f, 0.0f, 1.0f, 0.0f };
     Vector4<float> camRVector = Cross(camDVector, camUVector);
     mCamera->SetFrame(camPosition, camDVector, camUVector, camRVector);
 

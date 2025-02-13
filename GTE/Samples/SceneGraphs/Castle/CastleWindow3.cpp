@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.12.26
+// Version: 6.0.2025.02.13
 
 #include "CastleWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -355,7 +355,7 @@ void CastleWindow3::CreateLights()
     mDLightRoot = std::make_shared<Node>();
     mDLightRoot->localTransform.SetTranslation(-1824.998657f, -1531.269775f, 3886.592773f);
     mDLightRoot->localTransform.SetRotation(
-        AxisAngle<4, float>({ -0.494124f, 0.325880f, 0.806005f }, 1.371538f));
+        AxisAngle<4, float>({ -0.494124f, 0.325880f, 0.806005f, 0.0f }, 1.371538f));
 
     mDLightRoot->AttachChild(lightNode);
     mDLightRoot->Update();
