@@ -1338,7 +1338,7 @@ namespace gte
                 "Invalid dimension for tetrahedron search.");
 
             mQueryPoint = inP;
-            mIRQueryPoint = { inP[0], inP[1] };
+            mIRQueryPoint = { inP[0], inP[1], inP[2] };
 
             size_t const numTetrahedra = mIndices.size() / 4;
             info.path.resize(numTetrahedra);
