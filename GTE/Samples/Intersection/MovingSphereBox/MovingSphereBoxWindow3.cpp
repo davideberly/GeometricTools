@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2025.02.13
 
 #include "MovingSphereBoxWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -410,15 +410,6 @@ void MovingSphereBoxWindow3::CreateRoundedBoxVertices()
         Quaternion<float>{ 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
-    mVNormal[0] = { -1.0f, -1.0f, -1.0f, 0.0f };
-    mVNormal[1] = { +1.0f, -1.0f, -1.0f, 0.0f };
-    mVNormal[2] = { -1.0f, +1.0f, -1.0f, 0.0f };
-    mVNormal[3] = { +1.0f, +1.0f, -1.0f, 0.0f };
-    mVNormal[4] = { -1.0f, -1.0f, +1.0f, 0.0f };
-    mVNormal[5] = { +1.0f, -1.0f, +1.0f, 0.0f };
-    mVNormal[6] = { -1.0f, +1.0f, +1.0f, 0.0f };
-    mVNormal[7] = { +1.0f, +1.0f, +1.0f, 0.0f };
-
     for (int32_t i = 0; i < 8; ++i)
     {
         auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
@@ -553,19 +544,6 @@ void MovingSphereBoxWindow3::CreateRoundedBoxEdges()
         Quaternion<float>{ 0.0f, -sqrtHalf, 0.0f, sqrtHalf }
     };
 
-    mENormal[ 0] = { -1.0f, -1.0f, 0.0f, 0.0f };
-    mENormal[ 1] = { +1.0f, -1.0f, 0.0f, 0.0f };
-    mENormal[ 2] = { -1.0f, +1.0f, 0.0f, 0.0f };
-    mENormal[ 3] = { +1.0f, +1.0f, 0.0f, 0.0f };
-    mENormal[ 4] = { -1.0f, 0.0f, -1.0f, 0.0f };
-    mENormal[ 5] = { +1.0f, 0.0f, -1.0f, 0.0f };
-    mENormal[ 6] = { -1.0f, 0.0f, +1.0f, 0.0f };
-    mENormal[ 7] = { +1.0f, 0.0f, +1.0f, 0.0f };
-    mENormal[ 8] = { 0.0f, -1.0f, -1.0f, 0.0f };
-    mENormal[ 9] = { 0.0f, -1.0f, +1.0f, 0.0f };
-    mENormal[10] = { 0.0f, +1.0f, -1.0f, 0.0f };
-    mENormal[11] = { 0.0f, +1.0f, +1.0f, 0.0f };
-
     for (int32_t i = 0; i < 12; ++i)
     {
         auto effect = std::make_shared<ConstantColorEffect>(mProgramFactory, color[i]);
@@ -657,13 +635,6 @@ void MovingSphereBoxWindow3::CreateRoundedBoxFaces()
         Quaternion<float>{ 0.0f, -sqrtHalf, 0.0f, sqrtHalf },
         Quaternion<float>{ 0.0f, sqrtHalf, 0.0f, sqrtHalf }
     };
-
-    mFNormal[0] = { 0.0f, 0.0f, -1.0f, 0.0f };
-    mFNormal[1] = { 0.0f, 0.0f, +1.0f, 0.0f };
-    mFNormal[2] = { 0.0f, -1.0f, 0.0f, 0.0f };
-    mFNormal[3] = { 0.0f, +1.0f, 0.0f, 0.0f };
-    mFNormal[4] = { -1.0f, 0.0f, 0.0f, 0.0f };
-    mFNormal[5] = { +1.0f, 0.0f, 0.0f, 0.0f };
 
     for (int32_t i = 0; i < 6; ++i)
     {

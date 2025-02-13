@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// Version: 6.0.2025.02.13
 #pragma once
 
 #include <Applications/Window3.h>
@@ -41,15 +41,12 @@ private:
 
     // Octants of spheres for the rounded box corners.
     std::array<std::shared_ptr<Visual>, 8> mVertexVisual;
-    std::array<Vector3<float>, 8> mVNormal;
 
     // Quarter cylinders for the rounded box edges.
     std::array<std::shared_ptr<Visual>, 12> mEdgeVisual;
-    std::array<Vector3<float>, 12> mENormal;
 
     // Rectangles for the rounded box faces.
     std::array<std::shared_ptr<Visual>, 6> mFaceVisual;
-    std::array<Vector3<float>, 6> mFNormal;
 
     // The visual representation of mBox.
     std::shared_ptr<Visual> mBoxVisual;
