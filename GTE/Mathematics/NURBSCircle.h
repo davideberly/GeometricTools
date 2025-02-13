@@ -34,7 +34,6 @@ namespace gte
             :
             NURBSCurve<2, T>(BasisFunctionInput<T>(3, 2), nullptr, nullptr)
         {
-            T const zero = static_cast<T>(0);
             T const one = static_cast<T>(1);
             T const two = static_cast<T>(2);
             T const sqrt2 = std::sqrt(two);
