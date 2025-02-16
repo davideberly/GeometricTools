@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.12.26
+// Version: 6.0.2025.02.16
 
 #pragma once
 
@@ -249,7 +249,7 @@ namespace gte
             jsup.back() = mNumPhi;
 
             std::vector<Result> localResult(mNumThreads);
-            std::atomic<std::uint32_t> foundSeparatingDirection = 0;
+            std::atomic<std::uint32_t> foundSeparatingDirection(0);
 
             std::vector<std::thread> process(mNumThreads);
             for (size_t t = 0; t < mNumThreads; ++t)
