@@ -656,7 +656,7 @@ namespace gte
             queue.push(input);
             while (queue.size() > 0)
             {
-                auto const& node = queue.front();
+                std::shared_ptr<PolygonTree> node = queue.front();
                 queue.pop();
                 numNodes += node->child.size();
                 for (auto const& child : node->child)
@@ -678,7 +678,7 @@ namespace gte
             queue.push(input);
             while (queue.size() > 0)
             {
-                auto const& node = queue.front();
+                std::shared_ptr<PolygonTree> node = queue.front();
                 queue.pop();
                 auto& exnode = output.nodes[current++];
                 exnode.polygon = node->polygon;
