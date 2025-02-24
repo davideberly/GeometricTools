@@ -6,7 +6,7 @@ endif()
 cmake_minimum_required(VERSION 3.8)
 
 set(GTE_VERSION_MAJOR 7)
-set(GTE_VERSION_MINOR 1)
+set(GTE_VERSION_MINOR 3)
 
 project(Distance VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 

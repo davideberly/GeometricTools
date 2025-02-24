@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 7)
-set(GTE_VERSION_MINOR 1)
+set(GTE_VERSION_MINOR 3)
 
 cmake_minimum_required(VERSION 3.8)
 
@@ -15,6 +15,7 @@ add_subdirectory(ConformalMapping)
 add_subdirectory(ConstrainedDelaunay2D)
 add_subdirectory(ConvexHull2D)
 add_subdirectory(ConvexHull3D)
+add_subdirectory(ConvexHullSimplePolygon)
 add_subdirectory(Delaunay2D)
 add_subdirectory(Delaunay3D)
 add_subdirectory(DisjointIntervalsRectangles)
