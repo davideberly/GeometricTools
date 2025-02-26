@@ -1734,5 +1734,14 @@
     <ClInclude Include="Mathematics\DistSegment2Triangle2.h">
       <Filter>Distance\2D</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\PolygonWindingOrder.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\ConvexHullSimplePolygon.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\SampleCircularArc.h">
+      <Filter>CurvesSurfacesVolumes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

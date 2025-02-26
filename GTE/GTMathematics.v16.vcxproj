@@ -110,6 +110,7 @@
     <ClInclude Include="Mathematics\ConvertCoordinates.h" />
     <ClInclude Include="Mathematics\ConvexHull2.h" />
     <ClInclude Include="Mathematics\ConvexHull3.h" />
+    <ClInclude Include="Mathematics\ConvexHullSimplePolygon.h" />
     <ClInclude Include="Mathematics\ConvexMesh3.h" />
     <ClInclude Include="Mathematics\CurvatureFlow2.h" />
     <ClInclude Include="Mathematics\CurvatureFlow3.h" />
@@ -442,6 +443,7 @@
     <ClInclude Include="Mathematics\PlanarMesh.h" />
     <ClInclude Include="Mathematics\Polygon2.h" />
     <ClInclude Include="Mathematics\PolygonTree.h" />
+    <ClInclude Include="Mathematics\PolygonWindingOrder.h" />
     <ClInclude Include="Mathematics\PolyhedralMassProperties.h" />
     <ClInclude Include="Mathematics\Polyhedron3.h" />
     <ClInclude Include="Mathematics\PolylineOffset.h" />
@@ -470,6 +472,7 @@
     <ClInclude Include="Mathematics\RootsQuartic.h" />
     <ClInclude Include="Mathematics\RotatingCalipers.h" />
     <ClInclude Include="Mathematics\RotationEstimate.h" />
+    <ClInclude Include="Mathematics\SampleCircularArc.h" />
     <ClInclude Include="Mathematics\Sector2.h" />
     <ClInclude Include="Mathematics\Segment.h" />
     <ClInclude Include="Mathematics\SegmentMesh.h" />
