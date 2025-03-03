@@ -301,7 +301,7 @@ namespace gte
         }
 
         // Compute powers of ds/dt.
-        void ComputePowers(int32_t degree, int32_t numControls, Real tmin, Real tmax,
+        static void ComputePowers(int32_t degree, int32_t numControls, Real tmin, Real tmax,
             std::vector<Real>& powerDSDT)
         {
             Real dsdt = (static_cast<Real>(numControls) - static_cast<Real>(degree)) / (tmax - tmin);
@@ -328,7 +328,7 @@ namespace gte
                 {
                     Real smd = dsdt * (t - tmin);
                     index = static_cast<uint32_t>(std::floor(smd));
-                    u = smd - static_cast<float>(index);
+                    u = smd - static_cast<Real>(index);
                 }
                 else
                 {
