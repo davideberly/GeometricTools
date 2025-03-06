@@ -85,12 +85,9 @@ namespace gte
                 B[i] /= tNumPoints;
             }
 
-            Vector3<T> vecU{};
-            bool success = LinearSystem<T>().Solve(A, B, vecU);
+            bool success = LinearSystem<T>().Solve(3, &A[0], &B[0], u.data());
             if (success && meanSquareError != nullptr)
             {
-                u = { vecU[0], vecU[1], vecU[2] };
-
                 T totalError = static_cast<T>(0);
                 for (int32_t i = 0; i < numPoints; ++i)
                 {
