@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.02.25
+// Version: 6.0.2025.03.08
 
 #pragma once
 
@@ -31,7 +31,7 @@ namespace gte
         // meanSquareError to a nonnull pointer if you want the least-squares
         // error.
 
-        // Fit with y = u0*x^2 + u1*x + u0
+        // Fit with y = u0*x^2 + u1*x + u2
         static bool Fit(std::vector<Vector2<T>> const& points,
             std::array<T, 3>& u, T* meanSquareError = nullptr)
         {
@@ -85,12 +85,9 @@ namespace gte
                 B[i] /= tNumPoints;
             }
 
-            Vector3<T> vecU{};
-            bool success = LinearSystem<T>().Solve(A, B, vecU);
+            bool success = LinearSystem<T>().Solve(3, &A[0], &B[0], u.data());
             if (success && meanSquareError != nullptr)
             {
-                u = { vecU[0], vecU[1], vecU[2] };
-
                 T totalError = static_cast<T>(0);
                 for (int32_t i = 0; i < numPoints; ++i)
                 {
