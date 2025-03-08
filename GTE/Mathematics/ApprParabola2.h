@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2025.03.08
+// Version: 6.0.2025.03.09
 
 #pragma once
 
@@ -167,12 +167,9 @@ namespace gte
                 B[i] /= tNumPoints;
             }
 
-            Vector3<T> vecV{};
-            bool success = LinearSystem<T>().Solve(A, B, vecV);
+            bool success = LinearSystem<T>().Solve(3, &A[0], &B[0], v.data());
             if (success && meanSquareError != nullptr)
             {
-                v = { vecV[0], vecV[1], vecV[2] };
-
                 T totalError = static_cast<T>(0);
                 for (int32_t i = 0; i < numPoints; ++i)
                 {
