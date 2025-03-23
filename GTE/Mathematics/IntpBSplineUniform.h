@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// Version: 6.0.2025.03.23
 
 #pragma once
 
@@ -1224,7 +1224,6 @@ namespace gte
             {
                 InitializeTensors();
             }
-
         }
 
         // Disallow copying and moving.
@@ -1252,6 +1251,11 @@ namespace gte
         inline Real GetTMax(int32_t dim) const
         {
             return mTMax[dim];
+        }
+
+        inline int32_t GetCacheMode() const
+        {
+            return mCacheMode;
         }
 
         // Evaluate the interpolator.  The order is (0,0,0) when you want the
