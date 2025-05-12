@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11TextureCube.h>
@@ -146,3 +146,4 @@ void DX11TextureCube::CreateUAView(ID3D11Device* device, D3D11_TEXTURE2D_DESC co
     desc.Texture2DArray.ArraySize = tx.ArraySize;
     DX11Log(device->CreateUnorderedAccessView(GetDXTexture(), &desc, &mUAView));
 }
+

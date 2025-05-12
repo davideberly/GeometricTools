@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.06
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -87,7 +87,7 @@ namespace gte
         std::shared_ptr<DepthStencilState> mDSPass0, mDSPass1;
 
         // TODO: The stencil buffer reference values for the planes during
-        // the mDSPass1 drawing are not being set to zero in the GL45
+        // the mDSPass1 drawing are not being set to zero in the GL46
         // version of this sample. This leads to shadowed pixels that should
         // not be shadowed. If I clear the stencil buffer after each plane is
         // processed, the drawing is correct. I need to figure out why this
@@ -95,3 +95,4 @@ namespace gte
         int32_t mAPI;
     };
 }
+

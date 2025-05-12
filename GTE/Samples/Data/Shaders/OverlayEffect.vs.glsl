@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// File Version: 8.0.2025.05.10
 
 layout(location = 0) in vec3 modelPosition;
 layout(location = 1) in vec2 modelTCoord;
@@ -17,3 +17,4 @@ void main()
     gl_Position.z = -1.0f;
     gl_Position.w = 1.0f;
 }
+

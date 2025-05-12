@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.12.26
+// File Version: 8.0.2025.05.10
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
@@ -514,3 +514,4 @@ bool HLSLShaderFactory::IsTextureArray(D3D_SRV_DIMENSION dim)
         || dim == D3D_SRV_DIMENSION_TEXTURECUBE
         || dim == D3D_SRV_DIMENSION_TEXTURECUBEARRAY;
 }
+

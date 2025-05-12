@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.28
+// File Version: 8.0.2025.05.10
 
 #include "SkinningWindow3.h"
 
@@ -267,3 +267,4 @@ void SkinningWindow3::UpdateConstants(float time)
 
     mEngine->Update(cbuffer);
 }
+

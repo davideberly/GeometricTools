@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.04.02
+// File Version: 8.0.2025.05.10
 
 #include "SMUnlitEffect.h"
 
@@ -44,3 +44,4 @@ SMUnlitEffect::SMUnlitEffect(
     pshader->Set("Screen", mScreenBuffer);
     pshader->Set("shadowTexture", mShadowTexture, "shadowSampler", mSampler);
 }
+

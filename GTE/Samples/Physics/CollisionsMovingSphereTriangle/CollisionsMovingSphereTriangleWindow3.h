@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.3.2022.03.21
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -56,3 +56,4 @@ private:
     std::array<Vector3<float>, 3> mMTri;
     bool mUseInitialCenter;
 };
+

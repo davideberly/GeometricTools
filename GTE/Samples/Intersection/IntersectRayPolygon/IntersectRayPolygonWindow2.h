@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.5.2022.12.12
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -41,3 +41,4 @@ private:
     std::vector<std::array<int32_t, 4>> mDrawLineInputs;
     SegmentMesh2<double> mSegmentMesh;
 };
+

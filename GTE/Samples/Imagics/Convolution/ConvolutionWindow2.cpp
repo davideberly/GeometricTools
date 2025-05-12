@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include "ConvolutionWindow2.h"
 #include <Applications/WICFileIO.h>
@@ -446,3 +446,4 @@ std::string ConvolutionWindow2::msName[5] =
     "convolve separable groupshared (one slice at a time)",
     "convolve separable groupshared (slice processed as subslices)"
 };
+

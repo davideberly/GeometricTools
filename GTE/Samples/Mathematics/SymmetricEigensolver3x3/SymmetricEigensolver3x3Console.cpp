@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include "SymmetricEigensolver3x3Console.h"
 #include <Mathematics/SymmetricEigensolver3x3.h>
@@ -335,3 +335,4 @@ double SymmetricEigensolver3x3Console::Determinant(std::array<std::array<double,
     double c02 = evec[1][0] * evec[2][1] - evec[1][1] * evec[2][0];
     return evec[0][0] * c00 - evec[0][1] * c01 + evec[0][2] * c02;
 }
+

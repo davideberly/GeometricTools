@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.06.08
+// File Version: 8.0.2025.05.10
 
 #include "BSplineCurveReductionWindow3.h"
 #include <Graphics/ConstantColorEffect.h>
@@ -165,3 +165,4 @@ void BSplineCurveReductionWindow3::CreateScene()
     mPVWMatrices.Subscribe(mReduced->worldTransform, effect->GetPVWMatrixConstant());
     mTrackBall.Attach(mReduced);
 }
+

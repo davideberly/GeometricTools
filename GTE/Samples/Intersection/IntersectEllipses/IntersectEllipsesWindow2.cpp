@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.06.16
+// File Version: 8.0.2025.05.10
 
 #include "IntersectEllipsesWindow2.h"
 #include <Mathematics/IntrEllipse2Ellipse2.h>
@@ -193,3 +193,4 @@ void IntersectEllipsesWindow2::DoQuery()
         test1[i] = Dot(delta1, mMatrix[1] * delta1) - 1.0;
     }
 }
+

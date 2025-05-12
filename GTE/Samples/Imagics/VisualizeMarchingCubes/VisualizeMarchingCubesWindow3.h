@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.4.2025.03.24
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -33,7 +33,6 @@ private:
     std::array<float, 4> mTextColor;
     Environment mEnvironment;
 
-    using MarchingCubes = MarchingCubes<std::uint32_t>;
     using Extractor = SurfaceExtractorMC<float, std::uint32_t>;
     Image3<float> mImage;
     Extractor mExtractor;
@@ -57,3 +56,4 @@ private:
     std::uint32_t mCurrentEntry;
     std::string mCurrentString;
 };
+

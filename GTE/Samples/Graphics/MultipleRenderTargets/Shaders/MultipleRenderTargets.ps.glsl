@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// File Version: 8.0.2025.05.10
 
 uniform FarNearRatio
 {
@@ -37,3 +37,4 @@ void main()
     float temp = farNearRatio * (1.0f - d);
     gl_FragDepth = (2.0f - temp) / (temp + 2.0f * d);
 };
+

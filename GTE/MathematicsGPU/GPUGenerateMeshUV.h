@@ -3,14 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
 // Read the comments in Mathematics/GenerateMeshUV.h for information about
 // the algorithm.  The class GenerateMeshUV header file has a CPU-based
 // implementation.  The class GPUGenerateMeshUV derives from GenerateMeshUV
-// and provides a GPU-based implementation using DX11/HLSL or GL45/GLSL.
+// and provides a GPU-based implementation using DX11/HLSL or GL46/GLSL.
 
 #include <Mathematics/GenerateMeshUV.h>
 #include <Graphics/GraphicsEngine.h>
@@ -252,3 +252,4 @@ namespace gte
         }
     };
 }
+

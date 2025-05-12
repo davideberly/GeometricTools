@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #include <Mathematics/Constants.h>
 #include "PhysicsModule.h"
@@ -73,3 +73,4 @@ void PhysicsModule::Update()
     mY1Curr = mY1 + mTime * (mTCoeff + mTSqrCoeff * mTime) - mDeltaDivOmegaSqr * combo;
     mY2Curr = wireLength - radius * static_cast<float>(GTE_C_PI) - mY1Curr;
 }
+

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 // The functions were written based on the example source code
 // https://dev.w3.org/Amaya/libpng/example.c
@@ -346,3 +346,4 @@ bool WICFileIO::SaveToPNG(std::string const& filename, std::shared_ptr<Texture2>
     png_write_end(helper.png_ptr, helper.info_ptr);
     return true;
 }
+

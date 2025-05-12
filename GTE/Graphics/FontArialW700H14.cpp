@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/FontArialW700H14.h>
@@ -1759,3 +1759,4 @@ float FontArialW700H14::msCharacterData[257] =
 0.968348f, 0.972465f, 0.976583f, 0.980700f, 0.984817f, 0.988935f, 0.992537f, 0.996655f, 
 1.000257f, 
 };
+

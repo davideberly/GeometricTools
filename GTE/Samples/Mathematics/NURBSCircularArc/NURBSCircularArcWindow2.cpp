@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.4.2025.02.25
+// File Version: 8.0.2025.05.10
 
 #include "NURBSCircularArcWindow2.h"
 
@@ -100,3 +100,4 @@ bool NURBSCircularArcWindow2::OnCharPress(uint8_t key, int32_t x, int32_t y)
 
     return Window2::OnCharPress(key, x, y);
 }
+

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// File Version: 8.0.2025.05.10
 
 #include "RemezRotC1.h"
 using namespace gte;
@@ -159,3 +159,4 @@ void RemezRotC1::GetSecondSignDTerm(size_t j, Rational const& tSqr, Rational& fa
     factor *= tSqr / Rational((2 * (mDegree + j) + 3) * (2 * (mDegree + j) + 4));
     term = Rational(mDegree + j + 1) * factor;
 }
+

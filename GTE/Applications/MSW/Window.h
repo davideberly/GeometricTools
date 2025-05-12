@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.02.02
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -40,9 +40,9 @@ namespace gte
             // For DX11, the device creation flags are passed to the function
             // D3D11CreateDevice during construction of a DX11Engine object.
             // See the documentation for D3D11CreateDevice for the available
-            // flags. For GL45, set the flags to 0 for the default behavior;
-            // no additional semantics occur on GL45Engine construction. Set
-            // bit 0 of the flag to 1 to tell the GL45Engine construction to
+            // flags. For GL46, set the flags to 0 for the default behavior;
+            // no additional semantics occur on GL46Engine construction. Set
+            // bit 0 of the flag to 1 to tell the GL46Engine construction to
             // write a text file that contains the OpenGL driver information.
             // The default value is 0.  When bit 0 is set to 1, a text file
             // named OpenGLDriverInfo.txt is generated that contains the
@@ -113,3 +113,4 @@ namespace gte
 // previously in this file and is known to the compiler when it includes this
 // file.
 #include <Applications/MSW/WindowSystem.h>
+

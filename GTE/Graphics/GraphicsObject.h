@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -96,7 +96,7 @@ namespace gte
     {
     public:
         // This is an abstract base class that is used for bridging GTE
-        // graphics objects with DX11 and GL45 graphics objects.
+        // graphics objects with DX11 and GL46 graphics objects.
         virtual ~GraphicsObject();
     protected:
         GraphicsObject();
@@ -146,7 +146,7 @@ namespace gte
         }
 
         // Listeners subscribe to receive notification when a GraphicsObject
-        // is about to be destroyed.  The intended use is for the DX11/GL45
+        // is about to be destroyed.  The intended use is for the DX11/GL46
         // objects to destroy corresponding graphics-API-specific objects.
         class ListenerForDestruction
         {
@@ -169,3 +169,4 @@ namespace gte
         static std::set<std::shared_ptr<ListenerForDestruction>> msLFDSet;
     };
 }
+

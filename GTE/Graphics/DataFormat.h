@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -14,7 +14,7 @@
 namespace gte
 {
     // Data format types; these map directly to DX11 DXGI_FORMAT.  The
-    // GL45 formats are chosen to match some of these.
+    // GL46 formats are chosen to match some of these.
 
     // DX11.0 formats listed below
     static uint32_t constexpr DF_UNKNOWN = 0;
@@ -138,7 +138,7 @@ namespace gte
 
     using DFType = uint32_t;
 
-    // Enumerations for GL45.
+    // Enumerations for GL46.
     enum DFChannelType
     {
         DF_UNSUPPORTED,
@@ -198,3 +198,4 @@ namespace gte
         static std::array<bool, DF_NUM_FORMATS> const msSupported;
     };
 }
+

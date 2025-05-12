@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -137,7 +137,7 @@ namespace gte
         uint32_t GetStructuredBufferSize(int32_t handle) const;
         uint32_t GetStructuredBufferSize(std::string const& name) const;
 
-        // Access member layouts for these types of buffers.  Only GL45
+        // Access member layouts for these types of buffers.  Only GL46
         // needs access to the structured buffer layout.
         void GetConstantBufferLayout(int32_t handle, BufferLayout& layout) const;
         void GetConstantBufferLayout(std::string const& name, BufferLayout& layout) const;
@@ -162,7 +162,7 @@ namespace gte
         }
 
         // Names for the 'struct Data' defined in the private section below.
-        // Only GL45 requires the atomic counter names.  Only DX11 requires
+        // Only GL46 requires the atomic counter names.  Only DX11 requires
         // the raw and typed buffer names.
         enum
         {
@@ -182,7 +182,7 @@ namespace gte
     protected:
         // This structure provides the data necessary for the engine to attach
         // the associated resources to the shader, including name lookups and
-        // resource validation.  Only GL45 requires the atomic counter names.
+        // resource validation.  Only GL46 requires the atomic counter names.
         //   CB - constant buffer, lookup 0
         //   TB - texture buffer, lookup 1
         //   SB - structured buffer (and derived classes), lookup 2
@@ -191,10 +191,10 @@ namespace gte
         //   TX - texture (and derived classes), lookup 5
         //   TA - texture array (and derived classes), lookup 6
         //   SS - sampler state, lookup 7
-        //   AB - atomic (counter) buffer, lookup [GL45 only]
-        //   AC - atomic counter, lookup 9  [GL45 only]
+        //   AB - atomic (counter) buffer, lookup [GL46 only]
+        //   AC - atomic counter, lookup 9  [GL46 only]
         //
-        // For GL45, here is how to use atomic counter information. Given
+        // For GL46, here is how to use atomic counter information. Given
         // structured buffer data at index some-index:
         //   sb = mData[StructuredBufferShaderDataLookup][some-index];
         // Does the structured buffer have a counter?  Check
@@ -240,7 +240,7 @@ namespace gte
             // counter, AC index), AC (offset)
             uint32_t extra;
 
-            // SB (true if has atomic counter), RB, TX/TA (in GL45, false
+            // SB (true if has atomic counter), RB, TX/TA (in GL46, false
             // for gsampler*, true for gimage*)
             bool isGpuWritable;
         };
@@ -364,3 +364,4 @@ namespace gte
         LogError("Invalid handle for object.");
     }
 }
+

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.07.10
+// File Version: 8.0.2025.05.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -181,7 +181,7 @@ void WindowSystem::CreateEngineAndProgramFactory(Window::Parameters& parameters)
         parameters.useDepth24Stencil8, saveDriverInfo);
     if (!engine->MeetsRequirements())
     {
-        LogError("OpenGL 4.5 or later is required.");
+        LogError("OpenGL 4.6 or later is required.");
     }
 
     if (engine->GetDevice())
@@ -490,3 +490,4 @@ LRESULT CALLBACK WindowSystem::WindowProcedure(HWND handle, UINT message,
 
     return DefWindowProc(handle, message, wParam, lParam);
 }
+

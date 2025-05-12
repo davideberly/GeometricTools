@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2024.07.17
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -1522,3 +1522,4 @@ namespace gte
     template <typename UInteger>
     struct _is_arbitrary_precision_internal<BSNumber<UInteger>> : std::true_type {};
 }
+

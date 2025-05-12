@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.7.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -27,3 +27,4 @@ double constexpr GTE_C_LN_2 = 0.6931471805599453;
 double constexpr GTE_C_INV_LN_2 = 1.4426950408889634;
 double constexpr GTE_C_LN_10 = 2.3025850929940459;
 double constexpr GTE_C_INV_LN_10 = 0.43429448190325176;
+

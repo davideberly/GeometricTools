@@ -10,7 +10,7 @@
     <Text Include="Version.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GL45.h" />
+    <ClInclude Include="GL46.h" />
     <ClInclude Include="glcorearb.h">
       <Filter>GL Headers</Filter>
     </ClInclude>

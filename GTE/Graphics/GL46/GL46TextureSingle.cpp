@@ -1,0 +1,341 @@
+// David Eberly, Geometric Tools, Redmond WA 98052
+// Copyright (c) 1998-2025
+// Distributed under the Boost Software License, Version 1.0.
+// https://www.boost.org/LICENSE_1_0.txt
+// https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
+// File Version: 8.0.2025.05.10
+
+#include <Graphics/GL46/GTGraphicsGL46PCH.h>
+#include <Graphics/GL46/GL46TextureSingle.h>
+using namespace gte;
+
+GL46TextureSingle::~GL46TextureSingle()
+{
+    for (int32_t level = 0; level < mNumLevels; ++level)
+    {
+        glDeleteBuffers(1, &mLevelPixelUnpackBuffer[level]);
+        glDeleteBuffers(1, &mLevelPixelPackBuffer[level]);
+    }
+}
+
+GL46TextureSingle::GL46TextureSingle(TextureSingle const* gtTexture, GLenum target, GLenum targetBinding)
+    :
+    GL46Texture(gtTexture, target, targetBinding)
+{
+    // Initially no staging buffers.
+    std::fill(std::begin(mLevelPixelUnpackBuffer), std::end(mLevelPixelUnpackBuffer), 0);
+    std::fill(std::begin(mLevelPixelPackBuffer), std::end(mLevelPixelPackBuffer), 0);
+}
+
+void GL46TextureSingle::Initialize()
+{
+    // Save current binding for this texture target in order to restore it
+    // when done because the gl texture object is needed to be bound to this
+    // texture target for the operations to follow.
+    GLint prevBinding;
+    glGetIntegerv(mTargetBinding, &prevBinding);
+    glBindTexture(mTarget, mGLHandle);
+
+    // The default is 4-byte alignment.  This allows byte alignment when data
+    // from user buffers into textures and vice versa.
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
+    // Set the range of levels.
+    glTexParameteri(mTarget, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(mTarget, GL_TEXTURE_MAX_LEVEL, mNumLevels-1);
+
+    // Initialize with data?
+    auto texture = GetTexture();
+    if (texture->GetData())
+    {
+        if (CanAutoGenerateMipmaps())
+        {
+            // Initialize with the first mipmap level and then generate
+            // the remaining mipmaps.
+            auto data = texture->GetDataFor(0);
+            if (data)
+            {
+                LoadTextureLevel(0, data);
+                GenerateMipmaps();
+            }
+        }
+        else
+        {
+            // Initialize with each mipmap level.
+            for (int32_t level = 0; level < mNumLevels; ++level)
+            {
+                auto data = texture->GetDataFor(level);
+                if (data)
+                {
+                    LoadTextureLevel(level, data);
+                }
+            }
+        }
+    }
+
+    glBindTexture(mTarget, prevBinding);
+}
+
+bool GL46TextureSingle::Update()
+{
+    auto texture = GetTexture();
+
+    if (CanAutoGenerateMipmaps())
+    {
+        // Only update the level 0 texture and then generate the remaining
+        // mipmaps from it.
+        if (!Update(0))
+        {
+            return false;
+        }
+        GenerateMipmaps();
+    }
+    else
+    {
+        // Automatic generation of mipmaps is not enabled, so all mipmap
+        // levels must be copied to the GPU.
+        auto const numLevels = texture->GetNumLevels();
+        for (uint32_t level = 0; level < numLevels; ++level)
+        {
+            if (!Update(level))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GL46TextureSingle::CopyCpuToGpu()
+{
+    auto texture = GetTexture();
+
+    if (CanAutoGenerateMipmaps())
+    {
+        // Only update the level 0 texture and then generate the remaining
+        // mipmaps from it.
+        if (!CopyCpuToGpu(0))
+        {
+            return false;
+        }
+        GenerateMipmaps();
+    }
+    else
+    {
+        // Automatic generation of mipmaps is not enabled, so all mipmap
+        // levels must be copied to the GPU.
+        auto const numLevels = texture->GetNumLevels();
+        for (uint32_t level = 0; level < numLevels; ++level)
+        {
+            if (!CopyCpuToGpu(level))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GL46TextureSingle::CopyGpuToCpu()
+{
+    auto texture = GetTexture();
+    auto const numLevels = texture->GetNumLevels();
+    for (uint32_t level = 0; level < numLevels; ++level)
+    {
+        if (!CopyGpuToCpu(level))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool GL46TextureSingle::Update(uint32_t level)
+{
+    auto texture = GetTexture();
+    if (texture->GetUsage() != Resource::Usage::DYNAMIC_UPDATE)
+    {
+        LogError("Texture usage must be DYNAMIC_UPDATE.");
+    }
+
+    return DoCopyCpuToGpu(level);
+}
+
+bool GL46TextureSingle::CopyCpuToGpu(uint32_t level)
+{
+    if (!PreparedForCopy(GL_WRITE_ONLY))
+    {
+        return false;
+    }
+
+    return DoCopyCpuToGpu(level);
+}
+
+bool GL46TextureSingle::CopyGpuToCpu(uint32_t level)
+{
+    if (!PreparedForCopy(GL_READ_ONLY))
+    {
+        return false;
+    }
+
+    auto texture = GetTexture();
+
+    // Make sure level is valid.
+    auto const numLevels = texture->GetNumLevels();
+    if (level >= numLevels)
+    {
+        LogError("Level for Texture is out of range");
+    }
+
+    auto pixBuffer = mLevelPixelPackBuffer[level];
+    if (0 == pixBuffer)
+    {
+        LogError("Staging buffer not defined for level " + std::to_string(level));
+    }
+
+    auto data = texture->GetDataFor(level);
+    auto numBytes = texture->GetNumBytesFor(level);
+    if ((nullptr == data) || (0 == numBytes))
+    {
+        LogError("No target data for texture level " + std::to_string(level));
+    }
+
+    auto const target = GetTarget();
+    glBindTexture(target, mGLHandle);
+
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, pixBuffer);
+    glGetTexImage(target, level, mExternalFormat, mExternalType, 0);
+    glGetBufferSubData(GL_PIXEL_PACK_BUFFER, 0, numBytes, data);
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+    glBindTexture(target, 0);
+
+    return true;
+}
+
+bool GL46TextureSingle::GenerateMipmaps()
+{
+    if (CanAutoGenerateMipmaps())
+    {
+        // Save current binding for this texture target in order to restore it
+        // when done because the gl texture object is needed to be bound to
+        // this texture target for the operations to follow.
+        GLint prevBinding;
+        glGetIntegerv(mTargetBinding, &prevBinding);
+        glBindTexture(mTarget, mGLHandle);
+
+        // Generate the mipmaps.  All of this binding save and restore is not
+        // necessary in OpenGL 4.6, where glGenerateTextureMipamap(mGLHandle)
+        // can simply be used.
+        glGenerateMipmap(mTarget);
+
+        glBindTexture(mTarget, prevBinding);
+
+        return true;
+    }
+    return false;
+}
+
+bool GL46TextureSingle::DoCopyCpuToGpu(uint32_t level)
+{
+    auto texture = GetTexture();
+
+    if (CanAutoGenerateMipmaps() && (level > 0))
+    {
+        LogError("Cannot update automatically generated mipmaps in GPU");
+    }
+
+    // Make sure level is valid.
+    auto const numLevels = texture->GetNumLevels();
+    if (level >= numLevels)
+    {
+        LogError("Level for texture is out of range");
+    }
+
+    auto data = texture->GetDataFor(level);
+    auto numBytes = texture->GetNumBytesFor(level);
+    if ((nullptr == data) || (0 == numBytes))
+    {
+        LogError("No source data for texture level " + std::to_string(level));
+    }
+
+    auto const target = GetTarget();
+    glBindTexture(target, mGLHandle);
+
+    // Use staging buffer if present.
+    auto pixBuffer = mLevelPixelUnpackBuffer[level];
+    if (0 != pixBuffer)
+    {
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pixBuffer);
+        glBufferSubData(GL_PIXEL_UNPACK_BUFFER, 0, numBytes, data);
+        LoadTextureLevel(level, 0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    }
+    else
+    {
+        LoadTextureLevel(level, data);
+    }
+
+    glBindTexture(target, 0);
+
+    return true;
+}
+
+void GL46TextureSingle::CreateStaging()
+{
+    auto texture = GetTexture();
+    auto const copyType = texture->GetCopy();
+
+    auto const createPixelUnpackBuffers = 
+        (copyType == Resource::Copy::CPU_TO_STAGING) ||
+        (copyType == Resource::Copy::BIDIRECTIONAL);
+
+    auto const createPixelPackBuffers =
+        (copyType == Resource::Copy::STAGING_TO_CPU) ||
+        (copyType == Resource::Copy::BIDIRECTIONAL);
+
+    // TODO:  Determine frequency and nature of usage for this staging buffer
+    // when created by calling glBufferData.
+    GLenum usage = GL_DYNAMIC_DRAW;
+
+    if (createPixelUnpackBuffers)
+    {
+        for (int32_t level = 0; level < mNumLevels; ++level)
+        {
+            auto& pixBuffer = mLevelPixelUnpackBuffer[level];
+            if (0 == pixBuffer)
+            {
+                auto numBytes = texture->GetNumBytesFor(level);
+
+                // Create pixel buffer for staging.
+                glGenBuffers(1, &pixBuffer);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pixBuffer);
+                glBufferData(GL_PIXEL_UNPACK_BUFFER, numBytes, 0, usage);
+                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+            }
+        }
+    }
+
+    if (createPixelPackBuffers)
+    {
+        for (int32_t level = 0; level < mNumLevels; ++level)
+        {
+            auto& pixBuffer = mLevelPixelPackBuffer[level];
+            if (0 == pixBuffer)
+            {
+                auto numBytes = texture->GetNumBytesFor(level);
+
+                // Create pixel buffer for staging.
+                glGenBuffers(1, &pixBuffer);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, pixBuffer);
+                glBufferData(GL_PIXEL_PACK_BUFFER, numBytes, 0, usage);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+            }
+        }
+    }
+}
+

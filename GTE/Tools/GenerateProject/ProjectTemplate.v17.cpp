@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.1.2022.01.08
+// File Version: 8.0.2025.05.10
 
 #include "ProjectTemplate.v17.h"
 
@@ -327,3 +327,4 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
     </ClInclude>
   </ItemGroup>
 </Project>)raw";
+

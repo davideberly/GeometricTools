@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.03
+// File Version: 8.0.2025.05.10
 
 #define SIZE (2*RADIUS + 1)
 #define NUM_NEIGHBORS (SIZE * SIZE)
@@ -106,3 +106,4 @@ void minmax16(inout float4 e[NUM_ELEMENTS])
     minmax(e[3].xy, e[3].zw);    // min in e0.x, max in e3.xy
     minmax(e[3].xz, e[3].yw);    // min in e0.x, max in e3.y
 }
+

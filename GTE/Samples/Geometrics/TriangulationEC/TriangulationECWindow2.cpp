@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include "TriangulationECWindow2.h"
 
@@ -558,3 +558,4 @@ void TriangulationECWindow2::FourBoxesThreeNested(int32_t i0, int32_t i1, int32_
     triangulator(mOuter, inners);
     mTriangles = triangulator.GetTriangles();
 }
+

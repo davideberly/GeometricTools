@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>_Output\GL45\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>_Output\GL46\$(PlatformToolset)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -182,13 +182,13 @@
     <ClInclude Include="FiniteDifferencesConsole.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GTApplicationsGL45.v17.vcxproj">
+    <ProjectReference Include="..\..\GTApplicationsGL46.v17.vcxproj">
       <Project>{C67471F4-761E-4292-A811-B1FA78E60C21}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\GTGraphics.v17.vcxproj">
       <Project>{B15CB711-F650-4063-9C7C-E7A5F88139A2}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\GTGraphicsGL45.v17.vcxproj">
+    <ProjectReference Include="..\..\GTGraphicsGL46.v17.vcxproj">
       <Project>{7373CB9F-6595-4FA4-9500-88985A74F0E7}</Project>
     </ProjectReference>
   </ItemGroup>

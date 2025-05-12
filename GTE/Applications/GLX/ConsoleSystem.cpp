@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/Console.h>
@@ -42,7 +42,7 @@ void ConsoleSystem::CreateEngineAndProgramFactory(Console::Parameters& parameter
     auto engine = std::make_shared<WGLEngine>(false, saveDriverInfo);
     if (!engine->MeetsRequirements())
     {
-        LogError("OpenGL 4.5 or later is required.");
+        LogError("OpenGL 4.6 or later is required.");
     }
 
     if (engine->GetDevice())
@@ -67,7 +67,7 @@ void ConsoleSystem::CreateEngineAndProgramFactory(Console::Parameters& parameter
     auto engine = std::make_shared<GLXEngine>(true, saveDriverInfo);
     if (!engine->MeetsRequirements())
     {
-        LogError("OpenGL 4.5 or later is required.");
+        LogError("OpenGL 4.6 or later is required.");
     }
 
     if (engine->GetDisplay())
@@ -89,3 +89,4 @@ void ConsoleSystem::CreateEngineAndProgramFactory(Console::Parameters& parameter
 }
 #endif
 #endif
+

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.02.02
+// File Version: 8.0.2025.05.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/MSW/Window.h>
@@ -248,3 +248,4 @@ int32_t const WindowApplication::MODIFIER_LBUTTON = MK_LBUTTON;
 int32_t const WindowApplication::MODIFIER_MBUTTON = MK_MBUTTON;
 int32_t const WindowApplication::MODIFIER_RBUTTON = MK_RBUTTON;
 int32_t const WindowApplication::MODIFIER_SHIFT = MK_SHIFT;
+

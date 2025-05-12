@@ -164,7 +164,7 @@
     <ClCompile Include="GenerateOpenGLWrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GL45.h" />
+    <ClInclude Include="GL46.h" />
     <ClInclude Include="glcorearb.h" />
     <ClInclude Include="glext.h" />
     <ClInclude Include="glxext.h" />

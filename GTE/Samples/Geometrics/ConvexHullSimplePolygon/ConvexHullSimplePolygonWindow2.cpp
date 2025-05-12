@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 7.4.2025.02.24
+// File Version: 8.0.2025.05.10
 
 #include "ConvexHullSimplePolygonWindow2.h"
 
@@ -195,3 +195,4 @@ void ConvexHullSimplePolygonWindow2::Polygon1StartReflex()
         "The polygon must be counterclockwise.");
     mCHSP(mPolygon, mHull);
 }
+

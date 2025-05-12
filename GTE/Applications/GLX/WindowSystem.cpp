@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/WindowSystem.h>
 #include <Applications/GLX/Window.h>
-#include <Graphics/GL45/GLX/GLXEngine.h>
-#include <Graphics/GL45/GLSLProgramFactory.h>
+#include <Graphics/GL46/GLX/GLXEngine.h>
+#include <Graphics/GL46/GLSLProgramFactory.h>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 using namespace gte;
@@ -306,3 +306,4 @@ void WindowSystem::CreateFrom(Window::Parameters& parameters)
         parameters.created = false;
     }
 }
+

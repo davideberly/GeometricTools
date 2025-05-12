@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.09.25
+// File Version: 8.0.2025.05.10
 
 #include "DeformableBall.h"
 #include <Mathematics/SurfaceExtractorMC.h>
@@ -337,3 +337,4 @@ void DeformableBall::ComputeFunction(Vector3<float> const& position, float time,
     function = F + D;
     gradient = FGrad + DGrad;
 }
+

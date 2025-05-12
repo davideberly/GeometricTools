@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -14,10 +14,10 @@ using namespace gte;
 
 // NOTE: Expose only one of these.
 #if defined(GTE_USE_OPENGL)
-// TODO:  The only flag that works currently with GL45 is DO_MANUAL_SERIAL,
+// TODO:  The only flag that works currently with GL46 is DO_MANUAL_SERIAL,
 // because the OpenGL engine is not thread-safe regarding resource
 // creation (the DX11 engine is).  Add thread-safe resource creation
-// to GL45 by supporting sharing via contexts.
+// to GL46 by supporting sharing via contexts.
 #define DO_MANUAL_SERIAL
 #endif
 #if defined(GTE_USE_DIRECTX)
@@ -46,3 +46,4 @@ private:
     std::unique_ptr<VideoStreamManager> mVideoStreamManager;
     VideoStreamManager::Frame mCurrent;
 };
+

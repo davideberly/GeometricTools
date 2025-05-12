@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.07.04
+// File Version: 8.0.2025.05.10
 
 #include "Fluids2DWindow2.h"
 #include <Applications/WICFileIO.h>
@@ -111,3 +111,4 @@ bool Fluids2DWindow2::CreateOverlay()
 #endif
     return true;
 }
+

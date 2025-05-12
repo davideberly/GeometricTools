@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include "GenerateMeshUVsWindow3.h"
 #include <Applications/WICFileIO.h>
@@ -196,7 +196,7 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
     GenerateMeshUV<GPUFloat> pm(numThreads);
 #endif
 #if defined(GENERATE_MESH_UVS_GPU)
-    // Use the GPU, whether DX11/HLSL or GL45/GLSL.
+    // Use the GPU, whether DX11/HLSL or GL46/GLSL.
     GPUGenerateMeshUV<GPUFloat> pm(mEngine, mProgramFactory);
 #endif
     std::vector<Vector2<GPUFloat>> tcoords(numVertices);
@@ -267,3 +267,4 @@ void GenerateMeshUVsWindow3::CreateMeshResampled()
     mPVWMatrices.Subscribe(mMeshResampled->worldTransform,  effect->GetPVWMatrixConstant());
     mTrackBall.Attach(mMeshResampled);
 }
+

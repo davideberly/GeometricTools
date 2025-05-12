@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/GLX/Window.h>
@@ -295,3 +295,4 @@ namespace gte
     int32_t const WindowApplication::MODIFIER_RBUTTON = 0x0003;
     int32_t const WindowApplication::MODIFIER_SHIFT = 0x0001;
 }
+

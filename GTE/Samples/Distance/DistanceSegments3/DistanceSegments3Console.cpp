@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include "DistanceSegments3Console.h"
 #include <Applications/Timer.h>
@@ -738,3 +738,4 @@ void DistanceSegments3Console::GPUPerformanceTest(bool getClosest, bool testNonp
         << "numQueries = " << numQueries << ", "
         << "seconds per query = " << secondsPerQuery << std::endl;
 }
+

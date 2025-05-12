@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.2.2022.03.06
+// File Version: 8.0.2025.05.10
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/PlanarShadowEffect.h>
@@ -187,7 +187,7 @@ void PlanarShadowEffect::Draw(std::shared_ptr<GraphicsEngine> const& engine,
 
         if (mAPI == ProgramFactory::PF_GLSL)
         {
-            // Read the comments in PlanarShadowEffect.h about the GL45
+            // Read the comments in PlanarShadowEffect.h about the GL46
             // version not properly setting the stencil reference values
             // i+1 back to 0 during the mDSPass1 drawing. With an explicit
             // (and presumably expensive) clear, the drawing is then correct.
@@ -333,3 +333,4 @@ bool PlanarShadowEffect::GetProjectionMatrix(size_t i, Matrix4x4<float>& project
 
     return true;
 }
+

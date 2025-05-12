@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2022.01.06
+// File Version: 8.0.2025.05.10
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Buffer.h>
@@ -155,3 +155,4 @@ void DX11Buffer::CreateStaging(ID3D11Device* device, D3D11_BUFFER_DESC const& bf
 
     DX11Log(device->CreateBuffer(&desc, nullptr, reinterpret_cast<ID3D11Buffer**>(&mStaging)));
 }
+

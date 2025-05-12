@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 6.0.2023.08.08
+// File Version: 8.0.2025.05.10
 
 #pragma once
 
@@ -72,3 +72,4 @@ namespace gte
         std::vector<Vector3<Real>> mFaceNormals;
     };
 }
+
