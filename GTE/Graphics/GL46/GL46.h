@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// Version: 4.0.2020.01.11
+// File Version: 8.0.2025.06.08
 
 #pragma once
 
@@ -337,7 +337,86 @@ extern void InitializeWGL();
 // stored.  For no information, pass in nullptr.
 extern void InitializeOpenGL(int& major, int& minor, char const* infofile);
 
+
+// Expose this define if you want the trace of OpenGL calls recorded to a file
+// named GLTrace.txt.
+// 
+//#define GTE_ENABLE_GLTRACE
+
 // Support for generating an OpenGL function call trace.
 #include <string>
 extern void GLTraceClear();
 extern void GLTraceMessage(std::string const&);
+
+// Hide the DLL import functions by using a namespace to generate wrappers
+// that support reporting OpenGL errors and traces.
+#if defined(GTE_USE_MSWINDOWS) && defined(GTE_ENABLE_GLTRACE)
+namespace gte
+{
+    // OpenGL 1.0
+    extern void glCullFace(GLenum mode);
+    extern void glFrontFace(GLenum mode);
+    extern void glHint(GLenum target, GLenum mode);
+    extern void glLineWidth(GLfloat width);
+    extern void glPointSize(GLfloat size);
+    extern void glPolygonMode(GLenum face, GLenum mode);
+    extern void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
+    extern void glTexParameterf(GLenum target, GLenum pname, GLfloat param);
+    extern void glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params);
+    extern void glTexParameteri(GLenum target, GLenum pname, GLint param);
+    extern void glTexParameteriv(GLenum target, GLenum pname, const GLint* params);
+    extern void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const void* pixels);
+    extern void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels);
+    extern void glDrawBuffer(GLenum mode);
+    extern void glClear(GLbitfield mask);
+    extern void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+    extern void glClearStencil(GLint s);
+    extern void glClearDepth(GLdouble depth);
+    extern void glStencilMask(GLuint mask);
+    extern void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+    extern void glDepthMask(GLboolean flag);
+    extern void glDisable(GLenum cap);
+    extern void glEnable(GLenum cap);
+    extern void glFinish(void);
+    extern void glFlush(void);
+    extern void glBlendFunc(GLenum sfactor, GLenum dfactor);
+    extern void glLogicOp(GLenum opcode);
+    extern void glStencilFunc(GLenum func, GLint ref, GLuint mask);
+    extern void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass);
+    extern void glDepthFunc(GLenum func);
+    extern void glPixelStoref(GLenum pname, GLfloat param);
+    extern void glPixelStorei(GLenum pname, GLint param);
+    extern void glReadBuffer(GLenum mode);
+    extern void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels);
+    extern void glGetBooleanv(GLenum pname, GLboolean* data);
+    extern void glGetDoublev(GLenum pname, GLdouble* data);
+    extern GLenum glGetError(void);
+    extern void glGetFloatv(GLenum pname, GLfloat* data);
+    extern void glGetIntegerv(GLenum pname, GLint* data);
+    extern const GLubyte* glGetString(GLenum name);
+    extern void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, void* pixels);
+    extern void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat* params);
+    extern void glGetTexParameteriv(GLenum target, GLenum pname, GLint* params);
+    extern void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat* params);
+    extern void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint* params);
+    extern GLboolean glIsEnabled(GLenum cap);
+    extern void glDepthRange(GLdouble dnear, GLdouble dfar);
+    extern void glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+
+    // OpenGL 1.1
+    extern void glDrawArrays(GLenum mode, GLint first, GLsizei count);
+    extern void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices);
+    extern void glGetPointerv(GLenum pname, void** params);
+    extern void glPolygonOffset(GLfloat factor, GLfloat units);
+    extern void glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border);
+    extern void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+    extern void glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width);
+    extern void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+    extern void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void* pixels);
+    extern void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels);
+    extern void glBindTexture(GLenum target, GLuint texture);
+    extern void glDeleteTextures(GLsizei n, const GLuint* textures);
+    extern void glGenTextures(GLsizei n, GLuint* textures);
+    extern GLboolean glIsTexture(GLuint texture);
+}
+#endif

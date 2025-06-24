@@ -3,15 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.06.24
 
 #include "ProjectTemplate.h"
-#include <cctype>
-#include <cstdio>
-#include <cstring>
+#include <array>
+#include <cstddef>
+#include <cstdint>
 #include <fstream>
 #include <regex>
 #include <Rpc.h>
+#include <string>
 
 Template::Template(std::string const& gteRelativePath)
     :
@@ -80,7 +81,7 @@ bool Template::CreateSolution(
     std::ofstream outFile(outputName);
     if (outFile)
     {
-        unsigned char ut8tag[3] = { 0xEF, 0xBB, 0xBF };
+        std::array<uint8_t, 3> ut8tag{ 0xEF, 0xBB, 0xBF };
         for (int j = 0; j < 3; ++j)
         {
             outFile << ut8tag[j];
@@ -262,7 +263,7 @@ bool Template::CreateGL45System(
 
 std::string Template::GetGUIDString()
 {
-    UUID guid;
+    UUID guid{};
     RPC_STATUS status = UuidCreate(&guid);
     if (RPC_S_OK != status)
     {
@@ -278,7 +279,7 @@ std::string Template::GetGUIDString()
 
     std::string stringGuid(reinterpret_cast<char*>(stringUuid));
     RpcStringFree(&stringUuid);
-    for (size_t i = 0; i < stringGuid.size(); ++i)
+    for (std::size_t i = 0; i < stringGuid.size(); ++i)
     {
         stringGuid[i] = static_cast<char>(std::toupper(stringGuid[i]));
     }

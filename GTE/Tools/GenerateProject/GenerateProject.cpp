@@ -3,13 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.06.24
 
-#include <cstdlib>
-#include <iostream>
-#include "ProjectTemplate.v16.h"
 #include "ProjectTemplate.v17.h"
 #include "ProjectTemplateVSCode.h"
+#include <iostream>
+#include <string>
 
 int main(int numArguments, char* arguments[])
 {
@@ -29,18 +28,18 @@ int main(int numArguments, char* arguments[])
     if (appType != "c" && appType != "w2" && appType != "w3")
     {
         std::cout << "Application type must be c, w2 or w3." << std::endl;
-        return -2;
+        return -1;
     }
 
     int nesting = atoi(arguments[2]);
     if (nesting <= 0)
     {
         std::cout << "Nesting must be positive" << std::endl;
-        return -3;
+        return -2;
     }
 
     // Generate the relative path to GeometricTools/GTE.
-    std::string gteRelativePath;
+    std::string gteRelativePath{};
     for (int i = 0; i < nesting; ++i)
     {
         gteRelativePath += "..\\";
@@ -50,20 +49,12 @@ int main(int numArguments, char* arguments[])
     std::string projectName = arguments[3];
     bool success = false;
 
-    TemplateV16 generatev16(gteRelativePath);
-    success = generatev16.Execute(projectName, appType);
-    if (!success)
-    {
-        std::cout << "Could not create the V16 project files." << std::endl;
-        return -4;
-    }
-
     TemplateV17 generatev17(gteRelativePath);
     success = generatev17.Execute(projectName, appType);
     if (!success)
     {
         std::cout << "Could not create the V17 project files." << std::endl;
-        return -5;
+        return -3;
     }
 
     TemplateVSCode generateVSCode{};
@@ -71,7 +62,7 @@ int main(int numArguments, char* arguments[])
     if (!success)
     {
         std::cout << "Could not create the VSCode project files." << std::endl;
-        return -5;
+        return -4;
     }
 
     return 0;

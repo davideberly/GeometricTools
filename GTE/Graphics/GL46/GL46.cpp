@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.06.08
 
 #include <Graphics/GL46/GL46.h>
 #include <cassert>
@@ -129,14 +129,16 @@ static void ReportGLNullFunction(const char* glFunction)
     OpenGLReportListener(glFunction, GL_ZERO);
 }
 
-// Generate OpenGL function call traces. The results are stored in a text file
-// GLTrace.txt in the working folder of the project or the directory of the
-// executable. You can clear the trace at any time during program execution.
-// This allows you to obtain a trace for a specific block of code. You can
-// also insert messages into the trace to identify which application functions
-// were called. This allows you to determine the OpenGL functions called by
-// the application functions.
-//#define GTE_ENABLE_GLTRACE
+// Generate OpenGL function call traces. You can add GTE_ENABLE_GLTRACE to you
+// global preprocessor defines or expose the line containing this symbol in
+// GL46.h.
+// 
+// The results are stored in a text file GLTrace.txt in the working folder of
+// the project or the directory of the executable. You can clear the trace at
+// any time during program execution. This allows you to obtain a trace for a
+// specific block of code. You can also insert messages into the trace to
+// identify which application functions were called. This allows you to
+// determine the OpenGL functions called by the application functions.
 #if defined(GTE_ENABLE_GLTRACE)
 #include <array>
 #include <cstdint>
@@ -617,7 +619,7 @@ public:
     }
 
     template <typename T>
-    std::string GetArray(std::size_t numElements, T const* elements)
+    std::string GetArray(std::size_t numElements, T const* elements) const
     {
         std::string result = "{";
         for (std::size_t i = 0; i < numElements; ++i)
@@ -632,7 +634,7 @@ public:
         return result;
     }
 
-    std::string GetStringArray(std::size_t numElements, const GLchar* const* elements)
+    std::string GetStringArray(std::size_t numElements, const GLchar* const* elements) const
     {
         std::string result = "{";
         for (std::size_t i = 0; i < numElements; ++i)
@@ -647,19 +649,19 @@ public:
         return result;
     }
 
-    std::string GetString(char const* elements)
+    std::string GetString(char const* elements) const
     {
         std::string result = "{" + std::string(elements) + "}";
         return result;
     }
 
-    std::string GetString(char* elements)
+    std::string GetString(char* elements) const
     {
         std::string result = "{" + std::string(elements) + "}";
         return result;
     }
 
-    std::string GetEnumArray(std::size_t numElements, GLenum const* elements)
+    std::string GetEnumArray(std::size_t numElements, GLenum const* elements) const
     {
         std::string result = "{";
         for (std::size_t i = 0; i < numElements; ++i)
@@ -695,13 +697,700 @@ void GLTraceMessage(std::string const& message)
 }
 
 #else
+void GLTraceClear(){}
+void GLTraceMessage(std::string const&){}
+#endif
 
-void GLTraceClear()
+#if defined(GTE_USE_MSWINDOWS) && defined(GTE_ENABLE_GLTRACE)
+void gte::glCullFace(GLenum mode)
 {
+    ::glCullFace(mode);
+    ReportGLError("glCullFace");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glCullFace", "",
+        gsTrace.GetName(mode));
+#endif
 }
 
-void GLTraceMessage(std::string const&)
+void gte::glFrontFace(GLenum mode)
 {
+    ::glFrontFace(mode);
+    ReportGLError("glFrontFace");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glFrontFace", "",
+        gsTrace.GetName(mode));
+#endif
+}
+
+void gte::glHint(GLenum target, GLenum mode)
+{
+    ::glHint(target, mode);
+    ReportGLError("glHint");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glHint", "",
+        gsTrace.GetName(target), gsTrace.GetName(mode));
+#endif
+}
+
+void gte::glLineWidth(GLfloat width)
+{
+    ::glLineWidth(width);
+    ReportGLError("glLineWidth");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glLineWidth", "",
+        width);
+#endif
+}
+
+void gte::glPointSize(GLfloat size)
+{
+    ::glPointSize(size);
+    ReportGLError("glPointSize");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glPointSize", "",
+        size);
+#endif
+}
+
+void gte::glPolygonMode(GLenum face, GLenum mode)
+{
+    ::glPolygonMode(face, mode);
+    ReportGLError("glPolygonMode");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glPolygonMode", "",
+        gsTrace.GetName(face), gsTrace.GetName(mode));
+#endif
+}
+
+void gte::glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    ::glScissor(x, y, width, height);
+    ReportGLError("glScissor");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glScissor", "",
+        x, y, width, height);
+#endif
+}
+
+void gte::glTexParameterf(GLenum target, GLenum pname, GLfloat param)
+{
+    ::glTexParameterf(target, pname, param);
+    ReportGLError("glTexParameterf");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexParameterf", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), param);
+#endif
+}
+
+void gte::glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params)
+{
+    ::glTexParameterfv(target, pname, params);
+    ReportGLError("glTexParameterfv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexParameterfv", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glTexParameteri(GLenum target, GLenum pname, GLint param)
+{
+    ::glTexParameteri(target, pname, param);
+    ReportGLError("glTexParameteri");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexParameteri", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), param);
+#endif
+}
+
+void gte::glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
+{
+    ::glTexParameteriv(target, pname, params);
+    ReportGLError("glTexParameteriv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexParameteriv", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const void* pixels)
+{
+    ::glTexImage1D(target, level, internalformat, width, border, format, type, pixels);
+    ReportGLError("glTexImage1D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexImage1D", "",
+        gsTrace.GetName(target), level, gsTrace.GetName((GLenum)internalformat),
+        width, border, gsTrace.GetName(format), gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void* pixels)
+{
+    ::glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+    ReportGLError("glTexImage2D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexImage2D", "",
+        gsTrace.GetName(target), level, gsTrace.GetName((GLenum)internalformat),
+        width, height, border, gsTrace.GetName(format), gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glDrawBuffer(GLenum mode)
+{
+    ::glDrawBuffer(mode);
+    ReportGLError("glDrawBuffer");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDrawBuffer", "",
+        gsTrace.GetName(mode));
+#endif
+}
+
+void gte::glClear(GLbitfield mask)
+{
+    ::glClear(mask);
+    ReportGLError("glClear");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glClear", "",
+        mask);
+#endif
+}
+
+void gte::glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+{
+    ::glClearColor(red, green, blue, alpha);
+    ReportGLError("glClearColor");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glClearColor", "",
+        red, green, blue, alpha);
+#endif
+}
+
+void gte::glClearStencil(GLint s)
+{
+    ::glClearStencil(s);
+    ReportGLError("glClearStencil");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glClearStencil", "",
+        s);
+#endif
+}
+
+void gte::glClearDepth(GLdouble depth)
+{
+    ::glClearDepth(depth);
+    ReportGLError("glClearDepth");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glClearDepth", "",
+        depth);
+#endif
+}
+
+void gte::glStencilMask(GLuint mask)
+{
+    ::glStencilMask(mask);
+    ReportGLError("glStencilMask");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glStencilMask", "",
+        mask);
+#endif
+}
+
+void gte::glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+{
+    ::glColorMask(red, green, blue, alpha);
+    ReportGLError("glColorMask");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glColorMask", "",
+        gsTrace.GetBoolean(red), gsTrace.GetBoolean(green),
+        gsTrace.GetBoolean(blue), gsTrace.GetBoolean(alpha));
+#endif
+}
+
+void gte::glDepthMask(GLboolean flag)
+{
+    ::glDepthMask(flag);
+    ReportGLError("glDepthMask");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDepthMask", "",
+        gsTrace.GetBoolean(flag));
+#endif
+}
+
+void gte::glDisable(GLenum cap)
+{
+    ::glDisable(cap);
+    ReportGLError("glDisable");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDisable", "",
+        gsTrace.GetName(cap));
+#endif
+}
+
+void gte::glEnable(GLenum cap)
+{
+    ::glEnable(cap);
+    ReportGLError("glEnable");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glEnable", "",
+        gsTrace.GetName(cap));
+#endif
+}
+
+void gte::glFinish(void)
+{
+    ::glFinish();
+    ReportGLError("glFinish");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glFinish", "");
+#endif
+}
+
+void gte::glFlush(void)
+{
+    ::glFlush();
+    ReportGLError("glFlush");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glFlush", "");
+#endif
+}
+
+void gte::glBlendFunc(GLenum sfactor, GLenum dfactor)
+{
+    ::glBlendFunc(sfactor, dfactor);
+    ReportGLError("glBlendFunc");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glBlendFunc", "",
+        gsTrace.GetName(sfactor), gsTrace.GetName(sfactor));
+#endif
+}
+
+void gte::glLogicOp(GLenum opcode)
+{
+    ::glLogicOp(opcode);
+    ReportGLError("glLogicOp");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glLogicOp", "",
+        gsTrace.GetName(opcode));
+#endif
+}
+
+void gte::glStencilFunc(GLenum func, GLint ref, GLuint mask)
+{
+    ::glStencilFunc(func, ref, mask);
+    ReportGLError("glStencilFunc");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glStencilFunc", "",
+        gsTrace.GetName(func), ref, mask);
+#endif
+}
+
+void gte::glStencilOp(GLenum fail, GLenum zfail, GLenum zpass)
+{
+    ::glStencilOp(fail, zfail, zpass);
+    ReportGLError("glStencilOp");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glStencilOp", "",
+        gsTrace.GetName(fail), gsTrace.GetName(zfail), gsTrace.GetName(zpass));
+#endif
+}
+
+void gte::glDepthFunc(GLenum func)
+{
+    ::glDepthFunc(func);
+    ReportGLError("glDepthFunc");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDepthFunc", "",
+        gsTrace.GetName(func));
+#endif
+}
+
+void gte::glPixelStoref(GLenum pname, GLfloat param)
+{
+    ::glPixelStoref(pname, param);
+    ReportGLError("glPixelStoref");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glPixelStoref", "",
+        gsTrace.GetName(pname), param);
+#endif
+}
+
+void gte::glPixelStorei(GLenum pname, GLint param)
+{
+    ::glPixelStorei(pname, param);
+    ReportGLError("glPixelStorei");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glPixelStorei", "",
+        gsTrace.GetName(pname), param);
+#endif
+}
+
+void gte::glReadBuffer(GLenum mode)
+{
+    ::glReadBuffer(mode);
+    ReportGLError("glReadBuffer");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glReadBuffer", "",
+        gsTrace.GetName(mode));
+#endif
+}
+
+void gte::glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void* pixels)
+{
+    ::glReadPixels(x, y, width, height, format, type, pixels);
+    ReportGLError("glReadPixels");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glReadPixels", "",
+        x, y, width, height, gsTrace.GetName(format), gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glGetBooleanv(GLenum pname, GLboolean* data)
+{
+    ::glGetBooleanv(pname, data);
+    ReportGLError("glGetBooleanv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetBooleanv", "",
+        gsTrace.GetName(pname), "data");
+#endif
+}
+
+void gte::glGetDoublev(GLenum pname, GLdouble* data)
+{
+    ::glGetDoublev(pname, data);
+    ReportGLError("glGetDoublev");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetDoublev", "",
+        gsTrace.GetName(pname), "data");
+#endif
+}
+
+GLenum gte::glGetError(void)
+{
+    GLenum result = ::glGetError();
+    ReportGLError("glGetError");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetError", gsTrace.GetName(result));
+#endif
+    return result;
+}
+
+void gte::glGetFloatv(GLenum pname, GLfloat* data)
+{
+    ::glGetFloatv(pname, data);
+    ReportGLError("glGetFloatv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetFloatv", "",
+        gsTrace.GetName(pname), "data");
+#endif
+}
+
+void gte::glGetIntegerv(GLenum pname, GLint* data)
+{
+    ::glGetIntegerv(pname, data);
+    ReportGLError("glGetIntegerv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetIntegerv", "",
+        gsTrace.GetName(pname), "data");
+#endif
+}
+
+const GLubyte* gte::glGetString(GLenum name)
+{
+    GLubyte const* result = ::glGetString(name);
+    ReportGLError("glGetString");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetString", gsTrace.GetString(reinterpret_cast<char const*>(result)),
+        gsTrace.GetName(name));
+#endif
+    return result;
+}
+
+void gte::glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, void* pixels)
+{
+    ::glGetTexImage(target, level, format, type, pixels);
+    ReportGLError("glGetTexImage");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetTexImage", "",
+        gsTrace.GetName(target), level, gsTrace.GetName(format),
+        gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glGetTexParameterfv(GLenum target, GLenum pname, GLfloat* params)
+{
+    ::glGetTexParameterfv(target, pname, params);
+    ReportGLError("glGetTexParameterfv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetTexParameterfv", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glGetTexParameteriv(GLenum target, GLenum pname, GLint* params)
+{
+    ::glGetTexParameteriv(target, pname, params);
+    ReportGLError("glGetTexParameteriv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetTexParameteriv", "",
+        gsTrace.GetName(target), gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat* params)
+{
+    ::glGetTexLevelParameterfv(target,level,  pname, params);
+    ReportGLError("glGetTexLevelParameterfv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetTexLevelParameterfv", "",
+        gsTrace.GetName(target), level, gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint* params)
+{
+    ::glGetTexLevelParameteriv(target, level, pname, params);
+    ReportGLError("glGetTexLevelParameteriv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetTexLevelParameteriv", "",
+        gsTrace.GetName(target), level, gsTrace.GetName(pname), "params");
+#endif
+}
+
+GLboolean gte::glIsEnabled(GLenum cap)
+{
+    GLboolean result = ::glIsEnabled(cap);
+    ReportGLError("glIsEnabled");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glIsEnabled", gsTrace.GetBoolean(result),
+        gsTrace.GetName(cap));
+#endif
+    return result;
+}
+
+void gte::glDepthRange(GLdouble dnear, GLdouble dfar)
+{
+    ::glDepthRange(dnear, dfar);
+    ReportGLError("glDepthRange");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDepthRange", "",
+        dnear, dfar);
+#endif
+}
+
+void gte::glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    ::glViewport(x, y, width, height);
+    ReportGLError("glViewport");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glViewport", "",
+        x, y, width, height);
+#endif
+}
+
+void gte::glDrawArrays(GLenum mode, GLint first, GLsizei count)
+{
+    ::glDrawArrays(mode, first, count);
+    ReportGLError("glDrawArrays");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDrawArrays", "",
+        gsTrace.GetName(mode), first, count);
+#endif
+}
+
+void gte::glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
+{
+    ::glDrawElements(mode, count, type, indices);
+    ReportGLError("glDrawElements");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDrawElements", "",
+        gsTrace.GetName(mode), count, gsTrace.GetName(type), "indices");
+#endif
+}
+
+void gte::glGetPointerv(GLenum pname, void** params)
+{
+    ::glGetPointerv(pname, params);
+    ReportGLError("glGetPointerv");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGetPointerv", "",
+        gsTrace.GetName(pname), "params");
+#endif
+}
+
+void gte::glPolygonOffset(GLfloat factor, GLfloat units)
+{
+    ::glPolygonOffset(factor, units);
+    ReportGLError("glPolygonOffset");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glPolygonOffset", "",
+        factor, units);
+#endif
+}
+
+void gte::glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border)
+{
+    ::glCopyTexImage1D(target, level, internalformat, x, y, width, border);
+    ReportGLError("glCopyTexImage1D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glCopyTexImage1D", "",
+        gsTrace.GetName(target), level, gsTrace.GetName(internalformat),
+        x, y, width, border);
+#endif
+}
+
+void gte::glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
+{
+    ::glCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
+    ReportGLError("glCopyTexImage2D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glCopyTexImage2D", "",
+        gsTrace.GetName(target), level, gsTrace.GetName(internalformat),
+        x, y, width, height, border);
+#endif
+}
+
+void gte::glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width)
+{
+    ::glCopyTexSubImage1D(target, level, xoffset, x, y, width);
+    ReportGLError("glCopyTexSubImage1D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glCopyTexSubImage1D", "",
+        gsTrace.GetName(target), level, xoffset, x, y, width);
+#endif
+}
+
+void gte::glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    ::glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y, width, height);
+    ReportGLError("glCopyTexSubImage2D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glCopyTexSubImage2D", "",
+        gsTrace.GetName(target), level, xoffset, yoffset, x, y, width, height);
+#endif
+}
+
+void gte::glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void* pixels)
+{
+    ::glTexSubImage1D(target, level, xoffset, width, format, type, pixels);
+    ReportGLError("glTexSubImage1D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexSubImage1D", "",
+        gsTrace.GetName(target), level, xoffset, width,
+        gsTrace.GetName(format), gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels)
+{
+    ::glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+    ReportGLError("glTexSubImage2D");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glTexSubImage2D", "",
+        gsTrace.GetName(target), level, xoffset, yoffset, width, height,
+        gsTrace.GetName(format), gsTrace.GetName(type), "pixels");
+#endif
+}
+
+void gte::glBindTexture(GLenum target, GLuint texture)
+{
+    ::glBindTexture(target, texture);
+    ReportGLError("glBindTexture");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glBindTexture", "",
+        gsTrace.GetName(target), texture);
+#endif
+}
+
+void gte::glDeleteTextures(GLsizei n, const GLuint* textures)
+{
+    ::glDeleteTextures(n, textures);
+    ReportGLError("glDeleteTextures");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glDeleteTextures", "",
+        n, gsTrace.GetArray(n, textures));
+#endif
+}
+
+void gte::glGenTextures(GLsizei n, GLuint* textures)
+{
+    ::glGenTextures(n, textures);
+    ReportGLError("glGenTextures");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glGenTextures", "",
+        n, gsTrace.GetArray(n, textures));
+#endif
+}
+
+GLboolean gte::glIsTexture(GLuint texture)
+{
+    GLboolean result = ::glIsTexture(texture);
+    ReportGLError("glIsTexture");
+
+#if defined(GTE_ENABLE_GLTRACE)
+    gsTrace.Call("glIsTexture", gsTrace.GetBoolean(result),
+        texture);
+#endif
+    return result;
 }
 
 #endif
@@ -5704,7 +6393,8 @@ const GLubyte* APIENTRY glGetStringi(GLenum name, GLuint index)
     }
 
 #if defined(GTE_ENABLE_GLTRACE)
-    gsTrace.Call("glGetStringi", std::string(reinterpret_cast<char const*>(result)),
+    std::string text = (result ? reinterpret_cast<char const*>(result) : "");
+    gsTrace.Call("glGetStringi", text,
         gsTrace.GetName(name), index);
 #endif
     return result;

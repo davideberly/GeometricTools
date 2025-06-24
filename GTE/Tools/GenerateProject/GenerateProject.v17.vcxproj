@@ -185,13 +185,11 @@
   <ItemGroup>
     <ClCompile Include="GenerateProject.cpp" />
     <ClCompile Include="ProjectTemplate.cpp" />
-    <ClCompile Include="ProjectTemplate.v16.cpp" />
     <ClCompile Include="ProjectTemplate.v17.cpp" />
     <ClCompile Include="ProjectTemplateVSCode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProjectTemplate.h" />
-    <ClInclude Include="ProjectTemplate.v16.h" />
     <ClInclude Include="ProjectTemplate.v17.h" />
     <ClInclude Include="ProjectTemplateVSCode.h" />
   </ItemGroup>
