@@ -15,7 +15,7 @@
 // The algorithm computes two aligned boxes of closest points, closest[0] for
 // input box0 and closest[1] for input box1. Any choice of P0 in closest[0]
 // and any choice of P1 in closest[1] form a pair (P0,P1) of closest points.
-// One reasonable choise is
+// One reasonable choice is
 //   Vector<T, N> P0 = (closest[0].min + closest[0].max)/2;
 //   Vector<T, N> P1 = (closest[1].min + closest[1].max)/2;
 
