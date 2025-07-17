@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.07.17
 
 #pragma once
 
@@ -26,7 +26,7 @@ namespace gte
         // Because of deferred construction via Initialize(...), the
         // requirements are not known until that function is called.
         // TODO: Redesign the OpenGL system to allow for earlier versions of
-        // OpenGL if the sample application does not require OpenGL 4.5. This
+        // OpenGL if the sample application does not require OpenGL 4.6. This
         // is akin to setting the parameters.featureLevel for Direct3D 11
         // applications.
         inline bool MeetsRequirements() const

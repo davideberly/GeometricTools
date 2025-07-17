@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.07.17
 
 #include <Graphics/GL46/GTGraphicsGL46PCH.h>
 #include <Graphics/GL46/GLSLComputeProgram.h>
@@ -12,7 +12,7 @@
 #include <Graphics/GL46/GLSLShader.h>
 using namespace gte;
 
-std::string GLSLProgramFactory::defaultVersion = "#version 430";
+std::string GLSLProgramFactory::defaultVersion = "#version 460";
 std::string GLSLProgramFactory::defaultVSEntry = "main";
 std::string GLSLProgramFactory::defaultPSEntry = "main";
 std::string GLSLProgramFactory::defaultGSEntry = "main";

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.07.17
 
 #pragma once
 
@@ -19,10 +19,8 @@ namespace gte
     public:
         // The 'defaultVersion' can be set once on application initialization
         // if you want a GLSL version different from our default when
-        // constructing a program factory.  Although we require interfaces
-        // from OpenGL 4.5 on the CPU side, the GLSL required version is 4.30
-        // to support compute shaders.
-        static std::string defaultVersion;  // "#version 430"
+        // constructing a program factory.
+        static std::string defaultVersion;  // "#version 460"
         static std::string defaultVSEntry;  // "main"
         static std::string defaultPSEntry;  // "main"
         static std::string defaultGSEntry;  // "main"
