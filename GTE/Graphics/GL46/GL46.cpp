@@ -51,7 +51,7 @@ static void GetOpenGLFunction(char const* name, PGLFunction& function)
 }
 
 // Listen for glError warnings or errors.
-#define GTE_GL46_THROW_ON_REPORT_LISTENER_WARNING
+//#define GTE_GL46_THROW_ON_REPORT_LISTENER_WARNING
 static void OpenGLReportListener(char const* glFunction, GLenum code)
 {
     if (!glFunction)
@@ -69,38 +69,38 @@ static void OpenGLReportListener(char const* glFunction, GLenum code)
         {
         case GL_INVALID_ENUM:
             strCode = "GL_INVALID_ENUM";
-            return;
+            break;
         case GL_INVALID_VALUE:
             strCode = "GL_INVALID_VALUE";
-            return;
+            break;
         case GL_INVALID_OPERATION:
             strCode = "GL_INVALID_OPERATION";
-            return;
+            break;
         case GL_STACK_OVERFLOW:
             strCode = "GL_STACK_OVERFLOW";
-            return;
+            break;
         case GL_STACK_UNDERFLOW:
             strCode = "GL_STACK_UNDERFLOW";
-            return;
+            break;
         case GL_OUT_OF_MEMORY:
             strCode = "GL_OUT_OF_MEMORY";
-            return;
+            break;
         case GL_INVALID_FRAMEBUFFER_OPERATION:
             strCode = "GL_INVALID_FRAMEBUFFER_OPERATION";
-            return;
+            break;
         case GL_CONTEXT_LOST:
             strCode = "GL_CONTEXT_LOST";
-            return;
+            break;
         default:
+		    strCode = "Unknown GL error type";
+            break;
+        }
 #if defined(GTE_GL46_THROW_ON_REPORT_LISTENER_WARNING)
-        {
-            std::string message = "GL error <" + strCode + "> in " + strFunction;
-            throw std::runtime_error(std::string(__FILE__) + "(" +
-                std::string(__FUNCTION__) + "," + std::to_string(__LINE__) +
-                "): " + message + "\n");
-        }
+        std::string message = "GL error <" + strCode + "> in " + strFunction;
+        throw std::runtime_error(std::string(__FILE__) + "(" +
+            std::string(__FUNCTION__) + "," + std::to_string(__LINE__) +
+            "): " + message + "\n");
 #endif
-        }
     }
 }
 
@@ -11535,7 +11535,13 @@ void APIENTRY glGetProgramInterfaceiv(GLuint program, GLenum programInterface, G
     if (sglGetProgramInterfaceiv)
     {
         sglGetProgramInterfaceiv(program, programInterface, pname, params);
-        ReportGLError("glGetProgramInterfaceiv");
+        // TODO: For GL_TRANSFORM_FEEDBACK_BUFFER, this function succeeds on
+        // my NVIDIA graphics cards. It failed on my Intel Graphics driver
+        // on my laptop.
+        if (programInterface != GL_TRANSFORM_FEEDBACK_BUFFER)
+        {
+            ReportGLError("glGetProgramInterfaceiv");
+        }
     }
     else
     {
