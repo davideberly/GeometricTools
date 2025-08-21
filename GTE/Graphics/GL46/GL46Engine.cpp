@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.08.20
 
 #include <Graphics/GL46/GTGraphicsGL46PCH.h>
 #include <Graphics/FontArialW400H18.h>
@@ -214,9 +214,16 @@ uint64_t GL46Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
         LogError("Unknown primitive topology = " + std::to_string(type));
     }
 
-    uint32_t offset = ibuffer->GetOffset();
+    GLuint occlusionQuery = 0;
+    uint64_t numPixelsDrawn = 0;
+    if (mAllowOcclusionQuery)
+    {
+        occlusionQuery = BeginOcclusionQuery();
+    }
+
     if (ibuffer->IsIndexed())
     {
+        uint32_t offset = ibuffer->GetOffset();
         void const* data = reinterpret_cast<void const*>(static_cast<size_t>(indexSize) * static_cast<size_t>(offset));
         glDrawRangeElements(topology, 0, numActiveVertices - 1,
             static_cast<GLsizei>(numActiveIndices), indexType, data);
@@ -233,7 +240,46 @@ uint64_t GL46Engine::DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer cons
         glDrawArrays(topology, static_cast<GLint>(vertexOffset),
             static_cast<GLint>(numActiveVertices));
     }
-    return 0;
+
+    if (mAllowOcclusionQuery)
+    {
+        numPixelsDrawn = EndOcclusionQuery(occlusionQuery);
+    }
+
+    return numPixelsDrawn;
+}
+
+GLuint GL46Engine::BeginOcclusionQuery()
+{
+    GLuint occlusionQuery = 0;
+    glGenQueries(1, &occlusionQuery);
+    if (occlusionQuery > 0)
+    {
+        glBeginQuery(GL_SAMPLES_PASSED, occlusionQuery);
+        return occlusionQuery;
+    }
+
+    LogError("glGenQueries failed.");
+}
+
+uint64_t GL46Engine::EndOcclusionQuery(GLuint occlusionQuery)
+{
+    if (occlusionQuery > 0)
+    {
+        glEndQuery(GL_SAMPLES_PASSED);
+
+        GLint resultAvailable = GL_FALSE;
+        while (!resultAvailable)
+        {
+            glGetQueryObjectiv(occlusionQuery, GL_QUERY_RESULT_AVAILABLE, &resultAvailable);
+        }
+        GLint samplesPassed = 0;
+        glGetQueryObjectiv(occlusionQuery, GL_QUERY_RESULT, &samplesPassed);
+        glDeleteQueries(1, &occlusionQuery);
+        return static_cast<uint64_t>(samplesPassed);
+    }
+
+    LogError("No query provided.");
 }
 
 bool GL46Engine::EnableShaders(std::shared_ptr<VisualEffect> const& effect, GLuint program)

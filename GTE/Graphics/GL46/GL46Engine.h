@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.07.17
+// File Version: 8.0.2025.08.20
 
 #pragma once
 
@@ -54,6 +54,8 @@ namespace gte
     private:
         // Support for drawing.
         uint64_t DrawPrimitive(VertexBuffer const* vbuffer, IndexBuffer const* ibuffer);
+        GLuint BeginOcclusionQuery();
+        uint64_t EndOcclusionQuery(GLuint occlusionQuery);
 
         // Support for enabling and disabling resources used by shaders.
         bool EnableShaders(std::shared_ptr<VisualEffect> const& effect, GLuint program);
