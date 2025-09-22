@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.09.22
 
 #pragma once
 
@@ -993,10 +993,6 @@ namespace std
     {
         return (gte::BSRational<UInteger>)std::tanh((double)x);
     }
-
-    // Type trait that says BSRational is a signed type.
-    template <typename UInteger>
-    struct is_signed<gte::BSRational<UInteger>> : true_type {};
 }
 
 namespace gte
