@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.10.05
 
 #pragma once
 
@@ -511,7 +511,7 @@ namespace gte
                 // If you reach this assert, there is a good chance that you
                 // have two inner polygons that share a vertex or an edge.
                 LogAssert(
-                    v0min >= 0 && v1min >= 0,
+                    v0min != invalid && v1min != invalid ,
                     "Is this an invalid nested polygon?");
 
                 // Select mPoints[outer[v0min]] or mPoints[outer[v1min]] that
