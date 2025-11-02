@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.01
 
 #pragma once
 
@@ -228,10 +228,7 @@ namespace gte
             {
                 auto const& edge = element.second;
 
-                // VS 2019 16.8.1 generates LNT1006 "Local variable is not
-                // initialized." Incorrect, because the default constructor
-                // initializes all the members.
-                SphericalArc arc;
+                SphericalArc arc{};
                 arc.nIndex[0] = mTriToNormal[edge->T[0]];
                 arc.nIndex[1] = mTriToNormal[edge->T[1]];
                 arc.separation = 1;
@@ -279,11 +276,7 @@ namespace gte
                     {
                         if (i1 < numTriangles)
                         {
-                            // VS 2019 16.8.1 generates LNT1006 "Local
-                            // variable is not initialized." Incorrect,
-                            // because the default constructor initializes
-                            // all the members.
-                            SphericalArc arc;
+                            SphericalArc arc{};
                             arc.nIndex[0] = mTriToNormal[tAdjSorted[i0]];
                             arc.nIndex[1] = mTriToNormal[tAdjSorted[i1]];
                             arc.separation = separation;

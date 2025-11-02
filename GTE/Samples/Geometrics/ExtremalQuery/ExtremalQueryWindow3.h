@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.01
 
 #pragma once
 
 // Expose this for the BSP-based query.  Comment it out for the
 // projection-based query.
-//#define USE_BSP_QUERY
+#define USE_BSP_QUERY
 
 // Uncomment this for timing information.
 //#define MEASURE_TIMING_OF_QUERY

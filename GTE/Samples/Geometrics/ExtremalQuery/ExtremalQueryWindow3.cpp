@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.01
 
 #include "ExtremalQueryWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -140,16 +140,15 @@ void ExtremalQueryWindow3::CreateConvexPolyhedron(int32_t numVertices)
     ConvexHull3<float> ch3;
     ch3(vertices, 0);
 
-    auto const& triangles = ch3.GetHull();
-    int32_t numIndices = 3 * static_cast<int32_t>(triangles.size());
-    std::vector<int32_t> indices(numIndices);
+    auto const& szIndices = ch3.GetHull();
+    std::vector<int32_t> indices(szIndices.size());
     size_t k = 0;
-    for (auto index : triangles)
+    for (auto index : szIndices)
     {
         indices[k++] = static_cast<int32_t>(index);
     }
-    mConvexPolyhedron = std::make_unique<Polyhedron3<float>>(vertexPool, numIndices,
-        indices.data(), true);
+    mConvexPolyhedron = std::make_unique<Polyhedron3<float>>(vertexPool,
+        static_cast<int32_t>(indices.size()), indices.data(), true);
 
 #ifdef USE_BSP_QUERY
     mExtremalQuery = std::make_unique<ExtremalQuery3BSP<float>>(*mConvexPolyhedron);
