@@ -1,0 +1,4 @@
+@PACKAGE_INIT@
+
+# Include the automatically generated targets file
+include("${CMAKE_CURRENT_LIST_DIR}/gtmathematicsTargets.cmake")
