@@ -1743,5 +1743,11 @@
     <ClInclude Include="Mathematics\SampleCircularArc.h">
       <Filter>CurvesSurfacesVolumes</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\MinimumVolumeBox3Rational.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\MinimumVolumeBox3FloatingPoint.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

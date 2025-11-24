@@ -422,6 +422,8 @@
     <ClInclude Include="Mathematics\Minimize1.h" />
     <ClInclude Include="Mathematics\MinimizeN.h" />
     <ClInclude Include="Mathematics\MinimumSpanningTree.h" />
+    <ClInclude Include="Mathematics\MinimumVolumeBox3FloatingPoint.h" />
+    <ClInclude Include="Mathematics\MinimumVolumeBox3Rational.h" />
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
     <ClInclude Include="Mathematics\NaturalCubicSpline.h" />
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h" />
