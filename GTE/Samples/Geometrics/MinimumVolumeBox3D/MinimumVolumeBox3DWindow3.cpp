@@ -3,14 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.24
 
 #include "MinimumVolumeBox3DWindow3.h"
 #include <Applications/Timer.h>
 #include <Graphics/MeshFactory.h>
 #include <Graphics/VertexColorEffect.h>
 #include <Mathematics/ArbitraryPrecision.h>
-#include <Mathematics/MinimumVolumeBox3.h>
+#include <Mathematics/MinimumVolumeBox3Rational.h>
 #include <iostream>
 #include <random>
 #include <thread>
@@ -109,7 +109,7 @@ void MinimumVolumeBox3DWindow3::CreateScene()
     // computed internally.
     uint32_t const numThreads = 4;
     size_t const lgMaxSample = 5;
-    MinimumVolumeBox3<float, false> mvb3(numThreads);
+    MinimumVolumeBox3<float, std::int32_t, MVB3Rational> mvb3(numThreads);
     OrientedBox3<float> minBox;
     float volume;
     mvb3(NUM_POINTS, mVertices.data(), lgMaxSample, minBox, volume);

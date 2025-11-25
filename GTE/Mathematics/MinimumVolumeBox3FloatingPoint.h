@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.1.2025.11.23
+// File Version: 8.1.2025.11.24
 
 #pragma once
 #include <Mathematics/Logger.h>
@@ -221,27 +221,27 @@ namespace gte
         {
             Edge()
                 :
-                V{ invalidIndex, invalidIndex },
-                T{ invalidIndex, invalidIndex }
+                v{ invalidIndex, invalidIndex },
+                t{ invalidIndex, invalidIndex }
             {
             }
-            std::array<std::size_t, 2> V;
-            std::array<std::size_t, 2> T;
+            std::array<std::size_t, 2> v;
+            std::array<std::size_t, 2> t;
         };
 
         struct Triangle
         {
             Triangle()
                 :
-                V{ invalidIndex, invalidIndex },
-                E{ invalidIndex, invalidIndex },
-                T{ invalidIndex, invalidIndex }
+                v{ invalidIndex, invalidIndex },
+                e{ invalidIndex, invalidIndex },
+                t{ invalidIndex, invalidIndex }
             {
             }
 
-            std::array<std::size_t, 3> V;
-            std::array<std::size_t, 3> E;
-            std::array<std::size_t, 3> T;
+            std::array<std::size_t, 3> v;
+            std::array<std::size_t, 3> e;
+            std::array<std::size_t, 3> t;
         };
 
         // Information about candidates for the minimum volume box and about
@@ -427,7 +427,7 @@ namespace gte
                 edgeIndexMap.emplace(element.second.get(), index);
                 for (std::size_t j = 0; j < 2; ++j)
                 {
-                    mEdges[index].V[j] = static_cast<std::size_t>(element.second->V[j]);
+                    mEdges[index].v[j] = static_cast<std::size_t>(element.second->V[j]);
                 }
                 ++index;
             }
@@ -439,7 +439,7 @@ namespace gte
                 triangleIndexMap.emplace(element.second.get(), index);
                 for (std::size_t j = 0; j < 3; ++j)
                 {
-                    mTriangles[index].V[j] = static_cast<std::size_t>(element.second->V[j]);
+                    mTriangles[index].v[j] = static_cast<std::size_t>(element.second->V[j]);
                 }
                 ++index;
             }
@@ -451,7 +451,7 @@ namespace gte
                 {
                     auto triangleIndex = element.second->T[j];
                     auto tIter = triangleIndexMap.find(triangleIndex);
-                    mEdges[index].T[j] = tIter->second;
+                    mEdges[index].t[j] = tIter->second;
                 }
                 ++index;
             }
@@ -463,13 +463,13 @@ namespace gte
                 {
                     auto edgeIndex = element.second->E[j];
                     auto eIter = edgeIndexMap.find(edgeIndex);
-                    mTriangles[index].E[j] = eIter->second;
+                    mTriangles[index].e[j] = eIter->second;
                 }
                 for (std::size_t j = 0; j < 3; ++j)
                 {
                     auto triangleIndex = element.second->T[j];
                     auto tIter = triangleIndexMap.find(triangleIndex);
-                    mTriangles[index].T[j] = tIter->second;
+                    mTriangles[index].t[j] = tIter->second;
                 }
                 ++index;
             }
@@ -565,7 +565,7 @@ namespace gte
             for (std::size_t i = 0; i < mTriangles.size(); ++i)
             {
                 auto const& tri = mTriangles[i];
-                std::size_t v0 = tri.V[0], v1 = tri.V[1], v2 = tri.V[2];
+                std::size_t v0 = tri.v[0], v1 = tri.v[1], v2 = tri.v[2];
                 NVector3 edge10 = mNVertices[v1] - mNVertices[v0];
                 NVector3 edge20 = mNVertices[v2] - mNVertices[v0];
                 mNNormals[i] = Cross(edge20, edge10);
@@ -618,8 +618,8 @@ namespace gte
             // the same direction; that is, we cannot have N1 = -N0.
             for (auto const& edge : mEdges)
             {
-                auto const& N0 = mNNormals[edge.T[0]];
-                auto const& N1 = mNNormals[edge.T[1]];
+                auto const& N0 = mNNormals[edge.t[0]];
+                auto const& N1 = mNNormals[edge.t[1]];
                 auto N0xN1 = Cross(N0, N1);
                 if (N0xN1 == NVector3::Zero())
                 {
@@ -630,8 +630,8 @@ namespace gte
                     // simple to implement by not having to keep track of the
                     // bookkeeping while traversinh a patch of coplanar
                     // vertices.
-                    RemoveAdjacent(edge.V[0], edge.V[1]);
-                    RemoveAdjacent(edge.V[1], edge.V[0]);
+                    RemoveAdjacent(edge.v[0], edge.v[1]);
+                    RemoveAdjacent(edge.v[1], edge.v[0]);
                 }
             }
 
@@ -744,10 +744,10 @@ namespace gte
             candidate.axis[2] = Cross(candidate.axis[0], candidate.axis[1]);
 
             TVector3 pmin{}, pmax{};
-            candidate.minSupportIndex[0] = mEdges[candidate.edgeIndex[0]].V[0];
+            candidate.minSupportIndex[0] = mEdges[candidate.edgeIndex[0]].v[0];
             pmin[0] = Dot(candidate.axis[0], mTVertices[candidate.minSupportIndex[0]]);
             candidate.maxSupportIndex[0] = GetExtreme(candidate.axis[0], pmax[0]);
-            candidate.minSupportIndex[1] = mEdges[candidate.edgeIndex[1]].V[0];
+            candidate.minSupportIndex[1] = mEdges[candidate.edgeIndex[1]].v[0];
             pmin[1] = Dot(candidate.axis[1], mTVertices[candidate.minSupportIndex[1]]);
             candidate.maxSupportIndex[1] = GetExtreme(candidate.axis[1], pmax[1]);
             candidate.axis[2] = Cross(candidate.axis[0], candidate.axis[1]);
@@ -784,10 +784,10 @@ namespace gte
             Edge const& edge1 = mEdges[candidate.edgeIndex[1]];
             candidate.edge[0] = edge0;
             candidate.edge[1] = edge1;
-            candidate.N[0] = mTNormals[edge0.T[0]];
-            candidate.N[1] = mTNormals[edge0.T[1]];
-            candidate.M[0] = mTNormals[edge1.T[0]];
-            candidate.M[1] = mTNormals[edge1.T[1]];
+            candidate.N[0] = mTNormals[edge0.t[0]];
+            candidate.N[1] = mTNormals[edge0.t[1]];
+            candidate.M[0] = mTNormals[edge1.t[0]];
+            candidate.M[1] = mTNormals[edge1.t[1]];
             candidate.f00 = Dot(candidate.N[0], candidate.M[0]);
             candidate.f10 = Dot(candidate.N[1], candidate.M[0]);
             candidate.f01 = Dot(candidate.N[0], candidate.M[1]);
@@ -936,7 +936,6 @@ namespace gte
         // vertices.
         Candidate mMinimumVolumeObject;
 
-#pragma region LevelCurve
     protected:
         // The maximum sample index used to search each level curve for
         // non-face-supporting boxes (mMaxSample + 1 values). The samples are
@@ -2432,5 +2431,4 @@ namespace gte
             // Nothing to do.
         }
     };
-#pragma endregion
 }

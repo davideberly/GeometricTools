@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.24
 
 #pragma once
 
@@ -19,11 +19,11 @@
 
 #include <Mathematics/Logger.h>
 #include <Mathematics/LexicoArray2.h>
+#include <Mathematics/TypeTraits.h>
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <type_traits>
 #include <vector>
 
 namespace gte
@@ -236,42 +236,39 @@ namespace gte
     private:
         // Support for copying source to target or to set target to zero.  If
         // source is nullptr, then target is set to zero; otherwise source is
-        // copied to target.  This function hides the type traits used to
-        // determine whether Real is native floating-point or otherwise (such
-        // as BSNumber or BSRational).
-        void Set(int32_t numElements, Real const* source, Real* target) const
+        // copied to target.
+        template <typename Dummy = Real>
+        typename std::enable_if<!is_arbitrary_precision<Dummy>::value, void>::type
+        Set(int32_t numElements, Real const* source, Real* target) const
         {
-            if (std::is_floating_point<Real>() == std::true_type())
+            size_t numBytes = numElements * sizeof(Real);
+            if (source)
             {
-                // Fast set/copy for native floating-point.
-                size_t numBytes = numElements * sizeof(Real);
-                if (source)
+                std::memcpy(target, source, numBytes);
+            }
+            else
+            {
+                std::memset(target, 0, numBytes);
+            }
+        }
+
+        template <typename Dummy = Real>
+        typename std::enable_if<is_arbitrary_precision<Dummy>::value, void>::type
+        Set(int32_t numElements, Real const* source, Real* target) const
+        {
+            if (source)
+            {
+                for (int32_t i = 0; i < numElements; ++i)
                 {
-                    std::memcpy(target, source, numBytes);
-                }
-                else
-                {
-                    std::memset(target, 0, numBytes);
+                    target[i] = source[i];
                 }
             }
             else
             {
-                // The inputs are not std containers, so ensure assignment works
-                // correctly.
-                if (source)
+                Real const zero = (Real)0;
+                for (int32_t i = 0; i < numElements; ++i)
                 {
-                    for (int32_t i = 0; i < numElements; ++i)
-                    {
-                        target[i] = source[i];
-                    }
-                }
-                else
-                {
-                    Real const zero = (Real)0;
-                    for (int32_t i = 0; i < numElements; ++i)
-                    {
-                        target[i] = zero;
-                    }
+                    target[i] = zero;
                 }
             }
         }

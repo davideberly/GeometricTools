@@ -31,10 +31,10 @@ Compilers 2024/2025.
 
 On Ubuntu 24.04.1 LTS, the code is maintained using Visual Studio Code
 1.85.1 and CMake 3.28.1, NVIDIA graphics drivers, OpenGL 4.6 and
-gcc 13.2.0.
+gcc 13.3.0.
 
 On Fedora 42, the code is maintained using Visual Studio Code 1.92.1
-and CMake 3.28.2, NVIDIA graphics drivers, OpenGL 4.6 and gcc 15.1.1.
+and CMake 3.28.2, NVIDIA graphics drivers, OpenGL 4.6 and gcc 15.2.1.
 
 On openSUSE Leap 15.5, the code is maintained using Visual Studio Code 1.85.1
 and CMake 3.20.4, NVIDIA graphics drivers, OpenGL 4.6 and gcc 7.5.0.
@@ -44,7 +44,7 @@ and CMake 3.20.4, NVIDIA graphics drivers, OpenGL 4.6 and gcc 7.5.0.
 The repository contains many sample applications to illustrate some
 features of the engine. Top-level solutions/makefiles exist to build
 everything in the repository. Please read the
-[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte8p0InstallationRelease.pdf)
+[Installation and Release Notes](https://github.com/davideberly/GeometricTools/blob/master/GTE/Gte8p1InstallationRelease.pdf)
 to understand what is expected of your development environment.
   
 ## Pull Requests
