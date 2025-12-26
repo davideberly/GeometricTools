@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.12.26
 
 #pragma once
 
@@ -634,8 +634,8 @@ namespace gte
             }
 
             // (U2, -D)
-            lower = (s5p >= zero ? -E[1] : -E[1] - s5p / D[2]);
-            upper = (s6p <= zero ? +E[1] : +E[1] - s6p / D[2]);
+            lower = (s5p >= zero ? -E[1] : -E[1] - s5p / D[1]);
+            upper = (s6p >= zero ? +E[1] : +E[1] - s6p / D[1]);
             if (lower <= upper)
             {
                 if (s5p >= zero)
