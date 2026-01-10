@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.01.03
 
 #include "IntersectTriangleBoxWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -29,8 +29,8 @@ IntersectTriangleBoxWindow3::IntersectTriangleBoxWindow3(Parameters& parameters)
     mEngine->SetBlendState(mBlendState);
 
     CreateScene();
-    InitializeCamera(60.0f, GetAspectRatio(), 0.1f, 100.0f, 0.01f, 0.01f,
-        { 0.0f, 0.0f, -8.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
+    InitializeCamera(60.0f, GetAspectRatio(), 0.01f, 1000.0f, 0.001f, 0.001f,
+        { 0.0f, 0.0f, -2.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
 
     DoIntersectionQuery();
 }
@@ -66,7 +66,7 @@ void IntersectTriangleBoxWindow3::OnIdle()
 
 bool IntersectTriangleBoxWindow3::OnCharPress(uint8_t key, int32_t x, int32_t y)
 {
-    float const delta = 0.1f;
+    float const delta = 0.01f;
 
     switch (key)
     {
@@ -146,11 +146,11 @@ void IntersectTriangleBoxWindow3::CreateScene()
     mBox.axis[0] = { 1.0f, 0.0f, 0.0f };
     mBox.axis[1] = { 0.0f, 1.0f, 0.0f };
     mBox.axis[2] = { 0.0f, 0.0f, 1.0f };
-    mBox.extent = { 1.0f, 2.0f, 3.0f };
+    mBox.extent = { 0.125f, 0.375f, 0.625f };
 
-    mTriangle.v[0] = { 2.0f, 0.0f, 0.0f };
-    mTriangle.v[1] = { 2.0f, 1.0f, 0.0f };
-    mTriangle.v[2] = { 2.0f, 0.0f, 1.0f };
+    mTriangle.v[0] = { 0.5f, 0.0f, 0.0f };
+    mTriangle.v[1] = { 1.0f, 0.5f, 0.0f };
+    mTriangle.v[2] = { 1.5f, 0.5f, 0.5f };
 
     // The mesh objects use constant color; only vertex position is required.
     VertexFormat vformat;
@@ -327,4 +327,3 @@ void IntersectTriangleBoxWindow3::DoIntersectionQuery()
     }
     mPVWMatrices.Update();
 }
-

@@ -12,7 +12,7 @@
 // The find-intersection query clips the triangle against the faces of
 // the oriented box.
 
-#include <Mathematics/OrientedBox.h>
+#include <Mathematics/AlignedBox.h>
 #include <Mathematics/IntrTriangle3CanonicalBox3.h>
 #include <cstddef>
 #include <cstdint>
@@ -20,7 +20,7 @@
 namespace gte
 {
     template <typename T>
-    class TIQuery<T, Triangle3<T>, OrientedBox3<T>>
+    class TIQuery<T, Triangle3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
@@ -34,39 +34,30 @@ namespace gte
             bool intersect;
         };
 
-        Result operator()(Triangle3<T> const& triangle, OrientedBox3<T> const& box)
+        Result operator()(Triangle3<T> const& triangle, AlignedBox3<T> const& box)
         {
             Result result{};
 
-            // Transform the oriented box to a canonical box. Transform the
-            // triangle vertices accordingly.
-            CanonicalBox3<T> canonicalBox(box.extent);
+            // Transform the aligned box to a canonical box. Transform the
+            // vertices accordingly.
+            T const half = static_cast<T>(0.5);
+            CanonicalBox3<T> canonicalBox = half * (box.max - box.min);
+            Vector3<T> alignedBoxCenter = half * (box.max + box.min);
 
             Triangle3<T> transformedTriangle{};
-            for (std::size_t j = 0; j < 3; ++j)
+            for (std::size_t i = 0; i < 3; ++i)
             {
-                Vector3<T> diff = triangle.v[j] - box.center;
-                for (std::int32_t i = 0; i < 3; ++i)
-                {
-                    transformedTriangle.v[j][i] = Dot(box.axis[i], diff);
-                }
+                transformedTriangle.v[i] = triangle.v[i] - alignedBoxCenter;
             }
 
-            // Execute the test-intersection query.
-            TCQuery tcQuery{};
-            TCResult tcResult = tcQuery(transformedTriangle, canonicalBox);
-            result.intersect = tcResult.intersect;
-
+            TIQuery<T, Triangle3<T>, CanonicalBox3<T>> query{};
+            result.intersect = query(transformedTriangle, canonicalBox).intersect;
             return result;
         }
-
-    private:
-        using TCQuery = TIQuery<T, Triangle3<T>, CanonicalBox3<T>>;
-        using TCResult = typename TCQuery::Result;
     };
 
     template <typename T>
-    class FIQuery<T, Triangle3<T>, OrientedBox3<T>>
+    class FIQuery<T, Triangle3<T>, AlignedBox3<T>>
     {
     public:
         struct Result
@@ -82,7 +73,7 @@ namespace gte
             std::vector<std::vector<Vector3<T>>> outsidePolygons;
         };
 
-        Result operator()(Triangle3<T> const& triangle, OrientedBox3<T> const& box)
+        Result operator()(Triangle3<T> const& triangle, AlignedBox3<T> const& box)
         {
             Result result{};
 
@@ -97,19 +88,22 @@ namespace gte
 
             // Create planes for the box faces that with normals that point
             // inside the box.
+            T const half = static_cast<T>(0.5);
+            Vector3<T> center = half * (box.max + box.min);
+            Vector3<T> extent = half * (box.max - box.min);
             std::array<Plane3<T>, 6> planes{};
-            planes[0].normal = -box.axis[0];
-            planes[0].constant = Dot(planes[0].normal, box.center) - box.extent[0];
-            planes[1].normal = -box.axis[1];
-            planes[1].constant = Dot(planes[1].normal, box.center) - box.extent[1];
-            planes[2].normal = -box.axis[2];
-            planes[2].constant = Dot(planes[2].normal, box.center) - box.extent[2];
-            planes[3].normal = +box.axis[0];
-            planes[3].constant = Dot(planes[3].normal, box.center) - box.extent[0];
-            planes[4].normal = +box.axis[1];
-            planes[4].constant = Dot(planes[4].normal, box.center) - box.extent[1];
-            planes[5].normal = +box.axis[2];
-            planes[5].constant = Dot(planes[5].normal, box.center) - box.extent[2];
+            planes[0].normal = -Vector3<T>::Unit(0);
+            planes[0].constant = Dot(planes[0].normal, center) - extent[0];
+            planes[1].normal = -Vector3<T>::Unit(1);
+            planes[1].constant = Dot(planes[1].normal, center) - extent[1];
+            planes[2].normal = -Vector3<T>::Unit(2);
+            planes[2].constant = Dot(planes[2].normal, center) - extent[2];
+            planes[3].normal = +Vector3<T>::Unit(0);
+            planes[3].constant = Dot(planes[3].normal, center) - extent[0];
+            planes[4].normal = +Vector3<T>::Unit(1);
+            planes[4].constant = Dot(planes[4].normal, center) - extent[1];
+            planes[5].normal = +Vector3<T>::Unit(2);
+            planes[5].constant = Dot(planes[5].normal, center) - extent[2];
 
             for (auto const& plane : planes)
             {
@@ -153,4 +147,3 @@ namespace gte
         using PPResult = typename PPQuery::Result;
     };
 }
-

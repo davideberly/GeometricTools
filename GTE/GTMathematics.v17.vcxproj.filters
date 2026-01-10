@@ -1749,5 +1749,11 @@
     <ClInclude Include="Mathematics\MinimumVolumeBox3FloatingPoint.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
+    <ClInclude Include="Mathematics\IntrTriangle3CanonicalBox3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\IntrTriangle3AlignedBox3.h">
+      <Filter>Intersection\3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

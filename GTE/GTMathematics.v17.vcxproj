@@ -394,6 +394,8 @@
     <ClInclude Include="Mathematics\IntrSphere3Triangle3.h" />
     <ClInclude Include="Mathematics\IntrTetrahedron3Tetrahedron3.h" />
     <ClInclude Include="Mathematics\IntrTriangle2Triangle2.h" />
+    <ClInclude Include="Mathematics\IntrTriangle3AlignedBox3.h" />
+    <ClInclude Include="Mathematics\IntrTriangle3CanonicalBox3.h" />
     <ClInclude Include="Mathematics\IntrTriangle3Cylinder3.h" />
     <ClInclude Include="Mathematics\IntrTriangle3OrientedBox3.h" />
     <ClInclude Include="Mathematics\IntrTriangle3Triangle3.h" />
