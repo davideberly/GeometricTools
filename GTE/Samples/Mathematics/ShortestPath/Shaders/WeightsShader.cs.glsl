@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -61,4 +61,5 @@ void main()
     float weight3 = 0.70710678f*(height00 + height11);
     imageStore(weights, dt, vec4(height00, weight1, weight2, weight3));
 }
+
 

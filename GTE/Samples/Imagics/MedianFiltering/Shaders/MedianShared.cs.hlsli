@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -106,4 +106,5 @@ void minmax16(inout float4 e[NUM_ELEMENTS])
     minmax(e[3].xy, e[3].zw);    // min in e0.x, max in e3.xy
     minmax(e[3].xz, e[3].yw);    // min in e0.x, max in e3.y
 }
+
 

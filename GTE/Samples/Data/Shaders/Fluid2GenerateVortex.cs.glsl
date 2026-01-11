@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -34,4 +34,5 @@ void main()
     vec2 vortexVelocity = magnitude * vec2(diff.y, -diff.x);
     imageStore(outVelocity, c, vec4(imageLoad(inVelocity, c).xy + vortexVelocity, 0.0f, 0.0f));
 };
+
 

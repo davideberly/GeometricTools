@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -16132,4 +16132,5 @@ std::map<std::uint32_t, std::string> GLTrace::msName
 #define GL_CONTEXT_FLAG_NO_ERROR_BIT 0x00000008
 
 #endif
+
 

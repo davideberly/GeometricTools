@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -90,4 +90,5 @@ GLenum const GL46InputLayout::msChannelType[] =
     GL_UNSIGNED_INT_2_10_10_10_REV, // DF_UINT_10_10_2
     GL_UNSIGNED_INT_10F_11F_11F_REV // DF_FLOAT_11_11_10
 };
+
 

@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -111,4 +111,5 @@ UINT constexpr D3D11_CPU_ACCESS_READ_WRITE = (D3D11_CPU_ACCESS_READ | D3D11_CPU_
 
 // D3D11_QUERY_MISC_FLAG
 UINT constexpr D3D11_QUERY_MISC_NONE = 0;
+
 

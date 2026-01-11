@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -1352,4 +1352,5 @@ std::array<GLSLReflection::EnumMap const, 113> GLSLReflection::msEnumMap =
     EnumMap(GL_UNSIGNED_INT_ATOMIC_COUNTER, "GL_UNSIGNED_INT_ATOMIC_COUNTER", "atomic_uint", 0, 0, 0),
     EnumMap(0, "", "", 0, 0, 0)
 };
+
 

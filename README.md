@@ -33,7 +33,7 @@ On Ubuntu 24.04.1 LTS, the code is maintained using Visual Studio Code
 1.85.1 and CMake 3.28.1, NVIDIA graphics drivers, OpenGL 4.6 and
 gcc 13.3.0.
 
-On Fedora 42, the code is maintained using Visual Studio Code 1.92.1
+On Fedora 43, the code is maintained using Visual Studio Code 1.92.1
 and CMake 3.28.2, NVIDIA graphics drivers, OpenGL 4.6 and gcc 15.2.1.
 
 On openSUSE Leap 15.5, the code is maintained using Visual Studio Code 1.85.1

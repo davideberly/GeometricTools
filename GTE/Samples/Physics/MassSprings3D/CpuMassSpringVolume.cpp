@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -334,5 +334,6 @@ int32_t CpuMassSpringVolume::GetIndex(int32_t c, int32_t r, int32_t s) const
 {
     return c + mNumColumns * (r + mNumRows * s);
 }
+
 
 

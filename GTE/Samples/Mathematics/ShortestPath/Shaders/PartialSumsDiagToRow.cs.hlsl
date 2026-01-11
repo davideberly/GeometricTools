@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -30,4 +30,5 @@ void CSMain(int2 t : SV_GroupThreadID)
     float input1 = sum[int2(TWO_P * t.x + TWO_PM1 + t.y, TWO_P * t.x + TWO_PM1)];
     sum[int2(TWO_P * t.x + TWO_PM1 + t.y, TWO_P * t.x)] = input0 + input1;
 }
+
 

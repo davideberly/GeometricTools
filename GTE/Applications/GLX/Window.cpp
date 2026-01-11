@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -295,4 +295,5 @@ namespace gte
     int32_t const WindowApplication::MODIFIER_RBUTTON = 0x0003;
     int32_t const WindowApplication::MODIFIER_SHIFT = 0x0001;
 }
+
 

@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -335,4 +335,5 @@ double SymmetricEigensolver3x3Console::Determinant(std::array<std::array<double,
     double c02 = evec[1][0] * evec[2][1] - evec[1][1] * evec[2][0];
     return evec[0][0] * c00 - evec[0][1] * c01 + evec[0][2] * c02;
 }
+
 

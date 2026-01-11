@@ -1,5 +1,5 @@
 // David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2025
+// Copyright (c) 1998-2026
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
@@ -2297,4 +2297,5 @@ float FontArialW400H16::msCharacterData[257] =
 0.971626f, 0.975201f, 0.978776f, 0.982350f, 0.985925f, 0.989500f, 0.993074f, 0.996649f, 
 1.000223f, 
 };
+
 
