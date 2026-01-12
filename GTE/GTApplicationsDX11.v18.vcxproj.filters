@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{108bb8b1-880b-478f-b5f2-01a02c0235e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MSW">
+      <UniqueIdentifier>{5fcf44bc-cff8-487c-b2b6-7c3346df6e5d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Applications\Command.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Environment.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\OnIdleTimer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIO.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Window2.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Window3.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\TrackBall.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\TrackCylinder.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\TrackObject.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\CameraRig.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\GTApplications.cpp" />
+    <ClCompile Include="Applications\Timer.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\Window.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\WindowSystem.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\WindowApplication.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\Application.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\ConsoleApplication.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\Console.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\ConsoleSystem.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+    <ClCompile Include="Applications\MSW\WICFileIONative.cpp">
+      <Filter>MSW</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Applications\Command.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\Environment.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\OnIdleTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\WICFileIO.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\WICFileIO.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\Window2.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\Window3.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\CameraRig.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\TrackBall.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\TrackCylinder.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\TrackObject.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\GTApplications.h" />
+    <ClInclude Include="Applications\GTApplicationsPCH.h" />
+    <ClInclude Include="Applications\Timer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\Window.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\WindowSystem.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\WindowApplication.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\Application.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\Console.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\ConsoleApplication.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\Console.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\ConsoleSystem.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+    <ClInclude Include="Applications\MSW\WICFileIONative.h">
+      <Filter>MSW</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

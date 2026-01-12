@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{7D606E23-3278-4104-B17D-5F14A722153B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GenerateProject.v17</RootNamespace>
+    <RootNamespace>GenerateProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -186,11 +186,13 @@
     <ClCompile Include="GenerateProject.cpp" />
     <ClCompile Include="ProjectTemplate.cpp" />
     <ClCompile Include="ProjectTemplate.v17.cpp" />
+    <ClCompile Include="ProjectTemplate.v18.cpp" />
     <ClCompile Include="ProjectTemplateVSCode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProjectTemplate.h" />
     <ClInclude Include="ProjectTemplate.v17.h" />
+    <ClInclude Include="ProjectTemplate.v18.h" />
     <ClInclude Include="ProjectTemplateVSCode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

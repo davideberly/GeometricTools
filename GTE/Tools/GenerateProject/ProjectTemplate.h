@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.01.12
 
 #pragma once
 
@@ -53,7 +53,7 @@ protected:
         std::string const& projectName,
         std::string const& appType);
 
-    bool CreateGL45System(
+    bool CreateGL46System(
         std::string const& projectName,
         std::string const& appType);
 
@@ -63,9 +63,9 @@ protected:
     virtual std::string GetGTMathematicsGUID() const = 0;
     virtual std::string GetGTGraphicsGUID() const = 0;
     virtual std::string GetGTGraphicsDX11GUID() const = 0;
-    virtual std::string GetGTGraphicsGL45GUID() const = 0;
+    virtual std::string GetGTGraphicsGL46GUID() const = 0;
     virtual std::string GetGTApplicationsDX11GUID() const = 0;
-    virtual std::string GetGTApplicationsGL45GUID() const = 0;
+    virtual std::string GetGTApplicationsGL46GUID() const = 0;
     virtual std::string GetSolutionLines() const = 0;
     virtual std::string GetProjectLines() const = 0;
     virtual std::string GetFilterLines() const = 0;
@@ -91,7 +91,7 @@ protected:
 
     // Libraries that are common across all versions.
     static std::string const msLinkLibraryDX11;
-    static std::string const msLinkLibraryGL45;
+    static std::string const msLinkLibraryGL46;
 
     // Source code that is common across all versions.
     static std::string const msConsoleH;
@@ -104,5 +104,3 @@ protected:
     static std::string const msWindow3CPP;
     static std::string const msWindow3MainCPP;
 };
-
-

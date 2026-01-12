@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>15.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{BCCFEB10-D494-40F6-BD8A-10199B70B885}</ProjectGuid>
     <RootNamespace>CppLibraryProject</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

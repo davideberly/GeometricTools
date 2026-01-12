@@ -3,9 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.01.12
 
+#include "ProjectTemplate.h"
 #include "ProjectTemplate.v17.h"
+#include <string>
 
 TemplateV17::TemplateV17(std::string const& gteRelativePath)
     :
@@ -17,8 +19,8 @@ std::string const TemplateV17::msGTMathematicsGUID("0CADDB12-31D9-4F60-A8C0-678D
 std::string const TemplateV17::msGTGraphicsGUID("B15CB711-F650-4063-9C7C-E7A5F88139A2");
 std::string const TemplateV17::msGTGraphicsDX11GUID("00DEFF42-0F7C-4A7C-9C1F-59322B9E9004");
 std::string const TemplateV17::msGTApplicationsDX11GUID("8BB237C2-2D3A-41AD-9B98-A35BA75D5DEA");
-std::string const TemplateV17::msGTGraphicsGL45GUID("7373CB9F-6595-4FA4-9500-88985A74F0E7");
-std::string const TemplateV17::msGTApplicationsGL45GUID("C67471F4-761E-4292-A811-B1FA78E60C21");
+std::string const TemplateV17::msGTGraphicsGL46GUID("7373CB9F-6595-4FA4-9500-88985A74F0E7");
+std::string const TemplateV17::msGTApplicationsGL46GUID("C67471F4-761E-4292-A811-B1FA78E60C21");
 
 std::string const TemplateV17::msSolutionLines =
 R"raw(Microsoft Visual Studio Solution File, Format Version 12.00
@@ -327,5 +329,3 @@ R"raw(<?xml version="1.0" encoding="utf-8"?>
     </ClInclude>
   </ItemGroup>
 </Project>)raw";
-
-

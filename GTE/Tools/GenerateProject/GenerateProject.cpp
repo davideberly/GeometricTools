@@ -3,14 +3,18 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.06.24
+// File Version: 8.0.2026.01.12
 
 #include "ProjectTemplate.v17.h"
+#include "ProjectTemplate.v18.h"
 #include "ProjectTemplateVSCode.h"
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
+#include <ostream>
 #include <string>
 
-int main(int numArguments, char* arguments[])
+std::int32_t main(std::int32_t numArguments, char const* arguments[])
 {
     if (4 != numArguments)
     {
@@ -31,7 +35,7 @@ int main(int numArguments, char* arguments[])
         return -1;
     }
 
-    int nesting = atoi(arguments[2]);
+    std::int32_t nesting = atoi(arguments[2]);
     if (nesting <= 0)
     {
         std::cout << "Nesting must be positive" << std::endl;
@@ -40,7 +44,7 @@ int main(int numArguments, char* arguments[])
 
     // Generate the relative path to GeometricTools/GTE.
     std::string gteRelativePath{};
-    for (int i = 0; i < nesting; ++i)
+    for (std::int32_t i = 0; i < nesting; ++i)
     {
         gteRelativePath += "..\\";
     }
@@ -57,6 +61,14 @@ int main(int numArguments, char* arguments[])
         return -3;
     }
 
+    TemplateV18 generatev18(gteRelativePath);
+    success = generatev18.Execute(projectName, appType);
+    if (!success)
+    {
+        std::cout << "Could not create the V18 project files." << std::endl;
+        return -3;
+    }
+
     TemplateVSCode generateVSCode{};
     success = generateVSCode.Execute(projectName, appType);
     if (!success)
@@ -67,5 +79,3 @@ int main(int numArguments, char* arguments[])
 
     return 0;
 }
-
-

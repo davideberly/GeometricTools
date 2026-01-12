@@ -7,9 +7,12 @@
 
 #include "ProjectTemplateVSCode.h"
 #include <array>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
+#include <regex>
+#include <string>
 
 TemplateVSCode::TemplateVSCode()
 {
@@ -49,10 +52,10 @@ bool TemplateVSCode::Execute(std::string const& projectName, std::string const& 
 
 bool TemplateVSCode::CreateDotVSCodeFolderAndFiles()
 {
-    size_t constexpr numBuffer = 4096;
+    std::size_t constexpr numBuffer = 4096;
     std::array<char, numBuffer> buffer{};
-    sprintf_s(buffer.data(), numBuffer, "mkdir .vscode");
-    int result = system(buffer.data());
+    (void)sprintf_s(buffer.data(), numBuffer, "mkdir .vscode");
+    std::int32_t result = system(buffer.data());
     if (result != 0)
     {
         return false;
@@ -151,7 +154,7 @@ std::string TemplateVSCode::ReplaceCRLFbyLF(std::string const& source, bool isUT
         target += '\xBF';
     }
 
-    for (size_t i = 0; i < source.size(); ++i)
+    for (std::size_t i = 0; i < source.size(); ++i)
     {
         if (source[i] == '\n')
         {
@@ -412,5 +415,3 @@ EGL
 X11
 PNG::PNG
 Threads::Threads))raw";
-
-

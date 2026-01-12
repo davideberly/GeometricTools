@@ -3,16 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.06.24
+// File Version: 8.0.2026.01.12
 
 #include "ProjectTemplate.h"
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <fstream>
+#include <ostream>
 #include <regex>
-#include <Rpc.h>
 #include <string>
+#include <Windows.h>
 
 Template::Template(std::string const& gteRelativePath)
     :
@@ -28,7 +28,7 @@ bool Template::Execute(std::string const& projectName, std::string const& appTyp
             && CreateSource(projectName, projectName + "Console.cpp", msConsoleCPP)
             && CreateSource(projectName, projectName + "Main.cpp", msConsoleMainCPP)
             && CreateDX11System(projectName, "Console")
-            && CreateGL45System(projectName, "Console");
+            && CreateGL46System(projectName, "Console");
     }
     else if (appType == "w2")
     {
@@ -36,7 +36,7 @@ bool Template::Execute(std::string const& projectName, std::string const& appTyp
             && CreateSource(projectName, projectName + "Window2.cpp", msWindow2CPP)
             && CreateSource(projectName, projectName + "Main.cpp", msWindow2MainCPP)
             && CreateDX11System(projectName, "Window2")
-            && CreateGL45System(projectName, "Window2");
+            && CreateGL46System(projectName, "Window2");
     }
     else if (appType == "w3")
     {
@@ -44,7 +44,7 @@ bool Template::Execute(std::string const& projectName, std::string const& appTyp
             && CreateSource(projectName, projectName + "Window3.cpp", msWindow3CPP)
             && CreateSource(projectName, projectName + "Main.cpp", msWindow3MainCPP)
             && CreateDX11System(projectName, "Window3")
-            && CreateGL45System(projectName, "Window3");
+            && CreateGL46System(projectName, "Window3");
     }
     else
     {
@@ -212,21 +212,21 @@ bool Template::CreateDX11System(
     return true;
 }
 
-bool Template::CreateGL45System(
+bool Template::CreateGL46System(
     std::string const& projectName,
     std::string const& appType)
 {
-    std::string graphicsAPI = "GL45";
+    std::string graphicsAPI = "GL46";
     std::string graphicsMacro = "GTE_USE_OPENGL";
-    std::string linkLibrary = msLinkLibraryGL45;
+    std::string linkLibrary = msLinkLibraryGL46;
     std::string projectGUID = GetGUIDString();
 
     bool success = CreateSolution(
         projectName,
         projectGUID,
         graphicsAPI,
-        GetGTGraphicsGL45GUID(),
-        GetGTApplicationsGL45GUID(),
+        GetGTGraphicsGL46GUID(),
+        GetGTApplicationsGL46GUID(),
         GetSolutionLines());
     if (!success)
     {
@@ -239,9 +239,9 @@ bool Template::CreateGL45System(
         projectGUID,
         graphicsAPI,
         graphicsMacro,
-        msLinkLibraryGL45,
-        GetGTGraphicsGL45GUID(),
-        GetGTApplicationsGL45GUID(),
+        msLinkLibraryGL46,
+        GetGTGraphicsGL46GUID(),
+        GetGTApplicationsGL46GUID(),
         GetProjectLines());
     if (!success)
     {
@@ -302,7 +302,7 @@ std::regex const Template::msGraphicsMacroPattern("_GRAPHICS_MACRO_");
 std::regex const Template::msLinkLibraryPattern("_LINK_LIBRARY_");
 
 std::string const Template::msLinkLibraryDX11("d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;Windowscodecs.lib;");
-std::string const Template::msLinkLibraryGL45("opengl32.lib;Windowscodecs.lib;");
+std::string const Template::msLinkLibraryGL46("opengl32.lib;Windowscodecs.lib;");
 
 std::string const Template::msConsoleH =
 R"raw(#pragma once
@@ -336,6 +336,8 @@ void _PROJECT_NAME_Console::Execute()
 std::string const Template::msConsoleMainCPP =
 R"raw(#include "_PROJECT_NAME_Console.h"
 #include <iostream>
+#include <ostream>
+#include <stdexcept>
 
 int main()
 {
@@ -391,6 +393,8 @@ void _PROJECT_NAME_Window2::OnDisplay()
 std::string const Template::msWindow2MainCPP =
 R"raw(#include "_PROJECT_NAME_Window2.h"
 #include <iostream>
+#include <ostream>
+#include <stdexcept>
 
 int main()
 {
@@ -463,5 +467,3 @@ int main()
     }
     return 0;
 })raw";
-
-

@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{5582e855-f0f2-40aa-bba7-6b30dde9be5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLSL">
+      <UniqueIdentifier>{c6de7c8e-9b64-4c01-a2f6-1da5fb3b3f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\InputLayout">
+      <UniqueIdentifier>{9afc9c3f-af07-4e7f-b0f1-cabe40219a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources">
+      <UniqueIdentifier>{3c3ba76f-394a-4abd-adcc-7a1959721eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Buffers">
+      <UniqueIdentifier>{ef90a013-40d8-4cef-800a-d7ded808bdb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Textures">
+      <UniqueIdentifier>{c8db783d-0073-40bc-a47a-b3190901cedb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\State">
+      <UniqueIdentifier>{8552a3f0-33d9-4c24-9c52-936351b02c83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GLX">
+      <UniqueIdentifier>{3bc54124-a54d-46af-beb9-3c2e044162b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WGL">
+      <UniqueIdentifier>{1c0693ba-65c7-4cb8-a663-fbb404e233bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL">
+      <UniqueIdentifier>{53a9480e-4f1a-43e5-8231-ee63975d11de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GL\KHR">
+      <UniqueIdentifier>{f36a528e-e45d-4c71-b7fa-794d9772e4e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Graphics\GL46\GTGraphicsGL46.cpp" />
+    <ClCompile Include="Graphics\GL46\GL46.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46GraphicsObject.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Buffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Resource.cpp">
+      <Filter>Engine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46ConstantBuffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46IndexBuffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46AtomicCounterBuffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46StructuredBuffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46VertexBuffer.cpp">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture1.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureSingle.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture2.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture3.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureArray.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture1Array.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Texture2Array.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureCube.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureCubeArray.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureDS.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46TextureRT.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46DrawTarget.cpp">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46BlendState.cpp">
+      <Filter>Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46DrawingState.cpp">
+      <Filter>Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46DepthStencilState.cpp">
+      <Filter>Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46RasterizerState.cpp">
+      <Filter>Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46SamplerState.cpp">
+      <Filter>Engine\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLSLComputeProgram.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLSLProgramFactory.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLSLReflection.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLSLVisualProgram.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46InputLayout.cpp">
+      <Filter>Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46InputLayoutManager.cpp">
+      <Filter>Engine\InputLayout</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GL46Engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLSLShader.cpp">
+      <Filter>GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\WGL\WGLEngine.cpp">
+      <Filter>WGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\WGL\WGLExtensions.cpp">
+      <Filter>WGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLX\GLXEngine.cpp">
+      <Filter>GLX</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\GL46\GLX\GLXExtensions.cpp">
+      <Filter>GLX</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphics\GL46\GTGraphicsGL46.h" />
+    <ClInclude Include="Graphics\GL46\GTGraphicsGL46PCH.h" />
+    <ClInclude Include="Graphics\GL46\GL\glcorearb.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL\glext.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL\glxext.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL\wglext.h">
+      <Filter>GL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46GraphicsObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Buffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Resource.h">
+      <Filter>Engine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46ConstantBuffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46IndexBuffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46AtomicCounterBuffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46StructuredBuffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46VertexBuffer.h">
+      <Filter>Engine\Resources\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture1.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureSingle.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture2.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture3.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureArray.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture1Array.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Texture2Array.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureCube.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureCubeArray.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureDS.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46TextureRT.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46DrawTarget.h">
+      <Filter>Engine\Resources\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46BlendState.h">
+      <Filter>Engine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46DrawingState.h">
+      <Filter>Engine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46DepthStencilState.h">
+      <Filter>Engine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46RasterizerState.h">
+      <Filter>Engine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46SamplerState.h">
+      <Filter>Engine\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLSLComputeProgram.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLSLProgramFactory.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLSLReflection.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLSLVisualProgram.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46InputLayout.h">
+      <Filter>Engine\InputLayout</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46InputLayoutManager.h">
+      <Filter>Engine\InputLayout</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL46Engine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLSLShader.h">
+      <Filter>GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\WGL\WGLEngine.h">
+      <Filter>WGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GLX\GLXEngine.h">
+      <Filter>GLX</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\GL46\GL\KHR\khrplatform.h">
+      <Filter>GL\KHR</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{3906968c-6644-46af-9f73-ef24111c9df1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ConvexHull3DWindow3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexHull3DMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ConvexHull3DWindow3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Data\data01.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data02.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data03.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data04.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data05.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data06.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data07.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data08.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data09.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data10.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data11.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data12.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data13.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data14.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data15.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data16.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data17.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data18.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data19.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data20.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data21.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data22.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data23.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data24.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data25.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data26.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data27.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data28.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data29.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data30.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data31.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data32.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data33.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data34.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data35.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data36.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data37.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data38.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data39.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data40.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data41.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data42.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data43.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data44.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data45.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="Data\data46.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
