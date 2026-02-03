@@ -3,8 +3,8 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-set(GTE_VERSION_MAJOR 7)
-set(GTE_VERSION_MINOR 3)
+set(GTE_VERSION_MAJOR 8)
+set(GTE_VERSION_MINOR 1)
 
 cmake_minimum_required(VERSION 3.8)
 
