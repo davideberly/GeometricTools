@@ -79,7 +79,7 @@ namespace gte
             {
                 mTuple[i] = *iter;
             }
-            for (; i < numValues; ++i)
+            for (; i < N; ++i)
             {
                 mTuple[i] = static_cast<Real>(0);
             }
