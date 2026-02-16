@@ -231,7 +231,7 @@ namespace gte
         M(1, 2) = direction[2] * normal[1];
         M(2, 2) = direction[2] * normal[2] - dotND;
         M(3, 2) = -dotNO * direction[2];
-        M(0, 2) = zero;
+        M(0, 3) = zero;
         M(1, 3) = zero;
         M(2, 3) = zero;
         M(3, 3) = -dotND;
