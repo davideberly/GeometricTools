@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/DX11Engine.h>
@@ -177,7 +177,7 @@ DX11GraphicsObject* DX11Engine::Share(std::shared_ptr<Texture2> const& texture, 
         mGOMapMutex.lock();
         mGOMap.insert(std::make_pair(texture.get(), dxShared));
         mGOMapMutex.unlock();
-        return dxTexture;
+        return dxShared.get();
     }
 
     // The texture is not bound to 'engine'; create a new binding for 'this'.
