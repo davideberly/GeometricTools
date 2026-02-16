@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #pragma once
 
@@ -246,7 +246,7 @@ namespace gte
                     {
                         w = mParameters[i0 + static_cast<size_t>(mXDegreeP1) * (i1 + static_cast<size_t>(mYDegreeP1) * i2)] + w * x;
                     }
-                    mYZCoefficient[i1 + static_cast<size_t>(mYDegree) * i2] = w;
+                    mYZCoefficient[i1 + static_cast<size_t>(mYDegreeP1) * i2] = w;
                 }
             }
 
@@ -256,7 +256,7 @@ namespace gte
                 w = mYZCoefficient[i1 + static_cast<size_t>(mYDegreeP1) * i2];
                 while (--i1 >= 0)
                 {
-                    w = mParameters[i1 + static_cast<size_t>(mYDegreeP1) * i2] + w * y;
+                    w = mYZCoefficient[i1 + static_cast<size_t>(mYDegreeP1) * i2] + w * y;
                 }
                 mZCoefficient[i2] = w;
             }
