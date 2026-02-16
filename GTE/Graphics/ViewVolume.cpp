@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/ViewVolume.h>
@@ -339,7 +339,46 @@ void ViewVolume::OnFrustumChange()
     }
     else
     {
-#if defined (GTE_USE_MAT_VEC)
+#if defined(GTE_USE_VEC_MAT)
+        if (mIsDepthRangeZeroOne)
+        {
+            mProjectionMatrix(0, 0) = 2.0f * invRDiff;
+            mProjectionMatrix(1, 0) = 0.0f;
+            mProjectionMatrix(2, 0) = 0.0f;
+            mProjectionMatrix(3, 0) = -(rMin + rMax) * invRDiff;
+            mProjectionMatrix(0, 1) = 0.0f;
+            mProjectionMatrix(1, 1) = 2.0f * invUDiff;
+            mProjectionMatrix(2, 1) = 0.0f;
+            mProjectionMatrix(3, 1) = -(uMin + uMax) * invUDiff;
+            mProjectionMatrix(0, 2) = 0.0f;
+            mProjectionMatrix(1, 2) = 0.0f;
+            mProjectionMatrix(2, 2) = invDDiff;
+            mProjectionMatrix(3, 2) = -dMin * invDDiff;
+            mProjectionMatrix(0, 3) = 0.0f;
+            mProjectionMatrix(1, 3) = 0.0f;
+            mProjectionMatrix(2, 3) = 0.0f;
+            mProjectionMatrix(3, 3) = 1.0f;
+        }
+        else
+        {
+            mProjectionMatrix(0, 0) = 2.0f * invRDiff;
+            mProjectionMatrix(1, 0) = 0.0f;
+            mProjectionMatrix(2, 0) = 0.0f;
+            mProjectionMatrix(3, 0) = -(rMin + rMax) * invRDiff;
+            mProjectionMatrix(0, 1) = 0.0f;
+            mProjectionMatrix(1, 1) = 2.0f * invUDiff;
+            mProjectionMatrix(2, 1) = 0.0f;
+            mProjectionMatrix(3, 1) = -(uMin + uMax) * invUDiff;
+            mProjectionMatrix(0, 2) = 0.0f;
+            mProjectionMatrix(1, 2) = 0.0f;
+            mProjectionMatrix(2, 2) = 2.0f * invDDiff;
+            mProjectionMatrix(3, 2) = -(dMin + dMax) * invDDiff;
+            mProjectionMatrix(0, 3) = 0.0f;
+            mProjectionMatrix(1, 3) = 0.0f;
+            mProjectionMatrix(2, 3) = 0.0f;
+            mProjectionMatrix(3, 3) = 1.0f;
+        }
+#else
         if (mIsDepthRangeZeroOne)
         {
             mProjectionMatrix(0, 0) = 2.0f * invRDiff;
@@ -376,45 +415,6 @@ void ViewVolume::OnFrustumChange()
             mProjectionMatrix(3, 0) = 0.0f;
             mProjectionMatrix(3, 1) = 0.0f;
             mProjectionMatrix(3, 2) = 0.0f;
-            mProjectionMatrix(3, 3) = 1.0f;
-        }
-#else
-        if (mIsDepthRangeZeroOne)
-        {
-            mProjectionMatrix(0, 0) = 2.0f * invRDiff;
-            mProjectionMatrix(1, 0) = 0.0f;
-            mProjectionMatrix(2, 0) = 0.0f;
-            mProjectionMatrix(3, 0) = -(rMin + rMax) * invRDiff;
-            mProjectionMatrix(0, 1) = 0.0f;
-            mProjectionMatrix(1, 1) = 2.0f * invUDiff;
-            mProjectionMatrix(2, 1) = 0.0f;
-            mProjectionMatrix(3, 1) = -(uMin + uMax) * invUDiff;
-            mProjectionMatrix(0, 2) = 0.0f;
-            mProjectionMatrix(1, 2) = 0.0f;
-            mProjectionMatrix(2, 2) = invDDiff;
-            mProjectionMatrix(3, 2) = -dMin * invDDiff;
-            mProjectionMatrix(0, 3) = 0.0f;
-            mProjectionMatrix(1, 3) = 0.0f;
-            mProjectionMatrix(2, 3) = 0.0f;
-            mProjectionMatrix(3, 3) = 1.0f;
-        }
-        else
-        {
-            mProjectionMatrix(0, 0) = 2.0f * invRDiff;
-            mProjectionMatrix(1, 0) = 0.0f;
-            mProjectionMatrix(2, 0) = 0.0f;
-            mProjectionMatrix(3, 0) = -(rMin + rMax) * invRDiff;
-            mProjectionMatrix(0, 1) = 0.0f;
-            mProjectionMatrix(1, 1) = 2.0f * invUDiff;
-            mProjectionMatrix(2, 1) = 0.0f;
-            mProjectionMatrix(3, 1) = -(uMin + uMax) * invUDiff;
-            mProjectionMatrix(0, 2) = 0.0f;
-            mProjectionMatrix(1, 2) = 0.0f;
-            mProjectionMatrix(2, 2) = invDDiff;
-            mProjectionMatrix(3, 2) = -(dMin + dMax) * invDDiff;
-            mProjectionMatrix(0, 3) = 0.0f;
-            mProjectionMatrix(1, 3) = 0.0f;
-            mProjectionMatrix(2, 3) = 0.0f;
             mProjectionMatrix(3, 3) = 1.0f;
         }
 #endif
