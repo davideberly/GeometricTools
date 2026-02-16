@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 // The functions were written based on the example source code
 // https://dev.w3.org/Amaya/libpng/example.c
@@ -201,7 +201,7 @@ std::shared_ptr<Texture2> WICFileIO::Load(std::string const& filename, bool want
         }
         else if (color_type == PNG_COLOR_TYPE_RGB)
         {
-            texture = std::make_shared<Texture2>(DF_R8G8B8A8_UNORM, width, height, wantMipmaps);
+            texture = std::make_shared<Texture2>(DF_R16G16B16A16_UNORM, width, height, wantMipmaps);
             trg = texture->Get<uint16_t>();
             for (png_uint_32 y = 0; y < height; ++y)
             {
