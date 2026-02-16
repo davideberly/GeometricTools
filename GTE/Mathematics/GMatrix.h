@@ -216,8 +216,7 @@ namespace gte
 
         inline bool operator!=(GMatrix const& mat) const
         {
-            return mNumRows == mat.mNumRows && mNumCols == mat.mNumCols
-                && mElements != mat.mElements;
+            return !operator==(mat);
         }
 
         inline bool operator< (GMatrix const& mat) const
