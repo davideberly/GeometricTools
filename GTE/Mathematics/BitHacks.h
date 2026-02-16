@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #pragma once
 
@@ -113,7 +113,7 @@ namespace gte
             return GetLeadingBit(static_cast<uint64_t>(value));
         }
 
-        static int32_t GetTrailingBit(int32_t value)
+        static int32_t GetTrailingBit(uint32_t value)
         {
             static std::array<int32_t, 32> const trailingBitTable =
             {
@@ -127,18 +127,18 @@ namespace gte
             LogAssert(value != 0, "Invalid input.");
 #endif
 
-            uint32_t key = (static_cast<uint32_t>((value & -value) * 0x077CB531u)) >> 27;
+            // Use (~value + 1u) instead of -value to avoid compiler
+            // warnings about negating an unsigned integer.
+            uint32_t key = ((value & (~value + 1u)) * 0x077CB531u) >> 27;
             return trailingBitTable[key];
         }
 
-        static int32_t GetTrailingBit(uint32_t value)
+        static int32_t GetTrailingBit(int32_t value)
         {
-            // The GetTrailingBit(int32_t) function contains the actual
-            // implementation.  If the uint32_t-based function were to be
-            // implemented, the (value & -value) statement generates a compiler
-            // warning about negating an unsigned integer, which requires
-            // additional logic to avoid.
-            return GetTrailingBit(static_cast<int32_t>(value));
+#if defined(GTE_THROW_ON_BITHACKS_ERROR)
+            LogAssert(value != 0, "Invalid input.");
+#endif
+            return GetTrailingBit(static_cast<uint32_t>(value));
         }
 
         static int32_t GetTrailingBit(uint64_t value)
