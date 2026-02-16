@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #pragma once
 
@@ -169,6 +169,10 @@ namespace gte
 
         Vector3<Real> negEnd0 = capsule0.segment.p[0];
         Real tmp = plQuery(negEnd0, line).distance + capsule0.radius;
+        if (tmp > radius)
+        {
+            radius = tmp;
+        }
 
         Vector3<Real> posEnd1 = capsule1.segment.p[1];
         tmp = plQuery(posEnd1, line).distance + capsule1.radius;
