@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.18
 
 #pragma once
 
@@ -460,9 +460,9 @@ namespace gte
                 {
                     auto const& Lrc = L[GetIndex(r, c)];
                     auto const& Yc = Y[c];
-                    for (int32_t i = 0; i < NumBlocks; ++i)
+                    for (int32_t i = 0; i < BlockSize; ++i)
                     {
-                        for (int32_t j = 0; j < NumBlocks; ++j)
+                        for (int32_t j = 0; j < BlockSize; ++j)
                         {
                             Yr[i] -= Lrc[GetIndex(i, j)] * Yc[j];
                         }
