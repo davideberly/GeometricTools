@@ -3,13 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.18
 
 #pragma once
 
 // Documentation for natural splines is found in
 // https://www.geometrictools.com/Documentation/NaturalSplines.pdf
-// The number of points must be 2 or larger. The points[] and times[] arrays
+// The number of points must be 3 or larger. The points[] and times[] arrays
 // must have the same number of elements. The times[] values must be strictly
 // increasing.
 
@@ -38,7 +38,7 @@ namespace gte
             mDelta{}
         {
             LogAssert(
-                numPoints >= 2 && f0 != nullptr && f1 != nullptr && times != nullptr,
+                numPoints >= 3 && f0 != nullptr && f1 != nullptr && times != nullptr,
                 "Invalid input.");
 
             int32_t numPm1 = numPoints - 1;
@@ -108,7 +108,7 @@ namespace gte
             mDelta{}
         {
             LogAssert(
-                numPoints >= 2 && f0 != nullptr && f1 != nullptr && times != nullptr,
+                numPoints >= 3 && f0 != nullptr && f1 != nullptr && times != nullptr,
                 "Invalid input.");
 
             int32_t numPm1 = numPoints - 1;
