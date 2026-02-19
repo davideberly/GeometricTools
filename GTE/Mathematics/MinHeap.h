@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -391,7 +391,7 @@ namespace gte
             for (int32_t child = 0; child < mNumElements; ++child)
             {
                 int32_t parent = (child - 1) / 2;
-                if (parent > 0)
+                if (child > 0)
                 {
                     if (mPointers[child]->value < mPointers[parent]->value)
                     {
