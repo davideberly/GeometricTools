@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Terrain.h>
@@ -252,7 +252,7 @@ float Terrain::Page::GetHeight(float x, float y) const
     {
         float diff = dx - dy;
         h00 = GetHeight(row, col);
-        h11 = GetHeight(row + 1, col);
+        h11 = GetHeight(row + 1, col + 1);
         if (diff > 0.0f)
         {
             h10 = GetHeight(row, col + 1);
