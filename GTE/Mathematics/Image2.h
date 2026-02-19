@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.18
 
 #pragma once
 
@@ -65,7 +65,7 @@ namespace gte
 
         Image2& operator=(Image2&& image) noexcept
         {
-            Image<PixelType>::operator=(image);
+            Image<PixelType>::operator=(std::move(image));
             return *this;
         }
 
