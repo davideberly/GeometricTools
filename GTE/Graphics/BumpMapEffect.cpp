@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/BumpMapEffect.h>
@@ -165,7 +165,7 @@ bool BumpMapEffect::ComputeTangent(
     Vector3<float> deltaPos2 = position2 - position0;
 
     float const epsilon = 1e-08f;
-    if (Length(deltaPos1) <= epsilon || Length(deltaPos1) <= epsilon )
+    if (Length(deltaPos1) <= epsilon || Length(deltaPos2) <= epsilon)
     {
         // The triangle is degenerate.
         return false;
