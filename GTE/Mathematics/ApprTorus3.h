@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -107,9 +107,9 @@ namespace gte
             };
 
             // dF[i]/dC = 4 * (|D|^2 + v) * D - 8 * u * (I - N*N^T) * D
-            // dF[i]/dTheta = 8 * u * Dot(dN/dTheta, D)
-            // dF[i]/dPhi = 8 * u * Dot(dN/dPhi, D)
-            // dF[i]/du = -4 * u * (|D|^2 - Dot(N,D)^2)
+            // dF[i]/dTheta = 8 * u * Dot(N,D) * Dot(dN/dTheta, D)
+            // dF[i]/dPhi = 8 * u * Dot(N,D) * Dot(dN/dPhi, D)
+            // dF[i]/du = -4 * (|D|^2 - Dot(N,D)^2)
             // dF[i]/dv = 2 * (|D|^2 + v)
             mJFunction = [this](GVector<Real> const& P, GMatrix<Real>& J)
             {
@@ -133,9 +133,9 @@ namespace gte
                     J(row, 0) = temp[0];
                     J(row, 1) = temp[1];
                     J(row, 2) = temp[2];
-                    J(row, 3) = r8 * u * Dot(dNdTheta, D);
-                    J(row, 4) = r8 * u * Dot(dNdPhi, D);
-                    J(row, 5) = -r4 * u * (DdotD - NdotD * NdotD);
+                    J(row, 3) = r8 * u * NdotD * Dot(dNdTheta, D);
+                    J(row, 4) = r8 * u * NdotD * Dot(dNdPhi, D);
+                    J(row, 5) = -r4 * (DdotD - NdotD * NdotD);
                     J(row, 6) = r2 * sum;
                 }
             };
