@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.21
 
 #pragma once
 
@@ -49,7 +49,7 @@ namespace gte
                 int32_t const* currentIndex = indices;
                 for (size_t i = 0; i < numIndices; ++i)
                 {
-                    if (*currentIndex++ >= static_cast<int32_t>(numObservations))
+                    if (*currentIndex < 0 || *currentIndex++ >= static_cast<int32_t>(numObservations))
                     {
                         return false;
                     }
