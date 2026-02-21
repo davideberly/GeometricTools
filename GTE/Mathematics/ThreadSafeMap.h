@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.21
 
 #pragma once
 
@@ -25,103 +25,82 @@ namespace gte
         bool HasElements() const
         {
             bool hasElements;
-            mMutex.lock();
-            {
-                hasElements = (mMap.size() > 0);
-            }
-            mMutex.unlock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            hasElements = (mMap.size() > 0);
             return hasElements;
         }
 
         bool Exists(Key key) const
         {
             bool exists;
-            mMutex.lock();
-            {
-                exists = (mMap.find(key) != mMap.end());
-            }
-            mMutex.unlock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            exists = (mMap.find(key) != mMap.end());
             return exists;
         }
 
         void Insert(Key key, Value value)
         {
-            mMutex.lock();
-            {
-                mMap[key] = value;
-            }
-            mMutex.unlock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            mMap[key] = value;
         }
 
         bool Remove(Key key, Value& value)
         {
             bool exists;
-            mMutex.lock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            auto iter = mMap.find(key);
+            if (iter != mMap.end())
             {
-                auto iter = mMap.find(key);
-                if (iter != mMap.end())
-                {
-                    value = iter->second;
-                    mMap.erase(iter);
-                    exists = true;
-                }
-                else
-                {
-                    exists = false;
-                }
+                value = iter->second;
+                mMap.erase(iter);
+                exists = true;
             }
-            mMutex.unlock();
+            else
+            {
+                exists = false;
+            }
             return exists;
         }
 
         void RemoveAll()
         {
-            mMutex.lock();
-            {
-                mMap.clear();
-            }
-            mMutex.unlock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            mMap.clear();
         }
 
         bool Get(Key key, Value& value) const
         {
             bool exists;
-            mMutex.lock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            auto iter = mMap.find(key);
+            if (iter != mMap.end())
             {
-                auto iter = mMap.find(key);
-                if (iter != mMap.end())
-                {
-                    value = iter->second;
-                    exists = true;
-                }
-                else
-                {
-                    exists = false;
-                }
+                value = iter->second;
+                exists = true;
             }
-            mMutex.unlock();
+            else
+            {
+                exists = false;
+            }
             return exists;
         }
 
         void GatherAll(std::vector<Value>& values) const
         {
-            mMutex.lock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            if (mMap.size() > 0)
             {
-                if (mMap.size() > 0)
+                values.resize(mMap.size());
+                auto viter = values.begin();
+                for (auto const& m : mMap)
                 {
-                    values.resize(mMap.size());
-                    auto viter = values.begin();
-                    for (auto const& m : mMap)
-                    {
-                        *viter++ = m.second;
-                    }
-                }
-                else
-                {
-                    values.clear();
+                    *viter++ = m.second;
                 }
             }
-            mMutex.unlock();
+            else
+            {
+                values.clear();
+            }
         }
 
     protected:
