@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -483,51 +483,59 @@ namespace gte
                         mInvHMatrix = gte::Inverse(mHMatrix);
                     }
 
+                    // Compute the translation part of the inverse. For
+                    // RS-matrices, the 3x3 block was set above and the
+                    // translation must be computed from it. For non-RS
+                    // matrices, gte::Inverse already produced the correct
+                    // inverse including translation, so no overwrite needed.
+                    if (mIsRSMatrix)
+                    {
 #if defined(GTE_USE_VEC_MAT)
-                    mInvHMatrix(3, 0) = -(
-                        mInvHMatrix(0, 0) * mTranslate[0] +
-                        mInvHMatrix(1, 0) * mTranslate[1] +
-                        mInvHMatrix(2, 0) * mTranslate[2]
-                        );
+                        mInvHMatrix(3, 0) = -(
+                            mInvHMatrix(0, 0) * mTranslate[0] +
+                            mInvHMatrix(1, 0) * mTranslate[1] +
+                            mInvHMatrix(2, 0) * mTranslate[2]
+                            );
 
-                    mInvHMatrix(3, 1) = -(
-                        mInvHMatrix(0, 1) * mTranslate[0] +
-                        mInvHMatrix(1, 1) * mTranslate[1] +
-                        mInvHMatrix(2, 1) * mTranslate[2]
-                        );
+                        mInvHMatrix(3, 1) = -(
+                            mInvHMatrix(0, 1) * mTranslate[0] +
+                            mInvHMatrix(1, 1) * mTranslate[1] +
+                            mInvHMatrix(2, 1) * mTranslate[2]
+                            );
 
-                    mInvHMatrix(3, 2) = -(
-                        mInvHMatrix(0, 2) * mTranslate[0] +
-                        mInvHMatrix(1, 2) * mTranslate[1] +
-                        mInvHMatrix(2, 2) * mTranslate[2]
-                        );
+                        mInvHMatrix(3, 2) = -(
+                            mInvHMatrix(0, 2) * mTranslate[0] +
+                            mInvHMatrix(1, 2) * mTranslate[1] +
+                            mInvHMatrix(2, 2) * mTranslate[2]
+                            );
 
-                    // The last column of mHMatrix is always (0,0,0,1) for an
-                    // affine transformation, so it is set once in the
-                    // constructor.  It is not necessary to reset it here.
+                        // The last column of mHMatrix is always (0,0,0,1) for
+                        // an affine transformation, so it is set once in the
+                        // constructor.  It is not necessary to reset it here.
 #else
-                    mInvHMatrix(0, 3) = -(
-                        mInvHMatrix(0, 0) * mTranslate[0] +
-                        mInvHMatrix(0, 1) * mTranslate[1] +
-                        mInvHMatrix(0, 2) * mTranslate[2]
-                        );
+                        mInvHMatrix(0, 3) = -(
+                            mInvHMatrix(0, 0) * mTranslate[0] +
+                            mInvHMatrix(0, 1) * mTranslate[1] +
+                            mInvHMatrix(0, 2) * mTranslate[2]
+                            );
 
-                    mInvHMatrix(1, 3) = -(
-                        mInvHMatrix(1, 0) * mTranslate[0] +
-                        mInvHMatrix(1, 1) * mTranslate[1] +
-                        mInvHMatrix(1, 2) * mTranslate[2]
-                        );
+                        mInvHMatrix(1, 3) = -(
+                            mInvHMatrix(1, 0) * mTranslate[0] +
+                            mInvHMatrix(1, 1) * mTranslate[1] +
+                            mInvHMatrix(1, 2) * mTranslate[2]
+                            );
 
-                    mInvHMatrix(2, 3) = -(
-                        mInvHMatrix(2, 0) * mTranslate[0] +
-                        mInvHMatrix(2, 1) * mTranslate[1] +
-                        mInvHMatrix(2, 2) * mTranslate[2]
-                        );
+                        mInvHMatrix(2, 3) = -(
+                            mInvHMatrix(2, 0) * mTranslate[0] +
+                            mInvHMatrix(2, 1) * mTranslate[1] +
+                            mInvHMatrix(2, 2) * mTranslate[2]
+                            );
 
-                    // The last row of mHMatrix is always (0,0,0,1) for an
-                    // affine transformation, so it is set once in the
-                    // constructor.  It is not necessary to reset it here.
+                        // The last row of mHMatrix is always (0,0,0,1) for an
+                        // affine transformation, so it is set once in the
+                        // constructor.  It is not necessary to reset it here.
 #endif
+                    }
                 }
 
                 mInverseNeedsUpdate = false;
@@ -551,7 +559,11 @@ namespace gte
                 {
                     Matrix4x4<Real> invRotate = Transpose(GetRotation());
                     Real invScale = static_cast<Real>(1) / GetUniformScale();
+#if defined(GTE_USE_VEC_MAT)
+                    Vector4<Real> invTranslate = -invScale * (GetTranslationW1() * invRotate);
+#else
                     Vector4<Real> invTranslate = -invScale * (invRotate * GetTranslationW1());
+#endif
                     inverse.SetRotation(invRotate);
                     inverse.SetUniformScale(invScale);
                     inverse.SetTranslation(invTranslate);
@@ -559,7 +571,11 @@ namespace gte
                 else
                 {
                     Matrix4x4<Real> invMatrix = gte::Inverse(GetHMatrix());
+#if defined(GTE_USE_VEC_MAT)
+                    Vector4<Real> invTranslate = invMatrix.GetRow(3);
+#else
                     Vector4<Real> invTranslate = invMatrix.GetCol(3);
+#endif
                     inverse.SetMatrix(invMatrix);
                     inverse.SetTranslation(invTranslate);
                 }
