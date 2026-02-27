@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -29,7 +29,7 @@ namespace gte
             :
             center(Vector2<T>::Zero()),
             radius(static_cast<T>(1)),
-            end{ Vector2<T>::Zero(), Vector2<T>::Zero() }
+            end{ Vector2<T>::Unit(0), Vector2<T>::Unit(1) }
         {
         }
 
