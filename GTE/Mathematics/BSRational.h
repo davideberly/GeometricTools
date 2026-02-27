@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.18
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -897,6 +897,12 @@ namespace std
     template <typename UInteger>
     inline gte::BSRational<UInteger> frexp(gte::BSRational<UInteger> const& x, int32_t* exponent)
     {
+        if (x.GetSign() == 0)
+        {
+            *exponent = 0;
+            return gte::BSRational<UInteger>(0);
+        }
+
         gte::BSRational<UInteger> result = x;
         auto& numer = result.GetNumerator();
         auto& denom = result.GetDenominator();
