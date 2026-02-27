@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/AmbientLightEffect.h>
@@ -54,7 +54,7 @@ R"(
         vec4 materialAmbient;
     };
 
-    uniform Light
+    uniform Lighting
     {
         vec4 lightingAmbient;
         vec4 lightingAttenuation;
