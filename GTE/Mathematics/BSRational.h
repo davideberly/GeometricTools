@@ -248,13 +248,13 @@ namespace gte
             {
                 fpNumber = number.substr(1);
                 sign = +1;
-                LogAssert(fpNumber.size() > 1, "Invalid number format.");
+                LogAssert(fpNumber.size() > 0, "Invalid number format.");
             }
             else if (number[0] == '-')
             {
                 fpNumber = number.substr(1);
                 sign = -1;
-                LogAssert(fpNumber.size() > 1, "Invalid number format.");
+                LogAssert(fpNumber.size() > 0, "Invalid number format.");
             }
             else
             {
