@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #include <Graphics/GTGraphicsPCH.h>
 #include <Graphics/Picker.h>
@@ -152,7 +152,7 @@ PickRecord const& Picker::GetClosestNonpositive() const
             for (++i; i < records.size(); ++i)
             {
                 auto const& record = records[i];
-                if (record.t <= 0.0f && closest < record.distanceToLinePoint)
+                if (record.t <= 0.0f && record.distanceToLinePoint < closest)
                 {
                     closest = record.distanceToLinePoint;
                     candidate = &record;
