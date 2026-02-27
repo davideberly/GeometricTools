@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #pragma once
 
@@ -110,7 +110,7 @@ namespace gte
     inline float RobustDOP(float u, float v, float w, float z)
     {
 #if defined(GTE_DISCARD_FMA)
-        return u * v - w * z.
+        return u * v - w * z;
 #else
         float productWZ = w * z;
         float roundingError = std::fma(-w, z, productWZ);
@@ -213,7 +213,7 @@ namespace gte
     inline double RobustDOP(double u, double v, double w, double z)
     {
 #if defined(GTE_DISCARD_FMA)
-        return u * v - w * z.
+        return u * v - w * z;
 #else
         double productWZ = w * z;
         double roundingError = std::fma(-w, z, productWZ);
