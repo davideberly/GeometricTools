@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.18
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -258,7 +258,10 @@ namespace gte
             }
 
             *this = ConvertToInteger(intNumber);
-            mSign = sign;
+            if (mSign != 0)
+            {
+                mSign = sign;
+            }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
 #endif
