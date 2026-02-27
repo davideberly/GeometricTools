@@ -136,18 +136,20 @@ namespace gte
             }
             else
             {
+                uint32_t magnitude;
                 if (number < 0)
                 {
                     mSign = -1;
-                    number = -number;
+                    magnitude = -static_cast<uint32_t>(number);
                 }
                 else
                 {
                     mSign = 1;
+                    magnitude = static_cast<uint32_t>(number);
                 }
 
-                mBiasedExponent = BitHacks::GetTrailingBit(number);
-                mUInteger = (uint32_t)number;
+                mBiasedExponent = BitHacks::GetTrailingBit(magnitude);
+                mUInteger = magnitude;
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
@@ -187,18 +189,20 @@ namespace gte
             }
             else
             {
+                uint64_t magnitude;
                 if (number < 0)
                 {
                     mSign = -1;
-                    number = -number;
+                    magnitude = -static_cast<uint64_t>(number);
                 }
                 else
                 {
                     mSign = 1;
+                    magnitude = static_cast<uint64_t>(number);
                 }
 
-                mBiasedExponent = BitHacks::GetTrailingBit(number);
-                mUInteger = (uint64_t)number;
+                mBiasedExponent = BitHacks::GetTrailingBit(magnitude);
+                mUInteger = magnitude;
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
@@ -239,13 +243,13 @@ namespace gte
             {
                 intNumber = number.substr(1);
                 sign = +1;
-                LogAssert(intNumber.size() > 1, "Invalid number format.");
+                LogAssert(intNumber.size() > 0, "Invalid number format.");
             }
             else if (number[0] == '-')
             {
                 intNumber = number.substr(1);
                 sign = -1;
-                LogAssert(intNumber.size() > 1, "Invalid number format.");
+                LogAssert(intNumber.size() > 0, "Invalid number format.");
             }
             else
             {
