@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.09.22
+// File Version: 8.0.2026.02.16
 
 #pragma once
 
@@ -136,18 +136,20 @@ namespace gte
             }
             else
             {
+                uint32_t magnitude;
                 if (number < 0)
                 {
                     mSign = -1;
-                    number = -number;
+                    magnitude = -static_cast<uint32_t>(number);
                 }
                 else
                 {
                     mSign = 1;
+                    magnitude = static_cast<uint32_t>(number);
                 }
 
-                mBiasedExponent = BitHacks::GetTrailingBit(number);
-                mUInteger = (uint32_t)number;
+                mBiasedExponent = BitHacks::GetTrailingBit(magnitude);
+                mUInteger = magnitude;
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
@@ -187,18 +189,20 @@ namespace gte
             }
             else
             {
+                uint64_t magnitude;
                 if (number < 0)
                 {
                     mSign = -1;
-                    number = -number;
+                    magnitude = -static_cast<uint64_t>(number);
                 }
                 else
                 {
                     mSign = 1;
+                    magnitude = static_cast<uint64_t>(number);
                 }
 
-                mBiasedExponent = BitHacks::GetTrailingBit(number);
-                mUInteger = (uint64_t)number;
+                mBiasedExponent = BitHacks::GetTrailingBit(magnitude);
+                mUInteger = magnitude;
             }
 #if defined (GTE_VALIDATE_BSNUMBER)
             LogAssert(IsValid(), "Invalid BSNumber.");
