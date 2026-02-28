@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -371,9 +371,14 @@ namespace gte
                 minIndex = 2;
             }
 
-            result.distance = distance;
-            result.sqrDistance = distance * distance;
+            result.distance = minDistance;
+            result.sqrDistance = minDistance * minDistance;
             result.parameter = Dot(D, V[minIndex] - P) / Dot(D, D);
+            T const zero = static_cast<T>(0);
+            T const one = static_cast<T>(1);
+            result.barycentric[0] = (minIndex == 0) ? one : zero;
+            result.barycentric[1] = (minIndex == 1) ? one : zero;
+            result.barycentric[2] = (minIndex == 2) ? one : zero;
             result.closest[0] = P + result.parameter * D;
             result.closest[1] = V[minIndex];
         }
