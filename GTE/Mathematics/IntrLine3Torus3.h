@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -13,7 +13,7 @@
 //
 // The standard torus has center (0,0,0), plane of symmetry z = 0, axis of
 // symmetry containing (0,0,0) in the direction (0,0,1), outer radius r0
-// and inner radius r1 > r0 (a "ring torus"). It is defined implicitly by
+// and inner radius r1 with r0 > r1 (a "ring torus"). It is defined implicitly by
 //   (x^2 + y^2 + z^2 + r0^2 - r1^2)^2 - 4 * r0^2 * (x^2 + y^2) = 0
 // where (x,y,z) is a point on the torus. A parameterization is
 //   x(u,v) = (r0 + r1 * cos(v)) * cos(u)
