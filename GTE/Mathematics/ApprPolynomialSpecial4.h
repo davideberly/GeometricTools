@@ -196,7 +196,7 @@ namespace gte
             {
                 Real xp = mXPowers[mXDegrees[i]];
                 Real yp = mYPowers[mYDegrees[i]];
-                Real zp = mYPowers[mZDegrees[i]];
+                Real zp = mZPowers[mZDegrees[i]];
                 w += mParameters[i] * xp * yp * zp;
             }
 

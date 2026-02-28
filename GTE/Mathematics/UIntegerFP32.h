@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -141,7 +141,7 @@ namespace gte
         }
 
 #if defined(GTE_USE_MSWINDOWS)
-#pragma warning(default : 28020)
+#pragma warning(default : 26495)
 #endif
 
         // Assignment.  Only mSize elements are copied.
