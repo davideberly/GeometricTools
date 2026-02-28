@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.08.20
+// File Version: 8.0.2026.02.16
 
 #include <Graphics/GL46/GTGraphicsGL46PCH.h>
 #include <Graphics/FontArialW400H18.h>
@@ -875,7 +875,7 @@ bool GL46Engine::ProgramIndexUnitMap::GetUnitProgramIndex(uint32_t unit, GLint &
 {
     if (unit < mLinkMap.size())
     {
-        auto& item = mLinkMap[index];
+        auto& item = mLinkMap[unit];
         if (item.linkCount > 0)
         {
             program = item.program;

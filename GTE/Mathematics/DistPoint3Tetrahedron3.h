@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -100,10 +100,9 @@ namespace gte
             }
             result.distance = std::sqrt(result.sqrDistance);
 
-            std::array<T, 4> barycentric{};
             (void)ComputeBarycentrics(result.closest[1], tetrahedron.v[0],
                 tetrahedron.v[1], tetrahedron.v[2], tetrahedron.v[3],
-                barycentric);
+                result.barycentric);
 
             return result;
         }

@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.18
 
 #pragma once
 
@@ -198,7 +198,7 @@ namespace gte
         {
             LogAssert(
                 L.GetNumRows() == N && L.GetNumCols() == N &&
-                D.GetNumRows() == N && D.GetNumCols() && B.GetSize() == N,
+                D.GetNumRows() == N && D.GetNumCols() == N && B.GetSize() == N,
                 "Invalid size.");
 
             X.SetSize(N);
@@ -615,8 +615,8 @@ namespace gte
                 for (auto const& current : MBlock)
                 {
                     LogAssert(
-                        current.GetNumRows() == NumBlocks &&
-                        current.GetNumCols() == NumBlocks,
+                        current.GetNumRows() == BlockSize &&
+                        current.GetNumCols() == BlockSize,
                         "Invalid size.");
                 }
             }

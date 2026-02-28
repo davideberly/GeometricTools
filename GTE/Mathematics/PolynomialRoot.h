@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -33,12 +33,12 @@ namespace gte
         {
         }
 
-        bool operator==(PolynomialRoot& other) const
+        bool operator==(PolynomialRoot const& other) const
         {
             return x == other.x;
         }
 
-        bool operator<(PolynomialRoot& other) const
+        bool operator<(PolynomialRoot const& other) const
         {
             return x < other.x;
         }

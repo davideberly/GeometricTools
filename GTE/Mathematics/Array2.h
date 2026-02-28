@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -126,7 +126,7 @@ namespace gte
             mBound1 = other.mBound1;
             mIndirect1.resize(mBound1);
 
-            if (mBound0 > 0)
+            if (mObjects.size() > 0)
             {
                 // The objects are owned.
                 SetPointers(mObjects.data());

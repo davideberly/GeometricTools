@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.19
 
 #pragma once
 
@@ -37,7 +37,7 @@ namespace gte
             mXDegrees(xDegrees),
             mYDegrees(yDegrees),
             mZDegrees(zDegrees),
-            mParameters(mXDegrees.size() * mYDegrees.size() * mZDegrees.size(), (Real)0)
+            mParameters(mXDegrees.size(), (Real)0)
         {
             LogAssert(mXDegrees.size() == mYDegrees.size()
                 && mXDegrees.size() == mZDegrees.size(),
@@ -196,7 +196,7 @@ namespace gte
             {
                 Real xp = mXPowers[mXDegrees[i]];
                 Real yp = mYPowers[mYDegrees[i]];
-                Real zp = mYPowers[mZDegrees[i]];
+                Real zp = mZPowers[mZDegrees[i]];
                 w += mParameters[i] * xp * yp * zp;
             }
 

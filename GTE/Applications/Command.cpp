@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.16
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Command.h>
@@ -146,6 +146,11 @@ size_t Command::GetInteger(std::string const& name, int32_t& value)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
+            if (i + 1 >= mArguments.size())
+            {
+                mLastError = msArgRequired;
+                return 0;
+            }
             std::string argument = mArguments[i + 1];
             if (mProcessed[i + 1] ||
                 (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
@@ -192,6 +197,11 @@ size_t Command::GetFloat(std::string const& name, float& value)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
+            if (i + 1 >= mArguments.size())
+            {
+                mLastError = msArgRequired;
+                return 0;
+            }
             std::string argument = mArguments[i + 1];
             if (mProcessed[i + 1] ||
                 (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
@@ -238,6 +248,11 @@ size_t Command::GetDouble(std::string const& name, double& value)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
+            if (i + 1 >= mArguments.size())
+            {
+                mLastError = msArgRequired;
+                return 0;
+            }
             std::string argument = mArguments[i + 1];
             if (mProcessed[i + 1] ||
                 (argument[0] == '-' && !isdigit(static_cast<int32_t>(argument[1]))))
@@ -284,6 +299,11 @@ size_t Command::GetString(std::string const& name, std::string& value)
     {
         if (!mProcessed[i] && mArguments[i] == (msDash + name))
         {
+            if (i + 1 >= mArguments.size())
+            {
+                mLastError = msArgRequired;
+                return 0;
+            }
             std::string argument = mArguments[i + 1];
             if (mProcessed[i + 1] || argument[0] == '-')
             {

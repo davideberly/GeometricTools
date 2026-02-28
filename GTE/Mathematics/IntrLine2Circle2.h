@@ -3,11 +3,16 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
 // The queries consider the circle to be a solid (disk).
+//
+// The line is P + t * D, where D is required to be unit length. The
+// FIQuery intersection parameters are valid only when D is unit length.
+//
+// The circle has center C and radius R.
 
 #include <Mathematics/FIQuery.h>
 #include <Mathematics/TIQuery.h>

@@ -215,14 +215,15 @@ namespace gte
                         if (order >= 4)
                         {
                             // Compute fourth derivative.
+                            T const r120 = static_cast<T>(120);
                             denom *= mDelta[key];
-                            jet[4] = (r24 * poly[4] + u * (r60 * poly[5])) / denom;
+                            jet[4] = (r24 * poly[4] + u * (r120 * poly[5])) / denom;
 
                             if (order >= 5)
                             {
                                 // Compute fifth derivative.
                                 denom *= mDelta[key];
-                                jet[5] = (r60 * poly[5]) / denom;
+                                jet[5] = (r120 * poly[5]) / denom;
 
                                 for (uint32_t i = 6; i <= order; ++i)
                                 {
