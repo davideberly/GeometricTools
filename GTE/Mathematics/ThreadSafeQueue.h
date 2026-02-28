@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.21
 
 #pragma once
 
@@ -29,62 +29,46 @@ namespace gte
         // All the operations are thread-safe.
         size_t GetMaxNumElements() const
         {
-            size_t maxNumElements;
-            mMutex.lock();
-            {
-                maxNumElements = mMaxNumElements;
-            }
-            mMutex.unlock();
-            return maxNumElements;
+            std::lock_guard<std::mutex> lock(mMutex);
+            return mMaxNumElements;
         }
 
         size_t GetNumElements() const
         {
-            size_t numElements;
-            mMutex.lock();
-            {
-                numElements = mQueue.size();
-            }
-            mMutex.unlock();
-            return numElements;
+            std::lock_guard<std::mutex> lock(mMutex);
+            return mQueue.size();
         }
 
         bool Push(Element const& element)
         {
             bool pushed;
-            mMutex.lock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            if (mQueue.size() < mMaxNumElements)
             {
-                if (mQueue.size() < mMaxNumElements)
-                {
-                    mQueue.push(element);
-                    pushed = true;
-                }
-                else
-                {
-                    pushed = false;
-                }
+                mQueue.push(element);
+                pushed = true;
             }
-            mMutex.unlock();
+            else
+            {
+                pushed = false;
+            }
             return pushed;
         }
 
         bool Pop(Element& element)
         {
             bool popped;
-            mMutex.lock();
+            std::lock_guard<std::mutex> lock(mMutex);
+            if (mQueue.size() > 0)
             {
-                if (mQueue.size() > 0)
-                {
-                    element = mQueue.front();
-                    mQueue.pop();
-                    popped = true;
-                }
-                else
-                {
-                    popped = false;
-                }
+                element = mQueue.front();
+                mQueue.pop();
+                popped = true;
             }
-            mMutex.unlock();
+            else
+            {
+                popped = false;
+            }
             return popped;
         }
 
