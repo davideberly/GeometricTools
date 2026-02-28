@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.27
 
 #pragma once
 
@@ -11,7 +11,6 @@
 #include <Graphics/GraphicsEngine.h>
 #include <Graphics/ProgramFactory.h>
 #include <Graphics/ConstantBuffer.h>
-#include <Graphics/ProgramFactory.h>
 #include <Graphics/Texture2.h>
 #include <cstdint>
 #include <memory>
