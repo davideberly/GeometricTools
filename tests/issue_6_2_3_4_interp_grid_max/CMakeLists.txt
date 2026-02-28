@@ -1,8 +1,0 @@
-cmake_minimum_required(VERSION 3.14)
-project(test_issue_6_2_3_4 LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(GTE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../GTE")
-add_executable(test_issue_6_2_3_4 test_issue_6_2_3_4.cpp)
-target_include_directories(test_issue_6_2_3_4 PRIVATE "${GTE_ROOT}")
-target_compile_definitions(test_issue_6_2_3_4 PRIVATE GTE_DISABLE_PCH)
