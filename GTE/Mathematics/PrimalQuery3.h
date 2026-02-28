@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.02.24
 
 #pragma once
 
@@ -172,7 +172,7 @@ namespace gte
         //    -----------+--------------+-----
         //    float      | BSNumber     |   44
         //    double     | BSNumber     |  329
-        //    float      | BSNumber     |  262
+        //    float      | BSRational   |  262
         //    double     | BSRational   | 1969
         int32_t ToCircumsphere(int32_t i, int32_t v0, int32_t v1, int32_t v2, int32_t v3) const
         {
