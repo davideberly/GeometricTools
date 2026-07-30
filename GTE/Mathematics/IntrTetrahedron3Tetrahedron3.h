@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.07.30
 
 #pragma once
 
@@ -125,7 +125,7 @@ namespace gte
                 for (size_t i1 = 0; i1 < 6; ++i1)
                 {
                     auto const& edge1Indices = Tetrahedron3<T>::GetEdgeIndices(i1);
-                    Vector3<T> P1 = tetra0.v[edge1Indices[0]];
+                    Vector3<T> P1 = tetra1.v[edge1Indices[0]];
                     Vector3<T> E1 = tetra1.v[edge1Indices[1]] - P1;
 
                     if (std::fabs(Dot(E0, E1)) < cutoff)
