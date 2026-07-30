@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.16
+// File Version: 8.0.2026.07.30
 
 #pragma once
 
@@ -735,12 +735,14 @@ namespace gte
             // accumulation using DoHouseholderPostmultiply does not work
             // because the semantics of DoHouseholderPostmultiply are
             // slightly different from those of DoHouseholderPremultiply.
-            for (size_t k = 0, col = mNumCols - 3; k <= mNumCols - 3; ++k, --col)
+            if (mNumCols >= 3)
             {
-                DoHouseholderPremultiply(mNumCols, mNumCols, mRHouseholder[col].data(),
-                    col, mVMatrix.data());
+                for (size_t k = 0, col = mNumCols - 3; k <= mNumCols - 3; ++k, --col)
+                {
+                    DoHouseholderPremultiply(mNumCols, mNumCols, mRHouseholder[col].data(),
+                        col, mVMatrix.data());
+                }
             }
-
             // Multiply the Givens rotations using forward accumulation.
             for (auto const& givens : mRGivens)
             {
