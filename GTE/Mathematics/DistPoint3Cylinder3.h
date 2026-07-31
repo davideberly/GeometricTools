@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.07.30
 
 #pragma once
 
@@ -58,12 +58,18 @@ namespace gte
                 Dot(basis[0], delta)
             };
 
+            LogAssert(cylinder.radius > static_cast<T>(0),
+                "The cylinder must have a positive radius.");
+
             if (cylinder.height == std::numeric_limits<T>::max())
             {
                 DoQueryInfiniteCylinder(P, cylinder.radius, result);
             }
             else
             {
+                LogAssert(cylinder.height > static_cast<T>(0),
+                    "The cylinder must have a positive height.");
+
                 DoQueryFiniteCylinder(P, cylinder.radius, cylinder.height, result);
             }
 
