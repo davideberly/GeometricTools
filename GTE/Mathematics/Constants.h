@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.01
 
 #pragma once
 
@@ -13,11 +13,11 @@ double constexpr GTE_C_HALF_PI = 1.5707963267948966;
 double constexpr GTE_C_QUARTER_PI = 0.7853981633974483;
 double constexpr GTE_C_TWO_PI = 6.2831853071795862;
 double constexpr GTE_C_INV_PI = 0.3183098861837907;
-double constexpr GTE_C_INV_TWO_PI = 0.1591549430918953;
-double constexpr GTE_C_INV_HALF_PI = 0.6366197723675813;
+double constexpr GTE_C_INV_TWO_PI = 0.15915494309189535;
+double constexpr GTE_C_INV_HALF_PI = 0.63661977236758138;
 
 // Conversions between degrees and radians.
-double constexpr GTE_C_DEG_TO_RAD = 0.0174532925199433;
+double constexpr GTE_C_DEG_TO_RAD = 0.017453292519943295;
 double constexpr GTE_C_RAD_TO_DEG = 57.295779513082321;
 
 // Common constants.
