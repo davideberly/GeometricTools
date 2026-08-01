@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.07.31
 
 #pragma once
 
@@ -14,6 +14,7 @@
 // The find-intersection queries use parametric clipping against the four
 // edges of the box.
 
+#include <Mathematics/ContAlignedBox.h>
 #include <Mathematics/IntrIntervals.h>
 #include <Mathematics/IntrLine2AlignedBox2.h>
 #include <Mathematics/Segment.h>
@@ -24,39 +25,39 @@
 
 namespace gte
 {
-    template <typename Real>
-    class TIQuery<Real, Segment2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class TIQuery<T, Segment2<T>, AlignedBox2<T>>
         :
-        public TIQuery<Real, Line2<Real>, AlignedBox2<Real>>
+        public TIQuery<T, Line2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
+            public TIQuery<T, Line2<T>, AlignedBox2<T>>::Result
         {
             Result()
                 :
-                TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result{}
+                TIQuery<T, Line2<T>, AlignedBox2<T>>::Result{}
             {
             }
 
             // No additional information to compute.
         };
 
-        Result operator()(Segment2<Real> const& segment, AlignedBox2<Real> const& box)
+        Result operator()(Segment2<T> const& segment, AlignedBox2<T> const& box)
         {
             // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector2<Real>::Unit(d).
-            Vector2<Real> boxCenter{}, boxExtent{};
+            // implicitly Axis[d] = Vector2<T>::Unit(d).
+            Vector2<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the segment to a centered form in the aligned-box
             // coordinate system.
-            Vector2<Real> transformedP0 = segment.p[0] - boxCenter;
-            Vector2<Real> transformedP1 = segment.p[1] - boxCenter;
-            Segment2<Real> transformedSegment(transformedP0, transformedP1);
-            Vector2<Real> segOrigin{}, segDirection{};
-            Real segExtent{};
+            Vector2<T> transformedP0 = segment.p[0] - boxCenter;
+            Vector2<T> transformedP1 = segment.p[1] - boxCenter;
+            Segment2<T> transformedSegment(transformedP0, transformedP1);
+            Vector2<T> segOrigin{}, segDirection{};
+            T segExtent{};
             transformedSegment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
             Result result{};
@@ -65,14 +66,14 @@ namespace gte
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& segOrigin,
-            Vector2<Real> const& segDirection, Real segExtent,
-            Vector2<Real> const& boxExtent, Result& result)
+        void DoQuery(Vector2<T> const& segOrigin,
+            Vector2<T> const& segDirection, T segExtent,
+            Vector2<T> const& boxExtent, Result& result)
         {
             for (int32_t i = 0; i < 2; ++i)
             {
-                Real lhs = std::fabs(segOrigin[i]);
-                Real rhs = boxExtent[i] + segExtent * std::fabs(segDirection[i]);
+                T lhs = std::fabs(segOrigin[i]);
+                T rhs = boxExtent[i] + segExtent * std::fabs(segDirection[i]);
                 if (lhs > rhs)
                 {
                     result.intersect = false;
@@ -80,25 +81,25 @@ namespace gte
                 }
             }
 
-            TIQuery<Real, Line2<Real>, AlignedBox2<Real>>::DoQuery(segOrigin,
+            TIQuery<T, Line2<T>, AlignedBox2<T>>::DoQuery(segOrigin,
                 segDirection, boxExtent, result);
         }
     };
 
-    template <typename Real>
-    class FIQuery<Real, Segment2<Real>, AlignedBox2<Real>>
+    template <typename T>
+    class FIQuery<T, Segment2<T>, AlignedBox2<T>>
         :
-        public FIQuery<Real, Line2<Real>, AlignedBox2<Real>>
+        public FIQuery<T, Line2<T>, AlignedBox2<T>>
     {
     public:
         struct Result
             :
-            public FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result
+            public FIQuery<T, Line2<T>, AlignedBox2<T>>::Result
         {
             Result()
                 :
-                FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::Result{},
-                cdeParameter{ (Real)0, (Real)0 }
+                FIQuery<T, Line2<T>, AlignedBox2<T>>::Result{},
+                cdeParameter{ (T)0, (T)0 }
             {
             }
 
@@ -107,48 +108,70 @@ namespace gte
             // The values in this class are s-values for the centered form
             // C + s * D, where s in [-e,e] and e is the extent of the
             // segment.
-            std::array<Real, 2> cdeParameter;
+            std::array<T, 2> cdeParameter;
         };
 
-        Result operator()(Segment2<Real> const& segment, AlignedBox2<Real> const& box)
+        Result operator()(Segment2<T> const& segment, AlignedBox2<T> const& box)
         {
+            // The default result indicates no intersection.
+            Result result{};
+
             // Get the centered form of the aligned box.  The axes are
-            // implicitly Axis[d] = Vector2<Real>::Unit(d).
-            Vector2<Real> boxCenter{}, boxExtent{};
+            // implicitly Axis[d] = Vector2<T>::Unit(d).
+            Vector2<T> boxCenter{}, boxExtent{};
             box.GetCenteredForm(boxCenter, boxExtent);
 
             // Transform the segment to a centered form in the aligned-box
             // coordinate system.
-            Vector2<Real> transformedP0 = segment.p[0] - boxCenter;
-            Vector2<Real> transformedP1 = segment.p[1] - boxCenter;
-            Segment2<Real> transformedSegment(transformedP0, transformedP1);
-            Vector2<Real> segOrigin{}, segDirection{};
-            Real segExtent{};
+            Vector2<T> transformedP0 = segment.p[0] - boxCenter;
+            Vector2<T> transformedP1 = segment.p[1] - boxCenter;
+            Segment2<T> transformedSegment(transformedP0, transformedP1);
+            Vector2<T> segOrigin{}, segDirection{};
+            T segExtent{};
             transformedSegment.GetCenteredForm(segOrigin, segDirection, segExtent);
 
-            Result result{};
-            DoQuery(segOrigin, segDirection, segExtent, boxExtent, result);
-            for (int32_t i = 0; i < result.numIntersections; ++i)
+            if (segExtent > static_cast<T>(0))
             {
-                // Compute the segment in the aligned-box coordinate system
-                // and then translate it back to the original coordinates
-                // using the box cener.
-                result.point[i] = boxCenter + (segOrigin + result.parameter[i] * segDirection);
-                result.cdeParameter[i] = result.parameter[i];
+                DoQuery(segOrigin, segDirection, segExtent, boxExtent, result);
+                for (int32_t i = 0; i < result.numIntersections; ++i)
+                {
+                    // Compute the segment in the aligned-box coordinate system
+                    // and then translate it back to the original coordinates
+                    // using the box cener.
+                    result.point[i] = boxCenter + (segOrigin + result.parameter[i] * segDirection);
+                    result.cdeParameter[i] = result.parameter[i];
 
-                // Convert the parameters from the centered form to the
-                // endpoint form.
-                result.parameter[i] = (result.parameter[i] / segExtent + (Real)1) * (Real)0.5;
+                    // Convert the parameters from the centered form to the
+                    // endpoint form.
+                    result.parameter[i] = (result.parameter[i] / segExtent + (T)1) * (T)0.5;
+                }
             }
+            else
+            {
+                // The segment is degenerate, representing a single point.
+                // Report an intersection when this point is contained by the
+                // box.
+                if (InContainer(segment.p[0], box))
+                {
+                    result.intersect = true;
+                    result.numIntersections = 1;
+                    result.parameter[0] = static_cast<T>(0);
+                    result.parameter[1] = static_cast<T>(0);
+                    result.cdeParameter = result.cdeParameter;
+                    result.point[0] = segment.p[0];
+                    result.point[1] = segment.p[1];
+                }
+            }
+
             return result;
         }
 
     protected:
-        void DoQuery(Vector2<Real> const& segOrigin,
-            Vector2<Real> const& segDirection, Real segExtent,
-            Vector2<Real> const& boxExtent, Result& result)
+        void DoQuery(Vector2<T> const& segOrigin,
+            Vector2<T> const& segDirection, T segExtent,
+            Vector2<T> const& boxExtent, Result& result)
         {
-            FIQuery<Real, Line2<Real>, AlignedBox2<Real>>::DoQuery(segOrigin,
+            FIQuery<T, Line2<T>, AlignedBox2<T>>::DoQuery(segOrigin,
                 segDirection, boxExtent, result);
 
             if (result.intersect)
@@ -157,15 +180,22 @@ namespace gte
                 // t-interval is [t0,t1].  The segment intersects the box as
                 // long as [t0,t1] overlaps the segment t-interval
                 // [-segExtent,+segExtent].
-                std::array<Real, 2> segInterval = { -segExtent, segExtent };
-                FIQuery<Real, std::array<Real, 2>, std::array<Real, 2>> iiQuery{};
+                std::array<T, 2> segInterval = { -segExtent, segExtent };
+                FIQuery<T, std::array<T, 2>, std::array<T, 2>> iiQuery{};
                 auto iiResult = iiQuery(result.parameter, segInterval);
                 result.intersect = iiResult.intersect;
                 result.numIntersections = iiResult.numIntersections;
                 result.parameter = iiResult.overlap;
+
+                // If a segment intersects a box at an endpoint, and if that
+                // endpoint is the only point of intersection, ensure the
+                // caller computes 2 points of intersection for a degenerate
+                // line segment representing a single point.
+                if (result.numIntersections == 1)
+                {
+                    result.numIntersections = 2;
+                }
             }
         }
     };
 }
-
-

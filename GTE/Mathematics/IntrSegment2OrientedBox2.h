@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.07.31
 
 #pragma once
 
@@ -14,6 +14,7 @@
 // The find-intersection queries use parametric clipping against the four
 // edges of the box.
 
+#include <Mathematics/ContOrientedBox2.h>
 #include <Mathematics/IntrSegment2AlignedBox2.h>
 #include <Mathematics/OrientedBox.h>
 #include <array>
@@ -91,6 +92,9 @@ namespace gte
 
         Result operator()(Segment2<T> const& segment, OrientedBox2<T> const& box)
         {
+            // The default result indicates no intersection.
+            Result result{};
+
             // Transform the segment to the oriented-box coordinate system.
             Vector2<T> tmpOrigin{}, tmpDirection{};
             T segExtent{};
@@ -107,23 +111,40 @@ namespace gte
                 Dot(tmpDirection, box.axis[1])
             };
 
-            Result result{};
-            this->DoQuery(segOrigin, segDirection, segExtent, box.extent, result);
-            for (int32_t i = 0; i < result.numIntersections; ++i)
+            if (segExtent > static_cast<T>(0))
             {
-                // Compute the segment in the aligned-box coordinate system
-                // and then translate it back to the original coordinates
-                // using the box cener.
-                result.point[i] = box.center + (segOrigin + result.parameter[i] * segDirection);
-                result.cdeParameter[i] = result.parameter[i];
+                this->DoQuery(segOrigin, segDirection, segExtent, box.extent, result);
+                for (int32_t i = 0; i < result.numIntersections; ++i)
+                {
+                    // Compute the segment in the aligned-box coordinate system
+                    // and then translate it back to the original coordinates
+                    // using the box cener.
+                    result.point[i] = box.center + (segOrigin + result.parameter[i] * segDirection);
+                    result.cdeParameter[i] = result.parameter[i];
 
-                // Convert the parameters from the centered form to the
-                // endpoint form.
-                result.parameter[i] = (result.parameter[i] / segExtent + (T)1) * (T)0.5;
+                    // Convert the parameters from the centered form to the
+                    // endpoint form.
+                    result.parameter[i] = (result.parameter[i] / segExtent + (T)1) * (T)0.5;
+                }
             }
+            else
+            {
+                // The segment is degenerate, representing a single point.
+                // Report an intersection when this point is contained by the
+                // box.
+                if (InContainer(segment.p[0], box))
+                {
+                    result.intersect = true;
+                    result.numIntersections = 2;
+                    result.parameter[0] = static_cast<T>(0);
+                    result.parameter[1] = static_cast<T>(0);
+                    result.cdeParameter = result.cdeParameter;
+                    result.point[0] = segment.p[0];
+                    result.point[1] = segment.p[1];
+                }
+            }
+
             return result;
         }
     };
 }
-
-
