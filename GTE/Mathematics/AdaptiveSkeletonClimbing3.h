@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.07
 
 #pragma once
 
@@ -2840,7 +2840,7 @@ namespace gte
 
             tmp0 = oneMinusX * (f001 - f000) + fx * (f101 - f100);
             tmp1 = oneMinusX * (f011 - f010) + fx * (f111 - f110);
-            gradient[2] = oneMinusY * tmp0 + oneMinusY * tmp1;
+            gradient[2] = oneMinusY * tmp0 + fy * tmp1;
 
             return gradient;
         }
