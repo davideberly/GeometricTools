@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.06
 
 #pragma once
 
@@ -344,11 +344,16 @@ namespace gte
         {
             LogAssert(IsFinite(), "Meshes can be generated only for finite cones.");
 
+            T const one = static_cast<T>(1);
             T hMin = GetMinHeight();
             T hMax = GetMaxHeight();
             T rMin = hMin * tanAngle;
             T rMax = hMax * tanAngle;
-            T tNumExtra = static_cast<T>(0.5) * rMax/ rMin - static_cast<T>(1);
+            // TODO: The next line used to be 0.5*rMax/rMin-1, but if hMin is
+            // zero, then rMin is zero and tNumExtra is 'inf'. How was this
+            // equation derived? For now, guard against the division by zero
+            // using 0.5*(1+rMax)/(1+rMin)-1.
+            T tNumExtra = static_cast<T>(0.5) * (one + rMax) / (one + rMin) - static_cast<T>(1);
             size_t numExtra = 0;
             if (tNumExtra > static_cast<T>(0))
             {
@@ -370,17 +375,8 @@ namespace gte
                 GenerateCircumscribed(numMaxVertices, rMax, polygonMax);
             }
 
-            if (hMin > static_cast<T>(0))
-            {
-                CreateConeFrustumMesh(numMinVertices, numMaxVertices, numExtra,
-                    hMin, hMax, polygonMin, polygonMax, vertices, indices);
-            }
-            else
-            {
-                // TODO:
-                // CreateFiniteTruncatedConeMesh(numMaxVertices, numExtra,
-                //     hMax, polygonMax, vertices, indices);
-            }
+            CreateConeFrustumMesh(numMinVertices, numMaxVertices, numExtra,
+                hMin, hMax, polygonMin, polygonMax, vertices, indices);
 
             // Transform to the coordinate system of the cone.
             std::array<Vector<3, T>, 3> basis{};
