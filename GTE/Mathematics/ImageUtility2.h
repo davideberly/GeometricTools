@@ -49,7 +49,7 @@ namespace gte
 
             std::array<std::int32_t, N> neighbors{};
             image.GetNeighborhood(neighbors);
-            GetComponents(neighbors.size(), neighbors.data(), image, components);
+            GetComponents(image, neighbors.size(), neighbors.data(), components);
         }
 
         // Connected component labeling using depth-first search. The
@@ -58,7 +58,7 @@ namespace gte
         static void GetComponents(
             Image2<std::int32_t>& image,
             std::size_t numNeighbors,
-            std::size_t const* neighbors,
+            std::int32_t const* neighbors,
             std::vector<std::vector<std::size_t>>& components)
         {
             std::size_t const numPixels = image.GetNumPixels();
