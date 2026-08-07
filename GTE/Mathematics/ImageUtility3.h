@@ -3,22 +3,21 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.07
 
 #pragma once
 
-// Image utilities for Image3<int32_t> objects.  TODO: Extend this to a template
-// class to allow the pixel type to be int32_t*_t and uint*_t for * in
-// {8,16,32,64}.
+// Image utilities for Image3<std::int32_t> objects. TODO: Extend this to a
+// template class to allow the pixel type to be std::int32_t*_t and uint*_t
+// for * in {8,16,32,64}.
 //
-// All but the Draw* functions are operations on binary images.  Let the image
-// have d0 columns, d1 rows and d2 slices.  The input image must have zeros on
-// its boundaries x = 0, x = d0-1, y = 0, y = d1-1, z = 0 and z = d2-1.  The
-// 0-valued voxels are considered to be background.  The 1-valued voxels are
-// considered to be foreground.  In some of the operations, to save memory and
-// time the input image is modified by the algorithms.  If you need to
-// preserve the input image, make a copy of it before calling these
-// functions.
+// All but the Draw* functions are operations on binary images. Let the image
+// have d0 columns, d1 rows, and d2 slices. The input image must have zeros on
+// its boundaries x = 0, x = d0-1, y = 0, y = d1-1, z = 0, and z = d2-1. The
+// 0-valued voxels are considered to be background. The 1-valued voxels are
+// considered to be foreground. In some of the operations, to save memory and
+// time the input image is modified by the algorithms. If you need to preserve
+// the input image, make a copy of it before calling these functions.
 
 #include <Mathematics/Image3.h>
 #include <array>
@@ -32,87 +31,349 @@ namespace gte
     class ImageUtility3
     {
     public:
-        // Compute the 6-connected components of a binary image.  The input
-        // image is modified to avoid the cost of making a copy.  On output,
-        // the image values are the labels for the components.  The array
-        // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents6(Image3<int32_t>& image,
-            std::vector<std::vector<size_t>>& components)
+        // Compute the N-connected components of a binary image
+        // (N is 6, 18, or 26). The input image is modified to avoid the cost
+        // of making a copy. On output, the image values are the labels for
+        // the components. The array components[k], k >= 1, contains the
+        // indices for the k-th component.
+        template <std::size_t N>
+        static void GetComponents(
+            Image3<std::int32_t>& image,
+            std::vector<std::vector<std::size_t>>& components)
         {
-            std::array<int32_t, 6> neighbors;
+            static_assert(N == 6 || N == 18 || N == 26, "Invalid neighborhood type.");
+
+            std::array<std::int32_t, N> neighbors{};
             image.GetNeighborhood(neighbors);
-            GetComponents(6, &neighbors[0], image, components);
+            GetComponents(image, neighbors.size(), neighbors.data(), image, components);
         }
 
-        // Compute the 18-connected components of a binary image.  The input
-        // image is modified to avoid the cost of making a copy.  On output,
-        // the image values are the labels for the components.  The array
-        // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents18(Image3<int32_t>& image,
-            std::vector<std::vector<size_t>>& components)
+        // Connected component labeling using depth-first search. The
+        // neighborhood is specified by the caller as 1-dimensional indices
+        // into the image.
+        static void GetComponents(
+            Image3<std::int32_t>& image, 
+            std::size_t numNeighbors,
+            std::int32_t const* neighbors,
+            std::vector<std::vector<std::size_t>>& components)
         {
-            std::array<int32_t, 18> neighbors;
-            image.GetNeighborhood(neighbors);
-            GetComponents(18, &neighbors[0], image, components);
+            LogAssert(
+                numNeighbors > 0 && neighbors != nullptr,
+                "Invalid neighbors.");
+
+            std::size_t const numVoxels = image.GetNumPixels();
+            std::vector<std::int32_t> numElements(numVoxels);
+            std::vector<std::size_t> vstack(numVoxels);
+            std::size_t numComponents = 0;
+            std::int32_t label = 2;
+            for (std::size_t i = 0; i < numVoxels; ++i)
+            {
+                if (image[i] == 1)
+                {
+                    std::int32_t top = -1;
+                    vstack[++top] = i;
+
+                    std::int32_t& count = numElements[numComponents + 1];
+                    count = 0;
+                    while (top >= 0)
+                    {
+                        std::size_t v = vstack[top];
+                        image[v] = -1;
+                        std::int32_t j;
+                        for (j = 0; j < numNeighbors; ++j)
+                        {
+                            std::size_t adj = v + neighbors[j];
+                            if (image[adj] == 1)
+                            {
+                                vstack[++top] = adj;
+                                break;
+                            }
+                        }
+                        if (j == numNeighbors)
+                        {
+                            image[v] = label;
+                            ++count;
+                            --top;
+                        }
+                    }
+
+                    ++numComponents;
+                    ++label;
+                }
+            }
+
+            if (numComponents > 0)
+            {
+                components.resize(numComponents + 1);
+                for (std::size_t i = 1; i <= numComponents; ++i)
+                {
+                    components[i].resize(numElements[i]);
+                    numElements[i] = 0;
+                }
+
+                for (std::size_t i = 0; i < numVoxels; ++i)
+                {
+                    std::int32_t value = image[i];
+                    if (value != 0)
+                    {
+                        // Labels started at 2 to support the depth-first
+                        // search, so they need to be decremented for the
+                        // correct labels.
+                        image[i] = --value;
+                        components[value][numElements[value]] = i;
+                        ++numElements[value];
+                    }
+                }
+            }
         }
 
-        // Compute the 26-connected components of a binary image.  The input
-        // image is modified to avoid the cost of making a copy.  On output,
-        // the image values are the labels for the components.  The array
-        // components[k], k >= 1, contains the indices for the k-th component.
-        static void GetComponents26(Image3<int32_t>& image,
-            std::vector<std::vector<size_t>>& components)
+        // Compute a dilation with a structuring element consisting of the
+        // N-connected neighbors of each voxel (N is 6, 18, or 26). The input
+        // image is binary with 0 for background and 1 for foreground. The
+        // output image must be an object different from the input image.
+        template <std::size_t N>
+        static void Dilate(
+            Image3<std::int32_t> const& inImage,
+            Image3<std::int32_t>& outImage)
         {
-            std::array<int32_t, 26> neighbors;
-            image.GetNeighborhood(neighbors);
-            GetComponents(26, &neighbors[0], image, components);
-        }
+            static_assert(N == 6 || N == 18 || N == 26, "Invalid neighborhood type.");
 
-        // Dilate the image using a structuring element that contains the
-        // 6-connected neighbors.
-        static void Dilate6(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
-        {
-            std::array<std::array<int32_t, 3>, 6> neighbors;
+            std::array<std::array<std::int32_t, 3>, N> neighbors{};
             inImage.GetNeighborhood(neighbors);
-            Dilate(6, &neighbors[0], inImage, outImage);
+            Dilate(inImage, neighbors.size(), neighbors.data(), outImage);
         }
 
-        // Dilate the image using a structuring element that contains the
-        // 18-connected neighbors.
-        static void Dilate18(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
+        // Compute a dilation with a structing element consisting of neighbors
+        // specified by offsets relative to the voxel. The input image is
+        // binary with 0 for background and 1 for foreground. The output
+        // image must be an object different from the input image.
+        static void Dilate(
+            Image3<std::int32_t> const& inImage,
+            std::size_t numNeighbors,
+            std::array<std::int32_t, 3> const* neighbors,
+            Image3<std::int32_t>& outImage)
         {
-            std::array<std::array<int32_t, 3>, 18> neighbors;
-            inImage.GetNeighborhood(neighbors);
-            Dilate(18, &neighbors[0], inImage, outImage);
+            LogAssert(&outImage != &inImage, "Input and output must be different.");
+
+            outImage = inImage;
+
+            // If the voxel at (i0,i1,i2) is 1, then the voxels at
+            // (k0,k1,k2) = (i0+nbr0,i1+nbr1,i2+nbr2) are set to 1 where
+            // (nbr0,nbr1,nbr2) is in the neighbors array. Boundary
+            // testing is used to avoid accessing out-of-range pixels.
+            std::int32_t const dim0 = inImage.GetDimension(0);
+            std::int32_t const dim1 = inImage.GetDimension(1);
+            std::int32_t const dim2 = inImage.GetDimension(2);
+            for (std::int32_t i2 = 0; i2 < dim2; ++i2)
+            {
+                for (std::int32_t i1 = 0; i1 < dim1; ++i1)
+                {
+                    for (std::int32_t i0 = 1; i0 < dim0; ++i0)
+                    {
+                        if (inImage(i0, i1, i2) == 1)
+                        {
+                            for (std::size_t n = 0; n < numNeighbors; ++n)
+                            {
+                                std::int32_t k0 = i0 + neighbors[n][0];
+                                std::int32_t k1 = i1 + neighbors[n][1];
+                                std::int32_t k2 = i2 + neighbors[n][2];
+                                if (0 <= k0 && k0 < dim0 &&
+                                    0 <= k1 && k1 < dim1 &&
+                                    0 <= k2 && k2 < dim2)
+                                {
+                                    outImage(k0, k1, k2) = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        // Dilate the image using a structuring element that contains the
-        // 26-connected neighbors.
-        static void Dilate26(Image3<int32_t> const& inImage, Image3<int32_t>& outImage)
+        // Compute an erosion with a structuring element consisting of the
+        // N-connected neighbors of each voxel (N is 6, 18, or 26). The input
+        // image is binary with 0 for background and 1 for foreground. The
+        // output/ image must be an object different from the input image. If
+        // zeroExterior is true, the image exterior is assumed to be 0, so
+        // 1-valued boundary voxels are set to 0; otherwise, boundary voxels
+        // are set to 0 only when they have neighboring image voxels that
+        // are 0.
+        template <std::size_t N>
+        static void Erode(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            Image3<std::int32_t>& outImage)
         {
-            std::array<std::array<int32_t, 3>, 26> neighbors;
+            static_assert(N == 6 || N == 18 || N == 26, "Invalid neighborhood type.");
+
+            std::array<std::array<std::int32_t, 3>, N> neighbors{};
             inImage.GetNeighborhood(neighbors);
-            Dilate(26, &neighbors[0], inImage, outImage);
+            Erode(inImage, zeroExterior, neighbors.size(), neighbors.data(), outImage);
         }
 
-        // Compute coordinate-directional convex set.  For a given coordinate
+        // Compute an erosion with a structuring element consisting of
+        // neighbors specified by offsets relative to the voxel. The input
+        // image is binary with 0 for background and 1 for foreground. The
+        // output image must be an object different from the input image. If
+        // zeroExterior is true, the image exterior is assumed to be 0, so
+        // 1-valued boundary voxels are set to 0; otherwise, boundary voxels
+        // are set to 0 only when they have neighboring image voxels that
+        // are 0.
+        static void Erode(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            std::size_t numNeighbors,
+            std::array<std::int32_t, 3> const* neighbors,
+            Image3<std::int32_t>& outImage)
+        {
+            LogAssert(
+                numNeighbors > 0 && neighbors != nullptr,
+                "Invalid neighbors.");
+
+            LogAssert(
+                &outImage != &inImage,
+                "The input and output images must be different.");
+
+            outImage = inImage;
+
+            // If the pixel at (i0,i1,i2) is 1, it is changed to 0 when at
+            // least one neighbor (k0,k1,k2) = (i0+nbr0,i1+nbr1,i2+nbr2) is 0,
+            // where (nbr0,nbr1,nbr2) is in the neighbors array.
+            std::int32_t const dim0 = inImage.GetDimension(0);
+            std::int32_t const dim1 = inImage.GetDimension(1);
+            std::int32_t const dim2 = inImage.GetDimension(2);
+            for (std::int32_t i2 = 0; i2 < dim2; ++i2)
+            {
+                for (std::int32_t i1 = 0; i1 < dim1; ++i1)
+                {
+                    for (std::int32_t i0 = 0; i0 < dim0; ++i0)
+                    {
+                        if (inImage(i0, i1, i2) == 1)
+                        {
+                            for (std::size_t j = 0; j < numNeighbors; ++j)
+                            {
+                                std::int32_t k0 = i0 + neighbors[j][0];
+                                std::int32_t k1 = i1 + neighbors[j][1];
+                                std::int32_t k2 = i2 + neighbors[j][2];
+                                if (0 <= k0 && k0 < dim0 &&
+                                    0 <= k1 && k1 < dim1 &&
+                                    0 <= k2 && k2 < dim2)
+                                {
+                                    if (inImage(k0, k1, k2) == 0)
+                                    {
+                                        outImage(i0, i1, i2) = 0;
+                                        break;
+                                    }
+                                }
+                                else if (zeroExterior)
+                                {
+                                    outImage(i0, i1, i2) = 0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Compute an opening with a structuring element consisting of the
+        // N-connected neighbors of each pixel (N is 6, 18, or 26). The input image
+        // is binary with 0 for background and 1 for foreground. The output
+        // image must be an object different from the input image. If
+        // zeroExterior is true, the image exterior is assumed to consist of
+        // 0-valued pixels; otherwise, the image exterior is assumed to
+        // consist of 1-valued pixels.
+        template <std::size_t N>
+        static void Open(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            Image3<std::int32_t>& outImage)
+        {
+            static_assert(N == 6 || N == 18 || N == 26, "Invalid neighborhood type.");
+
+            Image3<std::int32_t> temp(inImage.GetDimension(0), inImage.GetDimension(1), inImage.GetDimension(2));
+            Erode<N>(inImage, zeroExterior, temp);
+            Dilate<N>(temp, outImage);
+        }
+
+        // Compute an opening with a structuring element consisting of
+        // neighbors specified by offsets relative to the voxel. The input
+        // image is binary with 0 for background and 1 for foreground. The
+        // output image must be an object different from the input image. If
+        // zeroExterior is true, the image exterior is assumed to consist of
+        // 0-valued voxels; otherwise, the image exterior is assumed to
+        // consist of 1-valued voxels.
+        static void Open(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            std::size_t numNeighbors,
+            std::array<std::int32_t, 3> const* neighbors,
+            Image3<std::int32_t>& outImage)
+        {
+            Image3<std::int32_t> temp(inImage.GetDimension(0), inImage.GetDimension(1), inImage.GetDimension(2));
+            Erode(inImage, zeroExterior, numNeighbors, neighbors, temp);
+            Dilate(temp, numNeighbors, neighbors, outImage);
+        }
+
+        // Compute a closing with a structuring element consisting of the
+        // N-connected neighbors of each voxel. The input image is binary
+        // with 0 for background and 1 for foreground. The output image must
+        // be an object different from the input image. If zeroExterior is
+        // true, the image exterior is assumed to consist of 0-valued voxels;
+        // otherwise, the image exterior is assumed to consist of 1-valued
+        // voxels.
+        template <std::size_t N>
+        static void Close(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            Image3<std::int32_t>& outImage)
+        {
+            static_assert(N == 4 || N == 8, "Invalid neighborhood type.");
+
+            Image3<std::int32_t> temp(inImage.GetDimension(0), inImage.GetDimension(1));
+            Dilate<N>(inImage, temp);
+            Erode<N>(temp, zeroExterior, outImage);
+        }
+
+        // Compute a closing with a structuring element consisting of
+        // neighbors specified by offsets relative to the voxel. The input
+        // image is binary with 0 for background and 1 for foreground. The
+        // output image must be an object different from the input image. If
+        // zeroExterior is true, the image exterior is assumed to consist of
+        // 0-valued voxels; otherwise, the image exterior is assumed to
+        // consist of 1-valued voxels.
+        static void Close(
+            Image3<std::int32_t> const& inImage,
+            bool zeroExterior,
+            std::size_t numNeighbors,
+            std::array<std::int32_t, 3> const* neighbors,
+            Image3<std::int32_t>& outImage)
+        {
+            Image3<std::int32_t> temp(inImage.GetDimension(0), inImage.GetDimension(1), inImage.GetDimension(2));
+            Dilate(inImage, numNeighbors, neighbors, temp);
+            Erode(temp, zeroExterior, numNeighbors, neighbors, outImage);
+        }
+
+        // Compute coordinate-directional convex set. For a given coordinate
         // direction (x, y, or z), identify the first and last 1-valued voxels
-        // on a segment of voxels in that direction.  All voxels from first to
-        // last are set to 1.  This is done for all segments in each of the
+        // on a segment of voxels in that direction. All voxels from first to
+        // last are set to 1. This is done for all segments in each of the
         // coordinate directions.
-        static void ComputeCDConvex(Image3<int32_t>& image)
+        static void ComputeCDConvex(
+            Image3<std::int32_t>& image)
         {
-            int32_t const dim0 = image.GetDimension(0);
-            int32_t const dim1 = image.GetDimension(1);
-            int32_t const dim2 = image.GetDimension(2);
+            std::int32_t const dim0 = image.GetDimension(0);
+            std::int32_t const dim1 = image.GetDimension(1);
+            std::int32_t const dim2 = image.GetDimension(2);
 
-            Image3<int32_t> temp = image;
-            int32_t i0, i1, i2;
+            Image3<std::int32_t> temp = image;
+            std::int32_t i0{}, i1{}, i2{};
             for (i1 = 0; i1 < dim1; ++i1)
             {
                 for (i0 = 0; i0 < dim0; ++i0)
                 {
-                    int32_t i2min;
+                    std::int32_t i2min;
                     for (i2min = 0; i2min < dim2; ++i2min)
                     {
                         if ((temp(i0, i1, i2min) & 1) == 0)
@@ -126,7 +387,7 @@ namespace gte
                     }
                     if (i2min < dim2)
                     {
-                        int32_t i2max;
+                        std::int32_t i2max;
                         for (i2max = dim2 - 1; i2max >= i2min; --i2max)
                         {
                             if ((temp(i0, i1, i2max) & 1) == 0)
@@ -146,7 +407,7 @@ namespace gte
             {
                 for (i0 = 0; i0 < dim0; ++i0)
                 {
-                    int32_t i1min;
+                    std::int32_t i1min;
                     for (i1min = 0; i1min < dim1; ++i1min)
                     {
                         if ((temp(i0, i1min, i2) & 1) == 0)
@@ -160,7 +421,7 @@ namespace gte
                     }
                     if (i1min < dim1)
                     {
-                        int32_t i1max;
+                        std::int32_t i1max;
                         for (i1max = dim1 - 1; i1max >= i1min; --i1max)
                         {
                             if ((temp(i0, i1max, i2) & 1) == 0)
@@ -180,7 +441,7 @@ namespace gte
             {
                 for (i1 = 0; i1 < dim1; ++i1)
                 {
-                    int32_t i0min;
+                    std::int32_t i0min;
                     for (i0min = 0; i0min < dim0; ++i0min)
                     {
                         if ((temp(i0min, i1, i2) & 1) == 0)
@@ -194,7 +455,7 @@ namespace gte
                     }
                     if (i0min < dim0)
                     {
-                        int32_t i0max;
+                        std::int32_t i0max;
                         for (i0max = dim0 - 1; i0max >= i0min; --i0max)
                         {
                             if ((temp(i0max, i1, i2) & 1) == 0)
@@ -210,23 +471,28 @@ namespace gte
                 }
             }
 
-            for (size_t i = 0; i < image.GetNumPixels(); ++i)
+            for (std::size_t i = 0; i < image.GetNumPixels(); ++i)
             {
                 image[i] = (temp[i] & 2 ? 0 : 1);
             }
         }
 
-        // Use a depth-first search for filling a 6-connected region.  This is
-        // nonrecursive, simulated by using a heap-allocated "stack".  The input
+        // Use a depth-first search for filling a 6-connected region. This is
+        // nonrecursive, simulated by using a heap-allocated "stack". The input
         // (x,y,z) is the seed point that starts the fill.
         template <typename PixelType>
-        static void FloodFill6(Image3<PixelType> & image, int32_t x, int32_t y, int32_t z,
-            PixelType foreColor, PixelType backColor)
+        static void FloodFill6(
+            Image3<PixelType>& image,
+            std::int32_t x,
+            std::int32_t y,
+            std::int32_t z,
+            PixelType foreColor,
+            PixelType backColor)
         {
             // Test for a valid seed.
-            int32_t const dim0 = image.GetDimension(0);
-            int32_t const dim1 = image.GetDimension(1);
-            int32_t const dim2 = image.GetDimension(2);
+            std::int32_t const dim0 = image.GetDimension(0);
+            std::int32_t const dim1 = image.GetDimension(1);
+            std::int32_t const dim2 = image.GetDimension(2);
             if (x < 0 || x >= dim0 || y < 0 || y >= dim1 || z < 0 || z >= dim2)
             {
                 // The seed point is outside the image domain, so there is
@@ -234,21 +500,21 @@ namespace gte
                 return;
             }
 
-            // Allocate the maximum amount of space needed for the stack.  An
+            // Allocate the maximum amount of space needed for the stack. An
             // empty stack has top == -1.
-            size_t const numVoxels = image.GetNumPixels();
-            std::vector<int32_t> xStack(numVoxels), yStack(numVoxels), zStack(numVoxels);
+            std::size_t const numVoxels = image.GetNumPixels();
+            std::vector<std::int32_t> xStack(numVoxels), yStack(numVoxels), zStack(numVoxels);
 
-            // Push seed point onto stack if it has the background color.  All
+            // Push seed point onto stack if it has the background color. All
             // points pushed onto stack have background color backColor.
-            int32_t top = 0;
+            std::int32_t top = 0;
             xStack[top] = x;
             yStack[top] = y;
             zStack[top] = z;
 
             while (top >= 0)  // stack is not empty
             {
-                // Read top of stack.  Do not pop since we need to return to
+                // Read top of stack. Do not pop since we need to return to
                 // this top value later to restart the fill in a different
                 // direction.
                 x = xStack[top];
@@ -258,7 +524,7 @@ namespace gte
                 // Fill the pixel.
                 image(x, y, z) = foreColor;
 
-                int32_t xp1 = x + 1;
+                std::int32_t xp1 = x + 1;
                 if (xp1 < dim0 && image(xp1, y, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -269,7 +535,7 @@ namespace gte
                     continue;
                 }
 
-                int32_t xm1 = x - 1;
+                std::int32_t xm1 = x - 1;
                 if (0 <= xm1 && image(xm1, y, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -280,7 +546,7 @@ namespace gte
                     continue;
                 }
 
-                int32_t yp1 = y + 1;
+                std::int32_t yp1 = y + 1;
                 if (yp1 < dim1 && image(x, yp1, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -291,7 +557,7 @@ namespace gte
                     continue;
                 }
 
-                int32_t ym1 = y - 1;
+                std::int32_t ym1 = y - 1;
                 if (0 <= ym1 && image(x, ym1, z) == backColor)
                 {
                     // Push pixel with background color.
@@ -302,7 +568,7 @@ namespace gte
                     continue;
                 }
 
-                int32_t zp1 = z + 1;
+                std::int32_t zp1 = z + 1;
                 if (zp1 < dim2 && image(x, y, zp1) == backColor)
                 {
                     // Push pixel with background color.
@@ -313,7 +579,7 @@ namespace gte
                     continue;
                 }
 
-                int32_t zm1 = z - 1;
+                std::int32_t zm1 = z - 1;
                 if (0 <= zm1 && image(x, y, zm1) == backColor)
                 {
                     // Push pixel with background color.
@@ -330,21 +596,27 @@ namespace gte
             }
         }
 
-        // Visit pixels using Bresenham's line drawing algorithm.  The callback
+        // Visit pixels using Bresenham's line drawing algorithm. The callback
         // represents the action you want applied to each voxel as it is visited.
-        static void DrawLine(int32_t x0, int32_t y0, int32_t z0, int32_t x1, int32_t y1, int32_t z1,
-            std::function<void(int32_t, int32_t, int32_t)> const& callback)
+        static void DrawLine(
+            std::int32_t x0,
+            std::int32_t y0,
+            std::int32_t z0,
+            std::int32_t x1,
+            std::int32_t y1,
+            std::int32_t z1,
+            std::function<void(std::int32_t, std::int32_t, std::int32_t)> const& callback)
         {
             // Starting point of line.
-            int32_t x = x0, y = y0, z = z0;
+            std::int32_t x = x0, y = y0, z = z0;
 
             // Direction of line.
-            int32_t dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
+            std::int32_t dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
 
             // Increment or decrement depending on direction of line.
-            int32_t sx = (dx > 0 ? 1 : (dx < 0 ? -1 : 0));
-            int32_t sy = (dy > 0 ? 1 : (dy < 0 ? -1 : 0));
-            int32_t sz = (dz > 0 ? 1 : (dz < 0 ? -1 : 0));
+            std::int32_t sx = (dx > 0 ? 1 : (dx < 0 ? -1 : 0));
+            std::int32_t sy = (dy > 0 ? 1 : (dy < 0 ? -1 : 0));
+            std::int32_t sz = (dz > 0 ? 1 : (dz < 0 ? -1 : 0));
 
             // Decision parameters for voxel selection.
             if (dx < 0)
@@ -359,12 +631,12 @@ namespace gte
             {
                 dz = -dz;
             }
-            int32_t ax = 2 * dx, ay = 2 * dy, az = 2 * dz;
-            int32_t decX, decY, decZ;
+            std::int32_t ax = 2 * dx, ay = 2 * dy, az = 2 * dz;
+            std::int32_t decX{}, decY{}, decZ{};
 
             // Determine largest direction component, single-step related
             // variable.
-            int32_t maxValue = dx, var = 0;
+            std::int32_t maxValue = dx, var = 0;
             if (dy > maxValue)
             {
                 maxValue = dy;
@@ -453,113 +725,6 @@ namespace gte
                     }
                 }
                 break;
-            }
-        }
-
-    private:
-        // Dilation using the specified structuring element.
-        static void Dilate(int32_t numNeighbors, std::array<int32_t, 3> const* delta,
-            Image3<int32_t> const& inImage, Image3<int32_t> & outImage)
-        {
-            int32_t const bound0M1 = inImage.GetDimension(0) - 1;
-            int32_t const bound1M1 = inImage.GetDimension(1) - 1;
-            int32_t const bound2M1 = inImage.GetDimension(2) - 1;
-            for (int32_t i2 = 1; i2 < bound2M1; ++i2)
-            {
-                for (int32_t i1 = 1; i1 < bound1M1; ++i1)
-                {
-                    for (int32_t i0 = 1; i0 < bound0M1; ++i0)
-                    {
-                        if (inImage(i0, i1, i2) == 0)
-                        {
-                            for (int32_t n = 0; n < numNeighbors; ++n)
-                            {
-                                int32_t d0 = delta[n][0];
-                                int32_t d1 = delta[n][1];
-                                int32_t d2 = delta[n][2];
-                                if (inImage(i0 + d0, i1 + d1, i2 + d2) == 1)
-                                {
-                                    outImage(i0, i1, i2) = 1;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            outImage(i0, i1, i2) = 1;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Connected component labeling using depth-first search.
-        static void GetComponents(int32_t numNeighbors, int32_t const* delta,
-            Image3<int32_t> & image, std::vector<std::vector<size_t>> & components)
-        {
-            size_t const numVoxels = image.GetNumPixels();
-            std::vector<int32_t> numElements(numVoxels);
-            std::vector<size_t> vstack(numVoxels);
-            size_t i, numComponents = 0;
-            int32_t label = 2;
-            for (i = 0; i < numVoxels; ++i)
-            {
-                if (image[i] == 1)
-                {
-                    int32_t top = -1;
-                    vstack[++top] = i;
-
-                    int32_t& count = numElements[numComponents + 1];
-                    count = 0;
-                    while (top >= 0)
-                    {
-                        size_t v = vstack[top];
-                        image[v] = -1;
-                        int32_t j;
-                        for (j = 0; j < numNeighbors; ++j)
-                        {
-                            size_t adj = v + delta[j];
-                            if (image[adj] == 1)
-                            {
-                                vstack[++top] = adj;
-                                break;
-                            }
-                        }
-                        if (j == numNeighbors)
-                        {
-                            image[v] = label;
-                            ++count;
-                            --top;
-                        }
-                    }
-
-                    ++numComponents;
-                    ++label;
-                }
-            }
-
-            if (numComponents > 0)
-            {
-                components.resize(numComponents + 1);
-                for (i = 1; i <= numComponents; ++i)
-                {
-                    components[i].resize(numElements[i]);
-                    numElements[i] = 0;
-                }
-
-                for (i = 0; i < numVoxels; ++i)
-                {
-                    int32_t value = image[i];
-                    if (value != 0)
-                    {
-                        // Labels started at 2 to support the depth-first
-                        // search, so they need to be decremented for the
-                        // correct labels.
-                        image[i] = --value;
-                        components[value][numElements[value]] = i;
-                        ++numElements[value];
-                    }
-                }
             }
         }
     };
