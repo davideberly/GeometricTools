@@ -3,13 +3,14 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.07.30
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
 // Compute the distance from a point to a cylinder that is finite or infinite.
 // The queries consider the cylinder to be a solid.
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Cylinder3.h>
 #include <Mathematics/Vector3.h>
