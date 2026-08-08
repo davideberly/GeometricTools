@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
@@ -160,7 +160,7 @@ namespace gte
                 // whose f-value has smaller magnitude.
                 T fMin = F(tMin, s);
                 T fMax = F(tMax, s);
-                if (fMin <= fMax)
+                if (std::fabs(fMin) <= std::fabs(fMax))
                 {
                     tMid = tMin;
                     fMid = fMin;
