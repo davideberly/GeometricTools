@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.07
 
 #pragma once
 
@@ -249,7 +249,7 @@ namespace gte
         static T P2D5(T const& t)
         {
             T const k1 = static_cast<T>(1);
-            return -P3D4(k1 - t);
+            return -P3D5(k1 - t);
         }
 
         static T P3D0(T const& t)
