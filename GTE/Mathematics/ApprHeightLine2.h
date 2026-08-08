@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
@@ -51,26 +51,23 @@ namespace gte
                 }
                 mean /= (Real)numIndices;
 
-                if (std::isfinite(mean[0]) && std::isfinite(mean[1]))
+                // Compute the covariance matrix of the points.
+                Real covar00 = (Real)0, covar01 = (Real)0;
+                currentIndex = indices;
+                for (size_t i = 0; i < numIndices; ++i)
                 {
-                    // Compute the covariance matrix of the points.
-                    Real covar00 = (Real)0, covar01 = (Real)0;
-                    currentIndex = indices;
-                    for (size_t i = 0; i < numIndices; ++i)
-                    {
-                        Vector2<Real> diff = points[*currentIndex++] - mean;
-                        covar00 += diff[0] * diff[0];
-                        covar01 += diff[0] * diff[1];
-                    }
+                    Vector2<Real> diff = points[*currentIndex++] - mean;
+                    covar00 += diff[0] * diff[0];
+                    covar01 += diff[0] * diff[1];
+                }
 
-                    // Decompose the covariance matrix.
-                    if (covar00 > (Real)0)
-                    {
-                        mParameters.first = mean;
-                        mParameters.second[0] = covar01 / covar00;
-                        mParameters.second[1] = (Real)-1;
-                        return true;
-                    }
+                // Decompose the covariance matrix.
+                if (covar00 > (Real)0)
+                {
+                    mParameters.first = mean;
+                    mParameters.second[0] = covar01 / covar00;
+                    mParameters.second[1] = (Real)-1;
+                    return true;
                 }
             }
 

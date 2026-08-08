@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.21
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
@@ -52,33 +52,30 @@ namespace gte
                 }
                 mean /= (Real)numIndices;
 
-                if (std::isfinite(mean[0]) && std::isfinite(mean[1]) && std::isfinite(mean[2]))
+                // Compute the covariance matrix of the points.
+                Real covar00 = (Real)0, covar01 = (Real)0, covar02 = (Real)0;
+                Real covar11 = (Real)0, covar12 = (Real)0;
+                currentIndex = indices;
+                for (size_t i = 0; i < numIndices; ++i)
                 {
-                    // Compute the covariance matrix of the points.
-                    Real covar00 = (Real)0, covar01 = (Real)0, covar02 = (Real)0;
-                    Real covar11 = (Real)0, covar12 = (Real)0;
-                    currentIndex = indices;
-                    for (size_t i = 0; i < numIndices; ++i)
-                    {
-                        Vector3<Real> diff = points[*currentIndex++] - mean;
-                        covar00 += diff[0] * diff[0];
-                        covar01 += diff[0] * diff[1];
-                        covar02 += diff[0] * diff[2];
-                        covar11 += diff[1] * diff[1];
-                        covar12 += diff[1] * diff[2];
-                    }
+                    Vector3<Real> diff = points[*currentIndex++] - mean;
+                    covar00 += diff[0] * diff[0];
+                    covar01 += diff[0] * diff[1];
+                    covar02 += diff[0] * diff[2];
+                    covar11 += diff[1] * diff[1];
+                    covar12 += diff[1] * diff[2];
+                }
 
-                    // Decompose the covariance matrix.
-                    Real det = covar00 * covar11 - covar01 * covar01;
-                    if (det != (Real)0)
-                    {
-                        Real invDet = (Real)1 / det;
-                        mParameters.first = mean;
-                        mParameters.second[0] = (covar11 * covar02 - covar01 * covar12) * invDet;
-                        mParameters.second[1] = (covar00 * covar12 - covar01 * covar02) * invDet;
-                        mParameters.second[2] = (Real)-1;
-                        return true;
-                    }
+                // Decompose the covariance matrix.
+                Real det = covar00 * covar11 - covar01 * covar01;
+                if (det != (Real)0)
+                {
+                    Real invDet = (Real)1 / det;
+                    mParameters.first = mean;
+                    mParameters.second[0] = (covar11 * covar02 - covar01 * covar12) * invDet;
+                    mParameters.second[1] = (covar00 * covar12 - covar01 * covar02) * invDet;
+                    mParameters.second[2] = (Real)-1;
+                    return true;
                 }
             }
 
