@@ -19,9 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\AdaptiveSkeletonClimbing2.h" />
     <ClInclude Include="Mathematics\AdaptiveSkeletonClimbing3.h" />
+    <ClInclude Include="Mathematics\AlignedBoxBV.h" />
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfPoints.h" />
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfSegments.h" />
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\APConversion.h" />
     <ClInclude Include="Mathematics\APInterval.h" />
     <ClInclude Include="Mathematics\ApprCircle2.h" />
@@ -78,6 +81,8 @@
     <ClInclude Include="Mathematics\BSPrecision.h" />
     <ClInclude Include="Mathematics\BSRational.h" />
     <ClInclude Include="Mathematics\BVTree.h" />
+    <ClInclude Include="Mathematics\BVTreeOfPoints.h" />
+    <ClInclude Include="Mathematics\BVTreeOfSegments.h" />
     <ClInclude Include="Mathematics\BVTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\CanonicalBox.h" />
     <ClInclude Include="Mathematics\ChebyshevRatioEstimate.h" />
@@ -429,15 +434,16 @@
     <ClInclude Include="Mathematics\MinimumWidthPoints2.h" />
     <ClInclude Include="Mathematics\NaturalCubicSpline.h" />
     <ClInclude Include="Mathematics\NaturalQuinticSpline.h" />
-    <ClInclude Include="Mathematics\OBBTree.h" />
-    <ClInclude Include="Mathematics\OBBTreeOfSegments.h" />
-    <ClInclude Include="Mathematics\OBBTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\OdeEuler.h" />
     <ClInclude Include="Mathematics\OdeImplicitEuler.h" />
     <ClInclude Include="Mathematics\OdeMidpoint.h" />
     <ClInclude Include="Mathematics\OdeRungeKutta4.h" />
     <ClInclude Include="Mathematics\OdeSolver.h" />
     <ClInclude Include="Mathematics\OrientedBox.h" />
+    <ClInclude Include="Mathematics\OrientedBoxBV.h" />
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfPoints.h" />
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfSegments.h" />
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfTriangles.h" />
     <ClInclude Include="Mathematics\Parallelepiped3.h" />
     <ClInclude Include="Mathematics\Parallelogram2.h" />
     <ClInclude Include="Mathematics\ParticleSystem.h" />
@@ -540,7 +546,6 @@
     <ClInclude Include="Mathematics\NURBSSphere.h" />
     <ClInclude Include="Mathematics\NURBSSurface.h" />
     <ClInclude Include="Mathematics\NURBSVolume.h" />
-    <ClInclude Include="Mathematics\OBBTreeOfPoints.h" />
     <ClInclude Include="Mathematics\ParametricCurve.h" />
     <ClInclude Include="Mathematics\ParametricSurface.h" />
     <ClInclude Include="Mathematics\Polynomial1.h" />

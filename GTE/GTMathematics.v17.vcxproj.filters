@@ -579,9 +579,6 @@
     <ClInclude Include="Mathematics\NearestNeighborQuery.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\OBBTreeOfPoints.h">
-      <Filter>ComputationalGeometry</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\PrimalQuery2.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
@@ -1581,15 +1578,6 @@
     <ClInclude Include="Mathematics\SortPointsOnCircle.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\OBBTree.h">
-      <Filter>ComputationalGeometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\OBBTreeOfTriangles.h">
-      <Filter>ComputationalGeometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Mathematics\OBBTreeOfSegments.h">
-      <Filter>ComputationalGeometry</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\IntrAreaEllipse2Ellipse2.h">
       <Filter>Intersection\2D</Filter>
     </ClInclude>
@@ -1683,9 +1671,6 @@
     <ClInclude Include="Mathematics\IntrSegment3Rectangle3.h">
       <Filter>Intersection\3D</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\AABBBVTreeOfTriangles.h">
-      <Filter>ComputationalGeometry</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\BVTreeOfTriangles.h">
       <Filter>ComputationalGeometry</Filter>
     </ClInclude>
@@ -1754,6 +1739,36 @@
     </ClInclude>
     <ClInclude Include="Mathematics\IntrTriangle3AlignedBox3.h">
       <Filter>Intersection\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AlignedBoxBV.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OrientedBoxBV.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfTriangles.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfSegments.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\AlignedBoxTreeOfPoints.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfSegments.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\OrientedBoxTreeOfPoints.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTreeOfPoints.h">
+      <Filter>ComputationalGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathematics\BVTreeOfSegments.h">
+      <Filter>ComputationalGeometry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
