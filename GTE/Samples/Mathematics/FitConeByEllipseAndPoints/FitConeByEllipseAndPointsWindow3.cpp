@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.08
 
 #include "FitConeByEllipseAndPointsWindow3.h"
 #include <Graphics/MeshFactory.h>
@@ -272,6 +272,7 @@ void FitConeByEllipseAndPointsWindow3::CreateScene()
     mf.SetVertexFormat(vformat);
 
     mBoxMesh.reserve(boxes.size());
+    mBoxMesh.clear();
     for (size_t i = 0; i < boxes.size(); ++i)
     {
         auto const& box = boxes[i];

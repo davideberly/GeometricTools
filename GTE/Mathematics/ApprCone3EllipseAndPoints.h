@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
@@ -21,7 +21,7 @@
 #include <Mathematics/Ellipse3.h>
 #include <Mathematics/Hyperplane.h>
 #include <Mathematics/Minimize1.h>
-#include <Mathematics/OBBTreeOfPoints.h>
+#include <Mathematics/OrientedBoxTreeOfPoints.h>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -232,6 +232,9 @@ namespace gte
     class ApprCone3ExtractEllipses
     {
     public:
+        using OBBTree = OrientedBoxTreeOfPoints<T>;
+        using OBBNode = typename OBBTree::Node;
+            
         ApprCone3ExtractEllipses()
             :
             mBoxExtentEpsilon(static_cast<T>(0)),
@@ -280,7 +283,7 @@ namespace gte
         }
 
         // Accessors for informational purposes.
-        inline std::vector<OBBNode<T>> const&
+        inline std::vector<OBBNode> const&
         GetOBBTree() const
         {
             return mOBBTree;
@@ -304,7 +307,7 @@ namespace gte
     private:
         void CreateOBBTree(std::vector<Vector3<T>> const& points)
         {
-            OBBTreeOfPoints<T> creator{};
+            OBBTree creator{};
             creator.Create(points);
             mOBBTree = creator.GetNodes();
         }
@@ -314,12 +317,13 @@ namespace gte
             auto const& node = mOBBTree[nodeIndex];
             if (node.maxIndex >= node.minIndex + 2)
             {
+                auto const& box = node.boundingVolume.box;
                 for (int32_t j = 0; j < 3; ++j)
                 {
-                    if (node.box.extent[j] <= mBoxExtentEpsilon)
+                    if (box.extent[j] <= mBoxExtentEpsilon)
                     {
-                        mBoxes.push_back(node.box);
-                        Plane3<T> plane(node.box.axis[j], node.box.center);
+                        mBoxes.push_back(box);
+                        Plane3<T> plane(box.axis[j], box.center);
                         ProcessPlane(plane);
                         return;
                     }
@@ -442,7 +446,7 @@ namespace gte
         }
 
         T mBoxExtentEpsilon, mCosAngleEpsilon;
-        std::vector<OBBNode<T>> mOBBTree;
+        std::vector<OBBNode> mOBBTree;
         std::vector<Plane3<T>> mPlanes;
         std::vector<std::vector<int32_t>> mIndices;
         std::vector<OrientedBox3<T>> mBoxes;

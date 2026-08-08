@@ -1,13 +1,15 @@
-// David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2026
-// Distributed under the Boost Software License, Version 1.0.
+// Geometric Tools Library
+// https://www.geometrictools.com
+// Copyright (c) 2025 Geometric Tools LLC
+// Distributed under the Boost Software License, Version 1.0
 // https://www.boost.org/LICENSE_1_0.txt
-// https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.08.01
+// File Version: 8.3.2026.08.08
 
 #pragma once
 
-// Read the comments in BVTree.h regarding tree construction.
+// Read the comments in BVTree.h regarding tree construction. Although this
+// class appears to be non-abstract, the BoundingVolume type has requirements
+// for its interface. In this sense, BVTreeOfTriangles is abstract.
 
 #include <Mathematics/BVTree.h>
 #include <Mathematics/IntrLine3Triangle3.h>
@@ -18,6 +20,7 @@
 #include <cstdint>
 #include <limits>
 #include <set>
+#include <utility>
 #include <vector>
 
 namespace gte
@@ -31,14 +34,7 @@ namespace gte
             BVTree<T, BoundingVolume>{},
             mVertices{},
             mTriangles{},
-            mBoundingVolumeQueries
-            {
-                BoundingVolume::IntersectLine,
-                BoundingVolume::IntersectRay,
-                BoundingVolume::IntersectSegment
-            },
-            mTriangleQueries
-            {
+            mLinearTriangleQuery{
                 IntersectLineTriangle,
                 IntersectRayTriangle,
                 IntersectSegmentTriangle
@@ -47,33 +43,32 @@ namespace gte
         }
 
         // The input height specifies the desired height of the tree and must
-        // be no larger than 31. If std::numeric_limits<size_t>::max(), the
+        // be no larger than 31. If std::numeric_limits<std::size_t>::max(), the
         // the entire tree is built and the actual height is computed from
-        // centroids.size(). If larger than 31, the height is clamped to 31.
+        // vertices.size(). If larger than 31, the height is clamped to 31.
         void Create(
             std::vector<Vector3<T>> const& vertices,
-            std::vector<std::array<size_t, 3>> const& triangles,
-            size_t height = std::numeric_limits<size_t>::max())
+            std::vector<std::array<std::size_t, 3>> const& triangles,
+            std::size_t height = std::numeric_limits<std::size_t>::max())
         {
             LogAssert(
                 vertices.size() >= 3 && triangles.size() > 0,
-                "Invalid input.");
+                "Expecting at least 3 vertices and at least 1 triangle.");
 
             mVertices = vertices;
             mTriangles = triangles;
 
             // Compute the triangle centroids.
-            this->mCentroids.resize(mTriangles.size());
+            std::vector<Vector3<T>> centroids(mTriangles.size());
             T const three = static_cast<T>(3);
-            for (size_t t = 0; t < mTriangles.size(); ++t)
+            for (std::size_t t = 0; t < mTriangles.size(); ++t)
             {
                 auto const& tri = mTriangles[t];
-                this->mCentroids[t] =
-                    (mVertices[tri[0]] + mVertices[tri[1]] + mVertices[tri[2]]) / three;
+                centroids[t] = (mVertices[tri[0]] + mVertices[tri[1]] + mVertices[tri[2]]) / three;
             }
 
             // Create the bounding volume tree for centroids.
-            BVTree<T, BoundingVolume>::Create(height);
+            BVTree<T, BoundingVolume>::Create(std::move(centroids), height);
         }
 
         // Member access.
@@ -82,33 +77,26 @@ namespace gte
             return mVertices;
         }
 
-        inline std::vector<std::array<size_t, 3>> const& GetTriangles() const
+        inline std::vector<std::array<std::size_t, 3>> const& GetTriangles() const
         {
             return mTriangles;
         }
 
-        // Generate a list of triangles intersected by a linear component
-        // (line, ray or segment). The line is parameterized by P + t * Q,
-        // where Q is a unit-length direction and t is any real number. The
-        // ray is parameterized by P + t * Q, where Q is a unit-length
-        // direction and t >= 0. The segment is parameterized by
-        // (1-t) * P + t * Q = P + t * (Q - P), where P and Q are the
-        // endpoints of the segment and 0 <= t <= 1.
-        static uint32_t constexpr LINE_QUERY = 0;
-        static uint32_t constexpr RAY_QUERY = 1;
-        static uint32_t constexpr SEGMENT_QUERY = 2;
-
-        struct Intersection
+        class Intersection
         {
+        public:
             Intersection()
                 :
-                triangleIndex(std::numeric_limits<size_t>::max()),
-                point(Vector3<T>::Zero()),
+                triangleIndex(std::numeric_limits<std::size_t>::max()),
+                point{},
                 parameter(static_cast<T>(0))
             {
             }
 
-            Intersection(size_t inTriangleIndex, Vector3<T> const& inPoint, T const& inParameter)
+            Intersection(
+                std::size_t inTriangleIndex,
+                Vector3<T> const& inPoint,
+                T const& inParameter)
                 :
                 triangleIndex(inTriangleIndex),
                 point(inPoint),
@@ -121,136 +109,81 @@ namespace gte
                 return parameter < other.parameter;
             }
 
-            size_t triangleIndex;
+            std::size_t triangleIndex;
             Vector3<T> point;
             T parameter;
         };
 
-        // The intersections are sorted by the parameter.
-        void Execute(uint32_t queryType, Vector3<T> const& P, Vector3<T> const& Q,
+        // Compute intersections of the linear component and triangles. These
+        // are sorted by the parameter of the linear component.
+        void Execute(
+            std::uint32_t queryType,
+            Vector3<T> const& P,
+            Vector3<T> const& Q,
+            std::vector<std::size_t>& nodeIndices,
             std::set<Intersection>& intersections)
         {
-            size_t constexpr invalid = std::numeric_limits<size_t>::max();
+            this->GetLeafIndices(queryType, P, Q, nodeIndices);
+
+            LinearTriangleQuery linearTriangleQuery = mLinearTriangleQuery[queryType];
+            Vector3<T> point{};
+            T parameter{};
             intersections.clear();
-
-            std::vector<size_t> indexStack(2 * this->mHeight + 1);
-            size_t top = 0;
-            indexStack[0] = 0;
-            while (top != std::numeric_limits<size_t>::max())
+            for (auto const& leafIndex : nodeIndices)
             {
-                size_t nodeIndex = indexStack[top--];
-                auto const& node = this->mNodes[nodeIndex];
-
-                // For tne balanced tree created by OBBTree<T>, an interior
-                // node has two valid children and a leaf node has two invalid
-                // children. This is true even if the height passed to
-                // OBBTree<T>::Create is smaller than the actual height.
-                if (node.leftChild != invalid && node.rightChild != invalid)
+                auto const& node = this->mNodes[leafIndex];
+                for (std::size_t i = node.minIndex; i <= node.maxIndex; ++i)
                 {
-                    // The node is interior.
-                    if (mBoundingVolumeQueries[queryType](P, Q, node.boundingVolume))
+                    std::size_t triangleIndex = this->mPartition[i];
+                    auto const& tri = mTriangles[triangleIndex];
+                    Triangle3<T> triangle(mVertices[tri[0]], mVertices[tri[1]], mVertices[tri[2]]);
+                    if (linearTriangleQuery(P, Q, triangle, point, parameter))
                     {
-                        // The linear component intersects the box. Continue
-                        // the intersection search to child nodes if they
-                        // exist.
-                        indexStack[++top] = node.rightChild;
-                        indexStack[++top] = node.leftChild;
-                    }
-                    else
-                    {
-                        // The linear component does not intersect the box.
-                        // There are no triangles intersected in the subtree
-                        // rooted at this node. Do not continue the
-                        // intersection search to child nodes if they exist.
-                    }
-                }
-                else // node.leftChild == invalid && node.rightChild == invalid
-                {
-                    for (size_t i = node.minIndex; i <= node.maxIndex; ++i)
-                    {
-                        size_t triangleIndex = this->mPartition[i];
-                        auto const& tri = mTriangles[triangleIndex];
-                        Triangle3<T> triangle(mVertices[tri[0]], mVertices[tri[1]], mVertices[tri[2]]);
-                        auto triResult = mTriangleQueries[queryType](P, Q, triangle);
-                        if (triResult.intersect)
-                        {
-                            intersections.insert(Intersection(triangleIndex,
-                                triResult.point, triResult.parameter));
-                        }
+                        intersections.insert(Intersection(triangleIndex, point, parameter));
                     }
                 }
             }
         }
 
     protected:
-        std::vector<Vector3<T>> mVertices;
-        std::vector<std::array<size_t, 3>> mTriangles;
+        using LinearTriangleQuery = bool (*)(Vector3<T> const&, Vector3<T> const&,
+            Triangle3<T> const&, Vector3<T>&, T&);
 
-    private:
-        // Function signature for {line,ray,segment}-boundingVolume
-        // test-intersection queries.
-        using BoundingVolumeQuery = bool (*)(
-            Vector3<T> const&, Vector3<T> const&, BoundingVolume const&);
-
-        // Support for {line,ray,segment}-triangle find-intersection queries.
-        struct TriangleResult
-        {
-            bool intersect;
-            Vector3<T> point;
-            T parameter;
-        };
-
-        using TriangleQuery = TriangleResult (*)(
-            Vector3<T> const&, Vector3<T> const&, Triangle3<T> const&);
-
-        static TriangleResult IntersectLineTriangle(Vector3<T> const& P,
-            Vector3<T> const& Q, Triangle3<T> const& triangle)
+        static bool IntersectLineTriangle(Vector3<T> const& P, Vector3<T> const& Q,
+            Triangle3<T> const& triangle, Vector3<T>& point, T& parameter)
         {
             FIQuery<T, Line3<T>, Triangle3<T>> query{};
-            auto result = query(Line3<T>(P, Q), triangle);
-
-            TriangleResult triResult{};
-            triResult.intersect = result.intersect;
-            triResult.point = result.point;
-            triResult.parameter = result.parameter;
-            return triResult;
+            auto output = query(Line3<T>(P, Q), triangle);
+            point = output.point;
+            parameter = output.parameter;
+            return output.intersect;
         }
 
-        static TriangleResult IntersectRayTriangle(Vector3<T> const& P,
-            Vector3<T> const& Q, Triangle3<T> const& triangle)
+        static bool IntersectRayTriangle(Vector3<T> const& P, Vector3<T> const& Q,
+            Triangle3<T> const& triangle, Vector3<T>& point, T& parameter)
         {
             FIQuery<T, Ray3<T>, Triangle3<T>> query{};
-            auto result = query(Ray3<T>(P, Q), triangle);
-
-            TriangleResult triResult{};
-            triResult.intersect = result.intersect;
-            triResult.point = result.point;
-            triResult.parameter = result.parameter;
-            return triResult;
+            auto output = query(Ray3<T>(P, Q), triangle);
+            point = output.point;
+            parameter = output.parameter;
+            return output.intersect;
         }
 
-        static TriangleResult IntersectSegmentTriangle(Vector3<T> const& P,
-            Vector3<T> const& Q, Triangle3<T> const& triangle)
+        static bool IntersectSegmentTriangle(Vector3<T> const& P, Vector3<T> const& Q,
+            Triangle3<T> const& triangle, Vector3<T>& point, T& parameter)
         {
             FIQuery<T, Segment3<T>, Triangle3<T>> query{};
-            auto result = query(Segment3<T>(P, Q), triangle);
-
-            // The segment is converted to centered form in the query. That
-            // form is C + s * D, where C is the midpoint of the segment,
-            // D is a unit-length vector and |s| <= e for segment extent
-            // (half length) e. The t-parameter must be converted back to
-            // (1-t)*P+t*Q where t in [0,1]. Thus, t = (s+e)/(2*e) which
-            // is equivalent to s/Length(Q-P)+1/2.
-            TriangleResult triResult{};
-            triResult.intersect = result.intersect;
-            triResult.point = result.point;
-            triResult.parameter = result.parameter / Length(Q - P) + static_cast<T>(0.5);
-            return triResult;
+            auto output = query(Segment3<T>(P, Q), triangle);
+            point = output.point;
+            parameter = output.parameter;
+            return output.intersect;
         }
 
-        std::array<BoundingVolumeQuery, 3> mBoundingVolumeQueries;
-        std::array<TriangleQuery, 3> mTriangleQueries;
+        std::vector<Vector3<T>> mVertices;
+        std::vector<std::array<std::size_t, 3>> mTriangles;
+        std::array<LinearTriangleQuery, 3> mLinearTriangleQuery;
+
+    private:
+        friend class UnitTestBVTreeOfTriangles;
     };
 }
-
-
