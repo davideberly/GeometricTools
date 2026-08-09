@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.3.2026.08.08
+// File Version: 8.3.2026.08.09
 
 #pragma once
 
@@ -228,7 +228,7 @@ namespace gte
             nodeIndices.clear();
 
             auto linearBoundaryVolumeQuery = this->mLinearBoundingVolumeQuery[queryType];
-            std::vector<std::size_t> indexStack(2 * this->mHeight);
+            std::vector<std::size_t> indexStack(2 * this->mHeight + 1);
             std::size_t top = 0;
             indexStack[0] = 0;
             while (top != std::numeric_limits<std::size_t>::max())
