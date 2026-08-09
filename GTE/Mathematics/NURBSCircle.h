@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.08
 
 #pragma once
 
@@ -34,6 +34,7 @@ namespace gte
             :
             NURBSCurve<2, T>(BasisFunctionInput<T>(3, 2), nullptr, nullptr)
         {
+            T const zero = static_cast<T>(0);
             T const one = static_cast<T>(1);
             T const two = static_cast<T>(2);
             T const sqrt2 = std::sqrt(two);
@@ -42,9 +43,9 @@ namespace gte
             this->mWeights[1] = one;
             this->mWeights[2] = sqrt2;
 
-            this->mControls[0] = { one, one };
+            this->mControls[0] = { one, zero };
             this->mControls[1] = { one, one };
-            this->mControls[2] = { one, one };
+            this->mControls[2] = { zero, one };
         }
     };
 
