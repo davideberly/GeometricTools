@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.10
 
 #pragma once
 
@@ -54,6 +54,8 @@ namespace gte
         // Vector<N,Real>::Unit(d), and all extents to 1.
         Hyperellipsoid()
         {
+            static_assert(N >= 2, "Invalid dimension.");
+
             center.MakeZero();
             for (int32_t d = 0; d < N; ++d)
             {
@@ -70,6 +72,7 @@ namespace gte
             axis(inAxis),
             extent(inExtent)
         {
+            static_assert(N >= 2, "Invalid dimension.");
         }
 
         // Compute M = sum_{d=0}^{N-1} U[d]*U[d]^T/e[d]^2.
@@ -105,41 +108,28 @@ namespace gte
             ToCoefficients(A, B, C);
             Convert(A, B, C, coeff);
 
-            // Arrange for one of the coefficients of the quadratic terms
-            // to be 1.
-            int32_t quadIndex = numCoefficients - 1;
-            int32_t maxIndex = quadIndex;
-            Real maxValue = std::fabs(coeff[quadIndex]);
-            // NOTE: When N = 2, MSVS 2019 16+ generates:
-            //   warning C6294: Ill-defined for-loop: initial condition does
-            //   not satisfy test. Loop body not executed.
-            // This is the correct behavior for N = 2.
-            int32_t localN = N;
-            if (localN >= 3)
+            // For numerical robustness, divide the coefficients by the
+            // quadratic coefficient of largest magnitude. The resulting
+            // coefficients are in [-1,1]. The number of coefficients is
+            // (N+1)*(N+2)/2. Of these, 1 is the constant term, N are the
+            // linear terms, and (N+1)*(N+2)/2 - N - 1 = N(N+1)/2 are the
+            // quadratic terms. The i-values in coeff[i] for the quadratic
+            // terms satisfy: N + 1 <= i < (N+1)*(N+2)/2
+            Real maxValue = static_cast<Real>(0);
+            int32_t maxIndex = -1;
+            for (int32_t i = N + 1; i < numCoefficients; ++i)
             {
-                for (int32_t d = 2; d < localN; ++d)
+                Real absValue = std::fabs(coeff[i]);
+                if (absValue > maxValue)
                 {
-                    quadIndex -= d;
-                    Real absValue = std::fabs(coeff[quadIndex]);
-                    if (absValue > maxValue)
-                    {
-                        maxIndex = quadIndex;
-                        maxValue = absValue;
-                    }
+                    maxValue = absValue;
+                    maxIndex = i;
                 }
             }
 
-            Real invMaxValue = (Real)1 / maxValue;
             for (int32_t i = 0; i < numCoefficients; ++i)
             {
-                if (i != maxIndex)
-                {
-                    coeff[i] *= invMaxValue;
-                }
-                else
-                {
-                    coeff[i] = (Real)1;
-                }
+                coeff[i] /= maxValue;
             }
         }
 
@@ -241,13 +231,6 @@ namespace gte
                     A(r, c) = A(c, r);
                 }
 
-                // NOTE: MSVS 2019 16+ generates for N = 2:
-                //   warning C28020: The expression
-                //   '0 <= _Param_(1)&&_Param(1)<=6-1' is not true at this
-                //   call.
-                // A similar warning occurs for N = 3 (upper bound is 10-1).
-                // The warning is incorrect.
-                //
                 // When r = N-1, i = (N+1)*(N+2)/2 - 1 which corresponds to
                 // the last element of coeff[]. The assignment is valid. After
                 // the assignment, i is incremented and now out of range for
@@ -274,9 +257,6 @@ namespace gte
                 coeff[i] = B[j];
             }
 
-            // The structure of the following code avoids incorrect warnings
-            // C28020 when using MSVS 2019 16.* on the previous implementation
-            // of this function.
             i = N + 1;
             for (int32_t r = 0; r < N; ++r)
             {
