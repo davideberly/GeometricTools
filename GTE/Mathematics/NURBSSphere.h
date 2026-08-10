@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.10
 
 #pragma once
 
@@ -16,11 +16,12 @@
 //   NURBSFullSphereDegree3 implements Section 2.3 (rectangular domain)
 // TODO: The class NURBSSurface currently assumes a rectangular domain.
 // Once support is added for triangular domains, make that new class a
-// base class of the sphere-representing NURBS.  This will allow sharing
+// base class of the sphere-representing NURBS. This will allow sharing
 // of the NURBS basis functions and evaluation framework.
 
 #include <Mathematics/NURBSSurface.h>
 #include <Mathematics/Vector3.h>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -31,8 +32,8 @@ namespace gte
     class NURBSEighthSphereDegree4
     {
     public:
-        // Construction.  The eigth sphere is x^2 + y^2 + z^2 = 1 for x >= 0,
-        // y >= 0 and z >= 0.
+        // The eigth sphere is x^2 + y^2 + z^2 = 1 for x >= 0, y >= 0,
+        // and z >= 0.
         NURBSEighthSphereDegree4()
         {
             Real const sqrt2 = std::sqrt((Real)2);
@@ -45,86 +46,83 @@ namespace gte
             Real const b2 = (Real)4;
             Real const b3 = sqrt2 * ((Real)3 + (Real)2 * sqrt2 - sqrt3) / sqrt3;
 
-            mControls[0][0] = { (Real)0, (Real)0, (Real)1 };   // P004
-            mControls[0][1] = { (Real)0, a0,   (Real)1 };   // P013
-            mControls[0][2] = { (Real)0, a1,   a1 };     // P022
-            mControls[0][3] = { (Real)0, (Real)1, a0 };     // P031
-            mControls[0][4] = { (Real)0, (Real)1, (Real)0 };   // P040
+            mControls[0][0] = { (Real)0, (Real)0, (Real)1 };    // P004
+            mControls[0][1] = { (Real)0, a0,   (Real)1 };       // P013
+            mControls[0][2] = { (Real)0, a1,   a1 };            // P022
+            mControls[0][3] = { (Real)0, (Real)1, a0 };         // P031
+            mControls[0][4] = { (Real)0, (Real)1, (Real)0 };    // P040
 
-            mControls[1][0] = { a0,   (Real)0, (Real)1 };   // P103
-            mControls[1][1] = { a2,   a2,   (Real)1 };   // P112
-            mControls[1][2] = { a2,   (Real)1, a2 };     // P121
-            mControls[1][3] = { a0,   (Real)1, (Real)0 };   // P130
-            mControls[1][4] = { (Real)0, (Real)0, (Real)0 };   // unused
+            mControls[1][0] = { a0,   (Real)0, (Real)1 };       // P103
+            mControls[1][1] = { a2,   a2,   (Real)1 };          // P112
+            mControls[1][2] = { a2,   (Real)1, a2 };            // P121
+            mControls[1][3] = { a0,   (Real)1, (Real)0 };       // P130
+            mControls[1][4] = { (Real)0, (Real)0, (Real)0 };    // unused
 
-            mControls[2][0] = { a1,   (Real)0, a1 };     // P202
-            mControls[2][1] = { (Real)1, a2,   a2 };     // P211
-            mControls[2][2] = { a1,   a1,   (Real)0 };   // P220
-            mControls[2][3] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[2][4] = { (Real)0, (Real)0, (Real)0 };   // unused
+            mControls[2][0] = { a1,   (Real)0, a1 };            // P202
+            mControls[2][1] = { (Real)1, a2,   a2 };            // P211
+            mControls[2][2] = { a1,   a1,   (Real)0 };          // P220
+            mControls[2][3] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[2][4] = { (Real)0, (Real)0, (Real)0 };    // unused
 
-            mControls[3][0] = { (Real)1, (Real)0, a0 };     // P301
-            mControls[3][1] = { (Real)1, a0,   (Real)0 };   // P310
-            mControls[3][2] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[3][3] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[3][4] = { (Real)0, (Real)0, (Real)0 };   // unused
+            mControls[3][0] = { (Real)1, (Real)0, a0 };         // P301
+            mControls[3][1] = { (Real)1, a0,   (Real)0 };       // P310
+            mControls[3][2] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[3][3] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[3][4] = { (Real)0, (Real)0, (Real)0 };    // unused
 
-            mControls[4][0] = { (Real)1, (Real)0, (Real)0 };   // P400
-            mControls[4][1] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[4][2] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[4][3] = { (Real)0, (Real)0, (Real)0 };   // unused
-            mControls[4][4] = { (Real)0, (Real)0, (Real)0 };   // unused
+            mControls[4][0] = { (Real)1, (Real)0, (Real)0 };    // P400
+            mControls[4][1] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[4][2] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[4][3] = { (Real)0, (Real)0, (Real)0 };    // unused
+            mControls[4][4] = { (Real)0, (Real)0, (Real)0 };    // unused
 
-            mWeights[0][0] = b0;    // w004
-            mWeights[0][1] = b1;    // w013
-            mWeights[0][2] = b2;    // w022
-            mWeights[0][3] = b1;    // w031
-            mWeights[0][4] = b0;    // w040
+            mWeights[0][0] = b0;        // w004
+            mWeights[0][1] = b1;        // w013
+            mWeights[0][2] = b2;        // w022
+            mWeights[0][3] = b1;        // w031
+            mWeights[0][4] = b0;        // w040
 
-            mWeights[1][0] = b1;    // w103
-            mWeights[1][1] = b3;    // w112
-            mWeights[1][2] = b3;    // w121
-            mWeights[1][3] = b1;    // w130
-            mWeights[1][4] = (Real)0;  // unused
+            mWeights[1][0] = b1;        // w103
+            mWeights[1][1] = b3;        // w112
+            mWeights[1][2] = b3;        // w121
+            mWeights[1][3] = b1;        // w130
+            mWeights[1][4] = (Real)0;   // unused
 
-            mWeights[2][0] = b2;    // w202
-            mWeights[2][1] = b3;    // w211
-            mWeights[2][2] = b2;    // w220
-            mWeights[2][3] = (Real)0;  // unused
-            mWeights[2][4] = (Real)0;  // unused
+            mWeights[2][0] = b2;        // w202
+            mWeights[2][1] = b3;        // w211
+            mWeights[2][2] = b2;        // w220
+            mWeights[2][3] = (Real)0;   // unused
+            mWeights[2][4] = (Real)0;   // unused
 
-            mWeights[3][0] = b1;    // w301
-            mWeights[3][1] = b1;    // w310
-            mWeights[3][2] = (Real)0;  // unused
-            mWeights[3][3] = (Real)0;  // unused
-            mWeights[3][4] = (Real)0;  // unused
+            mWeights[3][0] = b1;        // w301
+            mWeights[3][1] = b1;        // w310
+            mWeights[3][2] = (Real)0;   // unused
+            mWeights[3][3] = (Real)0;   // unused
+            mWeights[3][4] = (Real)0;   // unused
 
-            mWeights[4][0] = b0;    // w400
-            mWeights[4][1] = (Real)0;  // unused
-            mWeights[4][2] = (Real)0;  // unused
-            mWeights[4][3] = (Real)0;  // unused
-            mWeights[4][4] = (Real)0;  // unused
+            mWeights[4][0] = b0;        // w400
+            mWeights[4][1] = (Real)0;   // unused
+            mWeights[4][2] = (Real)0;   // unused
+            mWeights[4][3] = (Real)0;   // unused
+            mWeights[4][4] = (Real)0;   // unused
         }
 
-        // Evaluation of the surface.  The function supports derivative
+        // Evaluation of the surface. The function supports derivative
         // calculation through order 2; that is, maxOrder <= 2 is required.
-        // If you want only the position, pass in maxOrder of 0.  If you want
+        // If you want only the position, pass in maxOrder of 0. If you want
         // the position and first-order derivatives, pass in maxOrder of 1,
-        // and so on.  The output 'values' are ordered as: position X;
+        // and so on. The output 'values' are ordered as: position X;
         // first-order derivatives dX/du, dX/dv; second-order derivatives
         // d2X/du2, d2X/dudv, d2X/dv2.
         void Evaluate(Real u, Real v, uint32_t maxOrder, Vector<3, Real> values[6]) const
         {
-            // TODO: Some of the polynomials are used in other polynomials.
-            // Optimize the code by eliminating the redundant computations.
-
             Real w = (Real)1 - u - v;
             Real uu = u * u, uv = u * v, uw = u * w, vv = v * v, vw = v * w, ww = w * w;
 
-            // Compute the order-0 polynomials.  Only the elements to be used
-            // are filled in.  The other terms are uninitialized but never
+            // Compute the order-0 polynomials. Only the elements to be used
+            // are filled in. The other terms are uninitialized but never
             // used.
-            Real B[5][5];
+            std::array<std::array<Real, 5>, 5> B{};
             B[0][0] = ww * ww;
             B[0][1] = (Real)4 * vw * ww;
             B[0][2] = (Real)6 * vv * ww;
@@ -157,8 +155,8 @@ namespace gte
 
             if (maxOrder >= 1)
             {
-                // Compute the order-1 polynomials.  Only the elements to be
-                // used are filled in.  The other terms are uninitialized but
+                // Compute the order-1 polynomials. Only the elements to be
+                // used are filled in. The other terms are uninitialized but
                 // never used.
                 Real WmU = w - u;
                 Real WmTwoU = WmU - u;
@@ -172,7 +170,7 @@ namespace gte
                 Real ThreeWmV = w + TwoWmV;
                 Real Dsqr = D * D;
 
-                Real Bu[5][5];
+                std::array<std::array<Real, 5>, 5> Bu{};
                 Bu[0][0] = (Real)-4 * ww * w;
                 Bu[0][1] = (Real)-12 * v * ww;
                 Bu[0][2] = (Real)-12 * vv * w;
@@ -181,7 +179,7 @@ namespace gte
                 Bu[1][0] = (Real)4 * ww * WmThreeU;
                 Bu[1][1] = (Real)12 * vw * WmTwoU;
                 Bu[1][2] = (Real)12 * vv * WmU;
-                Bu[1][3] = (Real)4 * vv;
+                Bu[1][3] = (Real)4 * v * vv;
                 Bu[2][0] = (Real)12 * uw * WmU;
                 Bu[2][1] = (Real)12 * uv * TwoWmU;
                 Bu[2][2] = (Real)12 * u * vv;
@@ -189,7 +187,7 @@ namespace gte
                 Bu[3][1] = (Real)12 * uu * v;
                 Bu[4][0] = (Real)4 * uu * u;
 
-                Real Bv[5][5];
+                std::array<std::array<Real, 5>, 5> Bv{};
                 Bv[0][0] = (Real)-4 * ww * w;
                 Bv[0][1] = (Real)4 * ww * WmThreeV;
                 Bv[0][2] = (Real)12 * vw * WmV;
@@ -228,12 +226,12 @@ namespace gte
 
                 if (maxOrder >= 2)
                 {
-                    // Compute the order-2 polynomials.  Only the elements to
-                    // be used are filled in.  The other terms are
+                    // Compute the order-2 polynomials. Only the elements to
+                    // be used are filled in. The other terms are
                     // uninitialized but never used.
                     Real Dcub = Dsqr * D;
 
-                    Real Buu[5][5];
+                    std::array<std::array<Real, 5>, 5> Buu{};
                     Buu[0][0] = (Real)12 * ww;
                     Buu[0][1] = (Real)24 * vw;
                     Buu[0][2] = (Real)12 * vv;
@@ -250,7 +248,7 @@ namespace gte
                     Buu[3][1] = (Real)24 * uv;
                     Buu[4][0] = (Real)12 * uu;
 
-                    Real Buv[5][5];
+                    std::array<std::array<Real, 5>, 5> Buv{};
                     Buv[0][0] = (Real)12 * ww;
                     Buv[0][1] = (Real)-12 * w * WmTwoV;
                     Buv[0][2] = (Real)-12 * v * TwoWmV;
@@ -267,7 +265,7 @@ namespace gte
                     Buv[3][1] = (Real)12 * uu;
                     Buv[4][0] = (Real)0;
 
-                    Real Bvv[5][5];
+                    std::array<std::array<Real, 5>, 5> Bvv{};
                     Bvv[0][0] = (Real)12 * ww;
                     Bvv[0][1] = (Real)-24 * w * WmV;
                     Bvv[0][2] = (Real)12 * (ww - (Real)4 * vw + vv);
@@ -303,9 +301,9 @@ namespace gte
                             Dvv += product;
                         }
                     }
-                    Vector<3, Real> termDuu = D * (D * Nuu - Duu * N);
-                    Vector<3, Real> termDuv = D * (D * Nuv - Duv * N - Du * Nv - Dv * Nu);
-                    Vector<3, Real> termDvv = D * (D * Nvv - Dvv * N);
+                    Vector<3, Real> termDuu = D * Nuu - Duu * N;
+                    Vector<3, Real> termDuv = D * Nuv - Dv * Nu - Du * Nv - Duv * N;
+                    Vector<3, Real> termDvv = D * Nvv - Dvv * N;
                     values[3] = (D * termDuu - (Real)2 * Du * numerDU) / Dcub;
                     values[4] = (D * termDuv + (Real)2 * Du * Dv * N) / Dcub;
                     values[5] = (D * termDvv - (Real)2 * Dv * numerDV) / Dcub;
