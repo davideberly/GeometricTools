@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.11
 
 #pragma once
 
@@ -277,13 +277,27 @@ namespace gte
 
             if (pmin * pmax > zero)
             {
-                // It is not known whether the interval bounds a root.
+                // It is not known whether the interval bounds a root. Assign
+                // something to root to ensure the memory is initialized.
+                root = static_cast<Real>(0);
                 return false;
             }
 
             if (tmin >= tmax)
             {
-                // Invalid ordering of interval endpoitns. 
+                // Invalid ordering of interval endpoints.  Assign something
+                // to root to ensure the memory is initialized.
+                root = static_cast<Real>(0);
+                return false;
+            }
+
+            if (maxIterations == 0)
+            {
+                // It is expected that the caller set maxIterations to a
+                // positive number. But just in case it is set to zero,
+                // assign something to root to ensure the memory is
+                // initialized.
+                root = static_cast<Real>(0);
                 return false;
             }
 
