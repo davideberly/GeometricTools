@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.08.11
 
 #pragma once
 
@@ -34,7 +34,9 @@
 // expensive operation that the caller might not want if it is known the
 // inputs are valid.
 // 
-// The output minimumSpanningTree[] is the minimum spanning tree.
+// The output minimumSpanningTree[] is the minimum spanning tree. The first
+// element is a sentinel {nil,vertexIndex}, where vertexIndex is the index of
+// the starting vertex in the spanning tree.
 // 
 // The output backEdges[] are the graph edges not in the minimum spanning
 // tree. The tree has no cycles, but if you were to insert a back edge into
