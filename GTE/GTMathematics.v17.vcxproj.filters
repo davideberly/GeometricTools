@@ -1572,9 +1572,6 @@
     <ClInclude Include="Mathematics\StaticVTSManifoldMesh3.h">
       <Filter>Meshes</Filter>
     </ClInclude>
-    <ClInclude Include="Mathematics\ApprConvexQuadByRect.h">
-      <Filter>Approximation</Filter>
-    </ClInclude>
     <ClInclude Include="Mathematics\SortPointsOnCircle.h">
       <Filter>LowLevel</Filter>
     </ClInclude>
