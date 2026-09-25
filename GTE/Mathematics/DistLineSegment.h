@@ -3,23 +3,24 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.09.25
 
 #pragma once
 
 // Compute the distance between a line and a segment in nD.
 // 
-// The segment is Q[0] + s[0] * (Q[1] - Q[0]) for 0 <= s[0] <= 1. The
-// direction D[0] = Q[1] - Q[0] is generally not unit length.
+// The line is P[0] + s[0] * D[0] for real numbers s[0]. D[0] is not required
+// to be unit length.
+
+// The segment is Q[1] + s[1] * (Q[1] - Q[0]) for 0 <= s[1] <= 1. The
+// direction D[1] = Q[1] - Q[0] is generally not unit length.
 // 
-// The line is P[1] + s[1] * D[1], where D[i] is not required to be unit
-// length.
-// 
-// The closest point on the segment is stored in closest[0] with parameter[0]
-// storing s[0]. The closest point on the line is stoed in closest[1] with
+// The closest point on the line is stored in closest[0] with parameter[0]
+// storing s[0]. The closest point on the segment is stoed in closest[1] with
 // parameter[1] storing s[1]. When there are infinitely many choices for the
 // pair of closest points, only one of them is returned.
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Line.h>
 #include <Mathematics/Segment.h>
@@ -52,6 +53,11 @@ namespace gte
 
         Result operator()(Line<N, T> const& line, Segment<N, T> const& segment)
         {
+            LogAssert(
+                line.direction != (Vector<N, T>::Zero()) &&
+                segment.p[0] != segment.p[1],
+                "Invalid input.");
+
             Result result{};
 
             T const zero = static_cast<T>(0);

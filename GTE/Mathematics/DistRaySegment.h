@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.09.25
 
 #pragma once
 
@@ -12,7 +12,7 @@
 // The ray is P[0] + s[0] * D[0] for s[0] >= 0. D[0] is not required to be
 // unit length. 
 // 
-// The segment is Q[0] + s[1] * (Q[1] - Q[0]) for 0 <= s[1 <= 1. The
+// The segment is Q[0] + s[1] * (Q[1] - Q[0]) for 0 <= s[1] <= 1. The
 // direction D = Q[1] - Q[0] is generally not unit length.
 // 
 // The closest point on the ray is stored in closest[0] with parameter[0]
@@ -20,13 +20,13 @@
 // parameter[1] storing s[1]. When there are infinitely many choices for the
 // pair of closest points, only one of them is returned.
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/DCPQuery.h>
 #include <Mathematics/Ray.h>
 #include <Mathematics/Segment.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <cstdint>
 
 namespace gte
 {
@@ -52,6 +52,11 @@ namespace gte
 
         Result operator()(Ray<N, T> const& ray, Segment<N, T> const& segment)
         {
+            LogAssert(
+                ray.direction != (Vector<N, T>::Zero()) &&
+                segment.p[0] != segment.p[1],
+                "Invalid input.");
+
             Result result{};
 
             T const zero = static_cast<T>(0);
@@ -86,7 +91,7 @@ namespace gte
                         else  // region 1
                         {
                             // The endpoint Q1 of the segment and an interior
-                            // point of the line are closest.
+                            // point of the the ray are closest.
                             s0 = -(a01 + b0) / a00;
                             s1 = one;
                         }
@@ -94,87 +99,40 @@ namespace gte
                     else  // region 5
                     {
                         // The endpoint Q0 of the segment and an interior
-                        // point of the line are closest.
+                        // point of the ray are closest.
                         s0 = -b0 / a00;
                         s1 = zero;
                     }
                 }
                 else  // s0 < 0
                 {
-                    if (s1 <= zero)  // region 4
+                    // The s0 parameter is for the line containing the ray.
+                    // Clamp this parameter to 0 to obtain the closest ray
+                    // point, which is the ray origin.origin is
+                    s0 = zero;
+
+                    // The s1 parameter is for the line containing the segment.
+                    // Clamp this parameter to [0,1] to obtain the closest
+                    // segment point.
+                    s1 = -b1;
+                    if (s1 < zero)  // region 4
                     {
-                        s0 = -b0;
-                        if (s0 > zero)
-                        {
-                            s0 /= a00;
-                            s1 = zero;
-                        }
-                        else
-                        {
-                            s0 = zero;
-                            s1 = -b1;
-                            if (s1 < zero)
-                            {
-                                s1 = zero;
-                            }
-                            else if (s1 > a11)
-                            {
-                                s1 = one;
-                            }
-                            else
-                            {
-                                s1 /= a11;
-                            }
-                        }
+                        s1 = zero;
                     }
-                    else if (s1 <= det)  // region 3
+                    else if (s1 > a11)  // region 2
                     {
-                        s0 = zero;
-                        s1 = -b1;
-                        if (s1 < zero)
-                        {
-                            s1 = zero;
-                        }
-                        else if (s1 > a11)
-                        {
-                            s1 = one;
-                        }
-                        else
-                        {
-                            s1 /= a11;
-                        }
+                        s1 = one;
                     }
-                    else  // region 2
+                    else  // region 3
                     {
-                        s0 = -(a01 + b0);
-                        if (s0 > zero)
-                        {
-                            s0 /= a00;
-                            s1 = one;
-                        }
-                        else
-                        {
-                            s0 = zero;
-                            s1 = -b1;
-                            if (s1 < zero)
-                            {
-                                s1 = zero;
-                            }
-                            else if (s1 > a11)
-                            {
-                                s1 = one;
-                            }
-                            else
-                            {
-                                s1 /= a11;
-                            }
-                        }
+                        s1 /= a11;
                     }
                 }
             }
             else
             {
-                // The ray and segment are parallel.
+                // The ray and segment are parallel. The initial s0 values are
+                // for the line.
                 if (a01 > zero)
                 {
                     // Opposite direction vectors.
@@ -187,6 +145,10 @@ namespace gte
                     s0 = -(a01 + b0) / a00;
                     s1 = one;
                 }
+            
+                // The parameter s0 for the ray must be clamped to
+                // [0,+infinity).
+                s0 = std::max(s0, zero);
             }
 
             result.parameter[0] = s0;
@@ -210,5 +172,3 @@ namespace gte
     template <typename T>
     using DCPRay3Segment3 = DCPRaySegment<3, T>;
 }
-
-
