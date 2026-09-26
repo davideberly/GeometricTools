@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.09.26
 
 #pragma once
 
@@ -53,22 +53,23 @@ namespace gte
             // at the origin.
             Line3<T> xfrmLine(xfrmOrigin, xfrmDirection);
             LBQuery lbQuery{};
-            result = lbQuery(xfrmLine, cbox);
+            Result lbResult = lbQuery(xfrmLine, cbox);
 
-            // Compute the closest point on the line.
-            result.closest[0] = line.origin + result.parameter * line.direction;
+            result.distance = lbResult.distance;
+            result.sqrDistance = lbResult.sqrDistance;
+            result.parameter = lbResult.parameter;
 
-            // Rotate and translate the closest points to the original
-            // coordinates.
-            std::array<Vector3<T>, 2> closest{ box.center, box.center };
-            for (size_t i = 0; i < 2; ++i)
+            // Compute the closest point on the line in the original
+            // coordinate system.
+            result.closest[0] = line.origin + lbResult.parameter * line.direction;
+
+            // Compute the closest point on the box in the original coordinate
+            // system.
+            result.closest[1] = box.center;
+            for (int32_t j = 0; j < 3; ++j)
             {
-                for (int32_t j = 0; j < 3; ++j)
-                {
-                    closest[i] += result.closest[i][j] * box.axis[j];
-                }
+                result.closest[1] += lbResult.closest[1][j] * box.axis[j];
             }
-            result.closest = closest;
 
             return result;
         }
