@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.09.26
 
 #pragma once
 
@@ -63,8 +63,9 @@ namespace gte
             T discr = a1 * a1 - a0 * a2;
             if (discr < zero)
             {
-                // Q(t) has no real-valued roots. The segment does not
-                // intersect the ellipsoid.
+                // Q(t) has no real-valued roots. The line containing the
+                // segment does not intersect the ellipsoid, so the segment
+                // does not intersect the ellipsoid.
                 result.intersect = false;
                 return result;
             }
@@ -75,22 +76,20 @@ namespace gte
             T tmp1 = static_cast<T>(2) * a1 * segExtent;  // 2*a1*e
             T qm = tmp0 - tmp1;  // Q(-e)
             T qp = tmp0 + tmp1;  // Q(e)
-            if (qm * qp <= zero)
+
+            if (qm <= zero || qp <= zero)
             {
-                // Q(t) has a root on the interval [-e,e]. The segment
-                // intesects the ellipsoid.
+                // When qm <= 0, the segment endpoint p[0] is inside the
+                // ellipsoid. When qp <= 0, the segment endpoint p[1] is
+                // inside the sphere.
                 result.intersect = true;
                 return result;
             }
 
-            // Either (Q(-e) > 0 and Q(e) > 0) or (Q(-e) < 0 and Q(e) < 0).
-            // When Q at the endpoints is negative, Q(t) < 0 for all t in
-            // [-e,e] and the segment does not intersect the ellipsoid.
-            // Otherwise, Q(-e) > 0 [and Q(e) > 0]. The minimum of Q(t)
+            // At this point, Q(-e) > 0 and Q(+e) > 0. The minimum of Q(t)
             // occurs at t = -a1/a2. We know that discr >= 0, so Q(t) has a
-            // root on (-e,e) when -a1/2 is in (-e,e). The combined test for
-            // intersection is (Q(-e) > 0 and |a1| < a3*e).
-            result.intersect = (qm > zero && std::fabs(a1) < a2e);
+            // root on (-e,e) when -a1/a2 is in (-e,e).
+            result.intersect = (std::fabs(a1) < a2e);
             return result;
         }
     };
