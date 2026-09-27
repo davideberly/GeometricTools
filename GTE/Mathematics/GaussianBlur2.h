@@ -24,7 +24,8 @@ namespace gte
             PdeFilter2<Real>(xBound, yBound, xSpacing, ySpacing, data, mask,
                 borderValue, scaleType)
         {
-            assert((this->mInvDxDx + this->mInvDyDy) > 0.0); 
+            assert(this->mInvDxDx > Real{0}); 
+            assert(this->mInvDyDy > Real{0}); 
             mMaximumTimeStep = Real{0.5} / (this->mInvDxDx + this->mInvDyDy);
         }
 
