@@ -3,12 +3,13 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.09.27
 
 #pragma once
 
 #include <Mathematics/PdeFilter2.h>
 #include <cstdint>
+#include <cassert>
 
 namespace gte
 {
@@ -23,7 +24,8 @@ namespace gte
             PdeFilter2<Real>(xBound, yBound, xSpacing, ySpacing, data, mask,
                 borderValue, scaleType)
         {
-            mMaximumTimeStep = (Real)0.5 / (this->mInvDxDx + this->mInvDyDy);
+            assert((this->mInvDxDx + this->mInvDyDy) > 0.0); 
+            mMaximumTimeStep = Real{0.5} / (this->mInvDxDx + this->mInvDyDy);
         }
 
         virtual ~GaussianBlur2()
@@ -41,8 +43,8 @@ namespace gte
         {
             this->LookUp5(x, y);
 
-            Real uxx = this->mInvDxDx * (this->mUpz - (Real)2 * this->mUzz + this->mUmz);
-            Real uyy = this->mInvDyDy * (this->mUzp - (Real)2 * this->mUzz + this->mUzm);
+            Real uxx = this->mInvDxDx * (this->mUpz - Real{2} * this->mUzz + this->mUmz);
+            Real uyy = this->mInvDyDy * (this->mUzp - Real{2} * this->mUzz + this->mUzm);
 
             this->mBuffer[this->mDst][y][x] = this->mUzz + this->mTimeStep * (uxx + uyy);
         }
