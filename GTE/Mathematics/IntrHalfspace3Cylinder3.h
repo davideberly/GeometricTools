@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.04
 
 #pragma once
 
@@ -43,7 +43,7 @@ namespace gte
             //   max = (Dot(N,C)-d) + r*sqrt(1-Dot(N,W)^2) + (h/2)*|Dot(N,W)|
             T center = Dot(halfspace.normal, cylinder.axis.origin) - halfspace.constant;
             T absNdW = std::fabs(Dot(halfspace.normal, cylinder.axis.direction));
-            T root = std::sqrt(std::max((T)1, (T)1 - absNdW * absNdW));
+            T root = std::sqrt(std::max((T)0, (T)1 - absNdW * absNdW));
             T tmax = center + cylinder.radius * root + (T)0.5 * cylinder.height * absNdW;
 
             // The cylinder and halfspace intersect when the projection
