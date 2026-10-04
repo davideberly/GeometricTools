@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.04
 
 #pragma once
 
@@ -800,16 +800,19 @@ namespace gte
                     {
                         T y1 = -std::sqrt(lambda / d1);
                         result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        result.isTransverse[result.numPoints] = true;
+                        ++result.numPoints;
                         y1 = -y1;
                         result.points[result.numPoints] = { gte::FMA(-ell, y1, y0) + C0[0], y1 + C0[1] };
+                        result.isTransverse[result.numPoints] = true;
+                        ++result.numPoints;
                     }
                     else
                     {
                         result.points[result.numPoints] = { y0 + C0[0], C0[1] };
+                        result.isTransverse[result.numPoints] = false;
+                        ++result.numPoints;
                     }
-
-                    result.isTransverse[result.numPoints] = (lambda > zero);
-                    ++result.numPoints;
 
                     result.intersect = true;
                 }
