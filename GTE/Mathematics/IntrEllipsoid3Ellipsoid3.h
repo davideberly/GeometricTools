@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.05
 
 #pragma once
 
@@ -197,7 +197,7 @@ namespace gte
                     {
                         valid.push_back(param[0]);
                     }
-                    param[1].second += param[0].second;
+                    param[1].second += param[2].second;
                     if (param[1].second > (T)0)
                     {
                         valid.push_back(param[1]);
