@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.09
 
 #pragma once
 
@@ -75,9 +75,11 @@ namespace gte
             mVertices(vertices),
             mIndices{}
         {
+            // There must be at least one line segment and the number of
+            // vertices must be even.
             LogAssert(
-                vertices.size() >= 2,
-                "Invalid number of vertices.");
+                vertices.size() >= 2 && ((vertices.size() & 1) == 0),
+                "Invalid input.");
 
             mIndices.resize(vertices.size() / 2);
             for (size_t i = 0; i < mIndices.size(); ++i)
