@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.09
 
 #pragma once
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/IntrLine2Line2.h>
 #include <Mathematics/Segment.h>
 #include <array>
@@ -45,6 +46,10 @@ namespace gte
 
         Result operator()(Line2<T> const& line, Segment2<T> const& segment)
         {
+            LogAssert(
+                line.direction != Vector2<T>::Zero() && segment.p[1] != segment.p[0],
+                "Invalid input (degenerate line or segment).");
+
             Result result{};
 
             FIQuery<T, Line2<T>, Line2<T>> llQuery{};
@@ -124,6 +129,10 @@ namespace gte
 
         Result operator()(Line2<T> const& line, Segment2<T> const& segment)
         {
+            LogAssert(
+                line.direction != Vector2<T>::Zero() && segment.p[1] != segment.p[0],
+                "Invalid input (degenerate line or segment).");
+
             Result result{};
 
             T const zero = static_cast<T>(0);
@@ -156,9 +165,8 @@ namespace gte
             {
                 result.intersect = true;
                 result.numIntersections = std::numeric_limits<int32_t>::max();
-                T maxT = std::numeric_limits<T>::max();
-                result.lineParameter[0] = -maxT;
-                result.lineParameter[1] = +maxT;
+                result.lineParameter[0] = zero;
+                result.lineParameter[1] = one;
                 result.segmentParameter[0] = zero;
                 result.segmentParameter[1] = one;
             }
@@ -172,5 +180,3 @@ namespace gte
         }
     };
 }
-
-

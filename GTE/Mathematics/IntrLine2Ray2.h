@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.09
 
 #pragma once
 
+#include <Mathematics/Logger.h>
 #include <Mathematics/IntrLine2Line2.h>
 #include <Mathematics/Ray.h>
 #include <array>
@@ -45,6 +46,10 @@ namespace gte
 
         Result operator()(Line2<T> const& line, Ray2<T> const& ray)
         {
+            LogAssert(
+                line.direction != Vector2<T>::Zero() && ray.direction != Vector2<T>::Zero(),
+                "Invalid input (degenerate line or ray).");
+
             Result result{};
 
             FIQuery<T, Line2<T>, Line2<T>> llQuery{};
@@ -121,14 +126,20 @@ namespace gte
 
         Result operator()(Line2<T> const& line, Ray2<T> const& ray)
         {
+            LogAssert(
+                line.direction != Vector2<T>::Zero() && ray.direction != Vector2<T>::Zero(),
+                "Invalid input (degenerate line or ray).");
+
             Result result{};
+
+            T const zero = static_cast<T>(0);
 
             FIQuery<T, Line2<T>, Line2<T>> llQuery{};
             auto llResult = llQuery(line, Line2<T>(ray.origin, ray.direction));
             if (llResult.numIntersections == 1)
             {
                 // Test whether the line-line intersection is on the ray.
-                if (llResult.line1Parameter[0] >= static_cast<T>(0))
+                if (llResult.line1Parameter[0] >= zero)
                 {
                     result.intersect = true;
                     result.numIntersections = 1;
@@ -149,9 +160,9 @@ namespace gte
                 result.intersect = true;
                 result.numIntersections = std::numeric_limits<int32_t>::max();
                 T maxT = std::numeric_limits<T>::max();
-                result.lineParameter[0] = -maxT;
+                result.lineParameter[0] = zero;
                 result.lineParameter[1] = +maxT;
-                result.rayParameter[0] = static_cast<T>(0);
+                result.rayParameter[0] = zero;
                 result.rayParameter[1] = +maxT;
             }
             else
@@ -164,5 +175,3 @@ namespace gte
         }
     };
 }
-
-
