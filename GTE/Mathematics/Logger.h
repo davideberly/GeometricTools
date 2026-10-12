@@ -3,18 +3,29 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.10.12
 
 #pragma once
 
+#include <exception>
 #include <stdexcept>
 #include <string>
 
 // If exceptions are enabled, throw the exception passed in, otherwise call std::terminate.
 #if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || (defined(_MSC_VER) && defined(_CPPUNWIND))) && !defined(GTE_NO_EXCEPTIONS)
-    #define GTE_THROW_OR_TERMINATE(exception, message) throw exception(message)
+#define GTE_THROW_OR_TERMINATE(exception, message) \
+do \
+{ \
+    throw exception(message); \
+} \
+while (0)
 #else
-    #define GTE_THROW_OR_TERMINATE(exception, message) std::terminate()
+#define GTE_THROW_OR_TERMINATE(exception, message) \
+do \
+{ \
+    std::terminate(); \
+} \
+while(0)
 #endif
 
 // Generate exceptions about unexpected conditions. The messages can be
@@ -44,5 +55,3 @@ GTE_ASSERT(condition, std::runtime_error, message)
 
 #define LogError(message) \
 GTE_ERROR(std::runtime_error, message);
-
-
