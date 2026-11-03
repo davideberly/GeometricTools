@@ -35,3 +35,32 @@ add_subdirectory(RootFinding)
 add_subdirectory(ShortestPath)
 add_subdirectory(SymmetricEigensolver3x3)
 add_subdirectory(ThinPlateSplines)
+
+add_custom_target(Samples_Mathematics)
+add_dependencies(Samples_Mathematics
+    ApproximateBezierCurveByArcs
+    ApproximateEllipse2
+    ApproximateEllipsesByArcs
+    ApproximateEllipsoid3
+    BSplineCurveFitter
+    BSplineCurveReduction
+    BSplineSurfaceFitter
+    ContLozenge3
+    FitCone
+    FitConeByEllipseAndPoints
+    FitCylinder
+    FitTorus
+    GeodesicEllipsoid
+    GeodesicHeightField
+    Interpolation2D
+    NURBSCircle
+    NURBSCircularArc
+    NURBSCurveExample
+    NURBSSphere
+    PartialSums
+    PlaneEstimation
+    RootFinding
+    ShortestPath
+    SymmetricEigensolver3x3
+    ThinPlateSplines
+)

@@ -24,3 +24,21 @@ add_subdirectory(MedianFiltering)
 add_subdirectory(SurfaceExtraction)
 add_subdirectory(VideoStreams)
 add_subdirectory(VisualizeMarchingCubes)
+
+add_custom_target(Samples_Imagics)
+add_dependencies(Samples_Imagics
+    AdaptiveSkeletonClimbing2
+    AdaptiveSkeletonClimbing3
+    BSplineInterpolation
+    Convolution
+    ExtractLevelCurves
+    ExtractLevelSurfaces
+    ExtractRidges
+    GaussianBlurring
+    GpuGaussianBlur2
+    GpuGaussianBlur3
+    MedianFiltering
+    SurfaceExtraction
+    VideoStreams
+    VisualizeMarchingCubes
+)

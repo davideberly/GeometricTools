@@ -25,3 +25,22 @@ add_subdirectory(Picking)
 add_subdirectory(PointControllers)
 add_subdirectory(SwitchNodes)
 add_subdirectory(Terrain)
+
+add_custom_target(Samples_SceneGraphs)
+add_dependencies(Samples_SceneGraphs
+    BillboardNodes
+    BlendedAnimations
+    BspNodes
+    CameraAndLightNodes
+    Castle
+    CLODMeshes
+    DLODNodes
+    IKControllers
+    MorphControllers
+    MorphFaces
+    ParticleControllers
+    Picking
+    PointControllers
+    SwitchNodes
+    Terrain
+)

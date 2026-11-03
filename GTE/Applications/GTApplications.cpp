@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.03.11
 
 #include <Applications/GTApplicationsPCH.h>
 
@@ -36,11 +36,13 @@
 // https://learn.microsoft.com/en-us/cpp/overview/compiler-versions?view=msvc-170
 //  Currently, projects are provided only for Visual Studio 2019/2022, but the
 // macro allows you to compile with Visual Studio 2015 or later.
-#if !defined(_MSC_VER)
-#error Microsoft Visual Studio 2015 or later is required.
-#endif
+#if defined(_MSC_VER) // Using MSVC or Clang-cl
 #if _MSC_VER < 1900
 #error Microsoft Visual Studio 2015 or later is required.
+#endif
+#elif defined(__MINGW32__) // Using MinGW so it should always be fine
+#else
+#error GTE_USE_MSWINDOWS requested, but the platform seems neither MSVC nor MinGW.
 #endif
 
 #if !defined(GTE_USE_DIRECTX) && !defined(GTE_USE_OPENGL)
@@ -52,5 +54,3 @@
 #endif
 
 #endif
-
-

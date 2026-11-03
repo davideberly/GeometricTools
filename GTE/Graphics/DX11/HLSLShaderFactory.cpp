@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.03.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
+#include <cstring>
 using namespace gte;
 
 HLSLReflection HLSLShaderFactory::CreateFromFile(std::string const& filename,
@@ -214,7 +215,7 @@ bool HLSLShaderFactory::ReflectShader(std::string const& name,
         shader.SetTarget(std::string(target));
         shader.SetCompiledCode(numBytes, buffer);
 
-        if (shader.GetDescription().shaderType == D3D11_SHVER_COMPUTE_SHADER)
+        if (shader.GetDescription().shaderType == D3D_SHVER_COMPUTE_SHADER)
         {
             // The return value of GetThreadGroupSize is numX*numY*numZ, so
             // it is safe to ignore.

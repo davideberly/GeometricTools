@@ -3,10 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.03.11
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLReflection.h>
+#include <Mathematics/Logger.h>
+#include <cstring>
 #include <algorithm>
 #include <iomanip>
 using namespace gte;
@@ -31,8 +33,8 @@ void HLSLReflection::SetDescription(D3D_SHADER_DESC const& desc)
 {
     mDesc.creator = std::string(desc.Creator);
     mDesc.shaderType = static_cast<D3D_SHADER_VERSION_TYPE>(D3D_SHVER_GET_TYPE(desc.Version));
-    mDesc.majorVersion = D3D11_SHVER_GET_MAJOR(desc.Version);
-    mDesc.minorVersion = D3D11_SHVER_GET_MINOR(desc.Version);
+    mDesc.majorVersion = D3D_SHVER_GET_MAJOR(desc.Version);
+    mDesc.minorVersion = D3D_SHVER_GET_MINOR(desc.Version);
     mDesc.flags = desc.Flags;
     mDesc.numConstantBuffers = desc.ConstantBuffers;
     mDesc.numBoundResources = desc.BoundResources;
