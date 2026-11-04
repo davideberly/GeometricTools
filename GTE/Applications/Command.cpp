@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.16
+// File Version: 8.0.2026.03.11
 
 #include <Applications/GTApplicationsPCH.h>
 #include <Applications/Command.h>
 #include <Mathematics/Logger.h>
+#include <cstdlib>
 using namespace gte;
 
 std::string const Command::msOptNotFound("Option not found.");

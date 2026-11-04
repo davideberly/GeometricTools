@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.03.11
 
 #pragma once
 
 #include <Graphics/DX11/DX11.h>
+#include <Mathematics/Logger.h>
 #include <cstdint>
 #include <fstream>
 
@@ -20,111 +21,105 @@
 #define ID3DShaderReflectionVariable ID3D11ShaderReflectionVariable
 #define D3D_SHADER_DESC D3D11_SHADER_DESC
 #define D3D_SIGNATURE_PARAMETER_DESC D3D11_SIGNATURE_PARAMETER_DESC
+
+// Hacks to supplement missing defines in MinGW headers.
+#if defined(D3D11_SHADER_VERSION_TYPE)
 #define D3D_SHADER_VERSION_TYPE D3D11_SHADER_VERSION_TYPE
+#define D3D_SHVER_PIXEL_SHADER D3D11_SHVER_PIXEL_SHADER
+#define D3D_SHVER_COMPUTE_SHADER D3D11_SHVER_COMPUTE_SHADER
+#else
+#define D3D_SHADER_VERSION_TYPE D3D12_SHADER_VERSION_TYPE
+#define D3D_SHVER_PIXEL_SHADER D3D12_SHVER_PIXEL_SHADER
+#define D3D_SHVER_COMPUTE_SHADER D3D12_SHVER_COMPUTE_SHADER
+#endif
+
+#if defined(D3D11_SHVER_GET_TYPE)
 #define D3D_SHVER_GET_TYPE D3D11_SHVER_GET_TYPE
+#else
+#define D3D_SHVER_GET_TYPE(version) (((version) >> 16) & 0xffffu)
+#endif
+
+#if defined(D3D11_SHVER_GET_MAJOR)
 #define D3D_SHVER_GET_MAJOR D3D11_SHVER_GET_MAJOR
+#else
+#define D3D_SHVER_GET_MAJOR(version) (((version) >> 4) & 0xf)
+#endif
+
+#if defined(D3D11_SHVER_GET_MINOR)
 #define D3D_SHVER_GET_MINOR D3D11_SHVER_GET_MINOR
+#else
+#define D3D_SHVER_GET_MINOR(version) (((version) >> 0) & 0xf)
+#endif
+
+// #define D3D_SHADER_VERSION_TYPE D3D11_SHADER_VERSION_TYPE
+// #define D3D_SHVER_GET_TYPE D3D11_SHVER_GET_TYPE
+// #define D3D_SHVER_GET_MAJOR D3D11_SHVER_GET_MAJOR
+// #define D3D_SHVER_GET_MINOR D3D11_SHVER_GET_MINOR
 #define D3D_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC
 #define D3D_SHADER_INPUT_BIND_DESC D3D11_SHADER_INPUT_BIND_DESC
 #define D3D_SHADER_VARIABLE_DESC D3D11_SHADER_VARIABLE_DESC
 #define D3D_SHADER_TYPE_DESC D3D11_SHADER_TYPE_DESC
 
-namespace gte
-{
-    class HLSLResource
-    {
-    public:
-        // Abstract base class, destructor.
-        virtual ~HLSLResource() = default;
-    protected:
-        // Construction.
-        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, uint32_t numBytes);
-        HLSLResource(D3D_SHADER_INPUT_BIND_DESC const& desc, uint32_t index, uint32_t numBytes);
+namespace gte {
+class HLSLResource {
+public:
+  // Abstract base class, destructor.
+  virtual ~HLSLResource() = default;
 
-    public:
-        struct Description
-        {
-            Description()
-                :
-                name(""),
-                type(D3D_SIT_CBUFFER),
-                bindPoint(0),
-                bindCount(0),
-                flags(0),
-                returnType(D3D_RETURN_TYPE_UNORM),
-                dimension(D3D_SRV_DIMENSION_UNKNOWN),
-                numSamples(0)
-            {
-            }
+protected:
+  // Construction.
+  HLSLResource(D3D_SHADER_INPUT_BIND_DESC const &desc, uint32_t numBytes);
+  HLSLResource(D3D_SHADER_INPUT_BIND_DESC const &desc, uint32_t index,
+               uint32_t numBytes);
 
-            std::string name;
-            D3D_SHADER_INPUT_TYPE type;
-            uint32_t bindPoint;
-            uint32_t bindCount;
-            uint32_t flags;
-            D3D_RESOURCE_RETURN_TYPE returnType;
-            D3D_SRV_DIMENSION dimension;
-            uint32_t numSamples;
-        };
+public:
+  struct Description {
+    Description()
+        : name(""), type(D3D_SIT_CBUFFER), bindPoint(0), bindCount(0), flags(0),
+          returnType(D3D_RETURN_TYPE_UNORM),
+          dimension(D3D_SRV_DIMENSION_UNKNOWN), numSamples(0) {}
 
-        // Member access.
-        inline std::string const& GetName() const
-        {
-            return mDesc.name;
-        }
+    std::string name;
+    D3D_SHADER_INPUT_TYPE type;
+    uint32_t bindPoint;
+    uint32_t bindCount;
+    uint32_t flags;
+    D3D_RESOURCE_RETURN_TYPE returnType;
+    D3D_SRV_DIMENSION dimension;
+    uint32_t numSamples;
+  };
 
-        inline D3D_SHADER_INPUT_TYPE GetType() const
-        {
-            return mDesc.type;
-        }
+  // Member access.
+  inline std::string const &GetName() const { return mDesc.name; }
 
-        inline uint32_t GetBindPoint() const
-        {
-            return mDesc.bindPoint;
-        }
+  inline D3D_SHADER_INPUT_TYPE GetType() const { return mDesc.type; }
 
-        inline uint32_t GetBindCount() const
-        {
-            return mDesc.bindCount;
-        }
+  inline uint32_t GetBindPoint() const { return mDesc.bindPoint; }
 
-        inline uint32_t GetFlags() const
-        {
-            return mDesc.flags;
-        }
+  inline uint32_t GetBindCount() const { return mDesc.bindCount; }
 
-        inline D3D_RESOURCE_RETURN_TYPE GetReturnType() const
-        {
-            return mDesc.returnType;
-        }
+  inline uint32_t GetFlags() const { return mDesc.flags; }
 
-        inline D3D_SRV_DIMENSION GetDimension() const
-        {
-            return mDesc.dimension;
-        }
+  inline D3D_RESOURCE_RETURN_TYPE GetReturnType() const {
+    return mDesc.returnType;
+  }
 
-        inline uint32_t GetNumSamples() const
-        {
-            return mDesc.numSamples;
-        }
+  inline D3D_SRV_DIMENSION GetDimension() const { return mDesc.dimension; }
 
-        inline uint32_t GetNumBytes() const
-        {
-            return mNumBytes;
-        }
+  inline uint32_t GetNumSamples() const { return mDesc.numSamples; }
 
-        // Print to a text file for human readability.
-        virtual void Print(std::ofstream& output) const;
+  inline uint32_t GetNumBytes() const { return mNumBytes; }
 
-    private:
-        Description mDesc;
-        uint32_t mNumBytes;
+  // Print to a text file for human readability.
+  virtual void Print(std::ofstream &output) const;
 
-        // Support for Print.
-        static std::string const msSIType[];
-        static std::string const msReturnType[];
-        static std::string const msSRVDimension[];
-    };
-}
+private:
+  Description mDesc;
+  uint32_t mNumBytes;
 
-
+  // Support for Print.
+  static std::string const msSIType[];
+  static std::string const msReturnType[];
+  static std::string const msSRVDimension[];
+};
+} // namespace gte

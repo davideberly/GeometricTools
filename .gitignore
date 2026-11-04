@@ -1,7 +1,21 @@
 # User-specific files
 
+# Cache
+.cache/
+
+# Build artifacts
+build*/
+!build2/
+
+# CMake related
+CMakeUserPresets.json
+CMakeFiles/
+cmake/config/auto
+
 # Visual Studio cache/options directory
 .vs/
+.vscode/
+!GTE/.vscode/
 
 # Ignore Mathematica folders
 Mathematica/

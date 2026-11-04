@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.16
+// File Version: 8.0.2026.03.11
 
 #include <Graphics/GL46/GTGraphicsGL46PCH.h>
 #include <Graphics/GL46/GL46TextureArray.h>
+#include <algorithm>
 using namespace gte;
 
 GL46TextureArray::~GL46TextureArray()

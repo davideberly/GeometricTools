@@ -18,3 +18,15 @@ add_subdirectory(Intersection)
 add_subdirectory(Mathematics)
 add_subdirectory(Physics)
 add_subdirectory(SceneGraphs)
+
+add_custom_target(Samples)
+add_dependencies(Samples
+    Samples_Distance
+    Samples_Geometrics
+    Samples_Graphics
+    Samples_Imagics
+    Samples_Intersection
+    Samples_Mathematics
+    Samples_Physics
+    Samples_SceneGraphs
+)

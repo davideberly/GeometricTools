@@ -38,3 +38,35 @@ add_subdirectory(VertexColoring)
 add_subdirectory(VertexTextures)
 add_subdirectory(VolumeFog)
 add_subdirectory(WireMesh)
+
+add_custom_target(Samples_Graphics)
+add_dependencies(Samples_Graphics
+    AppendConsumeBuffers
+    AreaLights
+    BlendedTerrain
+    BufferUpdating
+    BumpMaps
+    CubeMaps
+    GeometryShaders
+    GlossMaps
+    IEEEFloatingPoint
+    Lights
+    LightTexture
+    MultipleRenderTargets
+    PlanarReflections
+    PlanarShadows
+    PlaneMeshIntersection
+    ProjectedTextures
+    ShaderReflection
+    ShadowMaps
+    Skinning
+    SphereMaps
+    StructuredBuffers
+    TextureArrays
+    TextureUpdating
+    Texturing
+    VertexColoring
+    VertexTextures
+    VolumeFog
+    WireMesh
+)
