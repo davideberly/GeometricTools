@@ -3,11 +3,10 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.10.04
+// File Version: 8.0.2026.11.04
 
 #pragma once
 
-#include <Mathematics/Logger.h>
 #include <Mathematics/PdeFilter.h>
 #include <algorithm>
 #include <array>
@@ -39,9 +38,8 @@ namespace gte
             mHasMask(mask != nullptr)
         {
             LogAssert(
-                xBound > 0 &&
                 xSpacing > (Real)0 &&
-                data != nullptr,
+                mask != nullptr,
                 "Invalid input.");
 
             // The mBuffer[] are ping-pong buffers for filtering.

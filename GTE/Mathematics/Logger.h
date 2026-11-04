@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.10.12
+// File Version: 8.0.2026.11.04
 
 #pragma once
 
@@ -18,7 +18,7 @@ do \
 { \
     throw exception(message); \
 } \
-while (0)
+while(0)
 #else
 #define GTE_THROW_OR_TERMINATE(exception, message) \
 do \
@@ -37,21 +37,37 @@ while(0)
 // The report uses the current source file, function and line on which the
 // macro is expanded.
 #define GTE_ASSERT(condition, exception, message) \
-if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
+do \
+{ \
+    if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); } \
+} \
+while(0)
 
 #define GTE_ERROR(exception, message) \
-{ GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); }
+do \
+{ \
+    GTE_THROW_OR_TERMINATE(exception, std::string(__FILE__) + "(" + std::string(__FUNCTION__) + "," + std::to_string(__LINE__) + "): " + message + "\n"); \
+} \
+while(0)
 
 // The report uses the specified source file, function and line. The file
 // and function are type 'char const*' and the line is type 'int32_t'.
 #define GTE_ASSERT_INDIRECT(condition, exception, file, function, line, message) \
-if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
+do \
+{ \
+    if (!(condition)) { GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); } \
+} \
+while(0)
 
 #define GTE_ERROR_INDIRECT(exception, file, function, line, message) \
-{ GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); }
+do \
+{ \
+    GTE_THROW_OR_TERMINATE(exception, std::string(file) + "(" + std::string(function) + "," + std::to_string(line) + "): " + message + "\n"); \
+} \
+while(0)
 
 #define LogAssert(condition, message) \
 GTE_ASSERT(condition, std::runtime_error, message)
 
 #define LogError(message) \
-GTE_ERROR(std::runtime_error, message);
+GTE_ERROR(std::runtime_error, message)
