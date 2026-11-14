@@ -33,3 +33,30 @@ add_subdirectory(SplitMeshByPlane)
 add_subdirectory(TriangulationCDT)
 add_subdirectory(TriangulationEC)
 add_subdirectory(VertexCollapseMesh)
+
+add_custom_target(Samples_Geometrics)
+add_dependencies(Samples_Geometrics
+    CLODPolyline
+    ConformalMapping
+    ConstrainedDelaunay2D
+    ConvexHull2D
+    ConvexHull3D
+    ConvexHullSimplePolygon
+    Delaunay2D
+    Delaunay3D
+    DisjointIntervalsRectangles
+    ExtremalQuery
+    GenerateMeshUVs
+    IncrementalDelaunay2
+    MinimalCycleBasis
+    MinimumAreaBox2D
+    MinimumAreaCircle2D
+    MinimumVolumeBox3D
+    MinimumVolumeSphere3D
+    PolygonBooleanOperations
+    PolylineOffset
+    SplitMeshByPlane
+    TriangulationCDT
+    TriangulationEC
+    VertexCollapseMesh
+)

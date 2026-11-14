@@ -47,3 +47,44 @@ add_subdirectory(SimplePendulum)
 add_subdirectory(SimplePendulumFriction)
 add_subdirectory(WaterDropFormation)
 add_subdirectory(WrigglingSnake)
+
+add_custom_target(Samples_Physics)
+add_dependencies(Samples_Physics
+    BallHill
+    BallRubberBand
+    BeadSlide
+    BlownGlass
+    BouncingBall
+    BouncingSpheres
+    BouncingTetrahedra
+    Cloth
+    CollisionsBoundTree
+    CollisionsMovingSpheres
+    CollisionsMovingSphereTriangle
+    DoublePendulum
+    FlowingSkirt
+    Fluids2D
+    Fluids3D
+    FoucaultPendulum
+    FreeFormDeformation
+    FreeTopFixedTip
+    GelatinBlob
+    GelatinCube
+    HelixTubeSurface
+    IntersectingBoxes
+    IntersectingRectangles
+    KeplerPolarForm
+    MassPulleySpringSystem
+    MassSprings3D
+    Rope
+    RoughPlaneFlatBoard
+    RoughPlaneParticle1
+    RoughPlaneParticle2
+    RoughPlaneSolidBox
+    RoughPlaneThinRod1
+    RoughPlaneThinRod2
+    SimplePendulum
+    SimplePendulumFriction
+    WaterDropFormation
+    WrigglingSnake
+)

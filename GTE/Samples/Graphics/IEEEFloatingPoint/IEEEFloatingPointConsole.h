@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.12
 
 #pragma once
 
@@ -23,8 +23,14 @@ private:
     template <typename Real, typename Binary>
     void TestSubnormals(std::string const& filename, std::string const& realname, Binary& result)
     {
-        auto inputBuffer = std::make_shared<StructuredBuffer>(2, sizeof(Real));
-        Real* input = inputBuffer->Get<Real>();
+        // NOTE: Microsoft Visual Studio 2022 compiles the code that used to
+        // be 'inputBuffer->Get<Real>()'. Microsoft Visual Studio 2026 fails
+        // to compile the code, generating warning C4864:
+        //   expected 'template' keyword before dependent template name
+        // The disambiguator keyword 'templae' must be inserted before the
+        // function name 'Get'.
+        auto inputBuffer = std::make_shared<StructuredBuffer>(2, sizeof(Binary));
+        Binary* input = inputBuffer->template Get<Binary>();
         Binary v0, v1;
         v0.encoding = 1;
         v1.encoding = 1;
@@ -32,10 +38,17 @@ private:
         input[1] = v1.number;  // Same as v0.
 
         // Compute v0+v1 and store in this buffer.
-        auto outputBuffer = std::make_shared<StructuredBuffer>(1, sizeof(Real));
+        auto outputBuffer = std::make_shared<StructuredBuffer>(1, sizeof(Binary));
         outputBuffer->SetUsage(Resource::Usage::SHADER_OUTPUT);
         outputBuffer->SetCopy(Resource::Copy::STAGING_TO_CPU);
-        Real* output = outputBuffer->Get<Real>();
+
+        // NOTE: Microsoft Visual Studio 2022 compiles the code that used to
+        // be 'inputBuffer->Get<Real>()'. Microsoft Visual Studio 2026 fails
+        // to compile the code, generating warning C4864:
+        //   expected 'template' keyword before dependent template name
+        // The disambiguator keyword 'templae' must be inserted before the
+        // function name 'Get'.
+        Binary* output = outputBuffer->template Get<Binary>();
         output[0] = (Real)0;
 
         mProgramFactory->defines.Set("REAL", realname);

@@ -1,12 +1,12 @@
 #!/bin/bash
-# usage: ./CMakeSceneGraphSamples.sh BUILD_TYPE LIBRARY_TYPE
+# usage: ./CMakeSample.sh BUILD_TYPE LIBRARY_TYPE
 # where BUILD_TYPE is in {Debug,Release}
 # and where LIBRARY_TYPE is in {Static,Shared}
 
 BUILD_TYPE=$1
 LIBRARY_TYPE=$2
-GCC=gcc
-GXX=g++
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="$(basename -- "$SCRIPT_DIR")"
 
 if [[ ! "${BUILD_TYPE}" = "Debug" && ! "${BUILD_TYPE}" = "Release" ]]; then
     echo "Invalid build type: ${BUILD_TYPE}, must be in {Debug, Release}"
@@ -20,16 +20,16 @@ fi
 
 if [ "${BUILD_TYPE}" = "Debug" ]; then
     if [ "${LIBRARY_TYPE}" = "Static" ]; then
-        cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DBUILD_RELEASE_LIB:BOOL=FALSE -DBUILD_SHARED_LIB:BOOL=FALSE -DCMAKE_C_COMPILER:FILEPATH=${GCC} -DCMAKE_CXX_COMPILER:FILEPATH=${GXX} -B./build -G "Unix Makefiles"
+        cmake -S ../../ --preset gcc_Debug -DBUILD_SHARED_LIBS:BOOL=FALSE -DGTE_BUILD_SAMPLES:BOOL=TRUE
     else
-        cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DBUILD_RELEASE_LIB:BOOL=FALSE -DBUILD_SHARED_LIB:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=${GCC} -DCMAKE_CXX_COMPILER:FILEPATH=${GXX} -B./build -G "Unix Makefiles"
+        cmake -S ../../ --preset gcc_Debug -DBUILD_SHARED_LIBS:BOOL=TRUE -DGTE_BUILD_SAMPLES:BOOL=TRUE
     fi
-    cmake --build ./build --config Debug --target all -- -j 10
+    cmake --build ../../build --config Debug --target "Samples_$TARGET" --
 else
     if [ "${LIBRARY_TYPE}" = "Static" ]; then
-        cmake -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_RELEASE_LIB:BOOL=TRUE -DBUILD_SHARED_LIB:BOOL=FALSE -DCMAKE_C_COMPILER:FILEPATH=${GCC} -DCMAKE_CXX_COMPILER:FILEPATH=${GXX} -B./build -G "Unix Makefiles"
+        cmake -S ../../ --preset gcc_Release -DBUILD_SHARED_LIBS:BOOL=FALSE -DGTE_BUILD_SAMPLES:BOOL=TRUE
     else
-        cmake -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_RELEASE_LIB:BOOL=TRUE -DBUILD_SHARED_LIB:BOOL=TRUE -DCMAKE_C_COMPILER:FILEPATH=${GCC} -DCMAKE_CXX_COMPILER:FILEPATH=${GXX} -B./build -G "Unix Makefiles"
+        cmake -S ../../ --preset gcc_Release -DBUILD_SHARED_LIBS:BOOL=TRUE -DGTE_BUILD_SAMPLES:BOOL=TRUE
     fi
-    cmake --build ./build --config Release --target all -- -j 10
+    cmake --build ../../build --config Release --target "Samples_$TARGET" --
 fi

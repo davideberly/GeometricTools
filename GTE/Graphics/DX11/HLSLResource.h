@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #pragma once
 
 #include <Graphics/DX11/DX11.h>
+#include <Mathematics/Logger.h>
 #include <cstdint>
 #include <fstream>
 
@@ -20,10 +21,36 @@
 #define ID3DShaderReflectionVariable ID3D11ShaderReflectionVariable
 #define D3D_SHADER_DESC D3D11_SHADER_DESC
 #define D3D_SIGNATURE_PARAMETER_DESC D3D11_SIGNATURE_PARAMETER_DESC
+
+// Hacks to supplement missing defines in MinGW headers.
+#if defined(D3D11_SHADER_VERSION_TYPE)
 #define D3D_SHADER_VERSION_TYPE D3D11_SHADER_VERSION_TYPE
+#define D3D_SHVER_PIXEL_SHADER D3D11_SHVER_PIXEL_SHADER
+#define D3D_SHVER_COMPUTE_SHADER D3D11_SHVER_COMPUTE_SHADER
+#else
+#define D3D_SHADER_VERSION_TYPE D3D12_SHADER_VERSION_TYPE
+#define D3D_SHVER_PIXEL_SHADER D3D12_SHVER_PIXEL_SHADER
+#define D3D_SHVER_COMPUTE_SHADER D3D12_SHVER_COMPUTE_SHADER
+#endif
+
+#if defined(D3D11_SHVER_GET_TYPE)
 #define D3D_SHVER_GET_TYPE D3D11_SHVER_GET_TYPE
+#else
+#define D3D_SHVER_GET_TYPE(version) (((version) >> 16) & 0xffffu)
+#endif
+
+#if defined(D3D11_SHVER_GET_MAJOR)
 #define D3D_SHVER_GET_MAJOR D3D11_SHVER_GET_MAJOR
+#else
+#define D3D_SHVER_GET_MAJOR(version) (((version) >> 4) & 0xf)
+#endif
+
+#if defined(D3D11_SHVER_GET_MINOR)
 #define D3D_SHVER_GET_MINOR D3D11_SHVER_GET_MINOR
+#else
+#define D3D_SHVER_GET_MINOR(version) (((version) >> 0) & 0xf)
+#endif
+
 #define D3D_SHADER_BUFFER_DESC D3D11_SHADER_BUFFER_DESC
 #define D3D_SHADER_INPUT_BIND_DESC D3D11_SHADER_INPUT_BIND_DESC
 #define D3D_SHADER_VARIABLE_DESC D3D11_SHADER_VARIABLE_DESC
@@ -126,5 +153,3 @@ namespace gte
         static std::string const msSRVDimension[];
     };
 }
-
-

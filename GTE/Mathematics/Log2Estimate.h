@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #pragma once
 
@@ -102,33 +102,20 @@ namespace gte
 
         size_t constexpr select = Degree - 1;
         auto constexpr& coeff = C_LOG2_EST_COEFF[select];
-        size_t constexpr last = Degree - 1;
+        size_t last = Degree - 1;
         T t = x - static_cast<T>(1);  // t in [0,1]
         T poly = static_cast<T>(coeff[last]);
-#if defined(GTE_USE_MSWINDOWS)
-        // When Degree is 1, MSVS 2019 generates warning C6294: 'Ill-defined
-        // loop: initial condition does not satisfy test. Loop body not
-        // executed.' By design of the template function, the loop must be
-        // skipped because p(t) = coeff[0]*t, in which case 'last' is 0. The
-        // value 'index = last - 1' wraps around to the maximum size_t number,
-        // but this is irrelevant because 'i' is initialized to 0 and
-        // 'i < last' is '0 < 0', which is false and the loop is skipped. The
-        // optimizing compiler should not generate any code at all for the
-        // loop.
-#pragma warning(push)
-#pragma warning(disable: 6294)
-#endif
-        for (size_t i = 0, index = last - 1; i < last; ++i, --index)
+        if (last > 0)
         {
-            poly = static_cast<T>(coeff[index]) + poly * t;
+            for (size_t i = 0, index = last - 1; i < last; ++i, --index)
+            {
+                poly = static_cast<T>(coeff[index]) + poly * t;
 
+            }
         }
         poly = poly * t;
         return poly;
     }
-#if defined(GTE_USE_MSWINDOWS)
-#pragma warning(pop)
-#endif
 
     // The input constraint is x > 0. Range reduction is used to generate
     // a value y in [1,2], call Log2Estimate(y) and then add the exponent

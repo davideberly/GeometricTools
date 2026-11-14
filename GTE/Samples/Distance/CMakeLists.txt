@@ -1,6 +1,6 @@
 if(COMMAND cmake_policy)
-    # Allow VERSION in the project() statement.
-    cmake_policy(SET CMP0048 NEW)
+	# Allow VERSION in the project() statement.
+	cmake_policy(SET CMP0048 NEW)
 endif()
 
 cmake_minimum_required(VERSION 3.10)
@@ -20,3 +20,17 @@ add_subdirectory(DistancePointHyperellipsoid)
 add_subdirectory(DistanceRectangleBox)
 add_subdirectory(DistanceSegments3)
 add_subdirectory(DistanceTriangleBox)
+
+add_custom_target(Samples_Distance)
+add_dependencies(Samples_Distance
+	DistanceAlignedBoxes
+	DistanceAlignedBoxOrientedBox
+	DistanceLine2Box2
+	DistanceOrientedBoxConeFrustum
+	DistanceOrientedBoxes
+	DistancePointConvexPolyhedron
+	DistancePointHyperellipsoid
+	DistanceRectangleBox
+	DistanceSegments3
+	DistanceTriangleBox
+)

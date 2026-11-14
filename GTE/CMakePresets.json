@@ -1,0 +1,237 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "MSYS2_ucrt64_gcc_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_gcc",
+                "_debug",
+                "MSYS_ucrt_PATH"
+            ]
+        },
+        {
+            "name": "MSYS2_ucrt64_gcc_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_gcc",
+                "_release",
+                "MSYS_ucrt_PATH"
+            ]
+        },
+        {
+            "name": "MSYS2_clang64_clang_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_clang",
+                "_debug",
+                "MSYS_clang64_PATH"
+            ]
+        },
+        {
+            "name": "MSYS2_clang64_clang_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_clang",
+                "_release",
+                "MSYS_clang64_PATH"
+            ]
+        },
+        {
+            "name": "Win_MSVC_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_MSVC",
+                "_debug"
+            ]
+        },
+        {
+            "name": "Win_MSVC_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_MSVC",
+                "_release"
+            ]
+        },
+        {
+            "name": "Win_clang-cl_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_windows_clang_cl",
+                "_debug"
+            ]
+        },
+        {
+            "name": "Win_clang-cl_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_windows_clang_cl",
+                "_release"
+            ]
+        },
+        {
+            "name": "Win_clang_Debug",
+            "hidden": true,
+            "inherits": [
+                "_common",
+                "_windows_clang",
+                "_debug"
+            ]
+        },
+        {
+            "name": "Win_clang_Release",
+            "hidden": true,
+            "inherits": [
+                "_common",
+                "_windows_clang",
+                "_release"
+            ]
+        },
+        {
+            "name": "gcc_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_gcc",
+                "_debug"
+            ]
+        },
+        {
+            "name": "gcc_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_gcc",
+                "_release"
+            ]
+        },
+        {
+            "name": "clang_Debug",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_clang",
+                "_debug"
+            ]
+        },
+        {
+            "name": "clang_Release",
+            "hidden": false,
+            "inherits": [
+                "_common",
+                "_clang",
+                "_release"
+            ]
+        },
+        {
+            "name": "_common",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/",
+            "cacheVariables": {
+                "CMAKE_MESSAGE_LOG_LEVEL": "STATUS",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_POLICY_VERSION_MINIMUM": "3.5"
+            }
+        },
+        {
+            "name": "_release",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "_debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "_none",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "None"
+            }
+        },
+        {
+            "name": "_gcc",
+            "hidden": true,
+            "description": "Using: C = gcc.exe, CXX = g++.exe",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "_clang",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
+            "name": "_MSVC",
+            "hidden": true,
+            "toolchainFile": "cmake/WindowsToolchain/Windows.MSVC.toolchain.cmake"
+        },
+        {
+            "name": "_windows_clang",
+            "hidden": true,
+            "toolchainFile": "cmake/WindowsToolchain/Windows.Clang.toolchain.cmake"
+        },
+        {
+            "name": "_windows_clang_cl",
+            "hidden": true,
+            "toolchainFile": "cmake/WindowsToolchain/Windows.Clang.toolchain.cmake",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER_FRONTEND_VARIANT": "MSVC",
+                "CMAKE_CXX_COMPILER_FRONTEND_VARIANT": "MSVC"
+            }
+        },
+        {
+            "name": "MSYS_ucrt_PATH",
+            "hidden": true,
+            "environment": {
+                "PATH": "C:/msys64/ucrt64/bin;$penv{PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "C:/msys64/ucrt64"
+            },
+            "vendor": {
+                "visualStudio": {
+                    "cmake.debugConfig": {
+                        "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe"
+                    }
+                }
+            }
+        },
+        {
+            "name": "MSYS_clang64_PATH",
+            "hidden": true,
+            "environment": {
+                "PATH": "C:/msys64/clang64/bin;$penv{PATH}"
+            },
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "C:/msys64/clang64"
+            },
+            "vendor": {
+                "visualStudio": {
+                    "cmake.debugConfig": {
+                        "miDebuggerPath": "C:/msys64/clang64/bin/gdb.exe"
+                    }
+                }
+            }
+        }
+    ]
+}

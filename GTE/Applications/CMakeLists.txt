@@ -1,58 +1,90 @@
-﻿cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.30...4.4)
 
-project(gtapplications VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
+project(gtapplications
+	VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR}
+	DESCRIPTION "GTE Applications library"
+	LANGUAGES CXX
+)
 
-option(BUILD_RELEASE_LIB "Build release library" OFF)
-option(BUILD_SHARED_LIB "Build shared library" OFF)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_definitions(-DGTE_USE_LINUX -DGTE_USE_ROW_MAJOR -DGTE_USE_MAT_VEC -DGTE_USE_OPENGL -DGTE_DISABLE_PCH)
-add_compile_options(-c -Wall -Werror)
-if(BUILD_RELEASE_LIB)
-    add_compile_definitions(NDEBUG)
-    add_compile_options(-O3)
+# Source file list for the core library
+set(gtapplications_CPP_FILES
+	Application.cpp
+	CameraRig.cpp
+	Command.cpp
+	ConsoleApplication.cpp
+	Environment.cpp
+	GTApplications.cpp
+	OnIdleTimer.cpp
+	Timer.cpp
+	TrackBall.cpp
+	TrackCylinder.cpp
+	TrackObject.cpp
+	Window2.cpp
+	Window3.cpp
+	WindowApplication.cpp
+)
+# Source file list for windowing backend (MSW or GLX)
+set(gtapplications_BACKEND_CPP_FILES "")
+if(WIN32)
+	list(APPEND gtapplications_BACKEND_CPP_FILES
+		MSW/Console.cpp
+		MSW/ConsoleSystem.cpp
+		MSW/WICFileIO.cpp
+		MSW/WICFileIONative.cpp
+		MSW/Window.cpp
+		MSW/WindowSystem.cpp
+	)
 else()
-    add_compile_definitions(_DEBUG)
-    add_compile_options(-g)
+	list(APPEND gtapplications_BACKEND_CPP_FILES
+		GLX/Console.cpp
+		GLX/ConsoleSystem.cpp
+		GLX/WICFileIO.cpp
+		GLX/Window.cpp
+		GLX/WindowSystem.cpp
+	)
 endif()
 
-set(GTE_ROOT ${PROJECT_SOURCE_DIR}/..)
-set(GTE_INCLUDE_DIR ${GTE_ROOT})
-set(GTE_LIB_PREFIX ${GTE_ROOT}/lib/${CMAKE_BUILD_TYPE})
-
-include_directories(${GTE_INCLUDE_DIR})
-
-set(GTE_CPP_FILES
-Application.cpp
-CameraRig.cpp
-Command.cpp
-ConsoleApplication.cpp
-Environment.cpp
-GTApplications.cpp
-OnIdleTimer.cpp
-Timer.cpp
-TrackBall.cpp
-TrackCylinder.cpp
-TrackObject.cpp
-Window2.cpp
-Window3.cpp
-WindowApplication.cpp
-GLX/Console.cpp
-GLX/ConsoleSystem.cpp
-GLX/WICFileIO.cpp
-GLX/Window.cpp
-GLX/WindowSystem.cpp)
-
-if(BUILD_SHARED_LIB)
-    add_library(${PROJECT_NAME} SHARED ${GTE_CPP_FILES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR} VERSION ${PROJECT_VERSION})
-    set(GTE_LIB_DIR ${GTE_LIB_PREFIX}Shared)
+if(GTE_BUILD_SHARED_LIBS)
+	add_library(${PROJECT_NAME} SHARED)
+	set_target_properties(${PROJECT_NAME}
+		PROPERTIES
+			SOVERSION ${PROJECT_VERSION_MAJOR}
+			VERSION ${PROJECT_VERSION}
+	)
 else()
-    add_library(${PROJECT_NAME} STATIC ${GTE_CPP_FILES})
-    set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
-    set(GTE_LIB_DIR ${GTE_LIB_PREFIX}Static)
+	add_library(${PROJECT_NAME} STATIC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
 endif()
-set(LIBRARY_OUTPUT_PATH ${GTE_LIB_DIR} CACHE PATH "Library directory" FORCE)
-SET(LIBRARY_OUTPUT_PATH ${GTE_LIB_DIR})
+
+target_sources(${PROJECT_NAME}
+	PRIVATE
+		${gtapplications_CPP_FILES}
+		${gtapplications_BACKEND_CPP_FILES}
+)
+
+file(GLOB_RECURSE gtapplications_HEADER_FILES
+	CONFIGURE_DEPENDS
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+target_sources(${PROJECT_NAME}
+	INTERFACE
+	FILE_SET fs_gtapplications_headers
+	TYPE
+	HEADERS
+	BASE_DIRS
+	${CMAKE_CURRENT_SOURCE_DIR}/..
+	FILES
+	${gtapplications_HEADER_FILES}
+)
+
+add_library(GTE::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_14)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC gte_usage_requirements)
+target_link_libraries(${PROJECT_NAME} PRIVATE gte_warning_levels)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC GTE::gtmathematics GTE::gtgraphics)
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE ${GTE_APPLICATIONS_BACKEND_LIBRARIES}
+)

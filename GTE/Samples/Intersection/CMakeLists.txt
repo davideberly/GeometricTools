@@ -29,3 +29,26 @@ add_subdirectory(IntersectTriangles2D)
 add_subdirectory(MovingCircleRectangle)
 add_subdirectory(MovingSphereBox)
 add_subdirectory(MovingSphereTriangle)
+
+add_custom_target(Samples_Intersection)
+add_dependencies(Samples_Intersection
+    AllPairsTriangles
+    IntersectBoxCone
+    IntersectBoxCylinder
+    IntersectBoxSphere
+    IntersectConvexPolyhedra
+    IntersectCylinders
+    IntersectEllipses
+    IntersectInfiniteCylinders
+    IntersectLineRectangle
+    IntersectLineTorus
+    IntersectPlaneConvexPolyhedron
+    IntersectRayPolygon
+    IntersectSphereCone
+    IntersectTriangleBox
+    IntersectTriangleCylinder
+    IntersectTriangles2D
+    MovingCircleRectangle
+    MovingSphereBox
+    MovingSphereTriangle
+)

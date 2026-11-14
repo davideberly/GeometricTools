@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2026.02.16
+// File Version: 8.0.2026.11.12
 
 // The functions were written based on the example source code
 // https://dev.w3.org/Amaya/libpng/example.c
@@ -257,9 +257,13 @@ bool WICFileIO::SaveToPNG(std::string const& filename, std::shared_ptr<Texture2>
         return false;
     }
 
-    int32_t bit_depth = 0;
-    int32_t color_type = 0;
-    png_uint_32 bytes_per_pixel = 0;
+    // NOTE: g++ 16.2.1 on Fedora 44 complained about the following 3
+    // variables potentially getting clobbered by a longjmp or vfork. The
+    // code compiled without complaint using previous versions of g++ on
+	// previous versions of Fedora.
+    volatile int32_t bit_depth = 0;
+    volatile int32_t color_type = 0;
+    volatile png_uint_32 bytes_per_pixel = 0;
     switch (texture->GetFormat())
     {
     case DF_R8G8B8A8_UNORM:

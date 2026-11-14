@@ -3,11 +3,12 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #include <Graphics/DX11/GTGraphicsDX11PCH.h>
 #include <Graphics/DX11/HLSLComputeProgram.h>
 #include <Graphics/DX11/HLSLProgramFactory.h>
+#include <Graphics/DX11/HLSLShader.h>
 #include <Graphics/DX11/HLSLShaderFactory.h>
 #include <Graphics/DX11/HLSLVisualProgram.h>
 using namespace gte;
@@ -161,27 +162,25 @@ std::shared_ptr<VisualProgram> HLSLProgramFactory::CreateFromNamedSources(
     return program;
 }
 
-std::shared_ptr<ComputeProgram> HLSLProgramFactory::CreateFromBytecode(
-    std::vector<uint8_t> const& csBytecode)
-{
-    LogAssert(csBytecode.size() > 0, "A program must have a compute shader.");
+std::shared_ptr<ComputeProgram>
+HLSLProgramFactory::CreateFromBytecode(std::vector<uint8_t> const &csBytecode) {
+  LogAssert(csBytecode.size() > 0, "A program must have a compute shader.");
 
-    HLSLReflection hlslCShader = HLSLShaderFactory::CreateFromBytecode("cs",
-        csEntry, std::string("cs_") + version, csBytecode.size(),
-        csBytecode.data());
-    if (hlslCShader.IsValid())
-    {
-        auto cshader = std::make_shared<HLSLShader>(hlslCShader, GT_COMPUTE_SHADER);
-        auto program = std::make_shared<HLSLComputeProgram>();
-        program->SetComputeShader(cshader);
-        return program;
-    }
-    else
-    {
-        return nullptr;
-    }
+  HLSLReflection hlslCShader = HLSLShaderFactory::CreateFromBytecode(
+      "cs", csEntry, std::string("cs_") + version, csBytecode.size(),
+      csBytecode.data());
+  if (hlslCShader.IsValid())
+  {
+      auto cshader = std::make_shared<HLSLShader>(hlslCShader, GT_COMPUTE_SHADER);
+      auto program = std::make_shared<HLSLComputeProgram>();
+      program->SetComputeShader(cshader);
+      return program;
+  }
+  else
+  {
+      return nullptr;
+  }
 }
-
 
 std::string HLSLProgramFactory::defaultVersion = "5_0";
 std::string HLSLProgramFactory::defaultVSEntry = "VSMain";
@@ -192,5 +191,3 @@ uint32_t HLSLProgramFactory::defaultFlags = (
     D3DCOMPILE_ENABLE_STRICTNESS |
     D3DCOMPILE_IEEE_STRICTNESS |
     D3DCOMPILE_OPTIMIZATION_LEVEL3);
-
-

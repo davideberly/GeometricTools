@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #pragma once
 
@@ -194,9 +194,6 @@ namespace gte
         // Containment queries.
         size_t GetContainingTetrahedron(Vector3<T> const& P) const
         {
-            // VS 2019 16.8.1 generates LNT1006 "Local variable is not
-            // initialized." Incorrect, because the default constructor
-            // initializes all the members.
             typename Delaunay3<T>::SearchInfo info{};
             return mDelaunay->GetContainingTetrahedron(P, info);
         }

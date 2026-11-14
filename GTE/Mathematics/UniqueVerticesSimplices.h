@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #pragma once
 
@@ -57,12 +57,7 @@ namespace gte
     public:
         UniqueVerticesSimplices()
         {
-            // The index type must be an integral type that does not include
-            // bool. MSVS 2019 16.7.3 does not trigger this static assertion
-            // when IndexType is bool. Instead, it complains about using
-            // .data() for the std::vector<bool> objects and about comparing
-            // bool values to 0 in the LogAssert statements, after which the
-            // compilation terminates.
+            // The IndexType must be an integral type but not bool.
             static_assert(
                 std::is_integral<IndexType>::value &&
                 !std::is_same<IndexType, bool>::value,
