@@ -27,13 +27,12 @@ int32_t HLSLProgramFactory::GetAPI() const
     return PF_HLSL;
 }
 
-std::shared_ptr<VisualProgram> HLSLProgramFactory::CreateFromBytecode(
-    std::vector<uint8_t> const& vsBytecode,
-    std::vector<uint8_t> const& psBytecode,
-    std::vector<uint8_t> const& gsBytecode)
-{
+std::shared_ptr<VisualProgram>
+HLSLProgramFactory::CreateFromBytecode(std::vector<uint8_t> const &vsBytecode,
+                                       std::vector<uint8_t> const &psBytecode,
+                                       std::vector<uint8_t> const &gsBytecode) {
     LogAssert(vsBytecode.size() > 0 && psBytecode.size() > 0,
-        "A program must have a vertex shader and a pixel shader.");
+            "A program must have a vertex shader and a pixel shader.");
 
     std::shared_ptr<HLSLShader> vshader;
     std::shared_ptr<HLSLShader> pshader;

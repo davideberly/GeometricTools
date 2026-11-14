@@ -31,8 +31,8 @@ void HLSLReflection::SetDescription(D3D_SHADER_DESC const& desc)
 {
     mDesc.creator = std::string(desc.Creator);
     mDesc.shaderType = static_cast<D3D_SHADER_VERSION_TYPE>(D3D_SHVER_GET_TYPE(desc.Version));
-    mDesc.majorVersion = D3D11_SHVER_GET_MAJOR(desc.Version);
-    mDesc.minorVersion = D3D11_SHVER_GET_MINOR(desc.Version);
+    mDesc.majorVersion = D3D_SHVER_GET_MAJOR(desc.Version);
+    mDesc.minorVersion = D3D_SHVER_GET_MINOR(desc.Version);
     mDesc.flags = desc.Flags;
     mDesc.numConstantBuffers = desc.ConstantBuffers;
     mDesc.numBoundResources = desc.BoundResources;
