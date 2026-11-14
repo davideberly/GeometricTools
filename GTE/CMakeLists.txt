@@ -9,7 +9,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 8)
-set(GTE_VERSION_MINOR 2)
+set(GTE_VERSION_MINOR 4)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(GTE

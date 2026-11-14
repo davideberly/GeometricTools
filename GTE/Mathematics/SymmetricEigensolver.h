@@ -3,7 +3,7 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2026.11.12
 
 #pragma once
 
@@ -405,10 +405,10 @@ namespace gte
 
                     // Compute s = Dot(x,v) * 2/v^T*v.
                     //
-                    // NOTE: MSVS 2019 16+ generates for Real=double, mSize=6:
-                    //   warning C6385: Reading invalid data from 'x':  the
-                    //   readable size is '_Old_3`mSize*sizeof(Real)' bytes,
-                    //   but '16' bytes may be read.
+                    // NOTE: MSVS 2022/2026 generates for Real=double,
+                    // mSize=6: warning C6385:
+                    //   Reading invalid data from 'x': the readable
+                    //   size is '_Old_3`mSize*sizeof(Real)' bytes, but '16' bytes may be read.
                     // This appears to be incorrect. At this point in the
                     // code, r = i + 1. On i-loop entry, r = mSize-2. On
                     // i-loop exit, r = 1. This keeps r in the valid range

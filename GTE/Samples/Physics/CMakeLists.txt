@@ -6,7 +6,7 @@ endif()
 cmake_minimum_required(VERSION 3.10)
 
 set(GTE_VERSION_MAJOR 8)
-set(GTE_VERSION_MINOR 2)
+set(GTE_VERSION_MINOR 4)
 
 project(Physics VERSION ${GTE_VERSION_MAJOR}.${GTE_VERSION_MINOR})
 

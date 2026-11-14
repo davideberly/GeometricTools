@@ -3,10 +3,11 @@
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // https://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 8.0.2025.05.10
+// File Version: 8.0.2025.11.04
 
 #pragma once
 
+#include <Mathematics/Logger.h>
 #include <cstdint>
 
 namespace gte
@@ -85,6 +86,11 @@ namespace gte
             mScale((Real)0),
             mTimeStep((Real)0)
         {
+            LogAssert(
+                quantity > 0 &&
+                data != nullptr,
+                "Invalid input.");
+
             Real maxValue = data[0];
             mMin = maxValue;
             for (int32_t i = 1; i < mQuantity; i++)

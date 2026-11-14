@@ -4,7 +4,7 @@ if(COMMAND cmake_policy)
 endif()
 
 set(GTE_VERSION_MAJOR 8)
-set(GTE_VERSION_MINOR 2)
+set(GTE_VERSION_MINOR 4)
 
 cmake_minimum_required(VERSION 3.10)
 

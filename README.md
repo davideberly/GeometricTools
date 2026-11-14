@@ -25,19 +25,16 @@ applications, GTGraphicsGL46 and GTApplicationsGL46, on Microsoft
 Windows 10/11 and on Linux. A small number of files exist to use GLX
 and X-Windows on Linux.
 
-On Microsoft Windows 10/11, the code is maintained using Microsoft Visual
-Studio 2022 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compilers 2024/2025.
+On Microsoft Windows 11, the code is maintained using Microsoft Visual
+Studio 2022 or 2026 with Microsoft's compilers, LLVM clang-cl or with Intel C++
+Compilers 2026.
 
-On Ubuntu 24.04.3 LTS, the code is maintained using Visual Studio Code
+On Ubuntu 26.04.1 LTS, the code is maintained using Visual Studio Code
 1.110.1, CMake 4.2.3, NVIDIA graphics drivers, OpenGL 4.6 and
-gcc 13.3.0.
+gcc 15.2.0.
 
-On Fedora 43, the code is maintained using Visual Studio Code 1.110.1,
-and CMake 3.31.10, NVIDIA graphics drivers, OpenGL 4.6 and gcc 15.2.1.
-
-On Linux Mint Cinnamon 22.3, the code is maintained using Visual Studio Code 1.111.0,
-CMake 3.28.3, NVIDIA graphics drivers, OpenGL 4.6 and gcc 13.3.0.
+On Fedora 44, the code is maintained using Visual Studio Code 1.110.1,
+and CMake 3.31.10, NVIDIA graphics drivers, OpenGL 4.6 and gcc 16.0.1.
 
 ## Getting Started
 
