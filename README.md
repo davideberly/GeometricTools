@@ -12,6 +12,7 @@ GTE is licensed under the
 The update history for the current version of GTE is
 [Current Update History](https://www.geometrictools.com/Downloads/Gte8UpdateHistory.pdf).
 The update history for all versions of GTE is [Full Update History](https://www.geometrictools.com/Downloads/GteFullUpdateHistory.pdf).
+The CMake system is provided by Michal Lurie using the MIT library.
 
 ## Supported Platforms
 
@@ -27,14 +28,16 @@ and X-Windows on Linux.
 
 On Microsoft Windows 11, the code is maintained using Microsoft Visual
 Studio 2022 or 2026 with Microsoft's compilers, LLVM clang-cl or with Intel C++
-Compilers 2026.
+Compilers 2026. Support is also provided for mingw-w64 using MSYS2 (GCC),
+Visual Code v1.145.2, CMake 4.4.5, NVIDIA graphics drivers, OpenGL 4.6,
+and gcc 16.2.1.
 
-On Ubuntu 26.04.1 LTS, the code is maintained using Visual Studio Code
-1.110.1, CMake 4.2.3, NVIDIA graphics drivers, OpenGL 4.6 and
+On Ubuntu 26.04.1 LTS, the code is maintained using Visual Code
+1.146.1, CMake 4.2.3, NVIDIA graphics drivers, OpenGL 4.6, and
 gcc 15.2.0.
 
-On Fedora 44, the code is maintained using Visual Studio Code 1.110.1,
-and CMake 3.31.10, NVIDIA graphics drivers, OpenGL 4.6 and gcc 16.0.1.
+On Fedora 45, the code is maintained using Visual Code 1.146.0,
+and CMake 4.3.0, NVIDIA graphics drivers, OpenGL 4.6, and gcc 16.2.1.
 
 ## Getting Started
 
