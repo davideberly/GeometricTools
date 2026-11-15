@@ -12,7 +12,7 @@ GTE is licensed under the
 The update history for the current version of GTE is
 [Current Update History](https://www.geometrictools.com/Downloads/Gte8UpdateHistory.pdf).
 The update history for all versions of GTE is [Full Update History](https://www.geometrictools.com/Downloads/GteFullUpdateHistory.pdf).
-The CMake system is provided by Michal Lurie using the MIT library.
+The CMake system is provided by Michal Lurie using the MIT license.
 
 ## Supported Platforms
 
